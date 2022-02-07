@@ -1,2 +1,4 @@
 class Dictionary:
-    pass
+    def __init__(self):
+        while True:
+            print("not hehe")
