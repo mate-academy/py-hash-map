@@ -1,6 +1,3 @@
-from app.point import Point
-
-
 class Dictionary:
     def __init__(self):
         self.initial_capacity = 8
@@ -10,7 +7,9 @@ class Dictionary:
         self.resize = 2
 
     def is_resize(self):
-        return True if self.length == int(self.initial_capacity * self.load_factor) else False
+        return True if self.length == int(
+            self.initial_capacity * self.load_factor
+        ) else False
 
     def check_resize(self):
         save_storage = self.storage[:]
