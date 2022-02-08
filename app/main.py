@@ -32,7 +32,9 @@ class Dictionary:
                 self[node.key] = node.value
 
     def __setitem__(self, key, value):
-        if self._length + 1 == int(self._alloc_length * self._LENGTH_RESIZE_COEF):
+        if self._length + 1 == int(
+                self._alloc_length * self._LENGTH_RESIZE_COEF
+        ):
             self._resize()
 
         position = hash(key) % self._alloc_length
@@ -45,10 +47,18 @@ class Dictionary:
                 index = position + 1
                 while self._container[index % self._alloc_length] is not None:
                     index += 1
-                self._container[index % self._alloc_length] = self._Node(key, value, hash(key))
+                self._container[index % self._alloc_length] = self._Node(
+                    key=key,
+                    value=value,
+                    key_hash=hash(key)
+                )
                 self._length += 1
         else:
-            self._container[position] = self._Node(key=key, value=value,key_hash=hash(key))
+            self._container[position] = self._Node(
+                key=key,
+                value=value,
+                key_hash=hash(key)
+            )
             self._length += 1
 
     def __len__(self):
@@ -58,7 +68,8 @@ class Dictionary:
         position = hash(key)
         index = 0
         while index < self._alloc_length:
-            if (node := self._container[position % self._alloc_length]).key == key:
+            if ((node := self._container[position % self._alloc_length]).key
+                    == key):
                 return node
             position += 1
             index = 1
