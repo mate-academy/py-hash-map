@@ -97,13 +97,13 @@ class Dictionary:
         try:
             return self.__getitem__(key)
         except KeyError:
-            raise KeyError
+            raise
 
     def pop(self, key):
         try:
             return self.__delitem__(key)
         except KeyError:
-            raise KeyError
+            raise
 
     def clear(self):
         self.storage = [[] for _ in range(self.initial_capacity)]
