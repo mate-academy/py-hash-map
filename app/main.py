@@ -4,62 +4,45 @@ from math import ceil
 class Dictionary:
     def __init__(self):
         self.len = 8
-        self.list = [[] for _ in range(self.len)]
+        self.list = [None for _ in range(self.len)]
+        self.counter = 0
 
     def __setitem__(self, key, value):
-        self.resize()  # Check if necessary to change list length
+        capacity = ceil((2 * self.len) / 3)
 
-        if isinstance(key, int):
-            element_cell = key % self.len
-        else:
-            element_cell = hash(key) % self.len
+        if capacity == self.counter:
+            self.resize()
 
-        if self.list[element_cell]:
-            for i in range(self.len):
+        element_cell = hash(key) % self.len
+
+        for _ in self.list:
+            if self.list[element_cell % self.len] is None or\
+                    self.list[element_cell % self.len] == key:
+                self.list[element_cell % self.len] = [key, hash(key), value]
+                self.counter += 1
+                break
+            else:
                 if element_cell == self.len:
                     element_cell = 0
-
-                element_cell += 1
-                if not self.list[element_cell]:
-                    break
-
-        self.list[element_cell] = [key, hash(key), value]
+                else:
+                    element_cell += 1
 
     def __getitem__(self, key):
         for lst in self.list:
-            if lst:
+            if lst is not None:
                 if key == lst[0]:
-                    return lst
+                    return lst[2]
 
     def __len__(self):
-        len_dict = 0
-
-        for value in self.list:
-            if value:
-                len_dict += 1
-        return len_dict
+        return self.counter
 
     def resize(self):
-        capacity = ceil((2 * self.len) / 3)
+        self.len *= 2
 
-        if self.__len__() >= capacity:
-            self.len *= 2
-            new_list = self.list.copy()                # Save main list
+        main_list = self.list.copy()
+        self.list = [None for _ in range(self.len)]
 
-            self.list = [[] for _ in range(self.len)]  # Change length main list
-
-            for value in new_list:
-                if value:                                          # Check value is not empty
-                    if isinstance(value[0], int):
-                        element_cell = value[0] % self.len
-                    else:
-                        element_cell = hash(value[0]) % self.len
-
-                    if self.list[element_cell]:                    # If main list[index] not empty - get next index
-                        if element_cell != self.len:
-                            self.list[element_cell + 1] = value
-                        else:
-                            element_cell = 0
-                            self.list[element_cell] = value
-                    else:
-                        self.list[element_cell] = value
+        for item in main_list:
+            if item is not None:
+                element_cell = hash(item[0]) % self.len
+                self.list[element_cell % self.len] = item
