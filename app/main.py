@@ -134,7 +134,7 @@ class Dictionary:
     def __iter__(self):
         for item in self.storage:
             if len(item) != 0:
-                yield item
+                yield item[:-1]
 
     def update(self, upd_data):
         return self.__setitem__(upd_data[0], upd_data[1])
