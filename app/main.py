@@ -27,8 +27,9 @@ class Dictionary:
 
     def __getitem__(self, key):
         for lst in self.list:
-            if key in lst:
-                return lst
+            if lst:
+                if key == lst[0]:
+                    return lst
 
     def __len__(self):
         len_dict = 0
