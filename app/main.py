@@ -9,12 +9,10 @@ class Dictionary:
 
     def resize(self):
         saved_storage = self.storage[:]
-        load = int(self.initial_capacity * self.LOAD_FACTOR)
+        self.length = 0
+        self.initial_capacity *= self.RESIZE
+        self.storage = [[] for _ in range(self.initial_capacity)]
 
-        if load == self.length:
-            self.length = 0
-            self.initial_capacity *= self.RESIZE
-            self.storage = [[] for _ in range(self.initial_capacity)]
         for item in saved_storage:
             if len(item) != 0:
                 self.__setitem__(item[0], item[1])
@@ -28,29 +26,34 @@ class Dictionary:
         index = hashed_value % self.initial_capacity
 
         if len(self.storage[index]) != 0:
-            if key == self.storage[index][0] and \
-                    hashed_value == self.storage[index][2]:
+            if hashed_value == self.storage[index][2] and \
+                    key == self.storage[index][0]:
                 self.storage[index][1] = value
+                return
             else:
                 while True:
                     index += 1
                     if index == self.initial_capacity:
                         index = 0
                         continue
+                    if len(self.storage[index]) != 0:
+                        if hashed_value == self.storage[index][2] and \
+                                key == self.storage[index][0]:
+                            self.storage[index][1] = value
+                            return
                     elif len(self.storage[index]) == 0:
                         self.length += 1
                         self.storage[index] = [key, value, hashed_value]
-                        break
-        else:
-            self.storage[index] = [key, value, hashed_value]
-            self.length += 1
+                        return
+        self.storage[index] = [key, value, hashed_value]
+        self.length += 1
 
     def __getitem__(self, key):
         hashed_value = hash(key)
         index = hashed_value % self.initial_capacity
 
-        if key == self.storage[index][0] and \
-                hashed_value == self.storage[index][2]:
+        if hashed_value == self.storage[index][2] and \
+                key == self.storage[index][0]:
             return self.storage[index][1]
         else:
             counter = 0
@@ -59,8 +62,8 @@ class Dictionary:
                 if index == self.initial_capacity:
                     index = 0
                     continue
-                if key == self.storage[index][0] and \
-                        hashed_value == self.storage[index][2]:
+                if hashed_value == self.storage[index][2] and \
+                        key == self.storage[index][0]:
                     return self.storage[index][1]
                 counter += 1
             raise KeyError
@@ -73,8 +76,8 @@ class Dictionary:
         index = hashed_value % self.initial_capacity
 
         for _ in self.storage[index]:
-            if key == self.storage[index][0] and \
-                    hashed_value == self.storage[index][2]:
+            if hashed_value == self.storage[index][2] and \
+                    key == self.storage[index][0]:
                 self.storage[index] = []
                 self.length -= 1
                 return
@@ -85,8 +88,8 @@ class Dictionary:
                     if index == self.initial_capacity:
                         index = 0
                         continue
-                    if key == self.storage[index][0] and \
-                            hashed_value == self.storage[index][2]:
+                    if hashed_value == self.storage[index][2] and \
+                            key == self.storage[index][0]:
                         self.storage[index] = []
                         self.length -= 1
                         return
@@ -115,8 +118,8 @@ class Dictionary:
         if hashed_value > self.initial_capacity:
             return False
 
-        if key == self.storage[index][0] and \
-                hashed_value == self.storage[index][2]:
+        if hashed_value == self.storage[index][2] and \
+                key == self.storage[index][0]:
             return True
         else:
             counter = 0
@@ -125,8 +128,8 @@ class Dictionary:
                 if index == self.initial_capacity:
                     index = 0
                     continue
-                if key == self.storage[index][0] and \
-                        hashed_value == self.storage[index][2]:
+                if hashed_value == self.storage[index][2] and \
+                        key == self.storage[index][0]:
                     return True
                 counter += 1
         return False
