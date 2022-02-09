@@ -5,17 +5,17 @@ class Dictionary:
         self._hash_table = [[] for _ in range(self._capacity)]
 
     def __setitem__(self, key, value):
+        self._length += 1
+        self._check_load_factor()
+
         index = hash(key) % self._capacity
 
         while self._hash_table[index]:
             if self._hash_table[index][0] == key:
-                self._hash_table[index][2] = value
-                return
+                self._length -= 1
+                break
 
             index = self._increase_index(index)
-
-        self._length += 1
-        self._check_load_factor()
 
         self._hash_table[index] = [key, hash(key), value]
 
