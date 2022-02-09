@@ -1,3 +1,10 @@
+"""
+During the tests, error with element '682'
+can be occurred, randomly. It may occur, or
+may not.
+"""
+
+
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
