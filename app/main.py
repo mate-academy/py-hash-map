@@ -17,22 +17,22 @@ class Node:
 
 
 class Dictionary:
-    table_length = 8
-    resize_coefficient = 2 / 3
-    multiplying_coefficient = 2
+    TABLE_LENGTH = 8
+    RESIZE_COEFFICIENT = 2 / 3
+    MULTIPLYING_COEFFICIENT = 2
 
     def __init__(self):
         self._table: List[Optional[Node]] = \
-            [None for _ in range(Dictionary.table_length)]
+            [None for _ in range(Dictionary.TABLE_LENGTH)]
         self._size = 0
-        self._capacity = Dictionary.table_length
+        self._capacity = Dictionary.TABLE_LENGTH
 
     def _resize(self):
         existing_instances = [
             instance for instance in self._table
             if instance is not None
         ]
-        self._capacity *= Dictionary.multiplying_coefficient
+        self._capacity *= Dictionary.MULTIPLYING_COEFFICIENT
         self._table = [None for _ in range(self._capacity)]
         self._size = 0
 
@@ -51,7 +51,7 @@ class Dictionary:
                 return
             index_in_table = (index_in_table + 1) % self._capacity
 
-        if (self._size + 1) > Dictionary.resize_coefficient * \
+        if (self._size + 1) > Dictionary.RESIZE_COEFFICIENT * \
                 self._capacity:
             self._resize()
         self._table[index_in_table] = Node(hash_, key, value)
