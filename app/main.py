@@ -2,7 +2,6 @@ class Dictionary:
     LOAD_FACTOR = 2 / 3
     RESIZE = 2
     DEFAULT_CAPACITY = 8
-    CLEAR_CAPACITY = 1
 
     def __init__(self):
         self.initial_capacity = 8
@@ -112,7 +111,7 @@ class Dictionary:
 
     def clear(self):
         self.length = 0
-        self.storage = [[] for _ in range(self.CLEAR_CAPACITY)]
+        self.storage = [[] for _ in range(self.DEFAULT_CAPACITY)]
 
     def __contains__(self, key):
         hashed_value = hash(key)
