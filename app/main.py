@@ -8,7 +8,6 @@ class Dictionary:
     def __init__(self, capacity=8):
         self.capacity = capacity
         self.ls = [None for _ in range(self.capacity)]
-        self.len = 0
         self.filled = 0
 
     def __setitem__(self, key, value):
@@ -28,7 +27,7 @@ class Dictionary:
             while True:
                 index += 1
                 index %= self.capacity
-                if self.ls[index] is not None:
+                if self.ls[index] is None:
                     self.filled += 1
                     self.ls[index] = [key, hash_value, value]
                     break
@@ -41,6 +40,7 @@ class Dictionary:
             if cell_key == key:
                 return value
             index += 1
+            index %= self.capacity
         raise KeyError
 
     def resize(self):
@@ -50,7 +50,7 @@ class Dictionary:
         self.ls = [None for _ in range(self.capacity)]
         for item in copy_ls:
             if item is not None:
-                self.__setitem__(item[0], item[2])
+                self[item[0]] = item[2]
 
     def __len__(self):
         return self.filled
