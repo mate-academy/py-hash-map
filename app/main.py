@@ -18,7 +18,7 @@ class Dictionary:
                 self.__setitem__(item[0], item[1])
 
     def __setitem__(self, key, value):
-        if self.length == int(self.initial_capacity * self.LOAD_FACTOR):
+        if self.length + 1 == int(self.initial_capacity * self.LOAD_FACTOR):
             self.resize()
 
         hashed_value = hash(key)
