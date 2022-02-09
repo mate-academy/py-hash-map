@@ -1,10 +1,12 @@
 class Dictionary:
     LOAD_FACTOR = 2 / 3
     RESIZE = 2
+    DEFAULT_CAPACITY = 8
+    CLEAR_CAPACITY = 1
 
     def __init__(self):
         self.initial_capacity = 8
-        self.storage = [[] for _ in range(self.initial_capacity)]
+        self.storage = [[] for _ in range(self.DEFAULT_CAPACITY)]
         self.length = 0
 
     def resize(self):
@@ -18,7 +20,7 @@ class Dictionary:
                 self.__setitem__(item[0], item[1])
 
     def __setitem__(self, key, value):
-        if self.length + 1 == int(self.initial_capacity * self.LOAD_FACTOR):
+        if self.length == int(self.initial_capacity * self.LOAD_FACTOR):
             self.resize()
 
         hashed_value = hash(key)
@@ -109,7 +111,8 @@ class Dictionary:
             raise
 
     def clear(self):
-        self.storage = [[] for _ in range(self.initial_capacity)]
+        self.length = 0
+        self.storage = [[] for _ in range(self.CLEAR_CAPACITY)]
 
     def __contains__(self, key):
         hashed_value = hash(key)
