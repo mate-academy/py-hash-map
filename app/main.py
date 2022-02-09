@@ -1,48 +1,67 @@
-from math import ceil
+from typing import Any
+from dataclasses import dataclass
 
 
 class Dictionary:
+    _DEFAULT_LENGTH = 8
+    _LENGTH_RESIZE_COEFFICIENT = 2 / 3
+    _RESIZE_MULTIPLY_COEFFICIENT = 2
+
+    @dataclass()
+    class _Node:
+        key: Any
+        value: object
+        hash_: int
+
     def __init__(self):
-        self.len = 8
-        self.list = [None for _ in range(self.len)]
-        self.counter = 0
+        self._container = [None for _ in range(self._DEFAULT_LENGTH)]
+        self._length = 0
+        self._current_length = len(self._container)
 
     def __setitem__(self, key, value):
-        capacity = ceil((2 * self.len) / 3)
+        capacity = int(self._LENGTH_RESIZE_COEFFICIENT * self._current_length)
+        hash_ = hash(key)
+        index = hash_ % self._current_length
 
-        if capacity == self.counter:
+        while self._container[index % self._current_length] is not None:
+            if index == self._current_length:
+                index = 0
+
+            if self._container[index].key == key and hash_ == hash(key):
+                self._container[index].value = value
+                return
+            index += 1
+
+        if capacity <= self._length:
             self.resize()
 
-        element_cell = hash(key) % self.len
-
-        for _ in self.list:
-            if self.list[element_cell % self.len] is None or\
-                    self.list[element_cell % self.len] == key:
-                self.list[element_cell % self.len] = [key, hash(key), value]
-                self.counter += 1
-                break
-            else:
-                if element_cell == self.len:
-                    element_cell = 0
-                else:
-                    element_cell += 1
+        self._container[index % self._current_length] =\
+            self._Node(key, value, hash_)
+        self._length += 1
 
     def __getitem__(self, key):
-        for lst in self.list:
-            if lst is not None:
-                if key == lst[0]:
-                    return lst[2]
+        for item in self._container:
+            if item is not None:
+                if item.key == key and item.hash_ == hash(key):
+                    return item.value
+        raise KeyError(key)
 
     def __len__(self):
-        return self.counter
+        return self._length
 
     def resize(self):
-        self.len *= 2
+        self._current_length *= self._RESIZE_MULTIPLY_COEFFICIENT
+        self._length = 0
+        new_list = self._container.copy()
 
-        main_list = self.list.copy()
-        self.list = [None for _ in range(self.len)]
-
-        for item in main_list:
+        self._container = [None for _ in range(self._current_length)]
+        for item in new_list:
             if item is not None:
-                element_cell = hash(item[0]) % self.len
-                self.list[element_cell % self.len] = item
+                self.__setitem__(item.key, item.value)
+
+
+if __name__ == "__main__":
+    items = [(f"Element {i}", i) for i in range(1000)]
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
