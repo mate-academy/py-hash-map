@@ -65,13 +65,7 @@ class Dictionary:
 
 
 if __name__ == "__main__":
-    a = Dictionary()
-
-    a[1] = 2
-    a[9] = 2
-    print(a[1])
-    print(a[1])
-    # items = [(f"Element {i}", i) for i in range(1000)]
-    # dictionary = Dictionary()
-    # for key, value in items:
-    #     dictionary[key] = value
+    items = [(f"Element {i}", i) for i in range(1000)]
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
