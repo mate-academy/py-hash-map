@@ -13,7 +13,8 @@ class Dictionary:
         while self._hash_table[index]:
             if self._hash_table[index][0] == key:
                 self._length -= 1
-                break
+                self._hash_table[index][2] = value
+                return
 
             index = self._increase_index(index)
 
