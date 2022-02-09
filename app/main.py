@@ -41,12 +41,12 @@ class Dictionary:
                 return
 
             index = (index + 1) % self._capacity
-        if (self._size + 1) > Dictionary._LENGTH_RESIZE_COEF * self._capacity:
-            self._resize()
 
         self._table[index] = Node(hash_, key, value)
 
         self._size += 1
+        if (self._size + 1) > Dictionary._LENGTH_RESIZE_COEF * self._capacity:
+            self._resize()
 
     def __getitem__(self, key):
         hash_ = hash(key)
