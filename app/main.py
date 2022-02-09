@@ -53,8 +53,8 @@ class Dictionary:
                 return
             index = (index + 1) % self._capacity
 
-        if (self._size + 1) > Dictionary._LOAD_FACTOR * self._capacity:
-            self._resize()
-
         self._hashtable[index] = Node(hash_, key, value)
         self._size += 1
+
+        if (self._size + 1) > Dictionary._LOAD_FACTOR * self._capacity:
+            self._resize()
