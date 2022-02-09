@@ -1,6 +1,9 @@
 class Dictionary:
+    _CAPACITY_FACTOR = 8
+    _LOAD_FACTOR = 2 / 3
+
     def __init__(self):
-        self._capacity = 8
+        self._capacity = self._CAPACITY_FACTOR
         self._size = 0
         self._table = [None] * self._capacity
 
@@ -16,7 +19,7 @@ class Dictionary:
         self._table[index] = (key, value)
         self._size += 1
 
-        if self._size >= self._capacity * 2/3:
+        if self._size >= self._capacity * self._LOAD_FACTOR:
             self._resize()
 
     def __getitem__(self, item):
