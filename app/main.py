@@ -48,7 +48,9 @@ class Dictionary:
             self._resize()
 
     def _resize(self):
-        existing_nodes = [node for node in self._hash_table if node is not None]
+        existing_nodes = [
+            node for node in self._hash_table if node is not None
+        ]
         self._capacity *= Dictionary._RESIZE
         self._hash_table = [None for _ in range(self._capacity)]
         self._size = 0
