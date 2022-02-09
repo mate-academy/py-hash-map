@@ -26,18 +26,17 @@ class Dictionary:
 
     def _resize(self):
         self._capacity *= 2
-        new_hash_table = [[] for _ in range(self._capacity)]
+        old_hash_table = self._hash_table
+        self._hash_table = [[] for _ in range(self._capacity)]
 
-        for item in self._hash_table:
+        for item in old_hash_table:
             if item:
                 new_index = item[1] % self._capacity
 
-                while new_hash_table[new_index]:
+                while self._hash_table[new_index]:
                     new_index = self._increase_index(new_index)
 
-                new_hash_table[new_index] = item
-
-        self._hash_table = new_hash_table
+                self._hash_table[new_index] = item
 
     def _increase_index(self, index):
         index += 1
