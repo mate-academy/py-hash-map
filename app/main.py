@@ -32,18 +32,22 @@ class Dictionary:
                 return
             index += 1
 
-        if capacity <= self._length:
-            self.resize()
-
         self._container[index % self._current_length] =\
             self._Node(key, value, hash_)
         self._length += 1
 
+        if capacity <= self._length:
+            self.resize()
+
     def __getitem__(self, key):
-        for item in self._container:
-            if item is not None:
-                if item.key == key and item.hash_ == hash(key):
-                    return item.value
+        position = hash(key)
+        index = 0
+
+        while index < self._current_length:
+            if self._container[position % self._current_length].key == key:
+                return self._container[position % self._current_length].value
+            index += 1
+            position += 1
         raise KeyError(key)
 
     def __len__(self):
@@ -61,7 +65,13 @@ class Dictionary:
 
 
 if __name__ == "__main__":
-    items = [(f"Element {i}", i) for i in range(1000)]
-    dictionary = Dictionary()
-    for key, value in items:
-        dictionary[key] = value
+    a = Dictionary()
+
+    a[1] = 2
+    a[9] = 2
+    print(a[1])
+    print(a[1])
+    # items = [(f"Element {i}", i) for i in range(1000)]
+    # dictionary = Dictionary()
+    # for key, value in items:
+    #     dictionary[key] = value
