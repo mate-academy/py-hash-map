@@ -27,8 +27,8 @@ class Dictionary:
         node = [key, value, hash_]
 
         while self.elements[index] is not None:
-            if self.elements[index][0] == key \
-                    and self.elements[index][2] == hash_:
+            if self.elements[index][2] == hash_ \
+                    and self.elements[index][0] == key:
                 self.elements[index][1] = value
                 return
             index = (index + 1) % len(self.elements)
