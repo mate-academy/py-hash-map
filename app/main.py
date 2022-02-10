@@ -23,51 +23,39 @@ class Dictionary:
             self.resize()
 
         hashed_value = hash(key)
-
         index = hashed_value % self.initial_capacity
 
-        if len(self.storage[index]) != 0:
-            if hashed_value == self.storage[index][2] and \
-                    key == self.storage[index][0]:
-                self.storage[index][1] = value
-                return
-            else:
-                while True:
-                    index += 1
-                    if index == self.initial_capacity:
-                        index = 0
-                        continue
-                    if len(self.storage[index]) != 0:
-                        if hashed_value == self.storage[index][2] and \
-                                key == self.storage[index][0]:
-                            self.storage[index][1] = value
-                            return
-                    elif len(self.storage[index]) == 0:
-                        self.length += 1
-                        self.storage[index] = [key, value, hashed_value]
-                        return
-        self.storage[index] = [key, value, hashed_value]
-        self.length += 1
+        if len(self.storage[index]) == 0:
+            self.storage[index] = [key, value, hashed_value]
+            self.length += 1
+
+        elif hashed_value == self.storage[index][2] and key == self.storage[index][0]:
+            self.storage[index][1] = value
+
+        else:
+            index = (index + 1) % self.initial_capacity
+
+            while True:
+                if not self.storage[index]:
+                    self.storage[index] = [key, value, hashed_value]
+                    self.length += 1
+                    return
+                elif hashed_value == self.storage[index][2] and key == self.storage[index][0]:
+                    self.storage[index][1] = value
+                    return
+                index = (index + 1) % self.initial_capacity
 
     def __getitem__(self, key):
         hashed_value = hash(key)
         index = hashed_value % self.initial_capacity
 
-        if hashed_value == self.storage[index][2] and \
-                key == self.storage[index][0]:
-            return self.storage[index][1]
-        else:
-            counter = 0
-            while counter <= self.initial_capacity:
-                index += 1
-                if index == self.initial_capacity:
-                    index = 0
-                    continue
-                if hashed_value == self.storage[index][2] and \
-                        key == self.storage[index][0]:
+        for _ in range(self.initial_capacity):
+            if len(self.storage[index]) != 0:
+                if self.storage[index][0] == key and hashed_value == self.storage[index][2]:
                     return self.storage[index][1]
-                counter += 1
-            raise KeyError
+            index = (index + 1) % self.initial_capacity
+
+        raise KeyError
 
     def __len__(self):
         return self.length
@@ -79,34 +67,24 @@ class Dictionary:
         for _ in self.storage[index]:
             if hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
+                return_index = self.storage[index][1]
                 self.storage[index] = []
                 self.length -= 1
-                return
-            else:
-                counter = 0
-                while counter <= self.initial_capacity:
-                    index += 1
-                    if index == self.initial_capacity:
-                        index = 0
-                        continue
-                    if hashed_value == self.storage[index][2] and \
-                            key == self.storage[index][0]:
-                        self.storage[index] = []
-                        self.length -= 1
-                        return
-                    counter += 1
+                return return_index
+            index = (index + 1) % self.initial_capacity
+
         raise KeyError
 
-    def get(self, key):
+    def get(self, key, default=None):
         try:
             return self.__getitem__(key)
         except KeyError:
-            raise
+            return default
 
     def pop(self, key):
         try:
             return self.__delitem__(key)
-        except KeyError:
+        except (KeyError, IndexError):
             raise
 
     def clear(self):
@@ -117,23 +95,14 @@ class Dictionary:
         hashed_value = hash(key)
         index = hashed_value % self.initial_capacity
 
-        if hashed_value > self.initial_capacity:
+        if index > self.initial_capacity:
             return False
 
-        if hashed_value == self.storage[index][2] and \
-                key == self.storage[index][0]:
-            return True
-        else:
-            counter = 0
-            while counter <= self.initial_capacity:
-                index += 1
-                if index == self.initial_capacity:
-                    index = 0
-                    continue
-                if hashed_value == self.storage[index][2] and \
-                        key == self.storage[index][0]:
+        for _ in range(self.initial_capacity):
+            if len(self.storage[index]) != 0:
+                if self.storage[index][0] == key and hashed_value == self.storage[index][2]:
                     return True
-                counter += 1
+            index = (index + 1) % self.initial_capacity
         return False
 
     def __iter__(self):
