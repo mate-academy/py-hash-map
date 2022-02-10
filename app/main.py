@@ -29,7 +29,8 @@ class Dictionary:
             self.storage[index] = [key, value, hashed_value]
             self.length += 1
 
-        elif hashed_value == self.storage[index][2] and key == self.storage[index][0]:
+        elif hashed_value == self.storage[index][2] and \
+                key == self.storage[index][0]:
             self.storage[index][1] = value
 
         else:
@@ -40,7 +41,8 @@ class Dictionary:
                     self.storage[index] = [key, value, hashed_value]
                     self.length += 1
                     return
-                elif hashed_value == self.storage[index][2] and key == self.storage[index][0]:
+                elif hashed_value == self.storage[index][2] and \
+                        key == self.storage[index][0]:
                     self.storage[index][1] = value
                     return
                 index = (index + 1) % self.initial_capacity
@@ -51,7 +53,8 @@ class Dictionary:
 
         for _ in range(self.initial_capacity):
             if len(self.storage[index]) != 0:
-                if self.storage[index][0] == key and hashed_value == self.storage[index][2]:
+                if hashed_value == self.storage[index][2] and \
+                        self.storage[index][0] == key:
                     return self.storage[index][1]
             index = (index + 1) % self.initial_capacity
 
@@ -100,7 +103,8 @@ class Dictionary:
 
         for _ in range(self.initial_capacity):
             if len(self.storage[index]) != 0:
-                if self.storage[index][0] == key and hashed_value == self.storage[index][2]:
+                if hashed_value == self.storage[index][2] and \
+                        self.storage[index][0] == key:
                     return True
             index = (index + 1) % self.initial_capacity
         return False
