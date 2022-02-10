@@ -34,10 +34,10 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         hash_ = hash(key)
-        index_in_table = hash_ % self._capacity
         if (self._size + 1) > Dictionary.RESIZE_COEFFICIENT * \
                 self._capacity:
             self._resize()
+        index_in_table = hash_ % self._capacity
 
         while self._table[index_in_table] is not None:
             current_instance = self._table[index_in_table]
