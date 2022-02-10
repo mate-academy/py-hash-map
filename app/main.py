@@ -17,20 +17,16 @@ class Dictionary:
         hash_value = hash(key)
         index = hash_value % self.capacity
 
-        if self.ls[index] is None:
-            self.ls[index] = [key, hash_value, value]
-            self.filled += 1
-        else:
+        while self.ls[index]:
             if key == self.ls[index][0]:
-                self.ls[index][2] = value
+                self.ls[index] = [key, hash_value, value]
                 return
-            while True:
-                index += 1
-                index %= self.capacity
-                if self.ls[index] is None:
-                    self.filled += 1
-                    self.ls[index] = [key, hash_value, value]
-                    break
+
+            index += 1
+            index %= self.capacity
+
+        self.filled += 1
+        self.ls[index] = [key, hash_value, value]
 
     def __getitem__(self, key):
         hash_value = hash(key)
