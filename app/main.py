@@ -2,27 +2,21 @@ class Dictionary:
     def __init__(self):
         self.capacity = 0
         self.my_dict_length = 8
-        self.my_dict = [[] for _ in range(self.my_dict_length)]
+        self.my_dict = [None for _ in range(self.my_dict_length)]
 
-    def __setitem__(self, key, value):
-        hash_ = hash(key)
+    def __setitem__(self, key, value, hash_=None):
+        if hash_ is None:
+            hash_ = hash(key)
         index = hash_ % self.my_dict_length
-        if not self.my_dict[index]:
-            self.my_dict[index] = [hash_, key, value]
-            self.capacity += 1
-        elif self.my_dict[index][1] == key:
-            self.my_dict[index][2] = value
-        else:
+        while True:
+            if not self.my_dict[index]:
+                self.my_dict[index] = [hash_, key, value]
+                self.capacity += 1
+                break
+            if self.my_dict[index][1] == key:
+                self.my_dict[index][2] = value
+                break
             index = (index + 1) % self.my_dict_length
-            while True:
-                if not self.my_dict[index]:
-                    self.my_dict[index] = [hash_, key, value]
-                    self.capacity += 1
-                    break
-                if self.my_dict[index][1] == key:
-                    self.my_dict[index][2] = value
-                    break
-                index = (index + 1) % self.my_dict_length
         if self.capacity > int(self.my_dict_length * 2 / 3):
             self.resize()
 
@@ -43,6 +37,6 @@ class Dictionary:
         self.capacity = 0
         self.my_dict_length *= 2
         old_dict = [item for item in self.my_dict if item]
-        self.my_dict = [[] for _ in range(self.my_dict_length)]
-        for (hash_, key, value) in old_dict:
-            self.__setitem__(key, value)
+        self.my_dict = [None for _ in range(self.my_dict_length)]
+        for hash_, key, value in old_dict:
+            self.__setitem__(key, value, hash_)
