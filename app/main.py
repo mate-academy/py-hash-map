@@ -1,10 +1,3 @@
-"""
-During the tests, error with element '682'
-can be occurred, randomly. It may occur, or
-may not.
-"""
-
-
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
@@ -42,6 +35,9 @@ class Dictionary:
     def __setitem__(self, key, value):
         hash_ = hash(key)
         index_in_table = hash_ % self._capacity
+        if (self._size + 1) > Dictionary.RESIZE_COEFFICIENT * \
+                self._capacity:
+            self._resize()
 
         while self._table[index_in_table] is not None:
             current_instance = self._table[index_in_table]
@@ -51,9 +47,6 @@ class Dictionary:
                 return
             index_in_table = (index_in_table + 1) % self._capacity
 
-        if (self._size + 1) > Dictionary.RESIZE_COEFFICIENT * \
-                self._capacity:
-            self._resize()
         self._table[index_in_table] = Node(hash_, key, value)
         self._size += 1
 
