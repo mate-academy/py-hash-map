@@ -85,9 +85,3 @@ class Dictionary:
             for instance in self._table if instance is not None
         ]
         return f"{message}"
-
-
-if __name__ == "__main__":
-    d = Dictionary()
-    d[25] = 100
-    d[9] = 200
