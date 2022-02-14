@@ -32,7 +32,10 @@ class Dictionary:
                 return
             elif hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
-                self.storage[index][1] = value
+                if self.storage[index][1] is True:
+                    self.length += 1
+                else:
+                    self.storage[index][1] = value
                 return
             index = (index + 1) % self.capacity
 
@@ -41,6 +44,8 @@ class Dictionary:
         index = hashed_value % self.capacity
 
         for _ in range(self.capacity):
+            if self.storage[index][0] == key and self.storage[index][1] is True:
+                raise KeyError
             if len(self.storage[index]) != 0:
                 if hashed_value == self.storage[index][2] and \
                         self.storage[index][0] == key:
@@ -60,7 +65,7 @@ class Dictionary:
             if hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
                 return_index = self.storage[index][1]
-                self.storage[index] = []
+                self.storage[index][1] = True
                 self.length -= 1
                 return return_index
             index = (index + 1) % self.capacity
@@ -105,15 +110,3 @@ class Dictionary:
 
     def update(self, upd_data):
         return self.__setitem__(upd_data[0], upd_data[1])
-
-
-if __name__ == "__main__":
-    d = Dictionary()
-
-    d[1] = 'one'
-    d[2] = 'two'
-    d[3] = 'three'
-    d[11] = '3'
-    print(d.__dict__)
-
-    print(d.__getitem__(11))
