@@ -44,7 +44,8 @@ class Dictionary:
         index = hashed_value % self.capacity
 
         for _ in range(self.capacity):
-            if self.storage[index][0] == key and self.storage[index][1] is True:
+            if self.storage[index][0] ==\
+                    key and self.storage[index][1] is True:
                 raise KeyError
             if len(self.storage[index]) != 0:
                 if hashed_value == self.storage[index][2] and \
