@@ -33,7 +33,9 @@ class Dictionary:
             elif hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
                 if self.storage[index][2] is True:
+                    self.storage[index] = [key, value, hashed_value]
                     self.length += 1
+                    return
                 else:
                     self.storage[index][1] = value
                 return
@@ -43,15 +45,16 @@ class Dictionary:
         hashed_value = hash(key)
         index = hashed_value % self.capacity
 
-        for _ in range(self.capacity):
-            if self.storage[index][0] == \
-                    key and self.storage[index][2] is True:
-                raise KeyError
-            if len(self.storage[index]) != 0:
-                if hashed_value == self.storage[index][2] and \
-                        self.storage[index][0] == key:
-                    return self.storage[index][1]
-            index = (index + 1) % self.capacity
+        if self.length:
+            for _ in range(self.capacity):
+                if self.storage[index][0] == key \
+                        and self.storage[index][2] is True:
+                    raise KeyError
+                if len(self.storage[index]) != 0:
+                    if hashed_value == self.storage[index][2] and \
+                            self.storage[index][0] == key:
+                        return self.storage[index][1]
+                index = (index + 1) % self.capacity
 
         raise KeyError
 
@@ -61,15 +64,20 @@ class Dictionary:
     def __delitem__(self, key):
         hashed_value = hash(key)
         index = hashed_value % self.capacity
+        counter = 0
 
-        for _ in self.storage[index]:
-            if hashed_value == self.storage[index][2] and \
-                    key == self.storage[index][0]:
-                return_index = self.storage[index][1]
-                self.storage[index][2] = True
-                self.length -= 1
-                return return_index
-            index = (index + 1) % self.capacity
+        while counter <= self.capacity:
+            if index == self.capacity:
+                index = 0
+            for _ in self.storage[index]:
+                if hashed_value == self.storage[index][2] and \
+                        key == self.storage[index][0]:
+                    return_index = self.storage[index][1]
+                    self.storage[index][2] = True
+                    self.length -= 1
+                    return return_index
+            counter += 1
+            index += 1
 
         raise KeyError
 
