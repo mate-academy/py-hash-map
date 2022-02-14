@@ -32,7 +32,7 @@ class Dictionary:
                 return
             elif hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
-                if self.storage[index][1] is True:
+                if self.storage[index][2] is True:
                     self.length += 1
                 else:
                     self.storage[index][1] = value
@@ -44,8 +44,8 @@ class Dictionary:
         index = hashed_value % self.capacity
 
         for _ in range(self.capacity):
-            if self.storage[index][0] ==\
-                    key and self.storage[index][1] is True:
+            if self.storage[index][0] == \
+                    key and self.storage[index][2] is True:
                 raise KeyError
             if len(self.storage[index]) != 0:
                 if hashed_value == self.storage[index][2] and \
@@ -66,7 +66,7 @@ class Dictionary:
             if hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
                 return_index = self.storage[index][1]
-                self.storage[index][1] = True
+                self.storage[index][2] = True
                 self.length -= 1
                 return return_index
             index = (index + 1) % self.capacity
