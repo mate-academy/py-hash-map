@@ -32,12 +32,11 @@ class Dictionary:
                 return
             elif hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
-                if self.storage[index][2] is True:
-                    self.storage[index] = [key, value, hashed_value]
-                    self.length += 1
-                    return
-                else:
-                    self.storage[index][1] = value
+                self.storage[index][1] = value
+                return
+            elif self.storage[index][2] is True:
+                self.storage[index] = [key, value, hashed_value]
+                self.length += 1
                 return
             index = (index + 1) % self.capacity
 
@@ -51,10 +50,9 @@ class Dictionary:
                         and self.storage[index][2] is True:
                     raise KeyError
 
-                if len(self.storage[index]) != 0:
-                    if hashed_value == self.storage[index][2] and \
-                            self.storage[index][0] == key:
-                        return self.storage[index][1]
+                if hashed_value == self.storage[index][2] and \
+                        self.storage[index][0] == key:
+                    return self.storage[index][1]
                 index = (index + 1) % self.capacity
 
         raise KeyError
@@ -69,10 +67,10 @@ class Dictionary:
         while self.storage[index]:
             if hashed_value == self.storage[index][2] and \
                     key == self.storage[index][0]:
-                return_index = self.storage[index][1]
+                return_value = self.storage[index][1]
                 self.storage[index][2] = True
                 self.length -= 1
-                return return_index
+                return return_value
             index = (index + 1) % self.capacity
 
         raise KeyError
@@ -100,11 +98,10 @@ class Dictionary:
         if index > self.capacity:
             return False
 
-        for _ in range(self.capacity):
-            if len(self.storage[index]) != 0:
-                if hashed_value == self.storage[index][2] and \
-                        self.storage[index][0] == key:
-                    return True
+        while self.storage[index]:
+            if hashed_value == self.storage[index][2] and \
+                    self.storage[index][0] == key:
+                return True
             index = (index + 1) % self.capacity
         return False
 
@@ -123,4 +120,3 @@ class Dictionary:
                 self.__setitem__(k, v)
         except KeyError:
             raise
-        return
