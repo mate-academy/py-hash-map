@@ -98,12 +98,12 @@ class Dictionary:
         if index > self.capacity:
             return False
 
-        while self.storage[index]:
-            if hashed_value == self.storage[index][2] and \
-                    self.storage[index][0] == key:
-                return True
-            index = (index + 1) % self.capacity
-        return False
+        try:
+            self.__getitem__(key)
+        except KeyError:
+            return False
+        else:
+            return True
 
     def __iter__(self):
         for item in self.storage:
