@@ -113,5 +113,14 @@ class Dictionary:
             if len(item) != 0:
                 yield item[:-1]
 
-    def update(self, upd_data):
-        return self.__setitem__(upd_data[0], upd_data[1])
+    def update(self, _m=None, **kwargs):
+        try:
+            if _m is not None:
+                for k, v in _m.items():
+                    self.__setitem__(k, v)
+
+            for k, v in kwargs.items():
+                self.__setitem__(k, v)
+        except KeyError:
+            raise
+        return
