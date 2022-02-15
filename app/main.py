@@ -92,12 +92,6 @@ class Dictionary:
         self.storage = [[] for _ in range(self.DEFAULT_CAPACITY)]
 
     def __contains__(self, key):
-        hashed_value = hash(key)
-        index = hashed_value % self.capacity
-
-        if index > self.capacity:
-            return False
-
         try:
             self.__getitem__(key)
         except KeyError:
