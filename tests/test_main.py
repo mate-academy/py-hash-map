@@ -99,4 +99,3 @@ def test_deletion():
         del dictionary[key]
 
     assert len(dictionary) == 0
-
