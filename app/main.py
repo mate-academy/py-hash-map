@@ -15,7 +15,9 @@ class Dictionary:
     _RESIZE_MULT_COEF = 2
 
     def __init__(self):
-        self._table: List[Optional[Node]] = [None for _ in range(Dictionary._DEFAULT_LENGTH)]
+        self._table: List[Optional[Node]] = [
+            None for _ in range(Dictionary._DEFAULT_LENGTH)
+        ]
         self._size = 0
         self._capacity = Dictionary._DEFAULT_LENGTH
 
