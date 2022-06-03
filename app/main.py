@@ -51,10 +51,12 @@ class Dictionary:
                 index = (index + 1) % self.length
 
     def __getitem__(self, key):
-        for cell in self.container:
-            if cell:
-                if cell.key == key:
-                    return cell.value
+        key_hash = hash(key)
+        index = key_hash % self.length
+        while self.container[index] is not None:
+            if self.container[index].key == key:
+                return self.container[index].value
+            index = (index + 1) % self.length
         raise KeyError
 
     def __len__(self):
