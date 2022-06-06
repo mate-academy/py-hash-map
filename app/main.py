@@ -1,3 +1,6 @@
+from app.point import Point
+
+
 class Dictionary:
     _BASE_CAPACITY = 8
     _LOAD_FACTOR = 2 / 3
@@ -61,13 +64,16 @@ class Dictionary:
         else:
             raise KeyError("Key not found")
 
-    def __getitem__(self, key):
-        index = hash(key) % self._capacity
-        value = self._hash_table[index][1]
-        if value is None:
-            raise KeyError("Key not found")
-
-        return value
+    def __getitem__(self, item):
+        index = hash(item) % self._capacity
+        while self._hash_table[index][1] is not None:
+            key, value = self._hash_table[index]
+            if key == item:
+                return value
+            index += 1
+            if index >= self._capacity - 1:
+                index = 0
+        raise KeyError("Key not found")
 
     def __init__(self):
         self._capacity = self._BASE_CAPACITY
@@ -110,6 +116,7 @@ class Dictionary:
         # find index of next free slot
         while self._hash_table[index][0] is not None:
             if self._hash_table[index][0] == key:
+                self._filled_slots += 1
                 break
             index += 1
             if index >= self._capacity - 1:
@@ -135,3 +142,12 @@ class Dictionary:
 
         result_str = ", ".join(result)
         return "{" + result_str + "}"
+
+
+items = [("one", 1), ("two", 22), (145, -1), (Point(1, 1), "A")]
+dictionary = Dictionary()
+for key, value in items:
+    dictionary[key] = value
+print(repr(dictionary))
+for key, value in items:
+    print(dictionary[key], value)
