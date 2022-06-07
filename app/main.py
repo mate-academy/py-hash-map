@@ -86,7 +86,7 @@ class Dictionary:
         else:
             raise KeyError
 
-    def update(self, items: list[tuple]):
+    def update(self, items):
         for key, value in items:
             self[key] = value
 
