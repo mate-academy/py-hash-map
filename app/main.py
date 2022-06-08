@@ -15,7 +15,7 @@ class Dictionary:
                 index = (index + 1) % self._capacity
         self._storage[index] = [key_hash, value_, key_]
         self._flow += 1
-        if self._flow > self._capacity * 2/3:
+        if self._flow > self._capacity * 2 / 3:
             self._refactor()
 
     def __getitem__(self, key_):
