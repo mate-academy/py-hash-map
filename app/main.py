@@ -48,9 +48,7 @@ class Dictionary:
         index_ = hash_ % self.__capacity
 
         for _ in range(self.__capacity):
-            if self.__memory[index_][2] == hash_ and (
-                    self.__memory[index_][0] == item
-            ):
+            if self.__memory[index_][0] == item:
                 return self.__memory[index_][1]
             index_ = (index_ + 1) % self.__capacity
         else:
