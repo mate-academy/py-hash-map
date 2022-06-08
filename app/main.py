@@ -1,12 +1,12 @@
 class Dictionary:
     __START_CAPACITY = 8
     __RESIZE_VALUE = 2
-    __LIMIT_SISE_HASH_TAB = 2 / 3
+    __TRASHOLD = 2 / 3
 
     def __init__(self):
         self.__capacity = self.__START_CAPACITY
         self.__hash_table = self.__create_empty_hash_table(self.__capacity)
-        self.__sise = 0
+        self.__number_of_elements = 0
 
     def __create_empty_hash_table(self, capacity):
         return [None for _ in range(capacity)]
@@ -19,12 +19,12 @@ class Dictionary:
         ]
         self.__capacity *= self.__RESIZE_VALUE
         self.__hash_table = self.__create_empty_hash_table(self.__capacity)
-        self.__sise = 0
+        self.__number_of_elements = 0
         for cell in self.__current_elements:
             self.__setitem__(cell[0], cell[1])
 
     def __setitem__(self, key, value):
-        if (self.__sise + 1) > self.__capacity * self.__LIMIT_SISE_HASH_TAB:
+        if (self.__number_of_elements + 1) > self.__capacity * self.__TRASHOLD:
             self.__resize()
 
         hash_ = hash(key)
@@ -40,7 +40,7 @@ class Dictionary:
             index_ = (index_ + 1) % self.__capacity
 
         self.__hash_table[index_] = cell
-        self.__sise += 1
+        self.__number_of_elements += 1
 
     def __getitem__(self, item):
         hash_ = hash(item)
@@ -55,4 +55,4 @@ class Dictionary:
         raise KeyError(f"{item} does not exist")
 
     def __len__(self):
-        return self.__sise
+        return self.__number_of_elements
