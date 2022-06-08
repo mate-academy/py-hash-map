@@ -6,12 +6,15 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         i = hash(key) % self.size
-        if self.table[i] is None:
-            self.table[i] = [hash(key), key, value]
-            self.volume += 1
-        else:
+        while True:
+            if not self.table[i]:
+                self.table[i] = [hash(key), key, value]
+                self.volume += 1
+                break
             if self.table[i][1] == key:
                 self.table[i][2] = value
+                break
+            i = (i + 1) % self.size
         if self.volume > int(self.size * 2 / 3):
             self.resize()
 
