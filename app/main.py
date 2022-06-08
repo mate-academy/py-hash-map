@@ -34,6 +34,6 @@ class Dictionary:
         self.old_storage = self._storage
         self._storage = [None for _ in range(self._capacity)]
         self._flow = 0
-        for i in self.old_storage:
-            if i is not None:
-                self.__setitem__(i[2], i[1])
+        for element in self.old_storage:
+            if element is not None:
+                self.__setitem__(element[2], element[1])
