@@ -1,9 +1,9 @@
 class Dictionary:
 
     def __init__(self):
-        self.__capacity: int = 8
-        self.__dict_with_data: list = [None] * self.__capacity
-        self.__elements: int = 0
+        self.__capacity = 8
+        self.__dict_with_data = [None] * self.__capacity
+        self.__elements = 0
 
     def __setitem__(self, key, value):
         self.__change_capacity()
