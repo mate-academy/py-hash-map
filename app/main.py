@@ -25,7 +25,7 @@ class Dictionary:
     def __getitem__(self, item):
         hash_ = hash(item)
         index = hash_ % self.capacity
-        for element in range(self.capacity):
+        for _ in range(self.capacity):
             if self.new_dict[index][1] == item:
                 return self.new_dict[index][2]
             index = (index + 1) % self.capacity
@@ -39,6 +39,6 @@ class Dictionary:
         self.capacity *= 2
         self.size = 0
         old_dict = [element for element in self.new_dict if element]
-        self.new_dict = [None for i in range(self.capacity)]
+        self.new_dict = [None for _ in range(self.capacity)]
         for hash_, key, value in old_dict:
             self.__setitem__(key, value, hash_)
