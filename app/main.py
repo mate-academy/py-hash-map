@@ -2,7 +2,7 @@ class Dictionary:
     def __init__(self):
         self.__capacity = 8
         self.__size = 0
-        self.__memory = [None] * 8
+        self.__memory: list = [None] * 8
         self.__current_element = []
 
     def __setitem__(self, key, value):
