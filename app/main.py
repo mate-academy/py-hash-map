@@ -34,6 +34,8 @@ class Dictionary:
             dict_index = (dict_index + 1) % self.__capacity
 
     def __getitem__(self, key):
+        if key == "":
+            raise TypeError
         hash_ = hash(key)
         index = hash_ % self.__capacity
         for _ in range(self.__capacity):
