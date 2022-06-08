@@ -22,15 +22,16 @@ class Dictionary:
         if self.size > int(self.capacity * (2 / 3)):
             self.resize()
 
-    def __getitem__(self, key):
-        hash_ = hash(key)
+    def __getitem__(self, item):
+        hash_ = hash(item)
         index = hash_ % self.capacity
-        for _ in range(self.capacity):
-            if self.new_dict[index][1] == key:
+        while self.new_dict[index] is not None:
+            if self.new_dict[index][0] == hash_ and \
+                    self.new_dict[index][1] == item:
                 return self.new_dict[index][2]
             index = (index + 1) % self.capacity
-        else:
-            raise KeyError(f"new_dict has not {key}")
+
+        raise KeyError(f"new_dict has not {item}")
 
     def __len__(self):
         return self.size
