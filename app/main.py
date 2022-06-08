@@ -14,10 +14,3 @@ class Dictionary:
 
     def __len__(self):
         return self.table
-
-
-a = Dictionary()
-
-for i in range(1000):
-    a.__setitem__(str(i), i)
-print(a.__getitem__('564'))
