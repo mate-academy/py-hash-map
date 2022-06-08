@@ -25,15 +25,18 @@ class Dictionary:
 
         self.__hash_table[index] = (key, value, cell_hash)
 
-    def __getitem__(self, key):
-        cell_hash = hash(key)
+    def __getitem__(self, key_):
+        cell_hash = hash(key_)
         index = cell_hash % self.__capacity
-        for _ in range(self.__capacity):
-            if self.__hash_table[index][0] == key:
-                return self.__hash_table[index][1]
-            index = (index + 1) % self.__capacity
-        else:
-            raise KeyError(f"Key: {key} not found.")
+        while self.__hash_table[index] is not None:
+            key, value, c_hash = self.__hash_table[index]
+            if c_hash == cell_hash:
+                if key == key_:
+                    return value
+            index += 1
+            if index >= self.__capacity - 1:
+                index = 0
+        raise KeyError(f"Key: {key_} not found.")
 
     def __len__(self):
         return self.__cells
