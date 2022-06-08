@@ -16,6 +16,7 @@ class Dictionary:
             ):
                 return self._hash_table[index][2]
             index = (index + 1) % self._capacity
+        raise KeyError(f"{key} doesn't exist.")
 
     def __setitem__(self, key, value):
         if self._self_size + 1 > self._capacity * self._self_load:
