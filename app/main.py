@@ -2,12 +2,12 @@ class Dictionary:
     def __init__(self):
         self.volume = 0
         self.size = 8
-        self.table = [None for _ in range(self.size)]
+        self.table = [None] * self.size
 
     def __setitem__(self, key, value):
         i = hash(key) % self.size
         while True:
-            if not self.table[i]:
+            if self.table[i] is None:
                 self.table[i] = [hash(key), key, value]
                 self.volume += 1
                 break
@@ -31,11 +31,10 @@ class Dictionary:
     def resize(self):
         self.volume = 0
         self.size *= 2
-        prev_dict = [cell for cell in self.table if cell]
-        self.table = [None for _ in range(self.size)]
-        for hsh, key, value in prev_dict:
-            i = hsh % self.size
-            self.table[i] = [hsh, key, value]
+        prev_table = [cell for cell in self.table if cell]
+        self.table = [None] * self.size
+        for hsh, key, value in prev_table:
+            self.__setitem__(key, value)
 
     def __len__(self):
         return self.volume
