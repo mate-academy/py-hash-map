@@ -28,6 +28,7 @@ class Dictionary:
             index = (index + 1) % self._capacity
             if check_index == index:
                 raise KeyError(f"Key: {key_} not in dictionary!")
+        raise KeyError(f"Key: {key_} not in dictionary!")
 
     def __len__(self):
         return self._current_load
