@@ -3,7 +3,7 @@ class Dictionary:
     def __init__(self):
         self.__capacity = 8
         self.__size = 0
-        self.__memory = [None] * 8
+        self.__memory: list = [None] * 8
 
     def resize_memory(self):
         if self.__size == int(self.__capacity * (2 / 3)):
@@ -17,7 +17,6 @@ class Dictionary:
                     self.__setitem__(*items)
 
     def __getitem__(self, key):
-        print(self.__memory)
         memory_place = hash(key) % self.__capacity
         if self.__memory[memory_place] is None:
             raise ValueError
