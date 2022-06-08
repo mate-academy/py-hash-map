@@ -17,6 +17,8 @@ class Dictionary:
 
             cell = (cell + 1) % self.capacity
 
+        raise KeyError(f"No such key({key})")
+
     def increase_size_of_hash_table(self):
         self.capacity *= 2
         self.size = 0
