@@ -12,11 +12,12 @@ class Dictionary:
         index = self._index(key)
 
         while self._array[index] is not None:
-            current_key = self._array[index][0]
+            current_key, _ = self._array[index]
             if key == current_key:
-                self._array[index] = (current_key, value)
+                self._array[index] = (key, value)
                 return
             index += 1
+            index = index % self._capacity
 
         self._array[index] = (key, value)
         self._size += 1
@@ -32,6 +33,7 @@ class Dictionary:
             if key == search_key:
                 return value
             index += 1
+            index = index % self._capacity
 
         raise KeyError
 
@@ -39,16 +41,16 @@ class Dictionary:
         return self._size
 
     def _resize(self):
-        included_elements = [
+        not_empty_list = [
             element
             for element in self._array
-            if element
+            if element is not None
         ]
         self._capacity *= 2
         self._size = 0
         self._array = [None] * self._capacity
 
-        for key, value in included_elements:
+        for key, value in not_empty_list:
             self.__setitem__(key=key, value=value)
 
     def _index(self, key):
@@ -79,6 +81,7 @@ class Dictionary:
                 self._array[index] = None
                 return value
             index += 1
+            index = index % self._capacity
 
         raise KeyError
 
