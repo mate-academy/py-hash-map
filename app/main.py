@@ -40,8 +40,6 @@ class Dictionary:
     def __getitem__(self, key):
         key_hash = hash(key)
         index = key_hash % self.capacity
-        if self.ls[index] is None:
-            raise KeyError("No value with such key in this dict.")
 
         while self.ls[index] is not None:
             if index == self.capacity:
@@ -49,6 +47,8 @@ class Dictionary:
             if self.ls[index][2] == key_hash and self.ls[index][0] == key:
                 return self.ls[index][1]
             index = (index + 1) % self.capacity
+
+        raise KeyError("No value with such key in this dict.")
 
     def __len__(self):
         return self.size
@@ -62,8 +62,6 @@ class Dictionary:
     def __delitem__(self, key):
         key_hash = hash(key)
         index = key_hash % self.capacity
-        if self.ls[index] is None:
-            raise KeyError("No value with such key in this dict.")
 
         while self.ls[index] is not None:
             if index == self.capacity:
@@ -73,11 +71,11 @@ class Dictionary:
                 self.size -= 1
             index = (index + 1) % self.capacity
 
-    def get(self, key):
+        raise KeyError("No value with such key in this dict.")
+
+    def get(self, key, default=None):
         key_hash = hash(key)
         index = key_hash % self.capacity
-        if self.ls[index] is None:
-            raise KeyError("No value with such key in this dict.")
 
         while self.ls[index] is not None:
             if index == self.capacity:
@@ -86,15 +84,13 @@ class Dictionary:
                 return self.ls[index][1]
             index = (index + 1) % self.capacity
 
+        return default
+
     def pop(self, key):
         key_hash = hash(key)
         index = key_hash % self.capacity
-        if self.ls[index] is None:
-            raise KeyError("No value with such key in this dict.")
 
         while self.ls[index] is not None:
-            if index == self.capacity:
-                index = 0
             if self.ls[index][2] == key_hash and self.ls[index][0] == key:
                 pop = self.ls[index][1]
                 self.ls[index] = None
@@ -102,6 +98,11 @@ class Dictionary:
                 return pop
             index = (index + 1) % self.capacity
 
+        raise KeyError("No value with such key in this dict.")
+
     def update(self, dictionary):
         for key, value in dictionary.items():
-            self.add_element(key, value)
+            self.__setitem__(key, value)
+
+    def __repr__(self):
+        return str(self.ls)
