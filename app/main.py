@@ -79,6 +79,7 @@ class Dictionary:
             key, value = self._array[index]
             if key == pop_key:
                 self._array[index] = None
+                self._size -= 1
                 return value
             index += 1
             index = index % self._capacity
