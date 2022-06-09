@@ -49,19 +49,21 @@ class Dictionary:
             raise KeyError(f"Key: {key} not found.")
 
     def get(self, key, default=None):
-        if self[key] is not None:
-            return self[key]
-        return default
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
     def pop(self, key, default=None):
-        if self[key] is not None:
+        try:
+            value = self.__getitem__(key)
             self.__delitem__(key)
-        else:
+        except KeyError:
             if default is not None:
                 return default
             else:
                 raise KeyError(f"Key: {key} not found.")
-        return self.__getitem__(key)
+        return value
 
     def __hash_table_resize(self):
         hash_table = self.__hash_table
