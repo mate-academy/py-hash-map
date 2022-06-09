@@ -74,6 +74,7 @@ class Dictionary:
         result = []
 
         for index in range(len(self.__key_index)):
-            result.append((self.__key_index[index][0], self.__storage[self.__key_index[index][1]]))
+            result.append((self.__key_index[index][0],
+                           self.__storage[self.__key_index[index][1]]))
 
         return f"{result}"
