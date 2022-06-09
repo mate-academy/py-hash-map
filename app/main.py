@@ -19,13 +19,13 @@ class Dictionary:
     def __getitem__(self, key):
         memory_place = hash(key) % self.__capacity
         if self.__memory[memory_place] is None:
-            raise ValueError
+            raise KeyError
         if key != self.__memory[memory_place][0]:
             while True:
                 if memory_place == len(self.__memory) - 1:
                     memory_place = 0
                 if self.__memory[memory_place] is None:
-                    raise ValueError
+                    raise KeyError
                 if key == self.__memory[memory_place][0]:
                     return self.__memory[memory_place][1]
                 memory_place += 1
