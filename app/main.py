@@ -79,7 +79,7 @@ class Dictionary:
         self.pop(del_key)
         return
 
-    def pop(self, pop_key):
+    def pop(self, pop_key, default_value=None):
         index = self._index(pop_key)
 
         while self._array[index] is not None:
@@ -90,8 +90,10 @@ class Dictionary:
                 return value
             index += 1
             index = index % self._capacity
-
-        raise KeyError
+        if default_value:
+            return default_value
+        else:
+            raise KeyError
 
     def __iter__(self):
         self.current_position = 0
