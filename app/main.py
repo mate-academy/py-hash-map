@@ -65,4 +65,3 @@ class Dictionary:
 
 if __name__ == "__main__":
     test_dict = Dictionary()
-
