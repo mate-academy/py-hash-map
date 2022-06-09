@@ -25,6 +25,7 @@ class Dictionary:
         if self.length > math.floor(self.capacity * Dictionary.LOAD_FACTOR):
             self.__resize_dict()
             self.__setitem__(key=key, value=value)
+            # return
 
         self.hash_table[hash_index] = (key, value)
 
