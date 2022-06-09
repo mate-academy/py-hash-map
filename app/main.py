@@ -12,6 +12,11 @@ class Dictionary:
         index = self._index(key)
 
         while self._array[index] is not None:
+            if self._array[index] == "deleted":
+                self._array[index] = (key, value)
+                self._size += 1
+                return
+
             current_key, _ = self._array[index]
             if key == current_key:
                 self._array[index] = (key, value)
@@ -29,6 +34,8 @@ class Dictionary:
         index = self._index(search_key)
 
         while self._array[index] is not None:
+            if self._array[index] == "deleted":
+                continue
             key, value = self._array[index]
             if key == search_key:
                 return value
@@ -60,7 +67,7 @@ class Dictionary:
         return "{" + ", ".join(
             f"{str(element[0])}: {str(element[1])}"
             for element in self._array
-            if element is not None
+            if element is not None and element != "deleted"
         ) + "}"
 
     def clear(self):
@@ -78,7 +85,7 @@ class Dictionary:
         while self._array[index] is not None:
             key, value = self._array[index]
             if key == pop_key:
-                self._array[index] = None
+                self._array[index] = "deleted"
                 self._size -= 1
                 return value
             index += 1
@@ -91,9 +98,8 @@ class Dictionary:
         self._non_empty_arr = [
             element for element
             in self._array
-            if element is not None
+            if element is not None and element != "deleted"
         ]
-        print(self._non_empty_arr)
         return self
 
     def __next__(self):
