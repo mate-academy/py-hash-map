@@ -46,11 +46,3 @@ class Dictionary:
         for cell in old_table:
             if cell:
                 self.__setitem__(cell[1], cell[2])
-
-# items = [(f"Element {i}", i) for i in range(1000)]
-# #print(items)
-# dictionary = Dictionary()
-# for key, value in items:
-#     dictionary[key] = value
-#     #print(hash(key), hash(key) % 16)
-# print(dictionary['Element 900'])
