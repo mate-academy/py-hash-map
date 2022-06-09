@@ -20,13 +20,12 @@ class Dictionary:
 
     def __getitem__(self, key):
         i = hash(key) % self.size
-        for _ in range(self.size):
-            if self.table[i] is not None:
-                if self.table[i][1] == key:
-                    return self.table[i][2]
-                i = (i + 1) % self.size
-            else:
-                raise KeyError('Not found')
+        while self.table[i]:
+            if self.table[i][0] == hash(key) and \
+                    self.table[i][1] == key:
+                return self.table[i][2]
+            i = (i + 1) % self.size
+        raise KeyError
 
     def resize(self):
         self.volume = 0
