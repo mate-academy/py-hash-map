@@ -66,14 +66,3 @@ class Dictionary:
 if __name__ == "__main__":
     test_dict = Dictionary()
 
-    test_dict[15] = "A"
-    test_dict[3] = "B"
-    test_dict[5] = "C"
-    test_dict[13] = "D"
-    test_dict[16] = "F"
-    test_dict[23] = "T"
-    test_dict[33] = "K"
-    test_dict[3] = "Changed"
-
-    print(test_dict.storage)
-    print(len(test_dict))
