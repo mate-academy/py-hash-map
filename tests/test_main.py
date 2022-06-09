@@ -62,9 +62,10 @@ from app.point import Point
 )
 def test_dictionary_add(items: list, pairs_after_adding: list):
     dictionary = Dictionary()
+    print(items)
     for key, value in items:
         dictionary[key] = value
-
+    print()
     for key, value in pairs_after_adding:
         assert dictionary[key] == value
     assert len(dictionary) == len(pairs_after_adding)
