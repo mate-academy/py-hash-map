@@ -17,20 +17,16 @@ class Dictionary:
                     self.__setitem__(*items)
 
     def __getitem__(self, key):
+
         memory_place = hash(key) % self.__capacity
-        if self.__memory[memory_place] is None:
+
+        for _ in range(self.__capacity):
+            if self.__memory[memory_place] is not None and\
+                    self.__memory[memory_place][0] == key:
+                return self.__memory[memory_place][1]
+            memory_place = (memory_place + 1) % self.__capacity
+        else:
             raise KeyError
-        if key != self.__memory[memory_place][0]:
-            while True:
-                if memory_place == len(self.__memory) - 1:
-                    memory_place = 0
-                if self.__memory[memory_place] is None:
-                    raise KeyError
-                if key == self.__memory[memory_place][0]:
-                    return self.__memory[memory_place][1]
-                memory_place += 1
-        elif key == self.__memory[memory_place][0]:
-            return self.__memory[memory_place][1]
 
     def __setitem__(self, key, value):
         self.resize_memory()
@@ -57,6 +53,7 @@ class Dictionary:
 
     def clear(self):
         self.__memory = [None] * self.__capacity
+        self.__size = 0
 
     def __delitem__(self, key):
         memory_place = hash(key) % self.__capacity
@@ -71,19 +68,23 @@ class Dictionary:
                 break
             memory_place += 1
 
-    def get(self, key):
+    def get(self, key, value=None):
         try:
-            return self.__getitem__(key)
-        except ValueError:
-            return None
+            return self[key]
+        except KeyError:
+            return value
 
-    def pop(self, key):
-        deleted = self.get(key)
-        if deleted:
+    def pop(self, key, default_value=None):
+        try:
+            deleted = self[key]
             self.__delitem__(key)
-            return deleted
+        except KeyError:
+            if default_value is None:
+                raise
+            else:
+                return default_value
         else:
-            raise KeyError
+            return deleted
 
     def update(self, items):
         for key, value in items:
