@@ -14,6 +14,8 @@ class Dictionary:
                     self._hash_table[index][1] == key):
                 return self._hash_table[index][2]
             index = (index + 1) % self._capacity
+        else:
+            raise KeyError(f"Key: {key} not in dictionary!")
 
     def __setitem__(self, key, value):
         if self._size + 1 > self._capacity * self._border:
