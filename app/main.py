@@ -36,13 +36,11 @@ class Dictionary:
     def __getitem__(self, key):
         hash_ = hash(key)
         index = hash_ % self.__capacity
-        for _ in range(self.__capacity):
-            if self.__dict_with_data[index] is not None:
-                if self.__dict_with_data[index][0] == key:
-                    return self.__dict_with_data[index][1]
-                index = (index + 1) % self.__capacity
-        else:
-            raise KeyError('Not found')
+        while self.__dict_with_data[index] is not None:
+            if self.__dict_with_data[index][0] == key:
+                return self.__dict_with_data[index][1]
+            index = (index + 1) % self.__capacity
+        raise KeyError('Not found')
 
     def __len__(self):
         return self.__elements
