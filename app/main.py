@@ -1,37 +1,77 @@
 class Dictionary:
     def __init__(self):
-        self._dict = {}
+        self.capacity = 8
+        self.load_factor = 2 / 3
+        self.size = 0
+        self.hash_table = [None for _ in range(self.capacity)]
+
+    def _size_hash_table(self):
+        self.capacity *= 2
+        self.size = 0
+        new_hash_table = [elem for elem in self.hash_table if elem]
+        self.hash_table = [None for _ in range(self.capacity)]
+        for elem in new_hash_table:
+            if elem:
+                self.add_hash_table(elem[0], elem[1])
+
+    def add_hash_table(self, key, value):
+        hash_key = hash(key)
+        index_ = hash_key % self.capacity
+
+        if self.hash_table[index_] is None or \
+                self.hash_table[index_][0] == key:
+            self.hash_table[index_] = (key, value, hash_key)
+            self.size += 1
+        else:
+            while True:
+                if index_ == self.capacity:
+                    index_ = 0
+
+                if self.hash_table[index_] is None:
+                    self.hash_table[index_] = (key, value, hash_key)
+                    self.size += 1
+                    break
+
+                if self.hash_table[index_][0] == key:
+                    self.hash_table[index_] = (key, value, hash_key)
+                    self.size += 1
+                    break
+                index_ += 1
 
     def __setitem__(self, key, value):
-        self._dict[key] = value
+        if self.size == int(self.capacity * self.load_factor):
+            self._size_hash_table()
 
-    def __getitem__(self, item):
-        return self._dict[item]
+        self.add_hash_table(key, value)
+
+    def __getitem__(self, key):
+        hash_key = hash(key)
+        index_ = hash_key % self.capacity
+
+        while self.hash_table[index_] is not None:
+            if self.hash_table[index_][0] == key:
+                return self.hash_table[index_][1]
+
+            index_ = (index_ + 1) % self.capacity
+
+        raise KeyError
+
+    def correct_dict(self):
+        return {
+            elem[0]: elem[1] for elem in self.hash_table
+            if elem is not None
+        }
 
     def __len__(self):
-        return len(self._dict)
+        return len(self.correct_dict())
 
-    def __iter__(self):
-        self.current = 0
-        return self
+    def get(self, key):
+        return self.correct_dict()[key]
 
-    def __next__(self):
-        if self.current >= len(self._dict):
-            raise StopIteration
+    def values(self, value):
+        for key, values in self.correct_dict().items():
+            if values == value:
+                return key
 
-        result = self._dict[self.current]
-        self.current += 1
-
-        return result
-
-    def __delitem__(self, key):
-        print("Hello", key)
-
-    def get(self):
-        return self._dict
-
-    def pop(self, key):
-        self._dict.pop(key)
-
-    def update(self, new_dict):
-        self._dict.update(new_dict)
+    def __repr__(self):
+        return self.correct_dict()
