@@ -53,19 +53,17 @@ class Dictionary:
     def __len__(self):
         return self.size
 
-    def get(self, key):
-        hash_key = hash(key)
-
-        for elem in self.hash_table:
-            if elem:
-                if elem[0] == key and elem[2] == hash_key:
-                    return elem[1]
-
-        raise KeyError
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
     def clear(self):
-        self.hash_table = {}
-        return self.hash_table
+        for elem in self.hash_table:
+            if elem:
+                elem = None
+        self.size = 0
 
     def __repr__(self):
         return f"{self.hash_table}"
@@ -78,6 +76,9 @@ class Dictionary:
             if self.hash_table[index_][0] == key and \
                     self.hash_table[index_][2] == hash_key:
                 self.hash_table.pop(index_)
+                self.size -= 1
                 return self.hash_table[index_][0]
 
             index_ = (index_ + 1) % self.capacity
+
+        raise KeyError
