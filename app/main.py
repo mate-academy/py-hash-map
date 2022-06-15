@@ -18,25 +18,18 @@ class Dictionary:
         hash_key = hash(key)
         index_ = hash_key % self.capacity
 
-        if self.hash_table[index_] is None or \
-                self.hash_table[index_][0] == key:
-            self.hash_table[index_] = (key, value, hash_key)
-            self.size += 1
-        else:
-            while True:
-                if index_ == self.capacity:
-                    index_ = 0
+        while True:
+            if self.hash_table[index_] is None:
+                self.hash_table[index_] = (key, value, hash_key)
+                self.size += 1
+                break
 
-                if self.hash_table[index_] is None:
-                    self.hash_table[index_] = (key, value, hash_key)
-                    self.size += 1
-                    break
+            elif self.hash_table[index_][0] == key and \
+                    self.hash_table[index_][2] == hash_key:
+                self.hash_table[index_] = (key, value, hash_key)
+                break
 
-                if self.hash_table[index_][0] == key:
-                    self.hash_table[index_] = (key, value, hash_key)
-                    self.size += 1
-                    break
-                index_ += 1
+            index_ = (index_ + 1) % self.capacity
 
     def __setitem__(self, key, value):
         if self.size == int(self.capacity * self.load_factor):
@@ -49,29 +42,42 @@ class Dictionary:
         index_ = hash_key % self.capacity
 
         while self.hash_table[index_] is not None:
-            if self.hash_table[index_][0] == key:
+            if self.hash_table[index_][0] == key and \
+                    self.hash_table[index_][2] == hash_key:
                 return self.hash_table[index_][1]
 
             index_ = (index_ + 1) % self.capacity
 
         raise KeyError
 
-    def correct_dict(self):
-        return {
-            elem[0]: elem[1] for elem in self.hash_table
-            if elem is not None
-        }
-
     def __len__(self):
-        return len(self.correct_dict())
+        return self.size
 
     def get(self, key):
-        return self.correct_dict()[key]
+        hash_key = hash(key)
 
-    def values(self, value):
-        for key, values in self.correct_dict().items():
-            if values == value:
-                return key
+        for elem in self.hash_table:
+            if elem:
+                if elem[0] == key and elem[2] == hash_key:
+                    return elem[1]
+
+        raise KeyError
+
+    def clear(self):
+        self.hash_table = {}
+        return self.hash_table
 
     def __repr__(self):
-        return self.correct_dict()
+        return f"{self.hash_table}"
+
+    def __delitem__(self, key):
+        hash_key = hash(key)
+        index_ = hash_key % self.capacity
+
+        while self.hash_table[index_] is not None:
+            if self.hash_table[index_][0] == key and \
+                    self.hash_table[index_][2] == hash_key:
+                self.hash_table.pop(index_)
+                return self.hash_table[index_][0]
+
+            index_ = (index_ + 1) % self.capacity
