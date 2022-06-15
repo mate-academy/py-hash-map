@@ -40,14 +40,13 @@ class Dictionary:
             if self.data[index].key == key:
                 return self.data[index].value
             index = (index + 1) % self.capacity
-        raise KeyError
+        raise KeyError("Key not found")
 
     def _resize_data(self):
         self.capacity *= 2
         items = [item for item in self.data if item is not None]
         self.size = 0
-        new_data = [None] * self.capacity
-        self.data = new_data
+        self.data = [None] * self.capacity
         for item in items:
             self.__setitem__(item.key, item.value)
 
