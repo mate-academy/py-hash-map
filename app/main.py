@@ -8,7 +8,7 @@ class Dictionary:
     def _size_hash_table(self):
         self.capacity *= 2
         self.size = 0
-        new_hash_table = [elem for elem in self.hash_table if elem]
+        new_hash_table = self.hash_table.copy()
         self.hash_table = [None for _ in range(self.capacity)]
         for elem in new_hash_table:
             if elem:
@@ -60,9 +60,7 @@ class Dictionary:
             return default
 
     def clear(self):
-        for elem in self.hash_table:
-            if elem:
-                elem = None
+        self.hash_table = [None for _ in range(self.capacity)]
         self.size = 0
 
     def __repr__(self):
@@ -75,7 +73,7 @@ class Dictionary:
         while self.hash_table[index_] is not None:
             if self.hash_table[index_][0] == key and \
                     self.hash_table[index_][2] == hash_key:
-                self.hash_table.pop(index_)
+                self.hash_table[index_] is None
                 self.size -= 1
                 return self.hash_table[index_][0]
 
