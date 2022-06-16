@@ -70,12 +70,14 @@ class Dictionary:
         hash_key = hash(key)
         index_ = hash_key % self.capacity
 
-        while self.hash_table[index_] is not None:
-            if self.hash_table[index_][0] == key and \
-                    self.hash_table[index_][2] == hash_key:
-                self.hash_table[index_] is None
-                self.size -= 1
-                return self.hash_table[index_][0]
+        while any(self.hash_table):
+            if self.hash_table[index_] is not None:
+                if self.hash_table[index_][0] == key and \
+                        self.hash_table[index_][2] == hash_key:
+                    value = self.hash_table[index_][1]
+                    self.hash_table[index_] = None
+                    self.size -= 1
+                    return value
 
             index_ = (index_ + 1) % self.capacity
 
