@@ -80,9 +80,3 @@ def test_resize_bucket():
     for key, value in items:
         assert dictionary[key] == value
     assert len(dictionary) == len(items)
-
-    
-def test_missing_key():
-    dictionary = Dictionary()
-    with pytest.raises(KeyError):
-        dictionary["missing_key"]
