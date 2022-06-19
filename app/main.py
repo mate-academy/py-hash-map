@@ -1,33 +1,66 @@
 class Dictionary:
     def __init__(self):
-        self._data = {}
+        self.capacity = 8
+        self.hash_table = [None for _ in range(self.capacity)]
+        self.size = 0
 
     def __getitem__(self, item):
-        return self._data[item]
+        index = hash(item) % self.capacity
+
+        for _ in range(2):
+            for i in range(self.capacity):
+                if index + i == self.capacity:
+                    index = 0
+                if self.hash_table[index + i] is not None:
+                    if self.hash_table[index + i][0] == item:
+                        return self.hash_table[index + i][-1]
+        raise KeyError
 
     def __setitem__(self, key, value):
-        self._data[key] = value
+        self.resize()
+
+        hash_table_index = hash(key) % self.capacity
+        while True:
+            if hash_table_index == self.capacity:
+                hash_table_index = 0
+
+            if self.hash_table[hash_table_index] is not None:
+                if self.hash_table[hash_table_index][1] == hash_table_index:
+                    if self.hash_table[hash_table_index][0] == key:
+                        self.hash_table[hash_table_index] = None
+                        self.size -= 1
+
+                    else:
+                        hash_table_index += 1
+            else:
+                break
+
+        self.hash_table[hash_table_index] = (key, hash_table_index, value)
+        self.size += 1
 
     def __len__(self):
-        return len(self._data)
+        return self.size
 
     def __repr__(self):
-        return f"{self._data}"
+        return str(
+            {key[0]: key[-1] for key in self.hash_table if key is not None}
+        )
 
-    def clear(self):
-        self._data = {}
+    def resize(self):
+        if self.size > self.capacity * 2 / 3:
+            self.capacity *= 2
+            copy_hash_table = self.hash_table.copy()
 
-    def __delitem__(self, key):
-        del self._data[key]
+            self.hash_table = [None] * self.capacity
 
-    def get(self, key, defolt_valye):
-        return self._data[key] if key in self._data.keys() else defolt_valye
+            for index, elem in enumerate(copy_hash_table):
+                while True:
+                    if index == self.capacity:
+                        index = 0
 
-    def pop(self, key):
-        self._data.pop(key)
+                    if self.hash_table[index] is not None:
+                        index += 1
+                    else:
+                        break
 
-    def update(self, dictionary):
-        self._data.update(dictionary)
-
-    def __iter__(self):
-        return iter(self._data)
+                self.hash_table[index] = elem
