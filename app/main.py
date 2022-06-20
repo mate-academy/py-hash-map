@@ -1,6 +1,7 @@
 class Dictionary:
     def __init__(self):
         self.dict_len = 8
+        self.length = 0
         self.element = [None] * self.dict_len
 
     def __setitem__(self, key, value):
@@ -14,6 +15,7 @@ class Dictionary:
         while True:
             if self.element[i] is None:
                 self.element[i] = new_el
+                self.length += 1
                 break
             elif hash_key == self.element[i][0] and key == self.element[i][1]:
                 self.element[i] = new_el
@@ -29,34 +31,19 @@ class Dictionary:
             raise KeyError
 
         while True:
-            if self.element[i][0] == hash_key:
+            if self.element[i][0] == hash_key and key == self.element[i][1]:
                 return self.element[i][2]
             else:
                 i = (i + 1) % self.dict_len
 
     def __len__(self):
-        length = 0
-
-        for i in range(self.dict_len):
-            if self.element[i] is not None:
-                length += 1
-
-        return length
+        return self.length
 
     def resize(self):
-        new_dict_len = self.dict_len * 2
-        new_dict = [None] * new_dict_len
+        self.dict_len *= 2
+        self.length = 0
+        old_dict, self.element = self.element, [None] * self.dict_len
 
-        for i in range(self.dict_len):
-            if self.element[i] is not None:
-                j = self.element[i][0] % new_dict_len
-
-                while True:
-                    if new_dict[j] is None:
-                        new_dict[j] = self.element[i]
-                        break
-                    else:
-                        j = (j + 1) % new_dict_len
-
-        self.dict_len = new_dict_len
-        self.element = new_dict
+        for el in old_dict:
+            if el is not None:
+                self.__setitem__(el[1], el[2])
