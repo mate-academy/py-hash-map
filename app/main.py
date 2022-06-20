@@ -27,10 +27,10 @@ class Dictionary:
         hash_key = hash(key)
         i = hash_key % self.dict_len
 
-        if self.element[i] is None:
-            raise KeyError
-
         while True:
+            if self.element[i] is None:
+                raise KeyError
+
             if self.element[i][0] == hash_key and key == self.element[i][1]:
                 return self.element[i][2]
             else:
