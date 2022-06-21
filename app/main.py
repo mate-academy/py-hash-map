@@ -5,37 +5,29 @@ class Dictionary:
         self.size = 0
 
     def __getitem__(self, item):
-        index = hash(item) % self.capacity
-
-        for _ in range(2):
-            for i in range(self.capacity):
-                if index + i == self.capacity:
-                    index = 0
-                if self.hash_table[index + i] is not None:
-                    if self.hash_table[index + i][0] == item:
-                        return self.hash_table[index + i][-1]
-        raise KeyError
+        key_hash = hash(item)
+        index = key_hash % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][0] == key_hash and \
+                    self.hash_table[index][1] == item:
+                return self.hash_table[index][2]
+            index = (index + 1) % self.capacity
+        raise KeyError (f"Key: {item} not in dictionary!")
 
     def __setitem__(self, key, value):
         self.resize()
 
-        hash_table_index = hash(key) % self.capacity
-        while True:
-            if hash_table_index == self.capacity:
-                hash_table_index = 0
-
-            if self.hash_table[hash_table_index] is not None:
-                if self.hash_table[hash_table_index][1] == hash_table_index:
-                    if self.hash_table[hash_table_index][0] == key:
-                        self.hash_table[hash_table_index] = None
-                        self.size -= 1
-
-                    else:
-                        hash_table_index += 1
-            else:
+        key_hash = hash(key)
+        index = key_hash % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][0] == key_hash and \
+                    self.hash_table[index][1] == key:
+                self.hash_table[index][2] = value
+                self.size -= 1
                 break
-
-        self.hash_table[hash_table_index] = (key, hash_table_index, value)
+            else:
+                index = (index + 1) % self.capacity
+        self.hash_table[index] = [key_hash, key, value]
         self.size += 1
 
     def __len__(self):
@@ -49,18 +41,11 @@ class Dictionary:
     def resize(self):
         if self.size > self.capacity * 2 / 3:
             self.capacity *= 2
+
             copy_hash_table = self.hash_table.copy()
+            self.hash_table = [[] for _ in range(self.capacity)]
+            self.size = 0
+            for element in copy_hash_table:
+                if element:
+                    self.__setitem__(element[1], element[2])
 
-            self.hash_table = [None] * self.capacity
-
-            for index, elem in enumerate(copy_hash_table):
-                while True:
-                    if index == self.capacity:
-                        index = 0
-
-                    if self.hash_table[index] is not None:
-                        index += 1
-                    else:
-                        break
-
-                self.hash_table[index] = elem
