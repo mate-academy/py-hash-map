@@ -12,7 +12,7 @@ class Dictionary:
                     self.hash_table[index][1] == item:
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
-        raise KeyError (f"Key: {item} not in dictionary!")
+        raise KeyError(f"Key: {item} not in dictionary!")
 
     def __setitem__(self, key, value):
         self.resize()
@@ -48,4 +48,3 @@ class Dictionary:
             for element in copy_hash_table:
                 if element:
                     self.__setitem__(element[1], element[2])
-
