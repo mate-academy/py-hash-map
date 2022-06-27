@@ -28,7 +28,8 @@ class Dictionary:
                 self.__dict_with_data[dict_index] = [key, value, hash_]
                 self.__elements += 1
                 break
-            if self.__dict_with_data[dict_index][0] == key:
+            if self.__dict_with_data[dict_index][0] == key \
+                    and hash_ == hash(key):
                 self.__dict_with_data[dict_index][1] = value
                 break
             dict_index = (dict_index + 1) % self.__capacity
@@ -37,7 +38,7 @@ class Dictionary:
         hash_ = hash(key)
         index = hash_ % self.__capacity
         while self.__dict_with_data[index] is not None:
-            if self.__dict_with_data[index][0] == key:
+            if self.__dict_with_data[index][0] == key and hash_ == hash(key):
                 return self.__dict_with_data[index][1]
             index = (index + 1) % self.__capacity
         raise KeyError('Not found')
