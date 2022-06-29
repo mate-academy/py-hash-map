@@ -1,12 +1,13 @@
 class Dictionary:
-    capacity = 8
-    threshold = int(capacity * (2 / 3))
-    hash_table = [None for i in range(capacity)]
-    length = 0
+    def __init__(self):
+        self.capacity = 8
+        self.threshold = int(self.capacity * (2 / 3))
+        self.hash_table = [None for _ in range(self.capacity)]
+        self.length = 0
 
     def __setitem__(self, key, value):
         if self.threshold == self.length:
-            self.capacity, self.threshold, tmp = self.resize(self.capacity)
+            tmp = self.resize()
             for node in self.hash_table:
                 if node:
                     self.fill_hash_table(node[0], node[2], self.capacity, tmp)
@@ -29,12 +30,11 @@ class Dictionary:
         hash_table[index_] = (key, hash_, value)
         return len_flag
 
-    @staticmethod
-    def resize(capacity):
-        capacity *= 2
-        threshold = int(capacity * (2 / 3))
-        tmp = [None for i in range(capacity)]
-        return capacity, threshold, tmp
+    def resize(self):
+        self.capacity *= 2
+        self.threshold = int(self.capacity * (2 / 3))
+        tmp = [None for _ in range(self.capacity)]
+        return tmp
 
     def __getitem__(self, key):
         hash_ = hash(key)
