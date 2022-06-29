@@ -24,9 +24,7 @@ class Dictionary:
             if hash_table[index_][1] == hash_ and hash_table[index_][0] == key:
                 len_flag = False
                 break
-            index_ += 1
-            if index_ == capacity:
-                index_ = 0
+            index_ = (index_ + 1) % capacity
         hash_table[index_] = (key, hash_, value)
         return len_flag
 
@@ -43,29 +41,52 @@ class Dictionary:
             if self.hash_table[index_][1] == hash_ \
                and self.hash_table[index_][0] == key:
                 return self.hash_table[index_][2]
-            index_ += 1
-            if index_ == self.capacity:
-                index_ = 0
+            index_ = (index_ + 1) % self.capacity
         if not self.hash_table[index_]:
             raise KeyError(key)
 
     def __len__(self):
         return self.length
 
-    # def clear(self):
-    #     pass
-    #
-    # def __delitem__(self, key):
-    #     pass
-    #
-    # def get(self, key, default=None):
-    #     pass
-    #
-    # def pop(self):
-    #     pass
-    #
-    # def update(self):
-    #     pass
-    #
-    # def __iter__(self):
-    #     pass
+    def clear(self):
+        self.hash_table = [None for _ in self.hash_table]
+
+    def __delitem__(self, key):
+        del_flag = True
+        hash_ = hash(key)
+        index_ = hash_ % self.capacity
+        while self.hash_table[index_]:
+            if self.hash_table[index_][1] == hash_ \
+               and self.hash_table[index_][0] == key:
+                self.hash_table[index_] = None
+                del_flag = False
+                break
+            index_ = (index_ + 1) % self.capacity
+        if del_flag:
+            raise KeyError(key)
+
+    def get(self, key, default=None):
+        return self.__getitem__(key)
+
+    def pop(self, key):
+        del_flag = True
+        hash_ = hash(key)
+        index_ = hash_ % self.capacity
+        while self.hash_table[index_]:
+            if self.hash_table[index_][1] == hash_ \
+               and self.hash_table[index_][0] == key:
+                value = self.hash_table[index_][2]
+                self.hash_table[index_] = None
+                return value
+            index_ = (index_ + 1) % self.capacity
+        if del_flag:
+            raise KeyError(key)
+
+    def update(self, another_dict):
+        for key, value in another_dict.items():
+            self.__setitem__(key, value)
+
+    def __iter__(self):
+        for item in self.hash_table:
+            if item:
+                yield item[2]
