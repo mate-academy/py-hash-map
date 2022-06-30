@@ -8,16 +8,18 @@ class Dictionary:
     def __setitem__(self, key, value):
         if self.threshold == self.length:
             self.resize()
-        if self.fill_hash_table(key, value, self.capacity, self.hash_table):
+        if self.fill_hash_table(key, value, self.capacity,
+                                self.hash_table, self.length):
             self.length += 1
 
     @staticmethod
-    def fill_hash_table(key, value, capacity, hash_table):
+    def fill_hash_table(key, value, capacity, hash_table, length):
         len_flag = True
         hash_ = hash(key)
         index_ = hash_ % capacity
         while hash_table[index_]:
             if hash_table[index_][1] == hash_ and hash_table[index_][0] == key:
+                length += 1
                 len_flag = False
                 break
             index_ = (index_ + 1) % capacity
@@ -30,7 +32,8 @@ class Dictionary:
         tmp = [None for _ in range(self.capacity)]
         for node in self.hash_table:
             if node:
-                self.fill_hash_table(node[0], node[2], self.capacity, tmp)
+                self.fill_hash_table(node[0], node[2], self.capacity,
+                                     tmp, self.length)
         self.hash_table = tmp
 
     def __getitem__(self, key):
