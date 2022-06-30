@@ -74,9 +74,12 @@ class Dictionary:
             return default
 
     def pop(self, key):
-        value = self.get(key)
-        self.__delitem__(key)
-        return value
+        try:
+            value = self.get(key)
+            self.__delitem__(key)
+            return value
+        except KeyError:
+            raise
 
     def update(self, another_dict=None, **kwargs):
         if another_dict:
