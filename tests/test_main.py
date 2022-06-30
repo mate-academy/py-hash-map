@@ -86,3 +86,22 @@ def test_missing_key():
     dictionary = Dictionary()
     with pytest.raises(KeyError):
         dictionary["missing_key"]
+
+
+@pytest.mark.timeout(5)
+def test_deletion():
+    items = [(f"Element {i}", i) for i in range(1000)]
+    dictionary = Dictionary()
+
+    for key, value in items:
+        dictionary[key] = value
+
+    for key, value in items:
+        assert dictionary[key] == value
+
+    assert len(dictionary) == len(items)
+
+    for key, value in items:
+        del dictionary[key]
+
+    assert len(dictionary) == 0

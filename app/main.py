@@ -7,11 +7,7 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         if self.threshold == self.length:
-            tmp = self.resize()
-            for node in self.hash_table:
-                if node:
-                    self.fill_hash_table(node[0], node[2], self.capacity, tmp)
-            self.hash_table = tmp
+            self.resize()
         if self.fill_hash_table(key, value, self.capacity, self.hash_table):
             self.length += 1
 
@@ -32,7 +28,10 @@ class Dictionary:
         self.capacity *= 2
         self.threshold = int(self.capacity * (2 / 3))
         tmp = [None for _ in range(self.capacity)]
-        return tmp
+        for node in self.hash_table:
+            if node:
+                self.fill_hash_table(node[0], node[2], self.capacity, tmp)
+        self.hash_table = tmp
 
     def __getitem__(self, key):
         hash_ = hash(key)
@@ -42,23 +41,26 @@ class Dictionary:
                and self.hash_table[index_][0] == key:
                 return self.hash_table[index_][2]
             index_ = (index_ + 1) % self.capacity
-        if not self.hash_table[index_]:
-            raise KeyError(key)
+        raise KeyError(key)
 
     def __len__(self):
         return self.length
 
     def clear(self):
         self.hash_table = [None for _ in self.hash_table]
+        self.length = 0
 
     def __delitem__(self, key):
         del_flag = True
         hash_ = hash(key)
         index_ = hash_ % self.capacity
-        while self.hash_table[index_]:
-            if self.hash_table[index_][1] == hash_ \
+        tmp = self.capacity if index_ == 0 else index_ - 1
+        while tmp != index_:
+            if self.hash_table[index_] \
+               and self.hash_table[index_][1] == hash_ \
                and self.hash_table[index_][0] == key:
                 self.hash_table[index_] = None
+                self.length -= 1
                 del_flag = False
                 break
             index_ = (index_ + 1) % self.capacity
@@ -66,17 +68,23 @@ class Dictionary:
             raise KeyError(key)
 
     def get(self, key, default=None):
-        return self.__getitem__(key)
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
     def pop(self, key):
         del_flag = True
         hash_ = hash(key)
         index_ = hash_ % self.capacity
-        while self.hash_table[index_]:
-            if self.hash_table[index_][1] == hash_ \
+        tmp = self.capacity if index_ == 0 else index_ - 1
+        while tmp != index_:
+            if self.hash_table[index_] \
+               and self.hash_table[index_][1] == hash_ \
                and self.hash_table[index_][0] == key:
                 value = self.hash_table[index_][2]
                 self.hash_table[index_] = None
+                self.length -= 1
                 return value
             index_ = (index_ + 1) % self.capacity
         if del_flag:
