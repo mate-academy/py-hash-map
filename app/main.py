@@ -74,24 +74,15 @@ class Dictionary:
             return default
 
     def pop(self, key):
-        del_flag = True
-        hash_ = hash(key)
-        index_ = hash_ % self.capacity
-        tmp = self.capacity if index_ == 0 else index_ - 1
-        while tmp != index_:
-            if self.hash_table[index_] \
-               and self.hash_table[index_][1] == hash_ \
-               and self.hash_table[index_][0] == key:
-                value = self.hash_table[index_][2]
-                self.hash_table[index_] = None
-                self.length -= 1
-                return value
-            index_ = (index_ + 1) % self.capacity
-        if del_flag:
-            raise KeyError(key)
+        value = self.get(key)
+        self.__delitem__(key)
+        return value
 
-    def update(self, another_dict):
-        for key, value in another_dict.items():
+    def update(self, another_dict=None, **kwargs):
+        if another_dict:
+            for key, value in another_dict.items():
+                self.__setitem__(key, value)
+        for key, value in kwargs.items():
             self.__setitem__(key, value)
 
     def __iter__(self):
