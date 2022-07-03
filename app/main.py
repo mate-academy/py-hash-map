@@ -22,17 +22,17 @@ class Dictionary:
     def __setitem__(self, key, value):
         index = hash(key) % self.capacity
 
+        if self.size >= math.floor(self.capacity * Dictionary.THRESHOLD):
+            self._resize()
+            self.__setitem__(key=key, value=value)
+            return
+
         while self.storage[index] is not None:
             if self.storage[index].key == key:
                 self.storage[index].value = value
                 return
 
             index = (index + 1) % self.capacity
-
-        if self.size >= math.floor(self.capacity * Dictionary.THRESHOLD):
-            self._resize()
-            self.__setitem__(key=key, value=value)
-            return
 
         self.size += 1
         self.storage[index] = Node(key=key, value=value)
