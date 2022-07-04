@@ -7,6 +7,7 @@ class Dictionary:
 
     def resize(self):
         self.capacity *= 2
+        self.t_hold = int(self.capacity * (2 / 3))
         temp_store = self.storage
         self.storage = [[] for _ in range(self.capacity)]
         self.length = 0
@@ -20,8 +21,9 @@ class Dictionary:
         hash_ = hash(key)
         index_ = hash_ % self.capacity
         while self.storage[index_]:
-            if self.storage[index_][0] == key and self.storage[1] == hash_:
-                self.storage[index_] = value
+            if self.storage[index_][0] == key and \
+                    self.storage[index_][1] == hash_:
+                self.storage[index_] = key, hash_, value
                 self.length -= 1
                 break
             index_ = (index_ + 1) % self.capacity
@@ -32,7 +34,8 @@ class Dictionary:
         hash_ = hash(key)
         index_ = hash_ % self.capacity
         while self.storage[index_]:
-            if self.storage[index_][0] == key and self.storage[index_][2] == hash_:
+            if self.storage[index_][0] == key and \
+                    self.storage[index_][1] == hash_:
                 return self.storage[index_][2]
             index_ = (index_ + 1) % self.capacity
         raise KeyError(f'Key {key} dont exist')
