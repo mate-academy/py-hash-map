@@ -10,7 +10,8 @@ class Dictionary:
         for _ in self.hash_table:
             if self.hash_table[index]:
 
-                if hash(key) == self.hash_table[index][0] and key == self.hash_table[index][1]:
+                if hash(key) == self.hash_table[index][0] and\
+                        key == self.hash_table[index][1]:
                     self.hash_table[index] = [hash(key), key, value]
                     break
 
@@ -27,7 +28,8 @@ class Dictionary:
         index = hash(key) % self.capacity
         for _ in self.hash_table:
             if self.hash_table[index]:
-                if self.hash_table[index][1] == key and self.hash_table[index][0] == hash(key):
+                if self.hash_table[index][1] == key and\
+                        self.hash_table[index][0] == hash(key):
                     return self.hash_table[index][2]
                 index += 1
                 if index == len(self.hash_table):
