@@ -7,7 +7,9 @@ class Dictionary:
     def __setitem__(self, key, value):
         self._resize()
         index = hash(key) % self.capacity
-        for _ in self.hash_table:
+        iteration = 0
+        while iteration != len(self) + 1:
+            iteration += 1
             if self.hash_table[index]:
 
                 if hash(key) == self.hash_table[index][0] and\
