@@ -22,7 +22,6 @@ class Dictionary:
         return self.length
 
     def resize(self):
-        print("resize")
         existing_elements = [element for element in self.storage if element]
         self.storage = [[] for _ in range(self.capacity * 2)]
         self.capacity *= 2
