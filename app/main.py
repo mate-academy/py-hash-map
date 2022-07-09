@@ -1,45 +1,40 @@
 class Dictionary:
 
     def __init__(self):
-        self.dic = [[] for _ in range(8)]
-        self.initial_capacity = len(self.dic)
-        self.load_factor = 0
+        self.storage = [[] for _ in range(8)]
+        self.capacity = 8
+        self.length = 0
 
     def __setitem__(self, key, value):
-        new_key = True
-        hash_ = hash(key)
-        for element in self.dic:
-            if element:
-                if element[0][0] == key:
-                    element.clear()
-                    element.append((key, hash_, value))
-                    new_key = False
-        if new_key:
-            if self.load_factor >= 2 / 3 * self.initial_capacity:
-                self.resize()
-            index = hash_ % self.initial_capacity
-            while self.dic[index]:
-                index = (index + 1) % self.initial_capacity
-            self.dic[index].append((key, hash_, value))
-            self.load_factor += 1
+        if self.length >= 2 / 3 * self.capacity:
+            self.resize()
+        index = hash(key) % self.capacity
+        while self.storage[index]:
+            if self.storage[index][0] == key \
+                    and self.storage[index][1] == hash(key):
+                self.storage[index][2] = value
+                return
+            index = (index + 1) % self.capacity
+        self.storage[index] = [key, hash(key), value]
+        self.length += 1
 
     def __len__(self):
-        return self.load_factor
+        return self.length
 
     def resize(self):
-        new_list = [[] for _ in range(self.initial_capacity * 2)]
-        self.initial_capacity = len(new_list)
-        for element in self.dic:
-            if element:
-                new_index = element[0][1] % self.initial_capacity
-                while new_list[new_index]:
-                    new_index = (new_index + 1) % self.initial_capacity
-                new_list[new_index].append(element[0])
-        self.dic = new_list
+        print("resize")
+        existing_elements = [element for element in self.storage if element]
+        self.storage = [[] for _ in range(self.capacity * 2)]
+        self.capacity *= 2
+        self.length = 0
+        for element in existing_elements:
+            self.__setitem__(element[0], element[2])
 
     def __getitem__(self, key):
-        for element in self.dic:
-            if element:
-                if element[0][0] == key:
-                    return element[0][2]
+        index = hash(key) % self.capacity
+        while self.storage[index]:
+            if self.storage[index][0] == key \
+                    and self.storage[index][1] == hash(key):
+                return self.storage[index][2]
+            index = (index + 1) % self.capacity
         raise KeyError
