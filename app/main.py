@@ -18,7 +18,8 @@ class Dictionary:
                 self.hash_list[index_] = [key, hash_, value]
                 self.length += 1
                 break
-            if self.hash_list[index_][0] == key:
+            if self.hash_list[index_][0] == key and\
+                    self.hash_list[index_][1] == hash_:
                 self.hash_list[index_][2] = value
                 break
             index_ = (index_ + 1) % self.capacity
