@@ -43,6 +43,7 @@ class Dictionary:
                         break
                 self.hash_table[index] = [key_, value]
                 break
+
             if index == self.capacity - 1:
                 for res_index in range(self.capacity):
                     if not self.hash_table[res_index]:
