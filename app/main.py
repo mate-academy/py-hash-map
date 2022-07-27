@@ -21,31 +21,37 @@ class Dictionary:
         self.hashing(hash_, value, key)
 
     def __getitem__(self, item):
-        for element in self.hash_table:
-            if len(element) > 0 and element[0] == item:
-                return element[-1]
-            if element == item:
-                return item
-        raise KeyError
+        n = 0
+        while True:
+            if len(self.hash_table[n]) > 0:
+                if self.hash_table[n][0] == item:
+                    return self.hash_table[n][1]
+            n += 1
+            if n >= len(self.hash_table):
+                raise KeyError
 
     def __len__(self):
-        return len(self.items)
+        return self.items.__len__()
 
     def hashing(self, hash_, value, key_):
-        for index in range(hash_, self.capacity):
-            if len(self.hash_table[index]) == 0:
-                self.hash_table[index] = [key_, value]
+        n = hash_
+        while True:
+            if len(self.hash_table[n]) == 0:
+                self.hash_table[n] = [key_, value, hash_]
+                # n += 1
                 break
-            elif self.hash_table[index][0] == key_:
+            elif self.hash_table[n][0] == key_:
                 for element in self.items:
                     if element[0] == key_:
                         self.items.remove(element)
                         break
-                self.hash_table[index] = [key_, value]
+                self.hash_table[n] = [key_, value, hash_]
                 break
-
-            if index == self.capacity - 1:
+            if n == self.capacity - 1:
                 for res_index in range(self.capacity):
                     if not self.hash_table[res_index]:
-                        self.hash_table[res_index] = [key_, value]
+                        self.hash_table[res_index] = [key_, value, hash_]
                         break
+            n += 1
+            if n >= len(self.hash_table):
+                break
