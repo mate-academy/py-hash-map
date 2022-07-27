@@ -41,12 +41,3 @@ class Dictionary:
 
     def __len__(self):
         return self.length
-
-        self.dict = [[] for _ in range(self.capacity)]
-        self.length = 0
-        for item in all_items:
-            if item:
-                self.__setitem__(item[0], item[1])
-
-    def __len__(self):
-        return self.length
