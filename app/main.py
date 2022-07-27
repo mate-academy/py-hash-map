@@ -25,12 +25,12 @@ class Dictionary:
     def check_and_resize(self):
         if self.length == int(self.current_capacity * 2 / 3):
             self.current_capacity *= 2
-            temp_elements = [element for element in self.elements
-                             if element is not None]
+            temp_elements = self.elements.copy()
             self.elements = [None for _ in range(self.current_capacity)]
             self.length = 0
             for item in temp_elements:
-                self.add_element(item[0], item[1])
+                if item is not None:
+                    self.add_element(item[0], item[1])
 
     def __getitem__(self, key):
         hash_code = hash(key)
@@ -53,20 +53,20 @@ class Dictionary:
     def __delitem__(self, key):
         hash_code = hash(key)
         output_index = hash_code % self.current_capacity
-        while self.elements[output_index] is not None:
-            if self.elements[output_index][0] == key \
-                    and self.elements[output_index][2] == hash_code:
-                self.elements[output_index] = None
-                break
+        while any(self.elements):
+            if self.elements[output_index] is not None:
+                if self.elements[output_index][0] == key and \
+                        self.elements[output_index][2] == hash_code:
+                    return_value = self.elements[output_index][1]
+                    self.elements[output_index] = None
+                    self.length -= 1
+                    return return_value
+
             output_index = (output_index + 1) % self.current_capacity
         raise KeyError("Element is not present in dict.")
 
-    def get(self, key, *args):
-        hash_code = hash(key)
-        output_index = hash_code % self.current_capacity
-        while self.elements[output_index] is not None:
-            if self.elements[output_index][0] == key \
-                    and self.elements[output_index][2] == hash_code:
-                return self.elements[output_index][1]
-            output_index = (output_index + 1) % self.current_capacity
-        return None if len(args) == 0 else args[0]
+    def get(self, key, default_value=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default_value
