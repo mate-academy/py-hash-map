@@ -3,12 +3,12 @@ class Dictionary:
         self.items = []
         self.capacity = 8
         self.size = 0
-        self.threshold = int(self.capacity * 2 / 3) + 1
+        self.threshold = int(self.capacity * 2 / 3)
         self.hash_table = [[] for _ in range(self.capacity)]
 
     def __setitem__(self, key, value):
-        self.size += 1
         if self.size == self.threshold:
+            self.size = 0
             self.capacity *= 2
             self.threshold = int(self.capacity * 2 / 3) + 1
             self.hash_table = [[] for _ in range(self.capacity)]
@@ -22,11 +22,10 @@ class Dictionary:
 
         while self.hash_table[index_item] != [] \
                 and self.hash_table[index_item][0] != key:
-            index_item += 1
-            if index_item == self.capacity:
-                index_item = 0
+            index_item = (index_item + 1) % self.capacity
 
         if self.hash_table[index_item] == []:
+            self.size += 1
             self.hash_table[index_item] = [key, value]
         elif self.hash_table[index_item][0] == key:
             self.hash_table[index_item][1] = value
@@ -38,12 +37,11 @@ class Dictionary:
             raise KeyError
 
         while self.hash_table[index_item][0] != key:
-            index_item += 1
-            if index_item == self.capacity:
-                index_item = 0
+            index_item = (index_item + 1) % self.capacity
 
-        if self.hash_table[index_item][0] == key:
+        if self.hash_table[index_item][0] == key \
+                and hash(self.hash_table[index_item][0]) == hash(key):
             return self.hash_table[index_item][1]
 
     def __len__(self):
-        return len(self.hash_table) - self.hash_table.count([])
+        return self.size
