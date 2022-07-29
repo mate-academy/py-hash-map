@@ -1,6 +1,5 @@
 class Dictionary:
     def __init__(self):
-        self.items = []
         self.capacity = 8
         self.size = 0
         self.threshold = int(self.capacity * 2 / 3)
@@ -8,14 +7,18 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         if self.size == self.threshold:
-            self.size = 0
-            self.capacity *= 2
-            self.threshold = int(self.capacity * 2 / 3) + 1
-            self.hash_table = [[] for _ in range(self.capacity)]
-            for key_, value_ in self.items:
-                self.add_to_hash_table(key_, value_)
-        self.items.append([key, value])
+            self.change_size()
         self.add_to_hash_table(key, value)
+
+    def change_size(self):
+        self.size = 0
+        self.capacity *= 2
+        self.threshold = int(self.capacity * 2 / 3) + 1
+        old_hash_table = self.hash_table
+        self.hash_table = [[] for _ in range(self.capacity)]
+        for item in old_hash_table:
+            if item != []:
+                self.__setitem__(item[0], item[1])
 
     def add_to_hash_table(self, key, value):
         index_item = hash(key) % self.capacity
