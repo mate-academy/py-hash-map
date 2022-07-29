@@ -27,7 +27,8 @@ class Dictionary:
         if self.hash_table[index_item] == []:
             self.size += 1
             self.hash_table[index_item] = [key, value]
-        elif self.hash_table[index_item][0] == key:
+        elif self.hash_table[index_item][0] == key \
+                and hash(self.hash_table[index_item][0]) == hash(key):
             self.hash_table[index_item][1] = value
 
     def __getitem__(self, key):
