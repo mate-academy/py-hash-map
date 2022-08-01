@@ -44,7 +44,7 @@ class Dictionary:
                     and self.hash_table[index_item][0] == key:
                 return self.hash_table[index_item][1]
             index_item = (index_item + 1) % self.capacity
-        raise KeyError(f"{key}: {index_item}")
+        raise KeyError
 
     def __len__(self):
         return self.size
