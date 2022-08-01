@@ -1,21 +1,13 @@
 class Dictionary:
     def __init__(self):
-        self.items = []
         self.capacity = 8
         self.hash_table = [[] for _ in range(self.capacity)]
+        self.size = 0
 
     def __setitem__(self, key, value):
-        for element in self.items:
-            if element[0] == key:
-                self.items.remove(element)
-                break
-
-        self.items.append([key, value])
-
         threshold = int((self.capacity * 2 / 3))
-        size = len(self.items)
 
-        if size == threshold:
+        if self.size == threshold:
             self.resize()
 
         hash_ = hash(key) % self.capacity
@@ -23,11 +15,14 @@ class Dictionary:
 
     def resize(self):
         self.capacity *= 2
+        self.size = 0
+        old_hash_table = self.hash_table
         self.hash_table = [[] for _ in range(self.capacity)]
-        for element in self.items:
-            self.hashing(hash(element[0]) % self.capacity,
-                         element[1],
-                         element[0])
+        for element in old_hash_table:
+            if len(element) != 0:
+                self.hashing(hash(element[0]) % self.capacity,
+                             element[1],
+                             element[0])
         return
 
     def __getitem__(self, key):
@@ -45,12 +40,13 @@ class Dictionary:
             return self.hash_table[index_item][1]
 
     def __len__(self):
-        return self.items.__len__()
+        return self.size
 
     def hashing(self, hash_, value, key_):
         while True:
             if len(self.hash_table[hash_]) == 0:
                 self.hash_table[hash_] = [key_, value, hash_]
+                self.size += 1
                 break
             elif self.hash_table[hash_][0] == key_:
                 self.hash_table[hash_] = [key_, value, hash_]
@@ -59,6 +55,7 @@ class Dictionary:
                 for res_index in range(self.capacity):
                     if not self.hash_table[res_index]:
                         self.hash_table[res_index] = [key_, value, hash_]
+                        self.size += 1
                         break
             hash_ += 1
             if hash_ >= len(self.hash_table):
