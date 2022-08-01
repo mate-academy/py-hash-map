@@ -8,7 +8,8 @@ class Dictionary:
     def __setitem__(self, key, value):
         if self.size == self.threshold:
             self.change_size()
-        self.add_to_hash_table(key, value)
+        hash_code = hash(key)
+        self.add_to_hash_table(key, value, hash_code)
 
     def change_size(self):
         self.size = 0
@@ -20,32 +21,31 @@ class Dictionary:
             if item != []:
                 self.__setitem__(item[0], item[1])
 
-    def add_to_hash_table(self, key, value):
-        index_item = hash(key) % self.capacity
+    def add_to_hash_table(self, key, value, hash_code):
+        index_item = hash_code % self.capacity
 
         while self.hash_table[index_item] != [] \
+                and self.hash_table[index_item][2] != hash_code \
                 and self.hash_table[index_item][0] != key:
             index_item = (index_item + 1) % self.capacity
 
         if self.hash_table[index_item] == []:
             self.size += 1
-            self.hash_table[index_item] = [key, value]
-        elif self.hash_table[index_item][0] == key \
-                and hash(self.hash_table[index_item][0]) == hash(key):
+            self.hash_table[index_item] = [key, value, hash_code]
+        elif self.hash_table[index_item][2] == hash_code \
+                and self.hash_table[index_item][0] == key:
             self.hash_table[index_item][1] = value
 
     def __getitem__(self, key):
-        index_item = hash(key) % self.capacity
+        hash_code = hash(key)
+        index_item = hash_code % self.capacity
 
-        if self.size == 0:
-            raise KeyError
-
-        while self.hash_table[index_item][0] != key:
+        while self.hash_table[index_item] != []:
+            if self.hash_table[index_item][2] == hash_code \
+                    and self.hash_table[index_item][0] == key:
+                return self.hash_table[index_item][1]
             index_item = (index_item + 1) % self.capacity
-
-        if self.hash_table[index_item][0] == key \
-                and hash(self.hash_table[index_item][0]) == hash(key):
-            return self.hash_table[index_item][1]
+        raise KeyError
 
     def __len__(self):
         return self.size
