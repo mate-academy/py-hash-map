@@ -25,7 +25,6 @@ class Dictionary:
         index_item = hash_code % self.capacity
 
         while self.hash_table[index_item] != [] \
-                and self.hash_table[index_item][2] != hash_code \
                 and self.hash_table[index_item][0] != key:
             index_item = (index_item + 1) % self.capacity
 
@@ -45,7 +44,7 @@ class Dictionary:
                     and self.hash_table[index_item][0] == key:
                 return self.hash_table[index_item][1]
             index_item = (index_item + 1) % self.capacity
-        raise KeyError
+        raise KeyError(f"{key}: {index_item}")
 
     def __len__(self):
         return self.size
