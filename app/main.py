@@ -24,16 +24,16 @@ class Dictionary:
     def add_to_hash_table(self, key, value, hash_code):
         index_item = hash_code % self.capacity
 
-        while self.hash_table[index_item] != [] \
-                and self.hash_table[index_item][0] != key:
+        while True:
+            if self.hash_table[index_item] == []:
+                self.size += 1
+                self.hash_table[index_item] = [key, value, hash_code]
+                break
+            if self.hash_table[index_item][2] == hash_code \
+                    and self.hash_table[index_item][0] == key:
+                self.hash_table[index_item][1] = value
+                break
             index_item = (index_item + 1) % self.capacity
-
-        if self.hash_table[index_item] == []:
-            self.size += 1
-            self.hash_table[index_item] = [key, value, hash_code]
-        elif self.hash_table[index_item][2] == hash_code \
-                and self.hash_table[index_item][0] == key:
-            self.hash_table[index_item][1] = value
 
     def __getitem__(self, key):
         hash_code = hash(key)
