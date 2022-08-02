@@ -23,7 +23,6 @@ class Dictionary:
                 self.hashing(hash(element[0]) % self.capacity,
                              element[1],
                              element[0])
-        return
 
     def __getitem__(self, key):
         index_item = hash(key) % self.capacity
