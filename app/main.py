@@ -43,19 +43,3 @@ class Dictionary:
                 return self.hash_list[index_][2]
             index_ = (index_ + 1) % self.capacity
             raise KeyError(f"Key: {key} is not in dictionary!")
-
-    def clear(self):
-        self.capacity = 0
-        self.hash_list = [None for _ in range(self.capacity)]
-
-    def __delitem__(self, key):
-        hash_ = hash(key)
-        index_ = hash_ % self.capacity
-        for _ in range(self.capacity):
-            if self.hash_list[index_][1] == key:
-                self.hash_list[index_] = None
-                self.capacity -= 1
-                break
-            index_ = (index_ + 1) % self.capacity
-        else:
-            raise KeyError(f"Key: {key} is not in dictionary!")
