@@ -11,10 +11,11 @@ class Dictionary:
         self.t_hold = int(self.capacity * (2 / 3))
 
     def adding_item(self, key, value):
-        if not self.hash_table[hash(key) % self.capacity]:
-            self.hash_table[hash(key) % self.capacity].extend([key, value])
+        hash_index = hash(key) % self.capacity
+        if not self.hash_table[hash_index]:
+            self.hash_table[hash_index].extend([key, value])
             self.length += 1
-            self.free_indexes.remove(hash(key) % self.capacity)
+            self.free_indexes.remove(hash_index)
         else:
             if key in [item[0] for item in self.hash_table if item]:
                 elt = [itm for itm in self.hash_table if itm and itm[0] == key]
