@@ -43,8 +43,7 @@ class Dictionary:
             self.adding_item_complex(key, value)
 
     def __getitem__(self, key):
-        hash_table_out_empty = [item for item in self.hash_table if item]
-        value = [item[1] for item in hash_table_out_empty if item[0] == key]
+        value = [itm[1] for itm in self.hash_table if itm and itm[0] == key]
         if value:
             return value[0]
         raise KeyError
