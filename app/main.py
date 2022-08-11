@@ -7,34 +7,24 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
 
     def adding_item(self, key, value):
-        hash_index = hash(key) % self.capacity
-        if not self.hash_table[hash_index]:
-            self.hash_table[hash_index].extend([key, value])
-            self.length += 1
-        else:
-            i = 0
-            while i < len(self.hash_table):
-                if self.hash_table[i]:
-                    if self.hash_table[i][0] == key:
-                        self.hash_table[i] = [key, value]
-                        break
-                    else:
-                        i += 1
-                else:
-                    i += 1
-            if i == self.capacity:
-                i = 0
-                while self.hash_table[i]:
-                    i += 1
-                self.hash_table[i].extend([key, value])
+        hash_code = hash(key)
+        hash_index = hash_code % self.capacity
+        while True:
+            if not self.hash_table[hash_index]:
+                self.hash_table[hash_index].extend([key, value, hash_code])
                 self.length += 1
+                break
+            if self.hash_table[hash_index][2] == hash_code \
+                    and self.hash_table[hash_index][0] == key:
+                self.hash_table[hash_index][1] = value
+                break
+            hash_index = (hash_index + 1) % self.capacity
 
     def __setitem__(self, key, value):
         if self.length < self.t_hold:
             self.adding_item(key, value)
         else:
             temporary_storage = self.hash_table
-            print(temporary_storage)
             self.capacity *= 2
             self.length = 0
             self.hash_table = [[] for _ in range(self.capacity)]
@@ -45,15 +35,13 @@ class Dictionary:
             self.adding_item(key, value)
 
     def __getitem__(self, key):
-        i = 0
-        while i <= len(self.hash_table):
-            try:
-                if self.hash_table[i][0] == key:
-                    return self.hash_table[i][1]
-                else:
-                    i += 1
-            except IndexError:
-                i += 1
+        hash_code = hash(key)
+        hash_index = hash_code % self.capacity
+        while self.hash_table[hash_index]:
+            if self.hash_table[hash_index][2] == hash_code \
+                    and self.hash_table[hash_index][0] == key:
+                return self.hash_table[hash_index][1]
+            hash_index = (hash_index + 1) % self.capacity
         raise KeyError
 
     def __len__(self):
