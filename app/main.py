@@ -20,8 +20,7 @@ class Dictionary:
                     else:
                         self.hash_table[index] = item
                         break
-        else:
-            self.add_new_element(key, value)
+        self.add_new_element(key, value)
 
     def __getitem__(self, item):
         hashed_value = hash(item)
