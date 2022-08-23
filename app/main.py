@@ -38,11 +38,11 @@ class Dictionary:
                 self.hash_table[index] = [hashed_value, key, value]
                 self.length += 1
                 break
-            else:
-                if key == self.hash_table[index][1] \
-                        and self.hash_table[index][0] == hashed_value:
-                    self.hash_table[index] = [hashed_value, key, value]
-                    break
+
+            if key == self.hash_table[index][1] \
+                    and self.hash_table[index][0] == hashed_value:
+                self.hash_table[index] = [hashed_value, key, value]
+                break
             index = (index + 1) % self.capacity
 
     def __len__(self):
