@@ -23,17 +23,12 @@ class Dictionary:
 
     def rebuilding_hash_table(self):
         self.capacity *= 2
+        self.length = 0
         self.threshold = self.capacity * self.load_factor
         prev_list = [item for item in self.hash_table if item]
         self.hash_table = [[] for _ in range(self.capacity)]
         for item in prev_list:
-            index = item[0] % self.capacity
-            while True:
-                if len(self.hash_table[index]) > 0:
-                    index = (index + 1) % self.capacity
-                else:
-                    self.hash_table[index] = item
-                    break
+            self.__setitem__(item[1], item[2])
 
     def add_new_element(self, key, value):
         hashed_value = hash(key)
