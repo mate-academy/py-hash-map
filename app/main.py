@@ -8,18 +8,7 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         if self.length > self.threshold:
-            self.capacity *= 2
-            self.threshold = self.capacity * self.load_factor
-            prev_list = [item for item in self.hash_table if item]
-            self.hash_table = [[] for _ in range(self.capacity)]
-            for item in prev_list:
-                index = item[0] % self.capacity
-                while True:
-                    if len(self.hash_table[index]) > 0:
-                        index = (index + 1) % self.capacity
-                    else:
-                        self.hash_table[index] = item
-                        break
+            self.rebuilding_hash_table()
         self.add_new_element(key, value)
 
     def __getitem__(self, item):
@@ -32,6 +21,20 @@ class Dictionary:
             index = (index + 1) % self.capacity
         raise KeyError
 
+    def rebuilding_hash_table(self):
+        self.capacity *= 2
+        self.threshold = self.capacity * self.load_factor
+        prev_list = [item for item in self.hash_table if item]
+        self.hash_table = [[] for _ in range(self.capacity)]
+        for item in prev_list:
+            index = item[0] % self.capacity
+            while True:
+                if len(self.hash_table[index]) > 0:
+                    index = (index + 1) % self.capacity
+                else:
+                    self.hash_table[index] = item
+                    break
+
     def add_new_element(self, key, value):
         hashed_value = hash(key)
         index = hashed_value % self.capacity
@@ -41,7 +44,8 @@ class Dictionary:
                 self.length += 1
                 break
             else:
-                if key == self.hash_table[index][1]:
+                if key == self.hash_table[index][1] \
+                        and self.hash_table[index][0] == hashed_value:
                     self.hash_table[index] = [hashed_value, key, value]
                     break
             index = (index + 1) % self.capacity
