@@ -10,7 +10,8 @@ class Dictionary:
             self.capacity *= 2
             self.hash_table = [None] * self.capacity
             self.load = self.capacity * 2 // 3
-            for element in [elem for elem in backup_hash_table if elem is not None]:
+            for element in \
+                    [elem for elem in backup_hash_table if elem is not None]:
                 self.__setitem__(element[0], element[2])
             self.__setitem__(key, value)
             return
@@ -33,4 +34,6 @@ class Dictionary:
         raise KeyError(f"No Key {key} in dict!")
 
     def __len__(self):
-        return len([element for element in self.hash_table if element is not None])
+        return len(
+            [element for element in self.hash_table if element is not None]
+        )
