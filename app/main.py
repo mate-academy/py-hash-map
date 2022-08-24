@@ -37,8 +37,7 @@ class Dictionary:
     def __getitem__(self, key):
         if self.length != 0:
             index_ = hash(key) % self.capacity
-
-            while (self.base_data[index_] is not None) or (index_ < self.length):
+            while self.base_data[index_] is not None:
                 if self.base_data[index_][0] == key:
                     return self.base_data[index_][2]
 
@@ -59,13 +58,15 @@ class Dictionary:
             if num is not None:
                 data_.append(num)
 
-        self.base_data = [None for i in range(self.capacity)]
+        self.base_data = [
+            None for i in range(self.capacity)]
         self.length = 0
         for number in data_:
             self.__setitem__(number[0], number[2])
 
     def clear(self):
-        self.base_data = [None for i in range(self.capacity)]
+        self.base_data = [
+            None for i in range(self.capacity)]
 
     def __delitem__(self, item):
         for i in range(self.length):
