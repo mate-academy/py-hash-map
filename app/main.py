@@ -37,7 +37,8 @@ class Dictionary:
     def __getitem__(self, key):
         if self.length != 0:
             index_ = hash(key) % self.capacity
-            while self.base_data[index_] is not None and (index_ < self.capacity):
+            while self.base_data[index_] is not None\
+                    and (index_ < self.capacity):
                 if self.base_data[index_][0] == key:
                     return self.base_data[index_][2]
 
