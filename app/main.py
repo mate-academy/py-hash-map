@@ -33,9 +33,8 @@ class Dictionary:
         )
 
     def clear(self):
-        for elem in self.hash_table:
-            elem = None
-        return elem
+        for i in range(len(self.hash_table)):
+            self.hash_table[i] = None
 
     def __delitem__(self, key):
         self.hash_table[self.find_item(key)] = None
@@ -72,3 +71,11 @@ class Dictionary:
                 return index
             index = (index + 1) % self.capacity
         raise KeyError(f"No Key {key} in dict!")
+
+
+dict_ = Dictionary()
+dict_[1] = 2
+dict_[2] = 3
+print(len(dict_))
+dict_.clear()
+print(len(dict_))
