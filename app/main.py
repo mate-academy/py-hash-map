@@ -35,6 +35,7 @@ class Dictionary:
     def clear(self):
         for elem in self.hash_table:
             elem = None
+        return elem
 
     def __delitem__(self, key):
         self.hash_table[self.find_item(key)] = None
