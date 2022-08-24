@@ -16,15 +16,18 @@ class Dictionary:
             self.base_data[index_] = [key, hash(key), value]
 
         elif self.base_data[index_][0] == key:
-            self.base_data[index_][2] = value
+            self.base_data[index_] = [key, hash(key), value]
             self.length -= 1
         else:
 
             while self.base_data[index_] is not None:
+
                 if self.base_data[index_][0] == key:
-                    self.base_data[index_][2] = value
+                    self.base_data[index_] = [key, hash(key), value]
                     self.length -= 1
                     a = 1
+                if index_ == self.capacity - 1:
+                    index_ = -1
 
                 index_ += 1
             if a != 1:
@@ -38,7 +41,6 @@ class Dictionary:
             while (self.base_data[index_] is not None) or (index_ < self.length):
                 if self.base_data[index_][0] == key:
                     return self.base_data[index_][2]
-
 
                 index_ += 1
 
