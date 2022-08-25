@@ -22,7 +22,8 @@ class Dictionary:
 
             while self.base_data[index_] is not None:
 
-                if self.base_data[index_][0] == key and self.base_data[index_][1] == hash(key):
+                if self.base_data[index_][0] == key and\
+                        self.base_data[index_][1] == hash(key):
                     self.base_data[index_] = [key, hash(key), value]
                     self.length -= 1
                     a = 1
@@ -36,7 +37,8 @@ class Dictionary:
             index_ = hash(key) % self.capacity
             while self.base_data[index_] is not None\
                     and (index_ < self.capacity):
-                if self.base_data[index_][0] == key and self.base_data[index_][1] == hash(key):
+                if self.base_data[index_][0] == key and \
+                        self.base_data[index_][1] == hash(key):
                     return self.base_data[index_][2]
 
                 index_ = (index_ + 1) % self.capacity
