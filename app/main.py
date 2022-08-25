@@ -22,14 +22,11 @@ class Dictionary:
 
             while self.base_data[index_] is not None:
 
-                if self.base_data[index_][0] == key:
+                if self.base_data[index_][0] == key and self.base_data[index_][1] == hash(key):
                     self.base_data[index_] = [key, hash(key), value]
                     self.length -= 1
                     a = 1
-                if index_ == self.capacity - 1:
-                    index_ = -1
-
-                index_ += 1
+                index_ = (index_ + 1) % self.capacity
             if a != 1:
                 self.base_data[index_] = [key, hash(key), value]
         self.length += 1
@@ -39,14 +36,12 @@ class Dictionary:
             index_ = hash(key) % self.capacity
             while self.base_data[index_] is not None\
                     and (index_ < self.capacity):
-                if self.base_data[index_][0] == key:
+                if self.base_data[index_][0] == key and self.base_data[index_][1] == hash(key):
                     return self.base_data[index_][2]
 
-                index_ += 1
+                index_ = (index_ + 1) % self.capacity
 
-            raise KeyError(f"Not Key {key} ")
-        else:
-            raise KeyError(f"Not Key {key} ")
+        raise KeyError(f"Not Key {key} ")
 
     def __len__(self):
         return int(self.length)
@@ -55,15 +50,15 @@ class Dictionary:
         self.capacity *= 2
         self.threshold = int(self.capacity * (2 / 3))
         data_ = []
-        for num in self.base_data:
-            if num is not None:
-                data_.append(num)
+        for member in self.base_data:
+            if member is not None:
+                data_.append(member)
 
         self.base_data = [
             None for i in range(self.capacity)]
         self.length = 0
-        for number in data_:
-            self.__setitem__(number[0], number[2])
+        for member in data_:
+            self.__setitem__(member[0], member[2])
 
     def clear(self):
         self.base_data = [
@@ -93,25 +88,15 @@ class Dictionary:
 
 
 if __name__ == "__main__":
-    d = Dictionary()
-    d.__setitem__("[1, 2, 3]", "y")
-    d.__setitem__("j", "i")
-    d.__setitem__("j", "123")
-    d.__setitem__("k", "l")
-    d.__setitem__("hello", "y")
-    d.__setitem__("[3, 4]", "y")
-    d.__setitem__("j", "y")
-    d.__setitem__("1234", "y")
-    print(d.__getitem__("j"))
-    print(d.__getitem__("k"))
-    print(d.__getitem__("j"))
-    print(d.__getitem__("b"))
-    print(d.__getitem__("1234"))
-    print(d.__getitem__("[1, 2, 3]"))
-    print(d.__len__())
-    d.__iter__()
-    d.update("1", "one")
-    d.get("1")
-    d.pop("1")
-    d.__delitem__("y")
-    d.clear()
+    @pytest.mark.timeout(5)
+    def test_deletion():
+        items = [(f"Element {i}", i) for i in range(1000)]
+        dictionary = Dictionary()
+        for key, value in items:
+            dictionary[key] = value
+        for key, value in items:
+            assert dictionary[key] == value
+        assert len(dictionary) == len(items)
+        for key, value in items:
+            del dictionary[key]
+        print(len(dictionary))
