@@ -7,7 +7,7 @@ class Dictionary:
         self.base_data = [None for i in range(self.capacity)]
 
     def __setitem__(self, key, value):
-        a = 0
+
         if self.length >= self.threshold:
             self.resize()
 
@@ -26,10 +26,10 @@ class Dictionary:
                         self.base_data[index_][1] == hash(key):
                     self.base_data[index_] = [key, hash(key), value]
                     self.length -= 1
-                    a = 1
+                    break
                 index_ = (index_ + 1) % self.capacity
-            if a != 1:
-                self.base_data[index_] = [key, hash(key), value]
+
+            self.base_data[index_] = [key, hash(key), value]
         self.length += 1
 
     def __getitem__(self, key):
@@ -55,7 +55,6 @@ class Dictionary:
         for member in self.base_data:
             if member is not None:
                 data_.append(member)
-
         self.base_data = [
             None for i in range(self.capacity)]
         self.length = 0
@@ -63,24 +62,43 @@ class Dictionary:
             self.__setitem__(member[0], member[2])
 
     def clear(self):
-        self.base_data = [
-            None for i in range(self.capacity)]
+        self.init()
 
     def __delitem__(self, item):
-        for i in range(self.length):
+        i = 0
+        while self.base_data[i] is not None:
             if self.base_data[i][2] == item:
                 self.base_data[i] = None
+            i = (i + 1) % self.capacity
 
     def pop(self, key):
-        for i in range(self.length):
-            if self.base_data[i][0] == key:
+        index_ = hash(key) % self.capacity
+        while self.base_data[index_] is not None:
+            if self.base_data[i][0] == key and\
+                    self.base_data[i][1] == hash(key):
                 self.base_data[i] = None
+                return
+            index_ = (index_ + 1) % self.capacity
+        return None
 
     def get(self, key):
-        self.__getitem__(key)
+        if self.length != 0:
+            index_ = hash(key) % self.capacity
+            while self.base_data[index_] is not None\
+                    and (index_ < self.capacity):
+                if self.base_data[index_][0] == key and \
+                        self.base_data[index_][1] == hash(key):
+                    return self.base_data[index_][2]
 
-    def update(self, key, value):
-        self.__setitem__(key, value)
+                index_ = (index_ + 1) % self.capacity
+
+        return None
+
+    @staticmethod
+    def update(**kwargs):
+        if kwargs:
+            for member in kwargs:
+                member.setitem()
 
     def __iter__(self):
         if self.length != 0:
