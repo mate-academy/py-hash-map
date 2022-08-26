@@ -74,9 +74,9 @@ class Dictionary:
     def pop(self, key):
         index_ = hash(key) % self.capacity
         while self.base_data[index_] is not None:
-            if self.base_data[i][0] == key and\
-                    self.base_data[i][1] == hash(key):
-                self.base_data[i] = None
+            if self.base_data[index_][0] == key and\
+                    self.base_data[index_][1] == hash(key):
+                self.base_data[index_] = None
                 return
             index_ = (index_ + 1) % self.capacity
         return None
