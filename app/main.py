@@ -3,53 +3,72 @@ class Dictionary:
         self.capacity = 8
         self.load = 5
         self.hash_table = [None] * 8
+        self.length = 0
 
     def __setitem__(self, key, value):
         if self.load == len(self):
-            backup_hash_table = self.hash_table
-            self.capacity *= 2
-            self.hash_table = [None] * self.capacity
-            self.load = self.capacity * 2 // 3
-            for element in \
-                    [elem for elem in backup_hash_table if elem is not None]:
-                self.__setitem__(element[0], element[2])
+            self.update_hash_table(self.capacity * 2)
             self.__setitem__(key, value)
             return
         hash_key = hash(key)
         index = hash_key % self.capacity
+        update_key = False
         while self.hash_table[index] is not None:
-            if self.hash_table[index][0] == key:
+            if self.hash_table[index][0] == key and \
+                    self.hash_table[index][1] == hash_key:
+                update_key = True
                 break
             index = (index + 1) % self.capacity
         self.hash_table[index] = (key, hash_key, value)
-        return
+        self.length += 1 if not update_key else 0
+
+    def update_hash_table(self, capacity):
+        backup_hash_table = self.hash_table
+        self.length = 0
+        self.capacity = capacity
+        self.hash_table = [None] * self.capacity
+        self.load = self.capacity * 2 // 3
+        for element in \
+                [elem for elem in backup_hash_table if elem is not None]:
+            self.__setitem__(element[0], element[2])
 
     def __getitem__(self, key):
         return self.hash_table[self.find_item(key)][2]
 
     def __len__(self):
-        return len(
-            [element for element in self.hash_table if element is not None]
-        )
+        return self.length
 
     def clear(self):
-        for i in range(len(self.hash_table)):
-            self.hash_table[i] = None
+        self.hash_table = [None] * 8
+        self.length = 0
 
     def __delitem__(self, key):
         self.hash_table[self.find_item(key)] = None
+        self.update_hash_table(self.capacity)
 
-    def get(self, key):
-        return self.__getitem__(key)
+    def get(self, key, value=None):
+        try:
+            result = self.__getitem__(key)
+        except KeyError:
+            result = value
+        return result
 
-    def pop(self, key):
-        i = self.find_item(key)
+    def pop(self, key, value=None):
+        try:
+            i = self.find_item(key)
+        except KeyError:
+            if value is not None:
+                return value
+            raise
         result = self.hash_table[i][2]
         self.__delitem__(self.hash_table[i][0])
         return result
 
-    def update(self, items: list):
-        self.__setitem__(items[0], items[1])
+    def update(self, items):
+        if isinstance(items, dict):
+            items = items.items()
+        for key, value in items:
+            self.__setitem__(key, value)
 
     def __iter__(self):
         self.iter_i = 0
@@ -71,11 +90,3 @@ class Dictionary:
                 return index
             index = (index + 1) % self.capacity
         raise KeyError(f"No Key {key} in dict!")
-
-
-dict_ = Dictionary()
-dict_[1] = 2
-dict_[2] = 3
-print(len(dict_))
-dict_.clear()
-print(len(dict_))
