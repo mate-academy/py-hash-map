@@ -66,10 +66,15 @@ class Dictionary:
         self.__delitem__(self.hash_table[i][0])
         return result
 
-    def update(self, items):
-        if isinstance(items, dict):
-            items = items.items()
-        for key, value in items:
+    def update(self, *args, **kwargs):
+        for arg in args:
+            if isinstance(arg, dict):
+                for key, value in arg.items():
+                    self.__setitem__(key, value)
+            else:
+                key, value = arg
+                self.__setitem__(key, value)
+        for key, value in kwargs.items():
             self.__setitem__(key, value)
 
     def __iter__(self):
