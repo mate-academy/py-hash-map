@@ -14,8 +14,8 @@ class Dictionary:
         index = hash_key % self.capacity
         update_key = False
         while self.hash_table[index] is not None:
-            if self.hash_table[index][0] == key and \
-                    self.hash_table[index][1] == hash_key:
+            if self.hash_table[index][1] == hash_key and \
+                    self.hash_table[index][0] == key:
                 update_key = True
                 break
             index = (index + 1) % self.capacity
@@ -40,6 +40,8 @@ class Dictionary:
 
     def clear(self):
         self.hash_table = [None] * 8
+        self.capacity = 8
+        self.load = 5
         self.length = 0
 
     def __delitem__(self, key):
