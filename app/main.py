@@ -10,25 +10,23 @@ class Dictionary:
 
         if self.length >= self.threshold:
             self.resize()
-
-        index_ = int(hash(key) % self.capacity)
+        hash_ = hash(key)
+        index_ = int(hash_ % self.capacity)
 
         while self.base_data[index_] is not None:
 
-            if self.base_data[index_][0] == key and\
-                    self.base_data[index_][1] == hash(key):
-                self.base_data[index_] = [key, hash(key), value]
+            if self.base_data[index_][1] == hash_ and self.base_data[index_][0] == key:
+                self.base_data[index_] = [key, hash_, value]
                 self.length -= 1
                 break
             index_ = (index_ + 1) % self.capacity
 
-        self.base_data[index_] = [key, hash(key), value]
+        self.base_data[index_] = [key, hash_, value]
         self.length += 1
 
     def __getitem__(self, key):
         index_ = hash(key) % self.capacity
-        while self.base_data[index_] is not None\
-                and (index_ < self.capacity):
+        while self.base_data[index_] is not None:
             if self.base_data[index_][0] == key and \
                     self.base_data[index_][1] == hash(key):
                 return self.base_data[index_][2]
@@ -38,7 +36,7 @@ class Dictionary:
         raise KeyError(f"Not Key {key} ")
 
     def __len__(self):
-        return int(self.length)
+        return self.length
 
     def resize(self):
         self.capacity *= 2
