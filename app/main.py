@@ -26,10 +26,11 @@ class Dictionary:
         self.length += 1
 
     def __getitem__(self, key):
-        index_ = hash(key) % self.capacity
+        hash_ = hash(key)
+        index_ = hash_ % self.capacity
         while self.base_data[index_] is not None:
             if self.base_data[index_][0] == key and \
-                    self.base_data[index_][1] == hash(key):
+                    self.base_data[index_][1] == hash_:
                 return self.base_data[index_][2]
 
             index_ = (index_ + 1) % self.capacity
