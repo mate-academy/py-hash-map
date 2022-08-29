@@ -15,7 +15,8 @@ class Dictionary:
 
         while self.base_data[index_] is not None:
 
-            if self.base_data[index_][1] == hash_ and self.base_data[index_][0] == key:
+            if self.base_data[index_][1] == hash_ and\
+                    self.base_data[index_][0] == key:
                 self.base_data[index_] = [key, hash_, value]
                 self.length -= 1
                 break
