@@ -3,15 +3,14 @@ class Dictionary:
         self.__size = 0
         self.hash_table = [None] * 8
 
-    def get_need_index(self, ind, key, hash_key):
+    def get_need_index(self, ind, key):
         if self.hash_table[ind] is None:
             return ind
-        if self.hash_table[ind][1] == hash_key \
-                and self.hash_table[ind][0] == key:
+        if self.hash_table[ind][0] == key:
             return ind
         need_item = [
             tup for tup in self.hash_table
-            if tup is not None and tup[1] == hash_key and tup[0] == key]
+            if tup is not None and tup[0] == key]
 
         if len(need_item) > 0:
             return self.hash_table.index(need_item[0])
@@ -35,7 +34,7 @@ class Dictionary:
                     if self.hash_table[ind] is None:
                         self.hash_table[ind] = (key, hash_key, value)
                         continue
-                    new_index = self.get_need_index(ind, key, hash_key)
+                    new_index = self.get_need_index(ind, key)
                     self.hash_table[new_index] = (key, hash_key, value)
 
     def __setitem__(self, key, value):
@@ -44,7 +43,7 @@ class Dictionary:
             ind = hash_key % len(self.hash_table)
         except TypeError:
             return
-        new_index = self.get_need_index(ind, key, hash_key)
+        new_index = self.get_need_index(ind, key)
         self.hash_table[new_index] = (key, hash_key, value)
         self.__size = len([item for item in self.hash_table
                            if item is not None])
