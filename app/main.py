@@ -12,30 +12,30 @@ class Dictionary:
         if self.length > 0:
             if self.length / self.capacity > self.load_factor:
                 self.resize()
-        if self.buckets[index][0] is not None:
+        accept = False
+        while self.buckets[index][0] is not None:
             if self.buckets[index][1] == key:
                 self.buckets[index][2] = value
-            else:
-                while self.buckets[index][0] is not None:
-                    index = (index + 1) % self.capacity
-                self.buckets[index] = [hash_code, key, value]
-                self.length += 1
-        else:
+                accept = True
+                break
+            index = (index + 1) % self.capacity
+        if not accept:
             self.buckets[index] = [hash_code, key, value]
             self.length += 1
 
     def __getitem__(self, input_key):
         hash_code = hash(input_key)
         index = hash_code % self.capacity
+        start_index = index - 1
         while True:
             try:
                 if self.buckets[index][0] is not None:
                     hash_x, key, value = self.buckets[index]
                     if hash_x == hash_code and input_key == key:
-                        return self.buckets[index][2]
+                        return value
             except IndexError:
                 raise KeyError(input_key)
-            if index % self.capacity == 0:
+            if index == start_index:
                 break
             index = (index + 1) % self.capacity
         raise KeyError(input_key)
