@@ -26,8 +26,9 @@ class Dictionary:
     def __getitem__(self, input_key):
         hash_code = hash(input_key)
         index = hash_code % self.capacity
-        start_index = index - 1
+        counter = 0
         while True:
+            counter += 1
             try:
                 if self.buckets[index][0] is not None:
                     hash_x, key, value = self.buckets[index]
@@ -35,7 +36,7 @@ class Dictionary:
                         return value
             except IndexError:
                 raise KeyError(input_key)
-            if index == start_index:
+            if counter == self.capacity:
                 break
             index = (index + 1) % self.capacity
         raise KeyError(input_key)
