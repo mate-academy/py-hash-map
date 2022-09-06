@@ -42,9 +42,10 @@ class Dictionary:
         except TypeError:
             return
         new_index = self.get_need_index(ind, key, hash_key)
+        if self.hash_table[new_index] is None:
+            self.__size += 1
         self.hash_table[new_index] = (key, hash_key, value)
-        self.__size = len([item for item in self.hash_table
-                           if item is not None])
+
         self.resize()
 
     def __getitem__(self, item):
@@ -72,6 +73,7 @@ class Dictionary:
             if tup is not None and tup[1] == hash_key and tup[0] == item]
         if len(need_item) > 0:
             self.hash_table[self.hash_table.index(need_item[0])] = None
+            self.__size -= 1
         else:
             raise KeyError
 
