@@ -10,13 +10,8 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         if self.length >= self.capacity * 0.66:
-            self.capacity *= 2
-            self.length = 0
-            old_list = self.hash
-            self.hash = [None for _ in range(self.capacity)]
-            for item in old_list:
-                if item:
-                    self.__setitem__(item[0], item[2])
+            self.resize()
+
         hashed = hash(key)
         index = hashed % self.capacity
         while True:
@@ -39,3 +34,12 @@ class Dictionary:
                 return self.hash[index][2]
             index = (index + 1) % self.capacity
         raise KeyError(key)
+
+    def resize(self):
+        self.capacity *= 2
+        self.length = 0
+        old_list = self.hash
+        self.hash = [None for _ in range(self.capacity)]
+        for item in old_list:
+            if item:
+                self.__setitem__(item[0], item[2])
