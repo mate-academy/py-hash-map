@@ -7,10 +7,11 @@ class Dictionary:
         self._hash_table = [None for _ in range(self._capacity)]
 
     def __getitem__(self, key):
-        index_ = hash(key) % self._capacity
+        hash_key = hash(key)
+        index_ = hash_key % self._capacity
 
         while self._hash_table[index_]:
-            if self._hash_table[index_][0] == hash(key) \
+            if self._hash_table[index_][0] == hash_key \
                     and self._hash_table[index_][1] == key:
                 return self._hash_table[index_][2]
             index_ = (index_ + 1) % self._capacity
@@ -21,23 +22,25 @@ class Dictionary:
         if self._size >= self._threshold:
             self._resize()
 
-        index_ = hash(key) % self._capacity
+        hash_key = hash(key)
+        index_ = hash_key % self._capacity
 
         while True:
             if not self._hash_table[index_]:
-                self._hash_table[index_] = [hash(key), key, value]
+                self._hash_table[index_] = [hash_key, key, value]
                 self._size += 1
-            if self._hash_table[index_][0] == hash(key) \
+            if self._hash_table[index_][0] == hash_key \
                     and self._hash_table[index_][1] == key:
                 self._hash_table[index_][2] = value
                 break
             index_ = (index_ + 1) % self._capacity
 
     def __delitem__(self, key):
-        index_ = hash(key) % self._capacity
+        hash_key = hash(key)
+        index_ = hash_key % self._capacity
 
         while self._hash_table[index_]:
-            if self._hash_table[index_][0] == hash(key) and \
+            if self._hash_table[index_][0] == hash_key and \
                     self._hash_table[index_][1] == key:
                 value = self._hash_table[index_][2]
                 self._hash_table[index_] = None
@@ -83,19 +86,23 @@ class Dictionary:
 
     def pop(self, key):
         try:
-            value = self.get(key)
+            value = self[key]
             self.__delitem__(key)
             return value
         except KeyError:
-            return f"Key {key} not found in dictionary"
+            raise f"Key {key} not found in dictionary"
 
-    def update(self, other):
-        if not isinstance(other, Dictionary):
-            raise ValueError
-
-        for key, value in other._hash_table:
-            if len(other._hash_table) != 0:
+    def update(self, *args, **kwargs):
+        for arg in args:
+            if isinstance(arg, dict):
+                for key, value in arg.items():
+                    self.__setitem__(key, value)
+            else:
+                key, value = arg
                 self.__setitem__(key, value)
+
+        for key, value in kwargs.items():
+            self.__setitem__(key, value)
 
     def clear(self):
         self._hash_table = [None for _ in self._hash_table]
