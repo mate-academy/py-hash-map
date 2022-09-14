@@ -8,23 +8,22 @@ class Dictionary:
     def __setitem__(self, key, value):
         storage_idx = hash(key) % self.size
 
-        self.length += 1
         if self.length >= self.load_factor * self.size:
-            self.size *= 2
-            self.resize(self.size, self.storage, key, value)
+            self.resize(self.storage)
 
         while True:
             if not self.storage[storage_idx]:
+                self.length += 1
                 self.storage[storage_idx] = [key, value, hash(key)]
                 break
             elif self.storage[storage_idx][0] == key:
                 self.storage[storage_idx][1] = value
-                self.length -= 1
                 break
             storage_idx = (storage_idx + 1) % self.size
 
-    def resize(self, size, storage, key, value):
-        self.storage = [[] for _ in range(size)]
+    def resize(self, storage):
+        self.size *= 2
+        self.storage = [[] for _ in range(self.size)]
         for item in storage:
             if item:
                 self.__setitem__(item[0], item[1])
@@ -47,28 +46,40 @@ class Dictionary:
         self.length = 0
 
     def __delitem__(self, key):
-        remove_idx = hash(key) % self.size
-        if key == self.storage[remove_idx][0]:
-            self.storage[remove_idx] = []
-            self.length -= 1
+        storage_idx = hash(key) % self.size
+        while True:
+            if not self.storage[storage_idx]:
+                raise KeyError
+            elif self.storage[storage_idx][0] == key:
+                self.storage[storage_idx] = []
+                self.length -= 1
+                break
+            storage_idx = (storage_idx + 1) % self.size
 
     def update(self, key, value):
         storage_idx = hash(key) % self.size
-        if self.storage[storage_idx][0] == key:
-            self.storage[storage_idx][1] = value
+        while True:
+            if not self.storage[storage_idx]:
+                raise KeyError
+            elif self.storage[storage_idx][0] == key:
+                self.storage[storage_idx][1] = value
+                break
+            storage_idx = (storage_idx + 1) % self.size
 
-    def pop(self, key=-1):
-        if self.storage[key]:
-            value = self.storage[key][1]
-            self.storage[key] = []
-            return value
+    def pop(self, key=None):
+        val = self.__getitem__(key) \
+            if key else self.__getitem__(self.size - 1)
+        self.__delitem__(key) if key else self.__delitem__(self.size - 1)
+        print(val)
 
     def get(self, key, val=None):
         storage_idx = hash(key) % self.size
-        if not self.storage[storage_idx]:
-            return val
-        elif self.storage[storage_idx]:
-            return self.storage[storage_idx][1]
+        while True:
+            if not self.storage[storage_idx]:
+                return val
+            elif self.storage[storage_idx][0] == key:
+                return self.storage[storage_idx][1]
+            storage_idx = (storage_idx + 1) % self.size
 
     def __iter__(self):
         for item in self.storage:
@@ -76,3 +87,15 @@ class Dictionary:
                 continue
             for i in item:
                 yield i
+
+
+# dict_one = Dictionary()
+# dict_one.__setitem__(7, "one")
+# dict_one.__setitem__(14, "one")
+# dict_one.__setitem__(21, "one")
+# dict_one.__setitem__(8, "one")
+# dict_one.__setitem__(15, "two")
+# print(dict_one.get(12, "Check"))
+# print(dict_one.storage)
+# dict_one.pop(14)
+# print(dict_one.storage)
