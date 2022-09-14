@@ -59,11 +59,11 @@ class Dictionary:
             index = (index + 1) % self.capacity
         raise KeyError(key)
 
-    def get(self, key):
-        self.__getitem__(key)
-
     def pop(self, key):
         self.__delitem__(key)
+
+    def get(self, key):
+        self.__getitem__(key)
 
     def update(self, other):
         if isinstance(other, Dictionary):
