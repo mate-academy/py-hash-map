@@ -8,9 +8,6 @@ class Dictionary:
     def __setitem__(self, key, value):
         storage_idx = hash(key) % self.size
 
-        if self.length >= self.load_factor * self.size:
-            self.resize(self.storage)
-
         while True:
             if not self.storage[storage_idx]:
                 self.length += 1
@@ -20,6 +17,9 @@ class Dictionary:
                 self.storage[storage_idx][1] = value
                 break
             storage_idx = (storage_idx + 1) % self.size
+
+        if self.length >= self.load_factor * self.size:
+            self.resize(self.storage)
 
     def resize(self, storage):
         self.size *= 2
