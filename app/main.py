@@ -8,21 +8,22 @@ class Dictionary:
     def __setitem__(self, key, value):
         storage_idx = hash(key) % self.size
 
-        while True:
-            if not self.storage[storage_idx]:
-                self.storage[storage_idx] = [key, value]
-                break
-
-            storage_idx += 1
-            if storage_idx == self.size:
-                storage_idx = 0
-
         self.length += 1
         if self.length >= self.load_factor * self.size:
             self.size *= 2
-            self.resize(self.size, self.storage)
+            self.resize(self.size, self.storage, key, value)
 
-    def resize(self, size, storage):
+        while True:
+            if not self.storage[storage_idx]:
+                self.storage[storage_idx] = [key, value, hash(key)]
+                break
+            elif self.storage[storage_idx][0] == key:
+                self.storage[storage_idx][1] = value
+                self.length -= 1
+                break
+            storage_idx = (storage_idx + 1) % self.size
+
+    def resize(self, size, storage, key, value):
         self.storage = [[] for _ in range(size)]
         for item in storage:
             if item:
@@ -31,15 +32,19 @@ class Dictionary:
 
     def __getitem__(self, key):
         storage_idx = hash(key) % self.size
-        if self.storage[storage_idx][0] == key:
-            print(self.storage[storage_idx][1])
+        while True:
+            if not self.storage[storage_idx]:
+                raise KeyError
+            elif self.storage[storage_idx][0] == key:
+                return self.storage[storage_idx][1]
+            storage_idx = (storage_idx + 1) % self.size
 
     def __len__(self):
         return self.length
 
     def clear(self):
         self.storage = [[] for _ in range(self.size)]
-        return self.storage
+        self.length = 0
 
     def __delitem__(self, key):
         remove_idx = hash(key) % self.size
