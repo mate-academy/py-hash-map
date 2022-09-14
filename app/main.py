@@ -25,7 +25,7 @@ class Dictionary:
 
     def resize(self, coefficient):
         old_table_hash = self.hash_table
-        self.capacity *= coefficient
+        self.capacity = int(self.capacity * coefficient)
         if self.capacity < 8:
             self.capacity = 8
         self.length = 0
@@ -42,22 +42,24 @@ class Dictionary:
                     and self.hash_table[index][0] == key:
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
-        raise KeyError(key)
+        raise KeyError(f"{key} not in dictionary")
 
     def clear(self):
         self.__init__()
 
     def __delitem__(self, key):
         if 6 < self.length <= self.capacity * (1 / 3):
-            self.resize(0.5)
+            self.resize(1/2)
         hash_key = hash(key)
         index = hash(key) % self.capacity
         while self.hash_table[index]:
             if self.hash_table[index][1] == hash_key \
                     and self.hash_table[index][0] == key:
+                value = self.hash_table[index][2]
                 self.hash_table[index] = []
+                self.length -= 1
+                return value
             index = (index + 1) % self.capacity
-        raise KeyError(key)
 
     def pop(self, key):
         self.__delitem__(key)
@@ -71,13 +73,20 @@ class Dictionary:
             for element in other_table_hash:
                 if len(element) != 0:
                     self.__setitem__(element[0], element[2])
+            return self
         if isinstance(other, dict):
             for k, v in other.items():
                 self.__setitem__(k, v)
-        raise TypeError(other)
+            return self
+        raise TypeError(f"{other} must be dictionary")
 
     def __iter__(self):
         if self.length != 0:
             counter = 0
             while counter <= self.length:
                 yield self.hash_table[counter]
+
+    def __repr__(self):
+        for element in self.hash_table:
+            if len(element) != 0:
+                print(element[0], element[2])
