@@ -49,7 +49,7 @@ class Dictionary:
 
     def __delitem__(self, key):
         if 6 < self.length <= self.capacity * (1 / 3):
-            self.resize(1/2)
+            self.resize(1 / 2)
         hash_key = hash(key)
         index = hash(key) % self.capacity
         while self.hash_table[index]:
