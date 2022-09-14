@@ -87,15 +87,3 @@ class Dictionary:
                 continue
             for i in item:
                 yield i
-
-
-# dict_one = Dictionary()
-# dict_one.__setitem__(7, "one")
-# dict_one.__setitem__(14, "one")
-# dict_one.__setitem__(21, "one")
-# dict_one.__setitem__(8, "one")
-# dict_one.__setitem__(15, "two")
-# print(dict_one.get(12, "Check"))
-# print(dict_one.storage)
-# dict_one.pop(14)
-# print(dict_one.storage)
