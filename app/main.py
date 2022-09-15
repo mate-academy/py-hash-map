@@ -13,7 +13,8 @@ class Dictionary:
                 self.length += 1
                 self.storage[storage_idx] = [key, value, hash(key)]
                 break
-            elif self.storage[storage_idx][0] == key:
+            elif self.storage[storage_idx][0] == key and\
+                    self.storage[storage_idx][2] == hash(key):
                 self.storage[storage_idx][1] = value
                 break
             storage_idx = (storage_idx + 1) % self.size
@@ -34,7 +35,8 @@ class Dictionary:
         while True:
             if not self.storage[storage_idx]:
                 raise KeyError
-            elif self.storage[storage_idx][0] == key:
+            elif self.storage[storage_idx][0] == key and\
+                    self.storage[storage_idx][2] == hash(key):
                 return self.storage[storage_idx][1]
             storage_idx = (storage_idx + 1) % self.size
 
@@ -50,36 +52,29 @@ class Dictionary:
         while True:
             if not self.storage[storage_idx]:
                 raise KeyError
-            elif self.storage[storage_idx][0] == key:
+            elif self.storage[storage_idx][0] == key and\
+                    self.storage[storage_idx][2] == hash(key):
+                value = self.storage[storage_idx][1]
                 self.storage[storage_idx] = []
                 self.length -= 1
                 break
             storage_idx = (storage_idx + 1) % self.size
+        return value
 
-    def update(self, key, value):
-        storage_idx = hash(key) % self.size
-        while True:
-            if not self.storage[storage_idx]:
-                raise KeyError
-            elif self.storage[storage_idx][0] == key:
-                self.storage[storage_idx][1] = value
-                break
-            storage_idx = (storage_idx + 1) % self.size
+    def update(self, *args):
+        for item in args:
+            self.__setitem__(item[0], item[1])
 
     def pop(self, key=None):
-        val = self.__getitem__(key) \
-            if key else self.__getitem__(self.size - 1)
-        self.__delitem__(key) if key else self.__delitem__(self.size - 1)
-        print(val)
+        value = self.__delitem__(key) if key\
+            else self.__delitem__(self.size - 1)
+        return value
 
     def get(self, key, val=None):
-        storage_idx = hash(key) % self.size
-        while True:
-            if not self.storage[storage_idx]:
-                return val
-            elif self.storage[storage_idx][0] == key:
-                return self.storage[storage_idx][1]
-            storage_idx = (storage_idx + 1) % self.size
+        try:
+            self.__getitem__(key)
+        except KeyError:
+            return val
 
     def __iter__(self):
         for item in self.storage:
