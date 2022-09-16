@@ -91,12 +91,3 @@ class Dictionary:
                 continue
             for i in item:
                 yield i
-
-
-dict_one = Dictionary()
-dict_one.__setitem__(1, "1")
-dict_one.__setitem__(2, "2")
-dict_one.__setitem__(7, "7")
-dict_one.update([(1, "2"), (5, "6")], c=7, d=3)
-
-print(dict_one.storage)
