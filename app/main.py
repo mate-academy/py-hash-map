@@ -44,10 +44,33 @@ class Dictionary:
             index = (index + 1) % self.capacity
         raise KeyError(f"{key} not in dictionary")
 
+    def get(self, key, value=None):
+        hash_key = hash(key)
+        index = hash(key) % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][1] == hash_key \
+                    and self.hash_table[index][0] == key:
+                return self.hash_table[index][2]
+            index = (index + 1) % self.capacity
+        return value
+
     def clear(self):
         self.__init__()
 
     def __delitem__(self, key):
+        if 6 < self.length <= self.capacity * (1 / 3):
+            self.resize(1 / 2)
+        hash_key = hash(key)
+        index = hash(key) % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][1] == hash_key \
+                    and self.hash_table[index][0] == key:
+                self.hash_table[index] = []
+                self.length -= 1
+                return self
+            index = (index + 1) % self.capacity
+
+    def pop(self, key, default=None):
         if 6 < self.length <= self.capacity * (1 / 3):
             self.resize(1 / 2)
         hash_key = hash(key)
@@ -60,14 +83,15 @@ class Dictionary:
                 self.length -= 1
                 return value
             index = (index + 1) % self.capacity
+        if default is not None:
+            return default
+        else:
+            raise KeyError(f"{key} not in dictionary")
 
-    def pop(self, key):
-        self.__delitem__(key)
-
-    def get(self, key):
-        self.__getitem__(key)
-
-    def update(self, other):
+    def update(self, other=None, **kwargs):
+        if kwargs is not None:
+            for k, v in kwargs.items():
+                self.__setitem__(k, v)
         if isinstance(other, Dictionary):
             other_table_hash = other.hash_table
             for element in other_table_hash:
@@ -78,7 +102,16 @@ class Dictionary:
             for k, v in other.items():
                 self.__setitem__(k, v)
             return self
-        raise TypeError(f"{other} must be dictionary")
+        if isinstance(other, list):
+            for element in other:
+                if len(element) == 2:
+                    self.__setitem__(element[0], element[1])
+                else:
+                    raise ValueError
+            return self
+        if other is None:
+            return self
+        raise TypeError
 
     def __iter__(self):
         if self.length != 0:
