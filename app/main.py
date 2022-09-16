@@ -61,18 +61,27 @@ class Dictionary:
             storage_idx = (storage_idx + 1) % self.size
         return value
 
-    def update(self, *args):
-        for item in args:
-            self.__setitem__(item[0], item[1])
+    def update(self, _m=None, **kwargs):
+        if isinstance(_m, dict):
+            for key in _m.keys():
+                self.__setitem__(key, _m[key])
+        elif _m:
+            for item in _m:
+                self.__setitem__(item[0], item[1])
+        for key, value in kwargs.items():
+            self.__setitem__(key, value)
 
-    def pop(self, key=None):
-        value = self.__delitem__(key) if key\
-            else self.__delitem__(self.size - 1)
-        return value
+    def pop(self, key, val=None):
+        if self.get(key):
+            return self.__delitem__(key)
+        elif val:
+            return val
+        else:
+            raise KeyError
 
     def get(self, key, val=None):
         try:
-            self.__getitem__(key)
+            return self.__getitem__(key)
         except KeyError:
             return val
 
@@ -82,3 +91,12 @@ class Dictionary:
                 continue
             for i in item:
                 yield i
+
+
+dict_one = Dictionary()
+dict_one.__setitem__(1, "1")
+dict_one.__setitem__(2, "2")
+dict_one.__setitem__(7, "7")
+dict_one.update([(1, "2"), (5, "6")], c=7, d=3)
+
+print(dict_one.storage)
