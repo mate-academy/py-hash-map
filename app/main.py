@@ -9,7 +9,7 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         if self.length >= self.capacity * 2 / 3:
-            self.resize(2)
+            self.resize()
         hash_key = hash(key)
         index = hash_key % self.capacity
         while True:
@@ -21,11 +21,15 @@ class Dictionary:
                     self.hash_table[index][1] == hash_key:
                 self.hash_table[index][2] = value
                 break
+            if self.hash_table[index][0] is None:
+                self.hash_table[index] = [key, hash_key, value]
+                self.length += 1
+                break
             index = (index + 1) % self.capacity
 
-    def resize(self, coefficient):
+    def resize(self):
         old_table_hash = self.hash_table
-        self.capacity = int(self.capacity * coefficient)
+        self.capacity *= 2
         self.length = 0
         self.hash_table = [[] for _ in range(self.capacity)]
         for element in old_table_hash:
@@ -53,23 +57,17 @@ class Dictionary:
 
     def __delitem__(self, key):
         hash_key = hash(key)
-        index = hash_key % self.capacity
-        if self.length:
-            while self.hash_table[index]:
-                if self.hash_table[index][0] != key \
-                        and self.hash_table[index][1] is True:
-                    raise KeyError(f"{key} not in dictionary")
-                if hash_key == self.hash_table[index][1] and \
-                        self.hash_table[index][0] == key:
-                    self.hash_table[index] = []
-                    self.length -= 1
-                    return self
-                index = (index + 1) % self.capacity
+        index = hash(key) % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][1] == hash_key \
+                    and self.hash_table[index][0] == key:
+                self.hash_table[index][0] = None
+                self.length -= 1
+                return self
+            index = (index + 1) % self.capacity
         raise KeyError(f"{key} not in dictionary")
 
     def pop(self, key, default=None):
-        if 6 < self.length <= self.capacity * (1 / 3):
-            self.resize(1 / 2)
         hash_key = hash(key)
         index = hash(key) % self.capacity
         while self.hash_table[index]:
@@ -82,6 +80,7 @@ class Dictionary:
             index = (index + 1) % self.capacity
         if default is not None:
             return default
+        raise KeyError
 
     def update(self, other=None, **kwargs):
         if kwargs is not None:
