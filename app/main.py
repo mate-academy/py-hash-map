@@ -80,7 +80,7 @@ class Dictionary:
             index = (index + 1) % self.capacity
         if default is not None:
             return default
-        raise KeyError
+        raise KeyError(f"{key} not in dictionary")
 
     def update(self, other=None, **kwargs):
         if kwargs is not None:
