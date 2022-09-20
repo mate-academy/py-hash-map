@@ -91,18 +91,3 @@ class Dictionary:
                 continue
             for i in item:
                 yield i
-
-
-dicti = Dictionary()
-dicti.__setitem__(9, "one")
-dicti.__setitem__(2, "two")
-dicti.__setitem__(3, "three")
-dicti.__setitem__(1, "one")
-print(dicti.storage)
-print(dicti.__delitem__(2))
-print(dicti.storage)
-print(dicti.__getitem__(1))
-dicti.__setitem__(10, "one")
-print(dicti.storage)
-
-
