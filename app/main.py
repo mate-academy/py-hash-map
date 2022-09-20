@@ -20,6 +20,7 @@ class Dictionary:
                             new_index = 0
                         else:
                             new_index += 1
+            del temp_capacity
         new_index = hash(key) % self.length_hash
         hash_index = new_index
         while True:
