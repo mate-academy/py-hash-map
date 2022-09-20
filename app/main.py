@@ -34,7 +34,7 @@ class Dictionary:
         storage_idx = hash(key) % self.size
         while True:
             if not self.storage[storage_idx]:
-                raise KeyError
+                raise KeyError(f"{key}")
             elif self.storage[storage_idx][0] == key and\
                     self.storage[storage_idx][2] == hash(key):
                 return self.storage[storage_idx][1]
@@ -51,11 +51,11 @@ class Dictionary:
         storage_idx = hash(key) % self.size
         while True:
             if not self.storage[storage_idx]:
-                raise KeyError
+                raise KeyError(f"{key}")
             elif self.storage[storage_idx][0] == key and\
                     self.storage[storage_idx][2] == hash(key):
                 value = self.storage[storage_idx][1]
-                self.storage[storage_idx] = []
+                self.storage[storage_idx] = [None]
                 self.length -= 1
                 break
             storage_idx = (storage_idx + 1) % self.size
@@ -91,3 +91,18 @@ class Dictionary:
                 continue
             for i in item:
                 yield i
+
+
+dicti = Dictionary()
+dicti.__setitem__(9, "one")
+dicti.__setitem__(2, "two")
+dicti.__setitem__(3, "three")
+dicti.__setitem__(1, "one")
+print(dicti.storage)
+print(dicti.__delitem__(2))
+print(dicti.storage)
+print(dicti.__getitem__(1))
+dicti.__setitem__(10, "one")
+print(dicti.storage)
+
+
