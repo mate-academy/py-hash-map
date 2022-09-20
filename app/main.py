@@ -55,9 +55,10 @@ class Dictionary:
             if self.capacity[hash_index] and \
                     self.capacity[hash_index][1] == hash_ and\
                     self.capacity[hash_index][0] == key:
+                pop_item = self.capacity[hash_index]
                 self.capacity[hash_index].clear()
                 self.length_dict -= 1
-                return
+                return pop_item
             elif hash_index == self.length_hash - 1:
                 hash_index = 0
             else:
@@ -90,12 +91,13 @@ class Dictionary:
 
     def get(self, key, default=None):
         try:
-            self.__getitem__(key)
+            pop_item = self.__getitem__(key)
         except KeyError:
             if default is not None:
                 return default
             else:
                 raise
+        return pop_item
 
     def pop(self, key, default=None):
         try:
