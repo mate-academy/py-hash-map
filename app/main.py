@@ -6,26 +6,13 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         if self.length_dict >= self.length_hash * 2 // 3:
-            temp_capacity = self.capacity.copy()
-            self.length_hash *= 2
-            self.capacity = [[] for _ in range(self.length_hash)]
-            for item in temp_capacity:
-                if item:
-                    new_index = item[1] % self.length_hash
-                    while True:
-                        if not len(self.capacity[new_index]):
-                            self.capacity[new_index] = item
-                            break
-                        elif new_index == self.length_hash - 1:
-                            new_index = 0
-                        else:
-                            new_index += 1
-            del temp_capacity
-        new_index = hash(key) % self.length_hash
-        hash_index = new_index
+            self.__resize_hash()
+        hash_ = hash(key)
+        new_index = hash_ % self.length_hash
+        hash_value = new_index
         while True:
             if self.capacity[new_index]:
-                if hash_index == self.capacity[new_index][1] and\
+                if hash_value == self.capacity[new_index][1] and\
                         self.capacity[new_index][0] == key:
                     if self.capacity[new_index][2] != value:
                         self.capacity[new_index][2] = value
@@ -35,7 +22,7 @@ class Dictionary:
                 else:
                     new_index += 1
             else:
-                self.capacity[new_index] = [key, hash(key), value]
+                self.capacity[new_index] = [key, hash_, value]
                 self.length_dict += 1
                 return
 
@@ -44,7 +31,7 @@ class Dictionary:
         new_index = hash_ % self.length_hash
         count = 0
         while True:
-            if count == self.length_hash:
+            if not self.capacity[new_index]:
                 raise KeyError(f"{key} is not founded")
             if self.capacity[new_index] and\
                     self.capacity[new_index][0] == key and\
@@ -60,20 +47,21 @@ class Dictionary:
         return self.length_dict
 
     def __delitem__(self, key):
-        hash_index = hash(key) % len(self.capacity)
-        count = 0
+        hash_ = hash(key)
+        hash_index = hash_ % len(self.capacity)
         while True:
-            if count == len(self.capacity):
+            if not self.capacity[hash_index]:
                 raise KeyError(f"{key} is not founded")
-            if self.capacity[hash_index][0] == key:
-                self.capacity[hash_index] = []
+            if self.capacity[hash_index] and \
+                    self.capacity[hash_index][1] == hash_ and\
+                    self.capacity[hash_index][0] == key:
+                self.capacity[hash_index].clear()
                 self.length_dict -= 1
                 return
-            elif hash_index == len(self.capacity):
+            elif hash_index == self.length_hash - 1:
                 hash_index = 0
             else:
                 hash_index += 1
-            count += 1
 
     def __repr__(self):
         new_string = []
@@ -82,6 +70,23 @@ class Dictionary:
                 if item:
                     new_string.append(f"{item[0]}: {item[2]}")
         return f"{{{', '.join(new_string)}}}"
+
+    def __resize_hash(self):
+        temp_capacity = self.capacity.copy()
+        self.length_hash *= 2
+        self.capacity = [[] for _ in range(self.length_hash)]
+        for item in temp_capacity:
+            if item:
+                new_index = item[1] % self.length_hash
+                while True:
+                    if not len(self.capacity[new_index]):
+                        self.capacity[new_index] = item
+                        break
+                    elif new_index == self.length_hash - 1:
+                        new_index = 0
+                    else:
+                        new_index += 1
+        del temp_capacity
 
     def get(self, key, default=None):
         try:
