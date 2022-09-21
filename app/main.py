@@ -37,14 +37,12 @@ class Dictionary:
     def __getitem__(self, key):
         index = hash(key) % self.capacity
         element = self.table[index]
-        list_actual_keys = [_[0] for _ in self.table if _ != []]
-        if key not in list_actual_keys:
-            raise KeyError
-        while True:
+        while element:
             if element[2] == hash(key) and element[0] == key:
                 return element[1]
             index = (index + 1) % self.capacity
             element = self.table[index]
+        raise KeyError()
 
     def clear(self):
         self.capacity = 8
@@ -53,25 +51,23 @@ class Dictionary:
         self.table = [[] for _ in range(self.capacity)]
 
     def __delitem__(self, key):
-        list_actual_keys = [_[0] for _ in self.table if _ != []]
-        if key not in list_actual_keys:
-            raise KeyError
         index = hash(key) % self.capacity
         element = self.table[index]
-        while True:
+        while element:
             if element[2] == hash(key) and element[0] == key:
                 self.table[index] = []
                 self.length -= 1
                 break
             index = (index + 1) % self.capacity
             element = self.table[index]
+        else:
+            raise KeyError
 
     def get(self, key, value=None):
         list_actual_keys = [_[0] for _ in self.table if _ != []]
         if key not in list_actual_keys:
             return value
-        if key in list_actual_keys:
-            return self.__getitem__(key)
+        return self.__getitem__(key)
 
     def pop(self, __key, default=None):
         list_actual_keys = [_[0] for _ in self.table if _ != []]
@@ -81,5 +77,4 @@ class Dictionary:
             return result
         if __key not in list_actual_keys and default is not None:
             return default
-        if __key not in list_actual_keys and default is None:
-            raise KeyError
+        raise KeyError
