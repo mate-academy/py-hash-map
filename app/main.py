@@ -16,7 +16,7 @@ class Dictionary:
                         self.capacity[new_index][0] == key:
                     if self.capacity[new_index][2] != value:
                         self.capacity[new_index][2] = value
-                        return
+                        break
                 elif new_index == self.length_hash - 1:
                     new_index = 0
                 else:
@@ -24,12 +24,11 @@ class Dictionary:
             else:
                 self.capacity[new_index] = [key, hash_, value]
                 self.length_dict += 1
-                return
+                break
 
     def __getitem__(self, key):
         hash_ = hash(key)
         new_index = hash_ % self.length_hash
-        count = 0
         while True:
             if not self.capacity[new_index]:
                 raise KeyError(f"{key} is not founded")
@@ -41,7 +40,6 @@ class Dictionary:
                 new_index = 0
             else:
                 new_index += 1
-            count += 1
 
     def __len__(self):
         return self.length_dict
@@ -56,7 +54,8 @@ class Dictionary:
                     self.capacity[hash_index][1] == hash_ and\
                     self.capacity[hash_index][0] == key:
                 pop_item = self.capacity[hash_index]
-                self.capacity[hash_index].clear()
+                self.capacity[hash_index][0] = None
+                self.capacity[hash_index][2] = None
                 self.length_dict -= 1
                 return pop_item
             elif hash_index == self.length_hash - 1:
@@ -77,16 +76,9 @@ class Dictionary:
         self.length_hash *= 2
         self.capacity = [[] for _ in range(self.length_hash)]
         for item in temp_capacity:
-            if item:
-                new_index = item[1] % self.length_hash
-                while True:
-                    if not len(self.capacity[new_index]):
-                        self.capacity[new_index] = item
-                        break
-                    elif new_index == self.length_hash - 1:
-                        new_index = 0
-                    else:
-                        new_index += 1
+            if item and item[0] is not None:
+                self.__setitem__(item[0], item[2])
+                self.length_dict -= 1
         del temp_capacity
 
     def get(self, key, default=None):
