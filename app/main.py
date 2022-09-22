@@ -60,17 +60,16 @@ class Dictionary:
                 break
             index = (index + 1) % self.capacity
             element = self.table[index]
-        else:
-            raise KeyError
+        KeyError
 
     def get(self, key, value=None):
-        list_actual_keys = [_[0] for _ in self.table if _ != []]
+        list_actual_keys = (_[0] for _ in self.table if _ != [])
         if key not in list_actual_keys:
             return value
         return self.__getitem__(key)
 
     def pop(self, __key, default=None):
-        list_actual_keys = [_[0] for _ in self.table if _ != []]
+        list_actual_keys = (_[0] for _ in self.table if _ != [])
         if __key in list_actual_keys:
             result = self.__getitem__(__key)
             self.__delitem__(__key)
