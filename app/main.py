@@ -13,7 +13,7 @@ class Dictionary:
                 self.table[index] = [key, value, hashed_key]
                 self.length += 1
                 break
-            if self.table[index][2] == hashed_key\
+            if self.table[index][2] == hashed_key \
                     and self.table[index][0] == key:
                 self.table[index][1] = value
                 break
@@ -25,9 +25,9 @@ class Dictionary:
         self.capacity *= 2
         self.length = 0
         self.load = int(self.capacity * 2 / 3)
-        prep_table = self.table
+        old_table = self.table
         self.table = [[] for _ in range(self.capacity)]
-        for element in prep_table:
+        for element in old_table:
             if len(element):
                 self.__setitem__(element[0], element[1])
 
@@ -35,14 +35,15 @@ class Dictionary:
         return self.length
 
     def __getitem__(self, key):
+        hashed_key = hash(key)
         index = hash(key) % self.capacity
         element = self.table[index]
         while element:
-            if element[2] == hash(key) and element[0] == key:
+            if element[2] == hashed_key and element[0] == key:
                 return element[1]
             index = (index + 1) % self.capacity
             element = self.table[index]
-        raise KeyError()
+        raise KeyError(key)
 
     def clear(self):
         self.capacity = 8
@@ -51,29 +52,31 @@ class Dictionary:
         self.table = [[] for _ in range(self.capacity)]
 
     def __delitem__(self, key):
+        hashed_key = hash(key)
         index = hash(key) % self.capacity
         element = self.table[index]
         while element:
-            if element[2] == hash(key) and element[0] == key:
+            if element[2] == hashed_key and element[0] == key:
                 self.table[index] = []
                 self.length -= 1
                 break
             index = (index + 1) % self.capacity
             element = self.table[index]
-        raise KeyError
+        else:
+            raise KeyError(key)
 
-    def get(self, key, value=None):
-        list_actual_keys = (_[0] for _ in self.table if _ != [])
-        if key not in list_actual_keys:
-            return value
-        return self.__getitem__(key)
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
     def pop(self, __key, default=None):
-        list_actual_keys = (_[0] for _ in self.table if _ != [])
-        if __key in list_actual_keys:
-            result = self.__getitem__(__key)
+        try:
+            item = self.__getitem__(__key)
             self.__delitem__(__key)
-            return result
-        if __key not in list_actual_keys and default is not None:
-            return default
-        raise KeyError
+        except KeyError:
+            if default:
+                return default
+            raise
+        return item
