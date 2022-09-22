@@ -60,7 +60,7 @@ class Dictionary:
                 break
             index = (index + 1) % self.capacity
             element = self.table[index]
-        KeyError
+        raise KeyError
 
     def get(self, key, value=None):
         list_actual_keys = (_[0] for _ in self.table if _ != [])
