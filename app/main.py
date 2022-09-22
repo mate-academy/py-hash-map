@@ -57,7 +57,8 @@ class Dictionary:
         element = self.table[index]
         while element:
             if element[2] == hashed_key and element[0] == key:
-                self.table[index] = []
+                element[0] = None
+                element[1] = None
                 self.length -= 1
                 break
             index = (index + 1) % self.capacity
