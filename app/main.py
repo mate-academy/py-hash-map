@@ -75,7 +75,7 @@ class Dictionary:
         return def_value
 
     def update(self, to_add):
-        for key, value in to_add:
+        for key, hashed_value, value in sum(to_add.buckets, []):
             self.__setitem__(key, value)
 
     def __iter__(self):
