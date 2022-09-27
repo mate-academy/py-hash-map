@@ -64,4 +64,4 @@ class Dictionary:
         self.capacity = 8
         self.threshold = int(self.capacity * 2 / 3)
         self.length = 0
-        self.table.clear()
+        self.table = [[] for _ in range(self.capacity)]
