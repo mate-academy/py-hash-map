@@ -35,7 +35,7 @@ class Dictionary:
                     and self.hash_table[index][0] == key:
                 return self.hash_table[index][1]
             index = (index + 1) % self.capacity
-        raise KeyError
+        raise KeyError(key)
 
     def __len__(self):
         return self.size
@@ -62,12 +62,11 @@ class Dictionary:
                 if val[0] == key and hash(key) == val[2]:
                     self.hash_table[ind] = []
 
-    def get(self, key, return_value=None):
-        for elem in self.hash_table:
-            if elem:
-                if key == elem[0] and hash(key) == elem[2]:
-                    return elem[1]
-        return return_value
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
     def pop(self, key, default=None):
         for ind, val in enumerate(self.hash_table):
@@ -78,4 +77,18 @@ class Dictionary:
         if default is not None:
             return default
         else:
-            raise KeyError(f"{key}")
+            raise KeyError(key)
+
+    def __iter__(self):
+        self.current_element = 0
+        return self
+
+    def __next__(self):
+        if self.current_element > self.__len__():
+            raise StopIteration
+
+        if not self.hash_table[self.current_element]:
+            self.current_element += 1
+        result = self.hash_table[self.current_element]
+        self.current_element += 1
+        return result
