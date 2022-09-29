@@ -3,7 +3,7 @@ class Dictionary:
     LOAD_FACTOR = 2 / 3
     RESIZE_VALUE = 2
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._size = 0
         self._capacity = self.INITIAL_CAPACITY
         self.hash_table = [[] for _ in range(self._capacity)]
@@ -11,13 +11,15 @@ class Dictionary:
     def __resize_if_loaded(self) -> None:
         if self._size >= self.LOAD_FACTOR * self._capacity:
             self._capacity *= self.RESIZE_VALUE
-            old_data = self.hash_table.copy()
-            self.hash_table = [[] for _ in range(self._capacity)]
+            self.__refill_table()
 
-            self._size = 0
-            for element in old_data:
-                if element:
-                    self.__find_position_and_set_value(element[1], element[2])
+    def __refill_table(self) -> None:
+        old_data = self.hash_table.copy()
+        self.hash_table = [[] for _ in range(self._capacity)]
+        self._size = 0
+        for element in old_data:
+            if element:
+                self.__find_position_and_set_value(element[1], element[2])
 
     def __find_position_and_set_value(self, key, value) -> None:
         position = self.__find_key_in_table_if_exists(key)
@@ -52,11 +54,19 @@ class Dictionary:
 
         return self.hash_table[position][2]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self._size
 
-    def clear(self):
+    def __delitem__(self, key) -> None:
+        position = self.__find_key_in_table_if_exists(key)
+        del self.hash_table[position]
+        self.__refill_table()
+
+    def clear(self) -> None:
         self.hash_table.clear()
 
     def get(self, key):
-        return self[key]
+        try:
+            return self[key]
+        except KeyError:
+            return
