@@ -71,8 +71,7 @@ class Dictionary:
     ) -> tuple[int, int | None]:
         index = key_hash % self.capacity
 
-        # No use iterating longer than self.capacity iterations
-        for _ in range(self.capacity):
+        while True:
             node_index = self.indices[index]
 
             # Not sure if it's okay to break lines like this
