@@ -3,9 +3,12 @@ from typing import Any, Hashable, Iterator
 
 
 class Dictionary:
+    initial_capacity = 8
+    load_factor = 2 / 3
+
     def __init__(self) -> None:
-        self.capacity = 8
-        self.threshold = 5
+        self.capacity = self.initial_capacity
+        self.threshold = int(self.capacity * self.load_factor)
         self.indices = [None] * self.capacity
         self.nodes = []
 
@@ -53,7 +56,7 @@ class Dictionary:
     def _resize(self) -> None:
         # Increase size
         self.capacity *= 2
-        self.threshold = int(self.capacity * 0.67)
+        self.threshold = int(self.capacity * self.load_factor)
 
         # Store data temporarily
         nodes = self.nodes
@@ -84,11 +87,9 @@ class Dictionary:
             index = ((5 * index) + 1) % self.capacity
 
     def clear(self) -> None:
-        # Breaking DRY, but calling self.__init__() wouldn't be better, right?
-        self.capacity = 8
-        self.threshold = 5
+        self.capacity = self.initial_capacity
         self.indices = [None] * self.capacity
-        self.nodes = []
+        self.nodes.clear()
 
     def get(self, key: Hashable) -> Any:
         try:
