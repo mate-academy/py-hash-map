@@ -6,6 +6,10 @@ class Dictionary:
     initial_capacity = 8
     load_factor = 2 / 3
 
+    # A constant from CPython dict implementation
+    # Used for pseudo-random index picking
+    perturb_shift = 5
+
     def __init__(self) -> None:
         self.capacity = self.initial_capacity
         self.threshold = int(self.capacity * self.load_factor)
@@ -73,6 +77,7 @@ class Dictionary:
             self, key_hash: int, key: Hashable
     ) -> tuple[int, int | None]:
         index = key_hash % self.capacity
+        perturb = key_hash
 
         while True:
             node_index = self.indices[index]
@@ -84,7 +89,8 @@ class Dictionary:
 
             # Formula from CPython dict implementation :)
             # In short, it generates a pseudo-random sequence of numbers
-            index = ((5 * index) + 1) % self.capacity
+            perturb >>= self.perturb_shift
+            index = ((5 * index) + 1 + perturb) % self.capacity
 
     def clear(self) -> None:
         self.capacity = self.initial_capacity
