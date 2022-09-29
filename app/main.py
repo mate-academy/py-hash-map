@@ -80,6 +80,7 @@ class Dictionary:
                 return index, node_index
 
             # Formula from CPython dict implementation :)
+            # In short, it generates a pseudo-random sequence of numbers
             index = ((5 * index) + 1) % self.capacity
 
     def clear(self) -> None:
