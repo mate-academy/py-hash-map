@@ -24,12 +24,12 @@ class Dictionary:
                 self.__setitem__(element[0], element[2])
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_key = hash(key)
-        hash_index = hash_key % self.capacity
+        key_hash = hash(key)
+        hash_index = key_hash % self.capacity
         while True:
             try:
                 if self.hash_table[hash_index][0] == key\
-                   and self.hash_table[hash_index][1] == hash_key:
+                   and self.hash_table[hash_index][1] == key_hash:
                     return self.hash_table[hash_index][2]
             except IndexError:
                 raise KeyError
