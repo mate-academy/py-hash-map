@@ -69,11 +69,11 @@ class Dictionary:
             return default
 
     def pop(self, key, default=None):
-        for ind, val in enumerate(self.hash_table):
-            if val:
-                if key == val[0] and hash(key) == val[2]:
-                    self.hash_table[ind] = []
-                    return val[1]
+        for index, value in enumerate(self.hash_table):
+            if value:
+                if key == value[0] and hash(key) == value[2]:
+                    self.hash_table[index] = []
+                    return value[1]
         if default is not None:
             return default
         else:
