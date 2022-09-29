@@ -1,9 +1,9 @@
 from __future__ import annotations
-from hashable import hashable
+from typing import Hashable, Any, Generator
 
 
 class KeyValuePair:
-    def __init__(self, key: hashable, value: object) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self._key = key
         self.value = value
 
@@ -48,44 +48,44 @@ class Dictionary:
         for i in range(self.capacity):
             self._hash_table[i] = []
 
-    def pop(self, key: hashable) -> None:
+    def pop(self, key: Hashable) -> None:
         self.__delitem__(key)
 
-    def get(self, key: hashable, default: object = None) -> object:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
-            return self.__get__(key)
+            return self[key]
         except KeyError:
             return default
 
-    def __get__(self, key: hashable) -> object:
+    def __get__(self, key: Hashable) -> Any:
         ind = hash(key) % self.capacity
         for i, pair in enumerate(self._hash_table[ind]):
-            if key == pair.key:
+            if pair == key:
                 return pair.value
         raise KeyError(f"Key {key} does not exist")
 
-    def __set__(self, key: hashable, value: object) -> None:
+    def __set__(self, key: Hashable, value: Any) -> None:
         ind = hash(key) % self.capacity
         for i, pair in enumerate(self._hash_table[ind]):
-            if key == pair.key:
+            if pair == key:
                 self._hash_table[ind][i].value = value
                 return
         self._hash_table[ind].append(KeyValuePair(key, value))
         self._ensure_capacity()
 
-    def __getitem__(self, item: hashable) -> object:
+    def __getitem__(self, item: Hashable) -> Any:
         return self.__get__(item)
 
-    def __setitem__(self, key: hashable, value: object) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self.__set__(key, value)
 
-    def __delitem__(self, key: hashable) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         ind = hash(key) % self.capacity
         for i, pair in enumerate(self._hash_table[ind]):
-            if key == pair:
+            if pair == key:
                 self._hash_table[ind].pop(i)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         for bucket in self._hash_table:
             for pair in bucket:
                 yield pair
