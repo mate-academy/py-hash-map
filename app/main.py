@@ -38,15 +38,15 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length == self.threshold:
             self.resize()
-        hash_key = (hash(key))
-        hash_index = hash_key % self.capacity
+        key_hash = (hash(key))
+        hash_index = key_hash % self.capacity
         while True:
-            if len(self.hash_table[hash_index]) == 0:
-                self.hash_table[hash_index] = [key, hash_key, value]
+            if not self.hash_table[hash_index]:
+                self.hash_table[hash_index] = [key, key_hash, value]
                 self.length += 1
                 break
             if self.hash_table[hash_index][0] == key and\
-                    self.hash_table[hash_index][1] == hash_key:
+                    self.hash_table[hash_index][1] == key_hash:
                 self.hash_table[hash_index][2] = value
                 break
             hash_index = (hash_index + 1) % self.capacity
