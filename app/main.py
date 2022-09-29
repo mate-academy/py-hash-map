@@ -1,3 +1,6 @@
+from typing import Hashable, Any
+
+
 class Dictionary:
     INITIAL_CAPACITY = 8
     LOAD_FACTOR = 2 / 3
@@ -21,11 +24,11 @@ class Dictionary:
             if element:
                 self.__find_position_and_set_value(element[1], element[2])
 
-    def __find_position_and_set_value(self, key, value) -> None:
+    def __find_position_and_set_value(self, key: Hashable, value: Any) -> None:
         position = self.__find_key_in_table_if_exists(key)
         if position != -1:
             self.hash_table[position][2] = value
-            return
+            return None
 
         position = hash(key) % self._capacity
         if self.hash_table[position]:
@@ -35,7 +38,7 @@ class Dictionary:
         self.hash_table[position] = [hash(key), key, value]
         self._size += 1
 
-    def __find_key_in_table_if_exists(self, key) -> int:
+    def __find_key_in_table_if_exists(self, key: Hashable) -> int:
         for index in range(len(self.hash_table)):
             if self.hash_table[index]:
                 if self.hash_table[index][1] == key:
@@ -43,11 +46,11 @@ class Dictionary:
 
         return -1
 
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self.__resize_if_loaded()
         self.__find_position_and_set_value(key, value)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable):
         position = self.__find_key_in_table_if_exists(key)
         if position == -1:
             raise KeyError(f"{key} not in dictionary")
@@ -57,7 +60,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self._size
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         position = self.__find_key_in_table_if_exists(key)
         del self.hash_table[position]
         self.__refill_table()
@@ -65,8 +68,8 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table.clear()
 
-    def get(self, key):
+    def get(self, key: Hashable):
         try:
             return self[key]
         except KeyError:
-            return
+            return None
