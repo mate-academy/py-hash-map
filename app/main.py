@@ -28,7 +28,7 @@ class Dictionary:
         position = self.__find_key_in_table_if_exists(key)
         if position != -1:
             self.hash_table[position][2] = value
-            return None
+            return
 
         position = hash(key) % self._capacity
         if self.hash_table[position]:
@@ -50,7 +50,7 @@ class Dictionary:
         self.__resize_if_loaded()
         self.__find_position_and_set_value(key, value)
 
-    def __getitem__(self, key: Hashable):
+    def __getitem__(self, key: Hashable) -> Any:
         position = self.__find_key_in_table_if_exists(key)
         if position == -1:
             raise KeyError(f"{key} not in dictionary")
@@ -68,7 +68,7 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table.clear()
 
-    def get(self, key: Hashable):
+    def get(self, key: Hashable) -> Any:
         try:
             return self[key]
         except KeyError:
