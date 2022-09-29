@@ -20,7 +20,7 @@ class Dictionary:
         self.threshold = int(self.capacity * self.LOAD_FACTOR)
         self.hash_table = self.make_hash_table()
         for element in old_hash_table:
-            if len(element) != 0:
+            if element:
                 self.__setitem__(element[0], element[2])
 
     def __getitem__(self, key: Hashable) -> Any:
