@@ -1,2 +1,62 @@
 class Dictionary:
-    pass
+    INITIAL_CAPACITY = 8
+    LOAD_FACTOR = 2 / 3
+    RESIZE_VALUE = 2
+
+    def __init__(self):
+        self._size = 0
+        self._capacity = self.INITIAL_CAPACITY
+        self.hash_table = [[] for _ in range(self._capacity)]
+
+    def __resize_if_loaded(self) -> None:
+        if self._size >= self.LOAD_FACTOR * self._capacity:
+            self._capacity *= self.RESIZE_VALUE
+            old_data = self.hash_table.copy()
+            self.hash_table = [[] for _ in range(self._capacity)]
+
+            self._size = 0
+            for element in old_data:
+                if element:
+                    self.__find_position_and_set_value(element[1], element[2])
+
+    def __find_position_and_set_value(self, key, value) -> None:
+        position = self.__find_key_in_table_if_exists(key)
+        if position != -1:
+            self.hash_table[position][2] = value
+            return
+
+        position = hash(key) % self._capacity
+        if self.hash_table[position]:
+            while self.hash_table[position]:
+                position = (position + 1) % self._capacity
+
+        self.hash_table[position] = [hash(key), key, value]
+        self._size += 1
+
+    def __find_key_in_table_if_exists(self, key) -> int:
+        for index in range(len(self.hash_table)):
+            if self.hash_table[index]:
+                if self.hash_table[index][1] == key:
+                    return index
+
+        return -1
+
+    def __setitem__(self, key, value) -> None:
+        self.__resize_if_loaded()
+        self.__find_position_and_set_value(key, value)
+
+    def __getitem__(self, key):
+        position = self.__find_key_in_table_if_exists(key)
+        if position == -1:
+            raise KeyError(f"{key} not in dictionary")
+
+        return self.hash_table[position][2]
+
+    def __len__(self):
+        return self._size
+
+    def clear(self):
+        self.hash_table.clear()
+
+    def get(self, key):
+        return self[key]
