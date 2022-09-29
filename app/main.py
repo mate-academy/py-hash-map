@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Hashable
+from typing import Any, Hashable, Iterator
 
 
 class Dictionary:
@@ -47,10 +47,10 @@ class Dictionary:
     def __len__(self) -> int:
         return len(self.nodes)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator:
         return iter(self.keys())
 
-    def _resize(self):
+    def _resize(self) -> None:
         # Increase size
         self.capacity *= 2
         self.threshold = int(self.capacity * 0.67)
@@ -83,7 +83,7 @@ class Dictionary:
             # Formula from CPython dict implementation :)
             index = ((5 * index) + 1) % self.capacity
 
-    def clear(self):
+    def clear(self) -> None:
         # Breaking DRY, but calling self.__init__() wouldn't be better, right?
         self.capacity = 8
         self.threshold = 5
