@@ -40,16 +40,18 @@ class Dictionary:
     def _resize(self) -> None:
         new_hash_table = [[] for _ in range(self.capacity * 2)]
         for pair in iter(self):
-            ind = hash(pair) % len(new_hash_table)
-            new_hash_table[ind].append(pair)
+            index = hash(pair) % len(new_hash_table)
+            new_hash_table[index].append(pair)
         self._hash_table = new_hash_table
 
     def clear(self) -> None:
-        for i in range(self.capacity):
-            self._hash_table[i] = []
+        self._hash_table = [[] for _ in range(Dictionary._INITIAL_CAPACITY)]
+        self._size = 0
 
-    def pop(self, key: Hashable) -> None:
+    def pop(self, key: Hashable) -> Any:
+        res = self.__get__(key)
         self.__delitem__(key)
+        return res
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
