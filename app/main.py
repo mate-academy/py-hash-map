@@ -61,15 +61,20 @@ class Dictionary:
         return self._size
 
     def __delitem__(self, key: Hashable) -> None:
-        position = self.__find_key_in_table_if_exists(key)
-        del self.hash_table[position]
+        del self.hash_table[self.__find_key_in_table_if_exists(key)]
         self.__refill_table()
 
-    def clear(self) -> None:
-        self.hash_table.clear()
+    def pop(self, key: Hashable) -> Any:
+        element = self[key]
+        del self[key]
+        self.__refill_table()
+        return element
 
-    def get(self, key: Hashable) -> Any:
+    def clear(self) -> None:
+        self.hash_table = [[] for _ in range(self._capacity)]
+
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return None
+            return default
