@@ -60,19 +60,19 @@ class Dictionary:
             return default
 
     def __get__(self, key: Hashable) -> Any:
-        ind = hash(key) % self.capacity
-        for i, pair in enumerate(self._hash_table[ind]):
+        index = hash(key) % self.capacity
+        for i, pair in enumerate(self._hash_table[index]):
             if pair == key:
                 return pair.value
         raise KeyError(f"Key {key} does not exist")
 
     def __set__(self, key: Hashable, value: Any) -> None:
-        ind = hash(key) % self.capacity
-        for i, pair in enumerate(self._hash_table[ind]):
+        index = hash(key) % self.capacity
+        for i, pair in enumerate(self._hash_table[index]):
             if pair == key:
-                self._hash_table[ind][i].value = value
+                self._hash_table[index][i].value = value
                 return
-        self._hash_table[ind].append(KeyValuePair(key, value))
+        self._hash_table[index].append(KeyValuePair(key, value))
         self._ensure_capacity()
 
     def __getitem__(self, item: Hashable) -> Any:
@@ -82,10 +82,10 @@ class Dictionary:
         self.__set__(key, value)
 
     def __delitem__(self, key: Hashable) -> None:
-        ind = hash(key) % self.capacity
-        for i, pair in enumerate(self._hash_table[ind]):
+        index = hash(key) % self.capacity
+        for i, pair in enumerate(self._hash_table[index]):
             if pair == key:
-                self._hash_table[ind].pop(i)
+                self._hash_table[index].pop(i)
 
     def __iter__(self) -> Generator:
         for bucket in self._hash_table:
