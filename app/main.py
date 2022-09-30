@@ -97,11 +97,11 @@ class Dictionary:
         self.indices = [None] * self.capacity
         self.nodes.clear()
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return None
+            return default
 
     def pop(self, key: Hashable) -> Any:
         value = self[key]
