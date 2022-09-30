@@ -67,7 +67,6 @@ class Dictionary:
     def pop(self, key: Hashable) -> Any:
         element = self[key]
         del self[key]
-        self.__refill_table()
         return element
 
     def clear(self) -> None:
