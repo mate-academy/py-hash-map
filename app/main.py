@@ -18,11 +18,11 @@ class Dictionary:
 
     def __refill_table(self) -> None:
         old_data = self.hash_table.copy()
-        self.hash_table = [[] for _ in range(self._capacity)]
-        self._size = 0
+        self.clear()
+
         for element in old_data:
             if element:
-                self.__find_position_and_set_value(element[1], element[2])
+                self.__find_position_and_set_value(*element[1:])
 
     def __find_position_and_set_value(self, key: Hashable, value: Any) -> None:
         position = self.__find_key_in_table_if_exists(key)
@@ -71,6 +71,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.hash_table = [[] for _ in range(self._capacity)]
+        self._size = 0
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
