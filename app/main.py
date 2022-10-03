@@ -51,3 +51,6 @@ class Dictionary:
 
     def clear(self):
         self.hash_table.clear()
+
+    def get(self, key):
+        return self.__getitem__(key)
