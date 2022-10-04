@@ -23,8 +23,8 @@ class Dictionary:
 
     def __getitem__(self, key):
         key_hash = hash(key)
-        get_index = key_hash % self.capacity
-        cell = self.hash_table[get_index]
+        index = key_hash % self.capacity
+        cell = self.hash_table[index]
         while True:
             if not cell:
                 raise KeyError
@@ -32,9 +32,9 @@ class Dictionary:
                 if cell[0] == key and cell[2] == key_hash:
                     return cell[1]
             except IndexError:
-                raise KeyError
-            get_index = (get_index + 1) % self.capacity
-            cell = self.hash_table[get_index]
+                raise KeyError(key)
+            index = (index + 1) % self.capacity
+            cell = self.hash_table[index]
 
     def __len__(self):
         return self.length
@@ -47,10 +47,13 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
         for element in old_table:
             if element:
-                self.__setitem__(element[0], element[1])
+                self[element[0]] = element[1]
 
     def clear(self):
         self.hash_table.clear()
 
-    def get(self, key):
-        return self.__getitem__(key)
+    def get(self, key, default = None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
