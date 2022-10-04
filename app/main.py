@@ -6,10 +6,11 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
 
     def __setitem__(self, key, value):
-        key_hash = hash(key)
-        index = key_hash % self.capacity
         if self.length == self.threshhold:
             self.resize()
+        key_hash = hash(key)
+        index = key_hash % self.capacity
+
         while True:
             if not self.hash_table[index]:
                 self.hash_table[index] = [key, value, key_hash]
@@ -26,8 +27,7 @@ class Dictionary:
         index = key_hash % self.capacity
         cell = self.hash_table[index]
         while True:
-            if not cell:
-                raise KeyError
+
             try:
                 if cell[0] == key and cell[2] == key_hash:
                     return cell[1]
