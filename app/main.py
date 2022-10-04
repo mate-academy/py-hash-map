@@ -4,7 +4,7 @@ class Dictionary:
         self.load_factor = 0.66
         self.list = [[] for _ in range(self.capacity)]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: (int, float, str, tuple, bool), value) -> None:
         if len(self) + 1 > self.capacity * self.load_factor:
             self.increase_capacity()
 
@@ -31,23 +31,23 @@ class Dictionary:
                 self.list[key_hash] = [key, value, hash(key)]
                 return
 
-    def __getitem__(self, key):
-        for i in range(len(self.list)):
+    def __getitem__(self, key: (int, float, str, tuple, bool)) -> None:
+        for cell in self.list:
             try:
-                if key == self.list[i][0]:
-                    return self.list[i][1]
+                if key == cell[0]:
+                    return cell[1]
             except IndexError:
                 pass
         raise KeyError
 
-    def __len__(self):
+    def __len__(self) -> int:
         count = 0
         for i in self.list:
             if i:
                 count += 1
         return count
 
-    def increase_capacity(self):
+    def increase_capacity(self) -> None:
         old_list = [char for char in self.list if char]
         self.capacity *= 2
         self.list = [[] for _ in range(self.capacity)]
