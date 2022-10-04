@@ -50,7 +50,10 @@ class Dictionary:
                 self[element[0]] = element[1]
 
     def clear(self):
-        self.hash_table.clear()
+        self.capacity = 8
+        self.threshold = int(self.capacity * 2 / 3)
+        self.length = 0
+        self.table = [[] for _ in range(self.capacity)]
 
     def get(self, key, default=None):
         try:
