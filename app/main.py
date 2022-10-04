@@ -42,8 +42,8 @@ class Dictionary:
 
     def __len__(self) -> int:
         count = 0
-        for i in self.list:
-            if i:
+        for cell in self.list:
+            if cell:
                 count += 1
         return count
 
