@@ -52,5 +52,4 @@ class Dictionary:
         self.capacity *= 2
         self.list = [[] for _ in range(self.capacity)]
         for char in old_list:
-            print(char, char[1])
             self[char[0]] = char[1]
