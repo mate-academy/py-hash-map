@@ -51,12 +51,12 @@ class Dictionary:
 
     def clear(self):
         self.capacity = 8
-        self.threshold = int(self.capacity * 2 / 3)
+        self.threshhold = int(self.capacity * 2 / 3)
         self.length = 0
-        self.table = [[] for _ in range(self.capacity)]
+        self.hash_table = [[] for _ in range(self.capacity)]
 
     def get(self, key, default=None):
         try:
             return self.__getitem__(key)
-        except KeyError:
+        except KeyError(key):
             return default
