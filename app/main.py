@@ -52,7 +52,7 @@ class Dictionary:
     def clear(self):
         self.hash_table.clear()
 
-    def get(self, key, default = None):
+    def get(self, key, default=None):
         try:
             return self.__getitem__(key)
         except KeyError:
