@@ -1,5 +1,5 @@
 class Point:
-    def __init__(self, first_value: int, second_value: int):
+    def __init__(self, first_value: int, second_value: int) -> None:
         self._first_value = first_value
         self._second_value = second_value
 
