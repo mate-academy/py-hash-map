@@ -1,7 +1,7 @@
 class Dictionary:
     def __init__(self):
         self.capacity = 8
-        self.load_factor = 0.66
+        self.load_factor = 2 / 3
         self.list = [[] for _ in range(self.capacity)]
 
     def __setitem__(self, key: (int, float, str, tuple, bool), value) -> None:
@@ -38,7 +38,7 @@ class Dictionary:
                     return cell[1]
             except IndexError:
                 pass
-        raise KeyError
+        raise KeyError(key)
 
     def __len__(self) -> int:
         count = 0
