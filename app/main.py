@@ -1,14 +1,17 @@
+from typing import Any, Hashable
+
+
 class Dictionary:
     def __init__(self, capacity: int = 8) -> None:
         self.capacity = capacity
         self.load_factor = 0.67
         self.buckets = [[] for _ in range(self.capacity)]
 
-    def __is_full(self):
+    def __is_full(self) -> bool:
         fullness = sum(1 for bucket in self.buckets if bucket)
         return fullness >= (self.capacity * self.load_factor)
 
-    def __resizer(self):
+    def __resizer(self) -> None:
         self.capacity *= 2
 
         instance = Dictionary(capacity=self.capacity)
@@ -21,7 +24,7 @@ class Dictionary:
 
         self.buckets = instance.buckets
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.__is_full():
             self.__resizer()
         index = hash(key) % self.capacity
@@ -33,7 +36,7 @@ class Dictionary:
         else:
             self.buckets[index].append([key, value])
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         if self.buckets[index] == []:
             raise KeyError()
@@ -43,7 +46,7 @@ class Dictionary:
                     return stored_pair[1]
             raise KeyError()
 
-    def __len__(self):
+    def __len__(self) -> int:
         counter = 0
         for stored_pair in self.buckets:
             if stored_pair:
