@@ -1,15 +1,15 @@
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.length = 0   # len() value
         self.capacity = 8  # current capacity hash table
         self.buckets = [None] * self.capacity  # creating an empty hash table
 
-    def _hashed_value_calculation(self, key):  # Calculating hash value
+    def _hashed_value_calculation(self, key: any) -> tuple:  # Calculating hash value
         hashed_value = hash(key)
         index = hashed_value % len(self.buckets)
         return index, hashed_value
 
-    def _resize(self):  # hash table resizing
+    def _resize(self) -> None:  # hash table resizing
         self.length = 0
         old_buckets = self.buckets.copy()
         self.buckets = [None] * self.capacity * 2
@@ -18,9 +18,8 @@ class Dictionary:
             if key_value is not None:
                 self.__setitem__(key_value[0], key_value[1])
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: any, value: any) -> None:
         index, hashed_value = self._hashed_value_calculation(key)
-        # print("index = ", index, "hashed_value = ", hashed_value)
         while self.buckets[index] is not None:
             if key == self.buckets[index][0] and\
                     hashed_value == self.buckets[index][2]:
@@ -33,7 +32,7 @@ class Dictionary:
         if self.__len__() / self.capacity > 2 / 3:
             self._resize()
 
-    def __getitem__(self, input_key):
+    def __getitem__(self, input_key: any) -> any:
         index, input_hashed_value = self._hashed_value_calculation(input_key)
         while self.buckets[index] is not None:
             key, value, hashed_value = self.buckets[index]
@@ -42,14 +41,14 @@ class Dictionary:
             index = (index + 1) % self.capacity
         raise KeyError
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.length
 
-    def clear(self):
+    def clear(self) -> None:
         self.length = 0
         self.buckets = [None] * self.capacity
 
-    def __delitem__(self, input_key):
+    def __delitem__(self, input_key: any) -> any:
         index, input_hashed_value = self._hashed_value_calculation(input_key)
         while self.buckets[index] is not None:
             key, value, hashed_value = self.buckets[index]
@@ -61,18 +60,18 @@ class Dictionary:
             index = (index + 1) % self.capacity
         raise KeyError
 
-    def get(self, input_key, args=None):
+    def get(self, input_key: any, arg: any = None) -> any:
         try:
             return self.__getitem__(input_key)
         except KeyError:
-            return args
+            return arg
 
-    def pop(self, input_key, args=None):
+    def pop(self, input_key: any, arg: any = None) -> any:
         try:
             return self.__delitem__(input_key)
         except KeyError:
-            if args:
-                return args
+            if arg:
+                return arg
             raise KeyError
 
     def update(self, inp=None, **kwargs):
@@ -92,14 +91,14 @@ class Dictionary:
             self.new_buckets_length -= 1
         return self
 
-    def __next__(self):
+    def __next__(self) -> any:
         if self.current_element >= self.new_buckets_length:
             raise StopIteration
         result = self.new_buckets[self.current_element]
         self.current_element += 1
         return result[0]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         pairs = []
         for pair in self.buckets:
             if pair is not None:
