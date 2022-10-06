@@ -93,7 +93,6 @@ class Dictionary:
         for _ in range(0, self.capacity - self.length):
             self.new_buckets.remove(None)
             self.new_buckets_length -= 1
-        print("self", self)
         return self
 
     def __next__(self) -> any:
@@ -101,7 +100,6 @@ class Dictionary:
             raise StopIteration
         result = self.new_buckets[self.current_element]
         self.current_element += 1
-        print(result)
         return result[0]
 
     def __repr__(self) -> str:
