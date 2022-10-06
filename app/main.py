@@ -2,7 +2,7 @@ class Dictionary:
     def __init__(self):
         self.length = 0
         self.capacity = 8
-        self.hash = self.capacity * [None]
+        self.hash = [None for _ in range(self.capacity)]
 
     def resize_dict(self):
         self.capacity *= 2
