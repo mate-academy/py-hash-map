@@ -22,4 +22,3 @@ Also, not forgot to store `(key, hash, value)` as node in hash table. Hash table
   - `__iter__`
 - you can test `Dictionary` with custom class `Point` that has `__hash__` and `__eq__` magic methods;
 - **you should implement your own custom dictionary, do not use built-in `dict` for this task**.
-
