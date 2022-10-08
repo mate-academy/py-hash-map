@@ -2,53 +2,47 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self, capacity: int = 8) -> None:
-        self.capacity = capacity
-        self.load_factor = 0.67
-        self.buckets = [[] for _ in range(self.capacity)]
-
-    def __is_full(self) -> bool:
-        fullness = sum(1 for bucket in self.buckets if bucket)
-        return fullness >= (self.capacity * self.load_factor)
+    def __init__(self) -> None:
+        self.capacity = 8
+        self.load_factor = 2 / 3
+        self.fullness = 0
+        self.buckets = [None] * self.capacity
 
     def __resizer(self) -> None:
         self.capacity *= 2
+        self.fullness, old_buckets = 0, self.buckets
+        self.buckets = [None] * self.capacity
 
-        instance = Dictionary(capacity=self.capacity)
-        for i in range(len(self.buckets)):
-            if not self.buckets[i]:
-                continue
-
-            for entry in self.buckets[i]:
-                instance.__setitem__(entry[0], entry[1])
-
-        self.buckets = instance.buckets
+        for item in old_buckets:
+            if item:
+                self.__setitem__(item[0], item[1])
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.__is_full():
+        if self.fullness >= (self.capacity * self.load_factor):
             self.__resizer()
-        index = hash(key) % self.capacity
 
-        for bucket in self.buckets[index]:
-            if bucket[0] == key:
-                bucket[1] = value
+        hashed_key = hash(key)
+        index = hashed_key % self.capacity
+        while True:
+            if self.buckets[index] is None:
+                self.buckets[index] = [key, value, hashed_key]
+                self.fullness += 1
                 break
-        else:
-            self.buckets[index].append([key, value])
+            if self.buckets[index][0] == key and \
+                    self.buckets[index][2] == hashed_key:
+                self.buckets[index][1] = value
+                break
+            index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self.capacity
-        if self.buckets[index] == []:
-            raise KeyError()
-        else:
-            for stored_pair in self.buckets[index]:
-                if stored_pair[0] == key:
-                    return stored_pair[1]
-            raise KeyError()
+        hashed_key = hash(key)
+        index = hashed_key % self.capacity
+        while self.buckets[index]:
+            if self.buckets[index][2] == hashed_key and \
+                    self.buckets[index][0] == key:
+                return self.buckets[index][1]
+            index = (index + 1) % self.capacity
+        raise KeyError()
 
     def __len__(self) -> int:
-        counter = 0
-        for stored_pair in self.buckets:
-            if stored_pair:
-                counter += len(stored_pair)
-        return counter
+        return self.fullness
