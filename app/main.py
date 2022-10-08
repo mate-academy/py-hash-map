@@ -1,4 +1,4 @@
-from typing import Any, Hashable
+from typing import Hashable
 
 
 class Dictionary:
@@ -17,7 +17,7 @@ class Dictionary:
             if item:
                 self.__setitem__(item[0], item[1])
 
-    def __setitem__(self, key: Hashable, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: any) -> None:
         if self.fullness >= (self.capacity * self.load_factor):
             self.__resizer()
 
@@ -34,7 +34,7 @@ class Dictionary:
                 break
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: Hashable) -> Any:
+    def __getitem__(self, key: Hashable) -> any:
         hashed_key = hash(key)
         index = hashed_key % self.capacity
         while self.buckets[index]:
