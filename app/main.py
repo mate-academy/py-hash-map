@@ -1,17 +1,20 @@
+from typing import Any, Hashable
+
+
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
         self.threshold = int(self.capacity * 2 / 3)
         self.hash_table = self.make_hash_table()
 
-    def make_hash_table(self):
+    def make_hash_table(self) -> list:
         return [[] for _ in range(self.capacity)]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.size
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         hash_index = hash_key % self.capacity
         while True:
@@ -25,7 +28,7 @@ class Dictionary:
                 raise KeyError
             hash_index = (hash_index + 1) % self.capacity
 
-    def resize(self):
+    def resize(self) -> None:
         old_hash_table = self.hash_table
         self.size = 0
         self.capacity *= 2
@@ -35,7 +38,7 @@ class Dictionary:
             if bucket:
                 self.__setitem__(bucket[0], bucket[2])
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size == self.threshold:
             self.resize()
         hash_key = hash(key)
@@ -46,8 +49,8 @@ class Dictionary:
                 self.size += 1
                 break
             if (
-                    self.hash_table[hash_index][0] == key and
-                    self.hash_table[hash_index][1] == hash_key
+                    self.hash_table[hash_index][0] == key
+                    and self.hash_table[hash_index][1] == hash_key
             ):
                 self.hash_table[hash_index][2] = value
                 break
