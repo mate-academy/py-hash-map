@@ -36,7 +36,7 @@ class Dictionary:
         self.hash_table = self.make_hash_table()
         for bucket in old_hash_table:
             if bucket:
-                self.__setitem__(bucket[0], bucket[2])
+                self[bucket[0]] = bucket[2]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size == self.threshold:
