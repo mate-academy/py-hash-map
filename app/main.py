@@ -19,6 +19,43 @@ class Dictionary:
         self._size = 0
         self._store = [None for _ in range(self._capacity)]
 
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def pop(self, key: Hashable) -> Any:
+        value = self[key]
+        del self[key]
+        self._size -= 1
+        return value
+
+    def update(self, other: Dictionary | dict) -> None:
+        if isinstance(other, Dictionary):
+            for index in range(other._capacity):
+                item = other._store[index]
+                if item is not None:
+                    self[item.key] = item.value
+        elif isinstance(other, dict):
+            for key, value in other.items():
+                self[key] = value
+        raise TypeError("Argument is not a dict or Dictionary")
+
+    def clear(self) -> None:
+        self._capacity = 8
+        self._store = [None for _ in range(self._capacity)]
+
+    def _resize(self) -> None:
+        self._size = 0
+        items = self._store
+        self._capacity *= 2
+        self._threshold = int(self._capacity * self._load_factor)
+        self._store = [None for _ in range(self._capacity)]
+        for item in items:
+            if item is not None:
+                self[item.key] = item.value
+
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self._capacity
         key_exists = False
@@ -65,39 +102,3 @@ class Dictionary:
     def __len__(self) -> int:
         return self._size
 
-    def _resize(self) -> None:
-        self._size = 0
-        items = self._store
-        self._capacity *= 2
-        self._threshold = int(self._capacity * self._load_factor)
-        self._store = [None for _ in range(self._capacity)]
-        for item in items:
-            if item is not None:
-                self[item.key] = item.value
-
-    def clear(self) -> None:
-        self._capacity = 8
-        self._store = [None for _ in range(self._capacity)]
-
-    def pop(self, key: Hashable) -> Any:
-        value = self[key]
-        del self[key]
-        self._size -= 1
-        return value
-
-    def get(self, key: Hashable, default: Any = None) -> Any:
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
-    def update(self, other: Dictionary | dict) -> None:
-        if isinstance(other, Dictionary):
-            for index in range(other._capacity):
-                item = other._store[index]
-                if item is not None:
-                    self[item.key] = item.value
-        elif isinstance(other, dict):
-            for key, value in other.items():
-                self[key] = value
-        raise TypeError("Argument is not a dict or Dictionary")
