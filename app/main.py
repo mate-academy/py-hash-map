@@ -44,6 +44,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self._capacity = 8
+        self._threshold = 5
         self._store = [None for _ in range(self._capacity)]
 
     def _resize(self) -> None:
