@@ -10,30 +10,18 @@ class DictItem:
     value: Any
 
 
-class DictSource:
-    def __init__(self, capacity: int) -> None:
-        for index in range(capacity):
-            setattr(self, f"index_{index}", None)
-
-    def get(self, index: int) -> Any:
-        return getattr(self, f"index_{index}")
-
-    def set(self, index: int, item: DictItem | None) -> None:
-        setattr(self, f"index_{index}", item)
-
-
 class Dictionary:
     def __init__(self) -> None:
         self._capacity = 8
         self._load_factor = 2 / 3
         self._threshold = int(self._capacity * self._load_factor)
         self._size = 0
-        self._source = DictSource(self._capacity)
+        self._source = [None for _ in range(self._capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self._capacity
         is_exist = False
-        while (item := self._source.get(index)) is not None:
+        while (item := self._source[index]) is not None:
             if item.key == key:
                 is_exist = True
                 break
@@ -41,7 +29,7 @@ class Dictionary:
                 index = 0
             else:
                 index += 1
-        self._source.set(index, DictItem(key, value))
+        self._source[index] = DictItem(key, value)
         if not is_exist:
             self._size += 1
         if self._size > self._threshold:
@@ -49,7 +37,7 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self._capacity
-        while (item := self._source.get(index)) is not None:
+        while (item := self._source[index]) is not None:
             if item.key == key:
                 return item.value
             if index == self._capacity - 1:
@@ -60,9 +48,9 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self._capacity
-        if self._source.get(index) is None:
+        if self._source[index] is None:
             raise KeyError(key)
-        self._source.set(index, None)
+        self._source[index] = None
         self._size -= 1
 
     def __iter__(self) -> Dictionary:
@@ -70,12 +58,12 @@ class Dictionary:
         return self
 
     def __next__(self) -> Any:
-        while self._source.get(self.iter) is None:
+        while self._source[self.iter] is None:
             self.iter += 1
             if self.iter == self._capacity:
                 del self.iter
                 raise StopIteration
-        result = self._source.get(self.iter)
+        result = self._source[self.iter]
         self.iter += 1
         return result
 
@@ -84,18 +72,18 @@ class Dictionary:
 
     def _resize(self) -> None:
         self._size = 0
-        items = [self._source.get(index)
+        items = [self._source[index]
                  for index in range(self._capacity)
-                 if self._source.get(index) is not None]
+                 if self._source[index] is not None]
         self._capacity *= 2
         self._threshold = int(self._capacity * self._load_factor)
-        self._source = DictSource(self._capacity)
+        self._source = [None for _ in range(self._capacity)]
         for item in items:
             self[item.key] = item.value
 
     def clear(self) -> None:
         self._capacity = 8
-        self._source = DictSource(self._capacity)
+        self._source = [None for _ in range(self._capacity)]
 
     def pop(self, key: Hashable) -> Any:
         value = self[key]
@@ -112,7 +100,7 @@ class Dictionary:
     def update(self, other: Dictionary | dict) -> None:
         if isinstance(other, Dictionary):
             for index in range(other._capacity):
-                item = other._source.get(index)
+                item = other._source[index]
                 if item is not None:
                     self[item.key] = item.value
         elif isinstance(other, dict):
