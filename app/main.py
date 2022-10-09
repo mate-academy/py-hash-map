@@ -15,17 +15,17 @@ class DictSource:
         for index in range(capacity):
             setattr(self, f"index_{index}", None)
 
-    def get(self, index) -> Any:
+    def get(self, index: int) -> Any:
         return getattr(self, f"index_{index}")
 
-    def set(self, index, item: DictItem | None) -> None:
+    def set(self, index: int, item: DictItem | None) -> None:
         setattr(self, f"index_{index}", item)
 
 
 class Dictionary:
     def __init__(self) -> None:
         self._capacity = 8
-        self._load_factor = 2/3
+        self._load_factor = 2 / 3
         self._threshold = int(self._capacity * self._load_factor)
         self._size = 0
         self._source = DictSource(self._capacity)
@@ -58,18 +58,18 @@ class Dictionary:
                 index += 1
         raise KeyError(key)
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self._capacity
         if self._source.get(index) is None:
             raise KeyError(key)
         self._source.set(index, None)
         self._size -= 1
 
-    def __iter__(self):
+    def __iter__(self) -> Dictionary:
         self.iter = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> Any:
         while self._source.get(self.iter) is None:
             self.iter += 1
             if self.iter == self._capacity:
@@ -79,7 +79,7 @@ class Dictionary:
         self.iter += 1
         return result
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self._size
 
     def _resize(self) -> None:
@@ -93,7 +93,7 @@ class Dictionary:
         for item in items:
             self[item.key] = item.value
 
-    def clear(self):
+    def clear(self) -> None:
         self._capacity = 8
         self._source = DictSource(self._capacity)
 
@@ -118,4 +118,4 @@ class Dictionary:
         elif isinstance(other, dict):
             for key, value in other.items():
                 self[key] = value
-        raise TypeError(f"Argument is not a dict or Dictionary")
+        raise TypeError("Argument is not a dict or Dictionary")
