@@ -101,3 +101,4 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self._size
+
