@@ -19,18 +19,18 @@ class Dictionary:
 
         while True:
             if not self.table[index]:
-                self.table[index] = [key, value]
+                self.table[index] = [key, hash(key), value]
                 self.length += 1
                 break
             if self.table[index][0] == key:
-                self.table[index][1] = value
+                self.table[index][2] = value
                 break
             index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
         for elem in self.table:
             if elem and elem[0] == key:
-                return elem[1]
+                return elem[2]
         raise KeyError(key)
 
     def __len__(self) -> int:
@@ -44,4 +44,4 @@ class Dictionary:
         self.length = 0
 
         for elem in table_:
-            self[elem[0]] = elem[1]
+            self[elem[0]] = elem[2]
