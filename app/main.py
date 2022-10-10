@@ -87,18 +87,14 @@ class Dictionary:
         self._size -= 1
 
     def __iter__(self) -> Dictionary:
-        self.iter = 0
+        self.iter = iter(self._store)
         return self
 
     def __next__(self) -> Any:
-        while self._store[self.iter] is None:
-            self.iter += 1
-            if self.iter == self._capacity:
-                del self.iter
-                raise StopIteration
-        result = self._store[self.iter].key
-        self.iter += 1
-        return result
+        result = next(self.iter)
+        while result is None:
+            result = next(self.iter)
+        return result.key
 
     def __len__(self) -> int:
         return self._size
