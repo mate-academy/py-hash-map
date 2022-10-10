@@ -1,14 +1,17 @@
+from typing import Hashable
+
+
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
         self.threshold = int(self.capacity * 2 / 3)
         self.items = [[] for _ in range(self.capacity)]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.length
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Hashable, value: any) -> None:
         hash_ = hash(key)
         index_ = hash_ % self.capacity
 
@@ -26,7 +29,7 @@ class Dictionary:
         if self.length == int(self.capacity * (2 / 3)):
             self.resize_hashtable()
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable) -> any:
         hash_ = hash(key)
         index_ = hash_ % self.capacity
 
@@ -36,9 +39,9 @@ class Dictionary:
 
             index_ = (index_ + 1) % self.capacity
 
-        raise KeyError('No such item in the dictionary')
+        raise KeyError("No such item in the dictionary")
 
-    def resize_hashtable(self):
+    def resize_hashtable(self) -> None:
         self.capacity *= 2
         stored_items = self.items
 
