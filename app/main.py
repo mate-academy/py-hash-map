@@ -4,7 +4,11 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.list = [[] for _ in range(self.capacity)]
 
-    def __setitem__(self, key: (int, float, str, tuple, bool), value) -> None:
+    def __setitem__(
+            self,
+            key: (int, float, str, tuple, bool),
+            value: any
+    ) -> None:
         if len(self) >= self.capacity * self.load_factor:
             self.increase_capacity()
 
