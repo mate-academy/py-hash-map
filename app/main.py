@@ -5,7 +5,7 @@ class Dictionary:
         self.list = [[] for _ in range(self.capacity)]
 
     def __setitem__(self, key: (int, float, str, tuple, bool), value) -> None:
-        if len(self) + 1 > self.capacity * self.load_factor:
+        if len(self) >= self.capacity * self.load_factor:
             self.increase_capacity()
 
         key_hash = hash(key) % self.capacity
