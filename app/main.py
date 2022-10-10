@@ -1,5 +1,5 @@
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.capacity = 8
         self.load_factor = 2 / 3
         self.list = [[] for _ in range(self.capacity)]
