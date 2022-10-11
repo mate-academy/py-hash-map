@@ -12,10 +12,10 @@ class Dictionary:
         self.capacity *= 2
         self.size = 0
         self.threshold = int(self.capacity * 2 / 3)
-        new_table = self.hash_table.copy()
+        temporary_table = self.hash_table.copy()
         self.hash_table = [None for _ in range(self.capacity)]
 
-        for element in new_table:
+        for element in temporary_table:
             if element:
                 self.__setitem__(element[0], element[2])
 
