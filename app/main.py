@@ -56,7 +56,7 @@ class Dictionary:
             for key, value in other.items():
                 self[key] = value
 
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             self[key] = value
 
         raise TypeError("Argument is not a dict or Dictionary")
@@ -64,6 +64,7 @@ class Dictionary:
     def clear(self) -> None:
         self._capacity = 8
         self._threshold = 5
+        self._size = 0
         self.storage = [None for _ in range(self._capacity)]
 
     def _resize(self) -> None:
