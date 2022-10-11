@@ -1,4 +1,4 @@
-from typing import Any, Hashable
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -33,12 +33,9 @@ class Dictionary:
         while True:
             if not self.buckets[index]:
                 raise KeyError
-            try:
-                if self.buckets[index][0] == key and \
-                        self.buckets[index][2] == hash_key:
-                    return self.buckets[index][1]
-            except IndexError:
-                raise KeyError
+            elif self.buckets[index][0] == key and \
+                    self.buckets[index][2] == hash_key:
+                return self.buckets[index][1]
             index = (index + 1) % self.capacity
 
     def __len__(self) -> int:
