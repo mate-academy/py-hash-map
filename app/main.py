@@ -2,21 +2,18 @@ from typing import Hashable, Any
 
 
 class Dictionary:
-    SIZE = 0
-    CAPACITY = 8
-    LOAD_FACTOR = 2 / 3
-
     def __init__(self) -> None:
-        self._size = Dictionary.SIZE
-        self._capacity = Dictionary.CAPACITY
-        self._threshold = int(self._capacity * Dictionary.LOAD_FACTOR)
+        self._size = 0
+        self._capacity = 8
+        self._load_factor = 2 / 3
+        self._threshold = int(self._capacity * self._load_factor)
         self._hash_table = [[] for _ in range(self._capacity)]
 
     def resize(self) -> None:
         new_hash_table = self._hash_table.copy()
         self._capacity *= 2
-        self._size = Dictionary.SIZE
-        self._threshold = int(self._capacity * Dictionary.LOAD_FACTOR)
+        self._size = 0
+        self._threshold = int(self._capacity * self._load_factor)
         self._hash_table = [[] for _ in range(self._capacity)]
 
         for element in new_hash_table:
