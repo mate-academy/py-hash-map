@@ -52,12 +52,6 @@ class Dictionary:
             if elements:
                 self.__setitem__(elements[0], elements[2])
 
-    def get(self, key: Hashable, default: Any = None) -> Any:
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
     def __len__(self) -> int:
         return self.size
 
