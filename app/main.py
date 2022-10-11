@@ -3,11 +3,12 @@ from typing import Hashable, Any
 
 class Dictionary:
     SIZE = 0
+    CAPACITY = 8
     LOAD_FACTOR = 2 / 3
 
     def __init__(self) -> None:
         self._size = Dictionary.SIZE
-        self._capacity = 8
+        self._capacity = Dictionary.CAPACITY
         self._threshold = int(self._capacity * Dictionary.LOAD_FACTOR)
         self._hash_table = [[] for _ in range(self._capacity)]
 
