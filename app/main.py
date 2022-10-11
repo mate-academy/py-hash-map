@@ -1,4 +1,5 @@
 from copy import deepcopy
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -8,7 +9,7 @@ class Dictionary:
         self.length = 0
         self.content = [[] for _ in range(self.capacity)]
 
-    def __setitem__(self, key: int, value: int) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hashed_result = hash(key)
         threshold = int(self.capacity * self.load_factor)
 
@@ -28,7 +29,7 @@ class Dictionary:
                 return
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, item: int) -> list | None:
+    def __getitem__(self, item: Hashable) -> list | None:
         hashed_value = hash(item)
         index = hashed_value % self.capacity
 
