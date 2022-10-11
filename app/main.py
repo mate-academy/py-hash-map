@@ -16,8 +16,8 @@ class Dictionary:
                 self.hash_table[index] = [key, value, key_hash]
                 self.length += 1
                 break
-            if self.hash_table[index][0] == key and \
-                    self.hash_table[index][2] == key_hash:
+            if (self.hash_table[index][0] == key
+                    and self.hash_table[index][2] == key_hash):
                 self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.capacity
@@ -26,15 +26,12 @@ class Dictionary:
         key_hash = hash(key)
         index = key_hash % self.capacity
         cell = self.hash_table[index]
-        while True:
-
-            try:
-                if cell[0] == key and cell[2] == key_hash:
-                    return cell[1]
-            except IndexError:
-                raise KeyError(key)
+        while cell:
+            if cell[0] == key and cell[2] == key_hash:
+                return cell[1]
             index = (index + 1) % self.capacity
             cell = self.hash_table[index]
+        raise KeyError(key)
 
     def __len__(self):
         return self.length
