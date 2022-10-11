@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -19,7 +19,7 @@ class Dictionary:
             if element:
                 self.__setitem__(element[0], element[2])
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size == self.threshold:
             self.resize()
 
@@ -39,7 +39,7 @@ class Dictionary:
 
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: Any) -> Any | KeyError:
+    def __getitem__(self, key: Hashable) -> Any | KeyError:
         hash_value = hash(key)
         index = hash_value % self.capacity
 
