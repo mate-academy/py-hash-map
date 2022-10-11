@@ -1,13 +1,16 @@
+from typing import Any, Hashable
+
+
 class Dictionary:
 
     def __init__(self) -> None:
         self.capacity = 8
-        self.threshol = int(self.capacity * 2 / 3)
+        self.threshold = int(self.capacity * 2 / 3)
         self.buckets = [[] for _ in range(self.capacity)]
         self.length = 0
 
-    def __setitem__(self, key, value):
-        if self.length == self.threshol:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.length == self.threshold:
             self.resize_buckets()
         hashed_key = hash(key)
         index = hashed_key % self.capacity
@@ -23,7 +26,7 @@ class Dictionary:
                 return
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         index = hash_key % self.capacity
 
@@ -45,12 +48,8 @@ class Dictionary:
         copy_of_buckets = self.buckets
         self.length = 0
         self.capacity *= 2
-        self.threshol = int(self.capacity * 2 / 3)
+        self.threshold = int(self.capacity * 2 / 3)
         self.buckets = [[] for _ in range(self.capacity)]
         for item in copy_of_buckets:
             if item:
                 self.__setitem__(item[0], item[1])
-
-
-if __name__ == '__main__':
-    pass
