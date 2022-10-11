@@ -8,14 +8,15 @@ class Dictionary:
         self.hash_table = [None for _ in range(self.size)]
 
     def resize(self) -> None:
-        if len(self) > (self.size * (2 / 3)):
-            self.length = 0
-            temp = self.hash_table
-            self.size *= 2
-            self.hash_table = [None for _ in range(self.size)]
-            for el in temp:
-                if el is not None:
-                    self[el[0]] = el[2]
+        if not len(self) > (self.size * (2 / 3)):
+            return
+        self.length = 0
+        temp = self.hash_table
+        self.size *= 2
+        self.hash_table = [None for _ in range(self.size)]
+        for el in temp:
+            if el is not None:
+                self[el[0]] = el[2]
 
     def __len__(self) -> int:
         return self.length
