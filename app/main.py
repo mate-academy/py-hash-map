@@ -23,7 +23,7 @@ class Dictionary:
         self.buckets[index] = (key, value)
         self.resize()
 
-    def __getitem__(self, key: Hashable) -> None:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.count_index(key)
 
         while self.buckets[index]:
