@@ -19,7 +19,7 @@ class Dictionary:
         self.threshold = int(self.capacity * 2 / 3)
 
         for item in this_hash_table:
-            if item:
+            if len(item) > 0:
                 self.__setitem__(item[0], item[2])
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
@@ -34,8 +34,8 @@ class Dictionary:
                 self.hash_table[hash_index] = [key, hash_value, value]
                 self.length += 1
                 break
-            if (self.hash_table[hash_index][0] == key
-                    and self.hash_table[hash_index][1] == hash_value):
+            if (self.hash_table[hash_index][1] == hash_value and
+                    self.hash_table[hash_index][0] == key):
                 self.hash_table[hash_index][2] = value
                 break
 
@@ -47,8 +47,8 @@ class Dictionary:
         hash_index = hash_value % self.capacity
 
         while self.hash_table[hash_index]:
-            if (self.hash_table[hash_index][0] == key
-                    and self.hash_table[hash_index][1] == hash_value):
+            if (self.hash_table[hash_index][1] == hash_value and
+                    self.hash_table[hash_index][0] == key):
                 return self.hash_table[hash_index][2]
             hash_index = (hash_index + 1) % self.capacity
         raise KeyError(key)
