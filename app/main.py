@@ -26,14 +26,12 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         hash_index = hash_key % self.capacity
-        while True:
-            try:
-                if self.hash_table[hash_index][0] == key\
-                   and self.hash_table[hash_index][1] == hash_key:
-                    return self.hash_table[hash_index][2]
-            except IndexError:
-                raise KeyError
+        while self.hash_table[hash_index]:
+            if (self.hash_table[hash_index][0] == key
+                    and self.hash_table[hash_index][1] == hash_key):
+                return self.hash_table[hash_index][2]
             hash_index = (hash_index + 1) % self.capacity
+        raise KeyError
 
     def __setitem__(self, key: Hashable, item: Any) -> None:
         if self.length == self.threshold:
@@ -45,7 +43,7 @@ class Dictionary:
                 self.hash_table[hash_index] = [key, key_hash, item]
                 self.length += 1
                 break
-            if self.hash_table[hash_index][0] == key and (
+            elif self.hash_table[hash_index][0] == key and (
                     self.hash_table[hash_index][1] == key_hash):
                 self.hash_table[hash_index][2] = item
                 break
