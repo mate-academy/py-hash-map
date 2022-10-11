@@ -30,8 +30,6 @@ class Dictionary:
 
         while True:
             if not self.hash_table[index]:
-                if self.size == self.threshold:
-                    self._resize()
                 self.hash_table[index] = [key, hash_key, value]
                 self.size += 1
                 break
