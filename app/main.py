@@ -49,7 +49,7 @@ class Dictionary:
             if self.table[index][0] == key and self.table[index][2] == _hash:
                 return self.table[index][1]
             index = (index + 1) % self.CAPACITY
-        raise KeyError
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.length
