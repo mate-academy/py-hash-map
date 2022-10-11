@@ -55,7 +55,7 @@ class Dictionary:
     def get(self, key: Hashable) -> Any:
         return self.__getitem__(key)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.size
 
     def clear(self) -> None:
