@@ -8,6 +8,7 @@ from typing import Any, Hashable
 class DictItem:
     key: Hashable
     value: Any
+    key_hash: int
 
 
 class DictIterator:
@@ -42,7 +43,10 @@ class Dictionary:
         self._size -= 1
         return value
 
-    def update(self, other: Dictionary | dict) -> None:
+    def update(self,
+               other: Dictionary | dict,
+               **kwargs
+               ) -> None:
         if isinstance(other, Dictionary):
             for index in range(other._capacity):
                 item = other.storage[index]
@@ -51,6 +55,10 @@ class Dictionary:
         elif isinstance(other, dict):
             for key, value in other.items():
                 self[key] = value
+
+        for key, value in kwargs:
+            self[key] = value
+
         raise TypeError("Argument is not a dict or Dictionary")
 
     def clear(self) -> None:
@@ -59,41 +67,58 @@ class Dictionary:
         self.storage = [None for _ in range(self._capacity)]
 
     def _resize(self) -> None:
-        self._size = 0
         items = self.storage
+        self._size = 0
         self._capacity *= 2
         self._threshold = int(self._capacity * self._load_factor)
         self.storage = [None for _ in range(self._capacity)]
+
         for item in items:
             if item is not None:
                 self[item.key] = item.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = hash(key) % self._capacity
+        new_item_hash = hash(key)
+        index = new_item_hash % self._capacity
         key_exists = False
+
         while (item := self.storage[index]) is not None:
-            if item.key == key:
+            if new_item_hash == item.key_hash and item.key == key:
                 key_exists = True
                 break
+
             index = (index + 1) % self._capacity
-        self.storage[index] = DictItem(key, value)
+
+        self.storage[index] = DictItem(key, value, new_item_hash)
+
         if not key_exists:
             self._size += 1
+
             if self._size > self._threshold:
                 self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self._capacity
+        new_item_hash = hash(key)
+        index = new_item_hash % self._capacity
+
         while (item := self.storage[index]) is not None:
-            if item.key == key:
+            if new_item_hash == item.key_hash and item.key == key:
                 return item.value
             index = (index + 1) % self._capacity
+
         raise KeyError(key)
 
     def __delitem__(self, key: Hashable) -> None:
-        index = hash(key) % self._capacity
-        if self.storage[index] is None:
-            raise KeyError(key)
+        new_item_hash = hash(key)
+        index = new_item_hash % self._capacity
+
+        while (item := self.storage[index]) is not None:
+            if new_item_hash == item.key_hash and item.key == key:
+                break
+            elif item is None:
+                raise KeyError(key)
+            index = (index + 1) % self._capacity
+
         self.storage[index] = None
         self._size -= 1
 
