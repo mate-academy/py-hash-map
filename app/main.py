@@ -32,8 +32,8 @@ class Dictionary:
 
         while True:
             if not self.buckets[index]:
-                raise KeyError
-            elif self.buckets[index][0] == key and \
+                raise KeyError(key)
+            if self.buckets[index][0] == key and \
                     self.buckets[index][2] == hash_key:
                 return self.buckets[index][1]
             index = (index + 1) % self.capacity
