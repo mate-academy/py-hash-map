@@ -2,6 +2,7 @@ from typing import Hashable, Any
 
 
 class Dictionary:
+    pass
 
     def __init__(self) -> None:
         self.capacity = 8
@@ -17,9 +18,8 @@ class Dictionary:
                 self.hash_table[index] = [key, value, key_hash]
                 self.length += 1
                 break
-            if self.hash_table[index][0] == key and \
-                    self.hash_table[index][2] == key_hash:
-                self.hash_table[index][1] = value
+            if self.hash_table[index][0] == key:
+                self.hash_table[index] = [key, value, key_hash]
                 break
             index = (index + 1) % self.capacity
         if self.length == self.threshold:
@@ -38,15 +38,12 @@ class Dictionary:
     def __getitem__(self, input_key: Hashable) -> Any:
         key_hash = hash(input_key)
         index = key_hash % self.capacity
-        item = self.hash_table[index]
         while True:
-            try:
-                if item[0] == input_key and item[2] == hash(input_key):
-                    return item[1]
-            except IndexError:
-                raise KeyError
+            if not self.hash_table[index]:
+                raise KeyError("Key Error")
+            if self.hash_table[index][0] == input_key:
+                return self.hash_table[index][1]
             index = (index + 1) % self.capacity
-            item = self.hash_table[index]
 
     def __len__(self) -> int:
         return self.length
