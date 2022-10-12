@@ -43,7 +43,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def resize(self) -> list:
+    def resize(self) -> None:
         new_bucket = deepcopy(self.content)
         self.length = 0
         self.capacity *= 2
@@ -52,5 +52,3 @@ class Dictionary:
         for element in new_bucket:
             if element:
                 self.__setitem__(element[0], element[1])
-
-        return self.content
