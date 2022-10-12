@@ -1,14 +1,13 @@
 from math import floor
 from typing import Hashable, Any
 from copy import deepcopy
-from app.point import Point
 
 
 class Dictionary:
 
     def __init__(self) -> None:
         self._capacity = 8
-        self._threshold = floor(self._capacity * 2/3)
+        self._threshold = floor(self._capacity * 2 / 3)
         self._length = 0
         self._increase_value = 2
         self.table = [[] for _ in range(self._capacity)]
