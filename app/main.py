@@ -52,4 +52,4 @@ class Dictionary:
         self.hash_table = [None for _ in range(self.capacity)]
         for tuple_ in old_table:
             if tuple_ is not None:
-                self.__setitem__(idk[0], idk[2])
+                self.__setitem__(tuple_[0], tuple_[2])
