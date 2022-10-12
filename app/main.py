@@ -54,7 +54,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.load_slots
 
-    def __delitem__(self, key) -> Any:
+    def __delitem__(self, key: Hashable) -> Any:
         hashed_key = hash(key)
         index = hashed_key % self.capacity
         while True:
