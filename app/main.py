@@ -11,7 +11,7 @@ class Dictionary:
     def create_hash_table(self) -> list:
         return [[] for _ in range(self.capacity)]
 
-    def resize(self):
+    def resize(self) -> None:
         new_hash_table = self.free_slots
         self.load_slots = 0
         self.capacity *= 2
@@ -54,7 +54,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.load_slots
 
-    def __delitem__(self, key):
+    def __delitem__(self, key) -> Any:
         hashed_key = hash(key)
         index = hashed_key % self.capacity
         while True:
