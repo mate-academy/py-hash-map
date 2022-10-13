@@ -28,10 +28,15 @@ class Dictionary:
             index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
-        for elem in self.table:
-            if elem and elem[0] == key:
-                return elem[2]
-        raise KeyError(key)
+        index = hash(key) % self.capacity
+
+        while True:
+            if self.table[index]:
+                if self.table[index][0] == key:
+                    return self.table[index][2]
+                index = (index + 1) % self.capacity
+                continue
+            raise KeyError(key)
 
     def __len__(self) -> int:
         return self.length
