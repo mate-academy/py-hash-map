@@ -11,7 +11,7 @@ class Dictionary:
         self.table = [[] for _ in range(self.capacity)]
 
     def table_resize(self) -> None:
-        hash_table = self.table.copy()
+        hash_table = self.table
         self.capacity *= 2
         self.size = 0
         self.threshold = int(self.capacity * self.load_factor)
