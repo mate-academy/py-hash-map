@@ -59,12 +59,6 @@ class Dictionary:
 
         raise KeyError
 
-    def pop(self, key: Hashable) -> Any:
-        item = self[key]
-        del self[key]
-
-        return item
-
     def clear(self) -> None:
         self.hash_table = [[] for _ in range(self.capacity)]
         self.length = 0
