@@ -2,7 +2,6 @@ from typing import Hashable, Any
 
 
 class Dictionary:
-
     CAPACITY = 8
     LOAD_FACTOR = 2 / 3
 
