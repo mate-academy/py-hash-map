@@ -12,41 +12,41 @@ class Dictionary:
         self.length = 0
 
     def resize_table(self) -> None:
-        table_copy = self.table.copy()
+        table_copy = self.table
         self.length = 0
         self.CAPACITY *= 2
         self.threshold = int(self.CAPACITY * self.LOAD_FACTOR)
         self.table = [[] for _ in range(self.CAPACITY)]
-        for x in table_copy:
-            if x:
-                self.__setitem__(x[0], x[1])
+        for element in table_copy:
+            if element:
+                self[element[0]] = element[1]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        _hash = hash(key)
-        index = _hash % self.CAPACITY
+        hash_ = hash(key)
+        index = hash_ % self.CAPACITY
 
         if self.length == self.threshold:
             self.resize_table()
 
         while True:
             if not self.table[index]:
-                self.table[index] = [key, value, _hash]
+                self.table[index] = [key, value, hash_]
                 self.length += 1
                 return
 
             if self.table[index][0] == key and \
-                    self.table[index][2] == _hash:
+                    self.table[index][2] == hash_:
                 self.table[index][1] = value
                 return
 
             index = (index + 1) % self.CAPACITY
 
     def __getitem__(self, key: Hashable) -> Any:
-        _hash = hash(key)
-        index = _hash % self.CAPACITY
+        hash_ = hash(key)
+        index = hash_ % self.CAPACITY
 
         while self.table[index]:
-            if self.table[index][0] == key and self.table[index][2] == _hash:
+            if self.table[index][0] == key and self.table[index][2] == hash_:
                 return self.table[index][1]
             index = (index + 1) % self.CAPACITY
         raise KeyError(key)
