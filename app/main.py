@@ -40,17 +40,19 @@ class Dictionary:
     def resize(self) -> None:
         threshold = self.capacity * self.LOAD_FACTOR
 
-        if self.size > threshold:
-            self.capacity *= 2
-            old_dictionary = self.buckets
+        if self.size <= threshold:
+            return
 
-            self.buckets = [[] for _ in range(self.capacity)]
+        self.capacity *= 2
+        old_dictionary = self.buckets
 
-            for element in old_dictionary:
-                if element:
-                    key, value = element
-                    self.__setitem__(key, value)
-                    self.size -= 1
+        self.buckets = [[] for _ in range(self.capacity)]
+
+        for element in old_dictionary:
+            if element:
+                key, value = element
+                self.__setitem__(key, value)
+                self.size -= 1
 
     def count_index(self, new_key: Hashable) -> int:
         hashed_value = hash(new_key)
