@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,38 +8,29 @@ class Dictionary:
         self.threshold = int(self.capacity * 2 / 3)
         self.hash_table = [None for _ in range(self.capacity)]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size == self.threshold:
             self.resize()
         hash_ = hash(key)
-        index_ = hash_ % self.capacity
-        if self.hash_table[index_] is None:
-            self.hash_table[index_] = (key, hash_, value)
-            self.size += 1
-            return
-        if self.hash_table[index_][0] == key:
-            self.hash_table[index_] = (key, hash_, value)
-            return
-        for _ in range(self.capacity):
-            index_ = (index_ + 1) % self.capacity
-            if self.hash_table[index_] is None:
-                self.hash_table[index_] = (key, hash_, value)
+        index = hash_ % self.capacity
+        while True:
+            if self.hash_table[index] is None:
+                self.hash_table[index] = (key, hash_, value)
                 self.size += 1
                 return
-            if self.hash_table[index_][0] == key:
-                self.hash_table[index_] = (key, hash_, value)
+            if self.hash_table[index][0] == key:
+                self.hash_table[index] = (key, hash_, value)
                 return
+            index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_ = hash(key)
-        index_ = hash_ % self.capacity
-        for _ in range(self.capacity):
-            if self.hash_table[index_] is None:
-                raise KeyError
-            if self.hash_table[index_][0] == key:
-                return self.hash_table[index_][2]
-            index_ = (index_ + 1) % self.capacity
-        raise KeyError
+        index = hash_ % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][0] == key:
+                return self.hash_table[index][2]
+            index = (index + 1) % self.capacity
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.size
@@ -48,7 +39,7 @@ class Dictionary:
         self.capacity *= 2
         self.size = 0
         self.threshold = int(self.capacity * 2 / 3)
-        old_table = self.hash_table.copy()
+        old_table = self.hash_table
         self.hash_table = [None for _ in range(self.capacity)]
         for tuple_ in old_table:
             if tuple_ is not None:
