@@ -3,7 +3,7 @@ from typing import Any, Hashable
 
 class Dictionary:
     def __init__(self) -> None:
-        self.load_factor = 2/3
+        self.load_factor = 2 / 3
         self.capacity = 8
         self.threshold = int(self.capacity * self.load_factor)
         self.hash_table = [[] for _ in range(self.capacity)]
@@ -42,8 +42,8 @@ class Dictionary:
         index = key_hash % self.capacity
 
         while self.hash_table[index]:
-            if (self.hash_table[index][0] == key and
-                    self.hash_table[index][1] == key_hash):
+            if (self.hash_table[index][0] == key
+                    and self.hash_table[index][1] == key_hash):
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
         raise KeyError
