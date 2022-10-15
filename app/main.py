@@ -3,69 +3,76 @@ from typing import Any, Hashable
 
 class Dictionary:
     def __init__(self) -> None:
-        self.size = 0
+        self._size = 0
         self._capacity = 8
-        self.threshold = int(self._capacity / 3 * 2)
-        self.hash_table = [[None, None, None]] * self._capacity
+        self._threshold = int(self._capacity / 3 * 2)
+        self._hash_table = [[] for _ in range(self._capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if isinstance(key, (dict, set, list)):
-            raise TypeError(f"unhashable type: '{type(key)}'")
+        hashed_key = hash(key)
+        index = hashed_key % self._capacity
 
-        index = hash(key) % self._capacity
-        while True:
+        if self._hash_table[index]:
+            for each in self._hash_table[index]:
+                if each[0] == key:
+                    each[1] = value
+                    return
 
-            if self.hash_table[index][2] is None:
-                self.size += 1
-                self.hash_table[index] = [key, value, hash(key)]
-                if self.size > self.threshold:
-                    self._resize()
-                break
+        self._hash_table[index].append([key, value, hashed_key])
+        self._size += 1
 
-            if self.hash_table[index][0] == key:
-                self.hash_table[index] = [key, value, hash(key)]
-                break
-
-            index += 1
-            if index == self._capacity:
-                index = 0
+        if self._size > self._threshold:
+            self._resize()
 
     def __getitem__(self, item: Hashable) -> Any:
-        if isinstance(item, (dict, set, list)):
-            raise TypeError(f"unhashable type: '{type(item)}'")
 
         index = hash(item) % self._capacity
-        start = index
-        if not self.hash_table[index][0]:
-            raise KeyError(f"there is no such key {item}")
 
-        while self.hash_table[index][0] != item:
-            index += 1
-            if index == self._capacity:
-                index = 0
-            if index == start:
-                raise KeyError(f"there is no such key {item}")
+        if self._hash_table[index]:
+            for cell in self._hash_table[index]:
+                if cell[0] == item:
+                    return cell[1]
 
-        return self.hash_table[index][1]
+        raise KeyError(f"there is no such key '{item}'")
 
     def __len__(self) -> int:
-        return self.size
+        return self._size
 
     def _resize(self) -> None:
         self._capacity *= 2
-        self.threshold = int(self._capacity / 3 * 2)
+        self._threshold = int(self._capacity / 3 * 2)
+        new = [[] for _ in range(self._capacity)]
 
-        new = [[None, None, None]] * self._capacity
+        for cell in self._hash_table:
+            if cell:
+                for element in cell:
+                    index = element[2] % self._capacity
+                    new[index].append(element)
+        self._hash_table = new
 
-        for element in self.hash_table:
-            if element[2] is None:
-                continue
-            index = hash(element[0]) % self._capacity
+    def clear(self) -> None:
+        self._capacity = 8
+        self._size = 0
+        self._hash_table = [[] for _ in range(self._capacity)]
 
-            while new[index][2] is not None:
-                index += 1
-                if index == self._capacity:
-                    index = 0
+    def __delitem__(self, item: Hashable) -> None:
 
-            new[index] = [element[0], element[1], hash(element[0])]
-        self.hash_table = new
+        index = hash(item) % self._capacity
+
+        if self._hash_table[index]:
+            for i, cell in enumerate(self._hash_table[index]):
+                if cell[0] == item:
+                    del self._hash_table[index][i]
+                    return
+        raise KeyError(f"there is no such key '{item}'")
+
+    def get(self, key: Hashable, value: Any = None) -> Any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return value
+
+    def pop(self, item: Hashable) -> Any:
+        value = self[item]
+        del self[item]
+        return value
