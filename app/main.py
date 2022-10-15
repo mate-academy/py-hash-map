@@ -8,17 +8,18 @@ class Dictionary:
         self.capacity = 8
         self.threshold = int(self.capacity * 2 / 3)
         self.length = 0
-        self.hash_table = [[] for _ in range(self.capacity)]
+        self.hash_table = [None for _ in range(self.capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         key_hash = hash(key)
         index = key_hash % self.capacity
         while True:
-            if len(self.hash_table[index]) == 0:
+            if self.hash_table[index] is None:
                 self.hash_table[index] = [key, value, key_hash]
                 self.length += 1
                 break
-            if self.hash_table[index][0] == key:
+            if self.hash_table[index][2] == key_hash and \
+                    self.hash_table[index][0] == key:
                 self.hash_table[index] = [key, value, key_hash]
                 break
             index = (index + 1) % self.capacity
@@ -30,9 +31,9 @@ class Dictionary:
         self.capacity *= 2
         self.length = 0
         self.threshold = int(self.capacity * 2 / 3)
-        self.hash_table = [[] for _ in range(self.capacity)]
+        self.hash_table = [None for _ in range(self.capacity)]
         for item in temp_table:
-            if len(item) != 0:
+            if item is not None:
                 self.__setitem__(item[0], item[1])
 
     def __getitem__(self, input_key: Hashable) -> Any:
@@ -41,7 +42,8 @@ class Dictionary:
         while True:
             if not self.hash_table[index]:
                 raise KeyError("Key Error")
-            if self.hash_table[index][0] == input_key:
+            if self.hash_table[index][2] == key_hash and\
+                    self.hash_table[index][0] == input_key:
                 return self.hash_table[index][1]
             index = (index + 1) % self.capacity
 
@@ -53,7 +55,7 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.capacity
-        self.hash_table[index] = []
+        self.hash_table[index] = [None, None, hash(key)]
 
     def get(self, key: Hashable) -> Any:
         return self.__getitem__(key)
