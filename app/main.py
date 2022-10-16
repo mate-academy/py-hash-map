@@ -29,8 +29,7 @@ class Dictionary:
         hash_index = hash_key % self.capacity
 
         while self.hash_table[hash_index]:
-            if (self.hash_table[hash_index][0] == key
-                    and self.hash_table[hash_index][1] == hash_key):
+            if self.hash_table[hash_index][0] == key:
                 return self.hash_table[hash_index][2]
             hash_index = (hash_index + 1) % self.capacity
         raise KeyError
@@ -46,8 +45,7 @@ class Dictionary:
                 self.hash_table[hash_index] = [key, hash_key, item]
                 self.length += 1
                 break
-            elif self.hash_table[hash_index][0] == key and (
-                    self.hash_table[hash_index][1] == hash_key):
+            elif self.hash_table[hash_index][0] == key:
                 self.hash_table[hash_index][2] = item
                 break
             hash_index = (hash_index + 1) % self.capacity
