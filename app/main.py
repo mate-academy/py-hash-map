@@ -2,10 +2,14 @@ from typing import Any, Hashable
 
 
 class Dictionary:
+    """ each element in hash_table is considered as chain,
+        so we need check if there is node with key we get, using 'for' cycle
+        if it is - reassign/read/delete value/node
+        or if not - just append node to chain/raise KeyError"""
     def __init__(self) -> None:
         self._size = 0
         self._capacity = 8
-        self._threshold = int(self._capacity / 3 * 2)
+        self._threshold = int(self._capacity * 2 / 3)
         self._hash_table = [[] for _ in range(self._capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
@@ -13,9 +17,9 @@ class Dictionary:
         index = hashed_key % self._capacity
 
         if self._hash_table[index]:
-            for each in self._hash_table[index]:
-                if each[0] == key:
-                    each[1] = value
+            for cell in self._hash_table[index]:
+                if cell[0] == key:
+                    cell[1] = value
                     return
 
         self._hash_table[index].append([key, value, hashed_key])
@@ -40,7 +44,7 @@ class Dictionary:
 
     def _resize(self) -> None:
         self._capacity *= 2
-        self._threshold = int(self._capacity / 3 * 2)
+        self._threshold = int(self._capacity * 2 / 3)
         new = [[] for _ in range(self._capacity)]
 
         for cell in self._hash_table:
