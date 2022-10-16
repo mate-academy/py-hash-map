@@ -2,54 +2,48 @@ from typing import Hashable, Any
 
 
 class Dictionary:
-    LOAD_FACTOR = 2 / 3
+
+    THRESHOLD = 2 / 3
 
     def __init__(self) -> None:
         self.capacity = 8
-        self.length = 0
-        self.threshold = int(self.capacity * self.LOAD_FACTOR)
-        self.hash_table = self.make_hash_table()
-
-    def make_hash_table(self) -> list:
-        return [[] for _ in range(self.capacity)]
-
-    def resize(self) -> None:
-        old_hash_table = self.hash_table
-        self.length = 0
-        self.capacity *= 2
-        self.threshold = int(self.capacity * self.LOAD_FACTOR)
-        self.hash_table = self.make_hash_table()
-        for element in old_hash_table:
-            if element:
-                self.__setitem__(element[0], element[2])
-
-    def __getitem__(self, key: Hashable) -> Any:
-        key_hash = hash(key)
-        hash_index = key_hash % self.capacity
-        while True:
-            try:
-                if self.hash_table[hash_index][0] == key\
-                   and self.hash_table[hash_index][1] == key_hash:
-                    return self.hash_table[hash_index][2]
-            except IndexError:
-                raise KeyError
-            hash_index = (hash_index + 1) % self.capacity
+        self.size = 0
+        self.threshold = int(self.capacity * self.THRESHOLD)
+        self.hash_table = [None for _ in range(self.capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.length == self.threshold:
+        if self.size == self.threshold:
             self.resize()
-        key_hash = (hash(key))
-        hash_index = key_hash % self.capacity
+        hash_ = hash(key)
+        index = hash_ % self.capacity
         while True:
-            if not self.hash_table[hash_index]:
-                self.hash_table[hash_index] = [key, key_hash, value]
-                self.length += 1
-                break
-            if self.hash_table[hash_index][0] == key and\
-                    self.hash_table[hash_index][1] == key_hash:
-                self.hash_table[hash_index][2] = value
-                break
-            hash_index = (hash_index + 1) % self.capacity
+            if self.hash_table[index] is None:
+                self.hash_table[index] = (key, hash_, value)
+                self.size += 1
+                return
+            if self.hash_table[index][0] == key:
+                self.hash_table[index] = (key, hash_, value)
+                return
+            index = (index + 1) % self.capacity
+
+    def __getitem__(self, key: Hashable) -> Any:
+        hash_ = hash(key)
+        index = hash_ % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][0] == key:
+                return self.hash_table[index][2]
+            index = (index + 1) % self.capacity
+        raise KeyError(key)
 
     def __len__(self) -> int:
-        return self.length
+        return self.size
+
+    def resize(self) -> None:
+        self.capacity *= 2
+        self.size = 0
+        self.threshold = int(self.capacity * self.THRESHOLD)
+        old_table = self.hash_table
+        self.hash_table = [None for _ in range(self.capacity)]
+        for tuple_ in old_table:
+            if tuple_ is not None:
+                self.__setitem__(tuple_[0], tuple_[2])
