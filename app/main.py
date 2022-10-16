@@ -53,3 +53,9 @@ class Dictionary:
                 self.table[index][2] = value
                 return
             index = (index + 1) % self._capacity
+
+    def clear(self):
+        self._capacity = 8
+        self._length = 0
+        self._increase_value = 2
+        self.table = [[] for _ in range(self._capacity)]
