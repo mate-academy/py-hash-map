@@ -54,7 +54,7 @@ class Dictionary:
                 return
             index = (index + 1) % self._capacity
 
-    def clear(self):
+    def clear(self) -> None:
         self._capacity = 8
         self._length = 0
         self._increase_value = 2
