@@ -17,32 +17,25 @@ class Dictionary:
         hash_key = hash(key)
         index = self.get_index(hash_key)
 
-        if self.hash_table[index]:
-
-            while self.hash_table[index]:
-                if key == self.hash_table[index][0]:
-                    self.hash_table[index][1] = value
-                    return
-                index += 1
-                if index == len(self.hash_table):
-                    index = 0
-            self.hash_table[index] = [key, value, key.__hash__()]
-            self.length += 1
-        else:
-            self.hash_table[index] = [key, value, key.__hash__()]
-            self.length += 1
+        while self.hash_table[index]:
+            if key == self.hash_table[index][0]:
+                self.hash_table[index][1] = value
+                return
+            index += 1
+            if index == len(self.hash_table):
+                index = 0
+        self.hash_table[index] = [key, value, hash(key)]
+        self.length += 1
 
     def __getitem__(self, key: Any) -> Any:
-        key_list = []
-        for string in self.hash_table:
-            if len(string) != 0:
-                key_list.append(string[0])
-        if len(key_list) == 0 or key not in key_list:
-            raise KeyError
 
+        check_key = True
         for item in self.hash_table:
             if item != [] and item[0] == key:
                 return item[1]
+
+        if check_key:
+            raise KeyError
 
     def __len__(self) -> int:
         return self.length
