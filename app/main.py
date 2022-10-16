@@ -1,6 +1,6 @@
 from math import floor
 from typing import Hashable, Any
-from copy import deepcopy
+import copy
 
 
 class Dictionary:
@@ -16,7 +16,7 @@ class Dictionary:
         return self._length
 
     def __resize_table(self) -> None:
-        table_ = deepcopy(self.table)
+        table_ = copy.copy(self.table)
         self._length = 0
         self._capacity = self._capacity * self._increase_value
         self.table = [[] for _ in range(self._capacity)]
@@ -32,8 +32,8 @@ class Dictionary:
         while True:
             if not self.table[index]:
                 raise KeyError(item)
-            if self.table[index][0] == item and hash_ == self.table[index][1]:
-                return self.table[index][2]
+            if self.table[index][0] == item and hash_ == self.table[index][2]:
+                return self.table[index][1]
             index = (hash_ + 1) % self._capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
@@ -49,8 +49,8 @@ class Dictionary:
                 self.table[index] = [key, value, hash_]
                 self._length += 1
                 return
-            if key == self.table[index][0] and hash_ == self.table[index][1]:
-                self.table[index][2] = value
+            if key == self.table[index][0] and hash_ == self.table[index][2]:
+                self.table[index][1] = value
                 return
             index = (index + 1) % self._capacity
 
