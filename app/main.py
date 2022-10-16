@@ -1,13 +1,11 @@
-from math import floor
 from typing import Hashable, Any
-import copy
 
 
 class Dictionary:
 
     def __init__(self) -> None:
         self._capacity = 8
-        self._threshold = floor(self._capacity * 2 / 3)
+        self._threshold = int(self._capacity * 2 / 3)
         self._length = 0
         self._increase_value = 2
         self.table = [[] for _ in range(self._capacity)]
@@ -16,14 +14,16 @@ class Dictionary:
         return self._length
 
     def __resize_table(self) -> None:
-        table_ = copy.copy(self.table)
+
+        table_ = self.table.copy()
         self._length = 0
-        self._capacity = self._capacity * self._increase_value
+        self._capacity *= 2
+        self._threshold = int(self._capacity * 2 / 3)
         self.table = [[] for _ in range(self._capacity)]
 
         for cell in table_:
-            if cell != 0:
-                self.__setitem__(cell[0], cell[1])
+            if cell:
+                self[cell[0]] = cell[1]
 
     def __getitem__(self, item: Hashable) -> list or None:
         hash_ = hash(item)
@@ -34,7 +34,7 @@ class Dictionary:
                 raise KeyError(item)
             if self.table[index][0] == item and hash_ == self.table[index][2]:
                 return self.table[index][1]
-            index = (hash_ + 1) % self._capacity
+            index = (index + 1) % self._capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
 
@@ -48,10 +48,10 @@ class Dictionary:
             if not self.table[index]:
                 self.table[index] = [key, value, hash_]
                 self._length += 1
-                return
+                break
             if key == self.table[index][0] and hash_ == self.table[index][2]:
                 self.table[index][1] = value
-                return
+                break
             index = (index + 1) % self._capacity
 
     def clear(self) -> None:
