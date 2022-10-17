@@ -10,12 +10,10 @@ class Dictionary:
         self.threshold = int(self.capacity * self.load_factor)
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_key = hash(key)
-        index = hash_key % self.capacity
+        index = hash(key) % self.capacity
 
         while self.table[index]:
-            if (self.table[index][0] == key
-                    and self.table[index][2] == hash_key):
+            if self.table[index][0] == key:
                 return self.table[index][1]
             index = (index + 1) % self.capacity
 
@@ -31,8 +29,7 @@ class Dictionary:
                 self.table[index] = [key, value, hash_key]
                 self.length += 1
                 break
-            if (key == self.table[index][0]
-                    and hash_key == self.table[index][2]):
+            if key == self.table[index][0]:
                 self.table[index][1] = value
                 break
             index = (index + 1) % self.capacity
