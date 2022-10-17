@@ -47,12 +47,12 @@ class Dictionary:
         old_dictionary = self.buckets
 
         self.buckets = [[] for _ in range(self.capacity)]
+        self.size = 0
 
         for element in old_dictionary:
             if element:
                 key, value = element
                 self.__setitem__(key, value)
-                self.size -= 1
 
     def count_index(self, new_key: Hashable) -> int:
         hashed_value = hash(new_key)
