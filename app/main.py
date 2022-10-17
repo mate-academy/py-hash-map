@@ -7,7 +7,6 @@ class Dictionary:
         self._capacity = 8
         self._threshold = int(self._capacity * 2 / 3)
         self._length = 0
-        self._increase_value = 2
         self.table = [[] for _ in range(self._capacity)]
 
     def __len__(self) -> int:
@@ -15,13 +14,13 @@ class Dictionary:
 
     def __resize_table(self) -> None:
 
-        table_ = self.table.copy()
+        table = self.table
         self._length = 0
         self._capacity *= 2
         self._threshold = int(self._capacity * 2 / 3)
         self.table = [[] for _ in range(self._capacity)]
 
-        for cell in table_:
+        for cell in table:
             if cell:
                 self[cell[0]] = cell[1]
 
@@ -29,12 +28,13 @@ class Dictionary:
         hash_ = hash(item)
         index = hash_ % self._capacity
 
-        while True:
-            if not self.table[index]:
-                raise KeyError(item)
+        while self.table[index]:
+
             if self.table[index][0] == item and hash_ == self.table[index][2]:
                 return self.table[index][1]
             index = (index + 1) % self._capacity
+
+        raise KeyError(item)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
 
@@ -57,5 +57,4 @@ class Dictionary:
     def clear(self) -> None:
         self._capacity = 8
         self._length = 0
-        self._increase_value = 2
         self.table = [[] for _ in range(self._capacity)]
