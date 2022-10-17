@@ -81,13 +81,9 @@ class Dictionary:
         return str(dict_repr)
 
     def resize(self) -> None:
+        hash_table_old = self.hash_table
         self.hash_capacity *= 2
-        hash_table_new = [None] * self.hash_capacity
-        for cell in self.hash_table:
+        self.hash_table = [None] * self.hash_capacity
+        for cell in hash_table_old:
             if cell is not None:
-                hash_key = hash(cell[0])
-                hash_index = hash_key % self.hash_capacity
-                while hash_table_new[hash_index] is not None:
-                    hash_index = (hash_index + 1) % self.hash_capacity
-                hash_table_new[hash_index] = cell
-        self.hash_table = hash_table_new
+                self.__setitem__(cell[0], cell[2])
