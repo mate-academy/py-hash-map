@@ -54,12 +54,20 @@ class Dictionary:
         self.hash_table.clear()
 
     def __delitem__(self, key: Hashable) -> None:
-        index = hash(key) % self.capacity
-        self.hash_table[index] = [None, None, hash(key)]
+        temp_table = self.hash_table
+        self.length = 0
+        key_hash = hash(key)
+        index = key_hash % self.capacity
+        self.hash_table[index] = None
+        self.hash_table = [None for _ in range(self.capacity)]
+        for item in temp_table:
+            if item is not None:
+                self.__setitem__(item[0], item[1])
 
     def get(self, key: Hashable) -> Any:
         return self.__getitem__(key)
 
     def pop(self, key: Hashable) -> Any:
+        element = self.__getitem__(key)
         self.__delitem__(key)
-        return self.__getitem__(key)
+        return element
