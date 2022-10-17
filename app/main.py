@@ -2,13 +2,15 @@ from typing import Any
 
 
 class Dictionary:
-    hash_capacity: int = 8
-    hash_table: list = [None] * hash_capacity
-    iter_table: list = []
-    iter_no = 0
+    def __init__(self) -> None:
+        self.hash_capacity: int = 8
+        self.hash_table: list = [None] * self.hash_capacity
+        self.iter_table: list = []
+        self.iter_no = 0
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        self.resize()
+        if self.hash_capacity / (self.__len__() + 1) <= 1.5:
+            self.resize()
         hash_key = hash(key)
         hash_index = hash_key % self.hash_capacity
         while self.hash_table[hash_index] is not None:
@@ -71,15 +73,19 @@ class Dictionary:
             return f"{self.iter_table[self.iter_no][0]}: " \
                    f"{self.iter_table[self.iter_no][2]}"
 
+    def __repr__(self) -> str:
+        dict_repr = {cell[0]: cell[2]
+                     for cell in self.hash_table if cell is not None}
+        print(dict_repr)
+
     def resize(self) -> None:
-        if self.hash_capacity / (self.__len__() + 1) <= 1.5:
-            self.hash_capacity *= 2
-            hash_table_new = [None] * self.hash_capacity
-            for cell in self.hash_table:
-                if cell is not None:
-                    hash_key = hash(cell[0])
-                    hash_index = hash_key % self.hash_capacity
-                    while hash_table_new[hash_index] is not None:
-                        hash_index = (hash_index + 1) % self.hash_capacity
-                    hash_table_new[hash_index] = cell
-            self.hash_table = hash_table_new
+        self.hash_capacity *= 2
+        hash_table_new = [None] * self.hash_capacity
+        for cell in self.hash_table:
+            if cell is not None:
+                hash_key = hash(cell[0])
+                hash_index = hash_key % self.hash_capacity
+                while hash_table_new[hash_index] is not None:
+                    hash_index = (hash_index + 1) % self.hash_capacity
+                hash_table_new[hash_index] = cell
+        self.hash_table = hash_table_new
