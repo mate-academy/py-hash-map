@@ -23,7 +23,7 @@ class Dictionary:
                 self.length += 1
                 return
 
-            if self.table[index][0] == key and self.table[index][2] == hash_:
+            if self.table[index][2] == hash_ and self.table[index][0] == key:
                 self.table[index][1] = value
                 return
             index = (index + 1) % self.capacity
@@ -33,7 +33,7 @@ class Dictionary:
         index = hash_ % self.capacity
 
         while self.table[index]:
-            if self.table[index][0] == key and self.table[index][2] == hash_:
+            if self.table[index][2] == hash_ and self.table[index][0] == key:
                 return self.table[index][1]
             index = (index + 1) % self.capacity
         raise KeyError(key)
