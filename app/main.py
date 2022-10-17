@@ -9,30 +9,31 @@ class Dictionary:
         self.iter_no = 0
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if self.hash_capacity / (self.__len__() + 1) <= 1.5:
-            self.resize()
-        hash_key = hash(key)
-        hash_index = hash_key % self.hash_capacity
-        while self.hash_table[hash_index] is not None:
-            hash_index: int = (hash_index + 1) % self.hash_capacity
-        self.hash_table[hash_index] = [key, hash_key, value]
+        try:
+            hash_key = hash(key)
+            if self.hash_capacity / (self.__len__() + 1) <= 1.5:
+                self.resize()
+            hash_index = hash_key % self.hash_capacity
+            while self.hash_table[hash_index] is not None:
+                hash_index: int = (hash_index + 1) % self.hash_capacity
+            self.hash_table[hash_index] = [key, hash_key, value]
+        except TypeError:
+            print(f"Unhashable type: {str(type(key)).split()[-1]}!")
 
     def __getitem__(self, key: Any) -> Any:
-        hash_key = hash(key)
-        hash_index = hash_key % self.hash_capacity
         try:
+            hash_key = hash(key)
+            hash_index = hash_key % self.hash_capacity
             while self.hash_table[hash_index][1] != hash_key \
                     and self.hash_table[hash_index][0] != key:
                 hash_index = (hash_index + 1) % self.hash_capacity
             result_value = self.hash_table[hash_index][2]
-        except TypeError:
-            print("Not found that index!")
-            return
-        else:
             return result_value
+        except (TypeError, KeyError):
+            print("Not found that index!")
 
     def __len__(self) -> int:
-        return sum([1 for value in self.hash_table if value])
+        return len(self.hash_table) - self.hash_table.count(None)
 
     def clear(self) -> None:
         self.hash_table = [None] * self.hash_capacity
@@ -60,23 +61,24 @@ class Dictionary:
                 if other_cell is not None:
                     self.__setitem__(other_cell[0], other_cell[2])
 
-    def __iter__(self) -> str:
-        for cell in self.hash_table:
-            if cell is not None:
-                self.iter_table.append(cell)
-        return f"{self.iter_table[self.iter_no][0]}: " \
-               f"{self.iter_table[self.iter_no][2]}"
+    def __iter__(self) -> Any:
+        self.iter_no = 0
+        return self
 
     def __next__(self) -> str:
-        self.iter_no += 1
-        if self.iter_no < len(self.iter_table):
-            return f"{self.iter_table[self.iter_no][0]}: " \
-                   f"{self.iter_table[self.iter_no][2]}"
+        if self.iter_no < self.hash_capacity - 1:
+            self.iter_no += 1
+            if self.hash_table[self.iter_no] is None:
+                exit()
+            return f"{self.hash_table[self.iter_no][0]}: " \
+                   f"{self.hash_table[self.iter_no][2]}"
+        else:
+            raise StopIteration
 
     def __repr__(self) -> str:
         dict_repr = {cell[0]: cell[2]
                      for cell in self.hash_table if cell is not None}
-        print(dict_repr)
+        return str(dict_repr)
 
     def resize(self) -> None:
         self.hash_capacity *= 2
