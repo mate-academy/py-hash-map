@@ -24,18 +24,21 @@ class Dictionary:
             index += 1
             if index == len(self.hash_table):
                 index = 0
-        self.hash_table[index] = [key, value, hash(key)]
+        self.hash_table[index] = [key, value, hash_key]
         self.length += 1
 
     def __getitem__(self, key: Any) -> Any:
 
-        check_key = True
-        for item in self.hash_table:
-            if item != [] and item[0] == key:
-                return item[1]
+        hash_key = hash(key)
+        index = self.get_index(hash_key)
 
-        if check_key:
-            raise KeyError
+        while self.hash_table[index]:
+            if (self.hash_table[index][0] == key
+                    and self.hash_table[index][2] == hash_key):
+                return self.hash_table[index][1]
+            index += 1
+
+        raise KeyError
 
     def __len__(self) -> int:
         return self.length
