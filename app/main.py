@@ -54,11 +54,11 @@ class Dictionary:
         self.hash_table.clear()
 
     def __delitem__(self, key: Hashable) -> None:
-        temp_table = self.hash_table
-        self.length = 0
         key_hash = hash(key)
         index = key_hash % self.capacity
         self.hash_table[index] = None
+        temp_table = self.hash_table
+        self.length = 0
         self.hash_table = [None for _ in range(self.capacity)]
         for item in temp_table:
             if item is not None:
