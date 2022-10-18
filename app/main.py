@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,29 +8,33 @@ class Dictionary:
         self.iter_table: list = []
         self.iter_no = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         try:
             hash_key = hash(key)
             if self.hash_capacity / (self.__len__() + 1) <= 1.5:
                 self.resize()
             hash_index = hash_key % self.hash_capacity
             while self.hash_table[hash_index] is not None:
+                if self.hash_table[hash_index][0] == key \
+                        and self.hash_table[hash_index][1] == hash_key:
+                    self.hash_table[hash_index][2] = value
+                    break
                 hash_index: int = (hash_index + 1) % self.hash_capacity
             self.hash_table[hash_index] = [key, hash_key, value]
         except TypeError:
             print(f"Unhashable type: {str(type(key)).split()[-1]}!")
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         try:
             hash_key = hash(key)
             hash_index = hash_key % self.hash_capacity
             while self.hash_table[hash_index][1] != hash_key \
-                    and self.hash_table[hash_index][0] != key:
+                    or self.hash_table[hash_index][0] != key:
                 hash_index = (hash_index + 1) % self.hash_capacity
             result_value = self.hash_table[hash_index][2]
             return result_value
         except (TypeError, KeyError):
-            print("Not found that index!")
+            raise KeyError("Not found that index!")
 
     def __len__(self) -> int:
         return len(self.hash_table) - self.hash_table.count(None)
@@ -38,7 +42,7 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table = [None] * self.hash_capacity
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_key = hash(key)
         hash_index = hash_key % self.hash_capacity
         while self.hash_table[hash_index][1] != hash_index \
@@ -50,7 +54,7 @@ class Dictionary:
         return {cell_no[0]: cell_no[2]
                 for cell_no in self.hash_table if cell_no is not None}
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         deleted_value = self.__getitem__(key)
         self.__delitem__(key)
         return deleted_value
