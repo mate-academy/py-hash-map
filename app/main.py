@@ -27,32 +27,32 @@ class Dictionary:
             old_hash_table = self.hash_table
 
             self.hash_table = [[] for _ in range(self.capacity)]
+            self.length = 0
 
             for item in old_hash_table:
                 if item:
-                    key, value = item
+                    key, hash_, value = item
                     self.__setitem__(key, value)
-                    self.length -= 1
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.hash_table_index(key)
 
         while self.hash_table[index]:
-            key_, value_ = self.hash_table[index]
+            key_, hash_, value_ = self.hash_table[index]
             if key == key_:
-                self.hash_table[index] = (key, value)
+                self.hash_table[index] = (key, hash(key), value)
                 return
             index = (index + 1) % self.capacity
 
         self.length += 1
-        self.hash_table[index] = (key, value)
+        self.hash_table[index] = (key, hash(key), value)
         self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.hash_table_index(key)
 
         while self.hash_table[index]:
-            key_, value = self.hash_table[index]
+            key_, hash_, value = self.hash_table[index]
             if key == key_:
                 return value
             index = (index + 1) % self.capacity
