@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from typing import Any
 
 
@@ -39,6 +37,10 @@ class Dictionary:
                     and self.hash_table[index][1] == hash_key):
                 return self.hash_table[index][2]
             index += 1
+            if index == len(self.hash_table):
+                index = 0
+            if index == len(self.hash_table):
+                return self.hash_table[index][2]
 
         raise KeyError
 
@@ -85,25 +87,21 @@ class Dictionary:
     def total_len(self) -> None:
         print(len(self.hash_table))
 
-    def show(self):
+    def show(self) -> None:
         print(self.hash_table)
-
-f = Dictionary()
-f.__setitem__(3, "fds")
-f.__setitem__(5, "dddass")
-f.__setitem__(6, "s654")
-f.__setitem__(7, "nbv")
-f.__setitem__(9, "vcx")
-f.__setitem__(12, "cxg")
-
-
-
-print(f.__getitem__(3))
-print(f.__getitem__(5))
-print(f.__getitem__(6))
-print(f.__getitem__(7))
-print(f.__getitem__(9))
-print(f.__getitem__(12))
-print(f.__len__())
-f.total_len()
-f.show()
+# f = Dictionary()
+# f.__setitem__(3, "fds")
+# f.__setitem__(5, "dddass")
+# f.__setitem__(6, "s654")
+# f.__setitem__(7, "nbv")
+# f.__setitem__(9, "vcx")
+# # f.__setitem__(12, "cxg")
+# print(f.__getitem__(3))
+# print(f.__getitem__(5))
+# print(f.__getitem__(6))
+# print(f.__getitem__(7))
+# print(f.__getitem__(9))
+# # print(f.__getitem__(12))
+# print(f.__len__())
+# f.total_len()
+# f.show()
