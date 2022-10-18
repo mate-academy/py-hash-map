@@ -10,14 +10,7 @@ class Dictionary:
 
     def __setitem__(self, key: int, value: Any) -> None:
         if self.size == self.threshold:
-            old_hash_table = self.hash_table
-            self.capacity *= 2
-            self.threshold = int(self.capacity * 2 / 3)
-            self.size = 0
-            self.hash_table = [[] for _ in range(self.capacity)]
-            for cell in old_hash_table:
-                if cell:
-                    self.__setitem__(cell[0], cell[1])
+            self.resize()
         hash_ = hash(key)
         index = hash_ % self.capacity
         while True:
@@ -44,3 +37,13 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.size
+
+    def resize(self):
+        old_hash_table = self.hash_table
+        self.capacity *= 2
+        self.threshold = int(self.capacity * 2 / 3)
+        self.size = 0
+        self.hash_table = [[] for _ in range(self.capacity)]
+        for cell in old_hash_table:
+            if cell:
+                self.__setitem__(cell[0], cell[1])
