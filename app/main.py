@@ -68,40 +68,9 @@ class Dictionary:
         for item in hash_list_copy:
             if item:
                 self.__setitem__(item[0], item[2])
-        #     if item:
-        #         hash_key = hash(item[0])
-        #         index = hash_key % len(new_list)
-        #         if new_list[index]:
-        #             while new_list[index]:
-        #                 index += 1
-        #                 if index == len(new_list[index]):
-        #                     index = 0
-        #             new_list[index] = [item[0], item[1], item[2]]
-        #             self.length += 1
-        #         else:
-        #             new_list[index] = [item[0], item[1], item[2]]
-        #             self.length += 1
-
-        # self.hash_table = new_list
 
     def total_len(self) -> None:
         print(len(self.hash_table))
 
     def show(self) -> None:
         print(self.hash_table)
-# f = Dictionary()
-# f.__setitem__(3, "fds")
-# f.__setitem__(5, "dddass")
-# f.__setitem__(6, "s654")
-# f.__setitem__(7, "nbv")
-# f.__setitem__(9, "vcx")
-# # f.__setitem__(12, "cxg")
-# print(f.__getitem__(3))
-# print(f.__getitem__(5))
-# print(f.__getitem__(6))
-# print(f.__getitem__(7))
-# print(f.__getitem__(9))
-# # print(f.__getitem__(12))
-# print(f.__len__())
-# f.total_len()
-# f.show()
