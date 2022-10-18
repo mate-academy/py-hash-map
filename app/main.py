@@ -38,7 +38,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def resize(self):
+    def resize(self) -> None:
         old_hash_table = self.hash_table
         self.capacity *= 2
         self.threshold = int(self.capacity * 2 / 3)
