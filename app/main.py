@@ -37,7 +37,7 @@ class Dictionary:
     def __setitem__(self, key: Hashable, item: Any) -> None:
         if self.length == self.threshold:
             self.resize()
-        hash_key = (hash(key))
+        hash_key = hash(key)
         hash_index = hash_key % self.capacity
 
         while True:
