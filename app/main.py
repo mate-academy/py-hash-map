@@ -13,21 +13,21 @@ class Dictionary:
         index = self.count_index(key)
 
         while self.buckets[index]:
-            key_, value_ = self.buckets[index]
+            key_, _, _ = self.buckets[index]
             if key == key_:
-                self.buckets[index] = (key, value)
+                self.buckets[index] = (key, hash(key), value)
                 return
             index = (index + 1) % self.capacity
 
         self.size += 1
-        self.buckets[index] = (key, value)
+        self.buckets[index] = (key, hash(key), value)
         self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.count_index(key)
 
         while self.buckets[index]:
-            key_, value = self.buckets[index]
+            key_, _, value = self.buckets[index]
             if key == key_:
                 return value
             index = (index + 1) % self.capacity
@@ -51,7 +51,7 @@ class Dictionary:
 
         for element in old_dictionary:
             if element:
-                key, value = element
+                key, _, value = element
                 self.__setitem__(key, value)
 
     def count_index(self, new_key: Hashable) -> int:
