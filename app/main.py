@@ -10,8 +10,6 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        # if self.length == self.threshold:
-        #     self.resize()
         if self.length + 1 > self.capacity * (2 / 3):
             self.resize()
         hash_key = hash(key)
