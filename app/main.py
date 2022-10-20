@@ -44,6 +44,7 @@ class Dictionary(object):
         for node in table:
             if node is not None:
                 self.__setitem__(node.key, node.value)
+                node.hash = self.get_hash(node.key)
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_hash(key)
