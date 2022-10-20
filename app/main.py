@@ -30,7 +30,7 @@ class Dictionary(object):
                 break
             index = (index + 1) % self.initial_capacity
         self.size += 1
-        node.hash = index
+        node.hash = self.get_hash(key)
         self.table[index] = node
         if self.size / self.initial_capacity >= self.load_factor:
             self.resize()
