@@ -5,7 +5,6 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.threshold = int(self.capacity * 2 / 3)
         self.items = [[] for _ in range(self.capacity)]
 
     def __len__(self) -> int:
