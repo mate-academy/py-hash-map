@@ -5,6 +5,7 @@ class Node(object):
     def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
+        self.hash = None
 
 
 class Dictionary(object):
@@ -29,6 +30,7 @@ class Dictionary(object):
                 break
             index = (index + 1) % self.initial_capacity
         self.size += 1
+        node.hash = index
         self.table[index] = node
         if self.size / self.initial_capacity >= self.load_factor:
             self.resize()
