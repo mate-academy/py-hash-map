@@ -36,7 +36,6 @@ class Dictionary:
             index += 1
             if index == len(self.hash_table):
                 index = 0
-                return self.hash_table[index][2]
 
         raise KeyError
 
