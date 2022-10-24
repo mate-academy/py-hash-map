@@ -47,7 +47,7 @@ class Dictionary:
         self.length = 0
         self.hash_table = [[] for _ in range(self.hash_size)]
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: object) -> None:
         index = hash(key) % self.hash_size
         while self.hash_table[index]:
             if key in self.hash_table[index]:
