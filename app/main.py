@@ -18,6 +18,8 @@ class Dictionary:
     def __setitem__(self, key: object, value: object) -> None:
         if self.length == self.treshold:
             self.resize_hash()
+        if isinstance(key, (list, dict)):
+            raise TypeError(f"unhashable type: {type(key)}")
         index = hash(key) % self.hash_size
         while True:
             if not self.hash_table[index]:
@@ -27,10 +29,11 @@ class Dictionary:
             if key in self.hash_table[index]:
                 self.hash_table[index][1] = value
                 return
-
             index = (index + 1) % self.hash_size
 
     def __getitem__(self, key: object) -> object:
+        if self.length == self.treshold:
+            self.resize_hash()
         index = hash(key) % self.hash_size
         while self.hash_table[index]:
             if key in self.hash_table[index]:
@@ -48,9 +51,12 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.hash_size)]
 
     def __delitem__(self, key: object) -> None:
+        if self.length == self.treshold:
+            self.resize_hash()
         index = hash(key) % self.hash_size
         while self.hash_table[index]:
             if key in self.hash_table[index]:
                 self.hash_table[index] = []
                 return
             index = (index + 1) % self.hash_size
+        raise KeyError(f"Key {key} does not exist")
