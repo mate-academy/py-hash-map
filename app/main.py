@@ -18,7 +18,7 @@ class Dictionary:
             if item:
                 self.__setitem__(item[0], item[2])
 
-    def __setitem__(self, key: (str, int, tuple), value: Any) -> None:
+    def __setitem__(self, key: Any, value: Any) -> None:
         if self.length == self.threshold:
             self.resize_hash()
         key_hash = hash(key)
@@ -35,7 +35,7 @@ class Dictionary:
                 return
             index = (index + 1) % self.hash_size
 
-    def __getitem__(self, key: (str, int, tuple)) -> object:
+    def __getitem__(self, key: Any) -> object:
         key_hash = hash(key)
         index = key_hash % self.hash_size
         while self.hash_table[index]:
@@ -43,7 +43,7 @@ class Dictionary:
                     self.hash_table[index][1] == key_hash:
                 return self.hash_table[index][2]
             index = (index + 1) % self.hash_size
-        raise KeyError(f"Key {key} does not exist")
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.length
@@ -54,7 +54,7 @@ class Dictionary:
         self.length = 0
         self.hash_table = [[] for _ in range(self.hash_size)]
 
-    def __delitem__(self, key: (str, int, tuple)) -> None:
+    def __delitem__(self, key: Any) -> None:
         key_hash = hash(key)
         index = key_hash % self.hash_size
         while self.hash_table[index]:
@@ -63,4 +63,4 @@ class Dictionary:
                 self.hash_table[index] = []
                 return
             index = (index + 1) % self.hash_size
-        raise KeyError(f"Key {key} does not exist")
+        raise KeyError(key)
