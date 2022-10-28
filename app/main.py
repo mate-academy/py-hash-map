@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 
 
 class Dictionary:
@@ -35,7 +35,7 @@ class Dictionary:
                 return
             index = (index + 1) % self.hash_size
 
-    def __getitem__(self, key: Any) -> object:
+    def __getitem__(self, key: Any) -> Union[object, KeyError]:
         key_hash = hash(key)
         index = key_hash % self.hash_size
         while self.hash_table[index]:
@@ -54,7 +54,7 @@ class Dictionary:
         self.length = 0
         self.hash_table = [[] for _ in range(self.hash_size)]
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Any) -> Union[None, KeyError]:
         key_hash = hash(key)
         index = key_hash % self.hash_size
         while self.hash_table[index]:
