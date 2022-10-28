@@ -7,6 +7,7 @@ class Dictionary:
         self.hash_table: list = [None] * self.hash_capacity
         self.iter_table: list = []
         self.iter_no = 0
+        self.dict_len = 0
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         try:
@@ -14,13 +15,15 @@ class Dictionary:
             if self.hash_capacity / (self.__len__() + 1) <= 1.5:
                 self.resize()
             hash_index = hash_key % self.hash_capacity
-            while self.hash_table[hash_index] is not None:
-                if self.hash_table[hash_index][0] == key \
+            for _ in range(self.hash_capacity):
+                if self.hash_table[hash_index] is None:
+                    self.hash_table[hash_index] = [key, hash_key, value]
+                    self.dict_len += 1
+                elif self.hash_table[hash_index][0] == key \
                         and self.hash_table[hash_index][1] == hash_key:
                     self.hash_table[hash_index][2] = value
-                    break
-                hash_index: int = (hash_index + 1) % self.hash_capacity
-            self.hash_table[hash_index] = [key, hash_key, value]
+                else:
+                    hash_index: int = (hash_index + 1) % self.hash_capacity
         except TypeError:
             print(f"Unhashable type: {str(type(key)).split()[-1]}!")
 
@@ -37,10 +40,11 @@ class Dictionary:
             raise KeyError("Not found that index!")
 
     def __len__(self) -> int:
-        return len(self.hash_table) - self.hash_table.count(None)
+        return self.dict_len
 
     def clear(self) -> None:
         self.hash_table = [None] * self.hash_capacity
+        self.dict_len = 0
 
     def __delitem__(self, key: Hashable) -> None:
         hash_key = hash(key)
@@ -49,6 +53,7 @@ class Dictionary:
                 and self.hash_table[hash_index][0] != key:
             hash_index += 1
         self.hash_table[hash_index] = None
+        self.dict_len -= 1
 
     def get(self) -> dict:
         return {cell_no[0]: cell_no[2]
@@ -88,6 +93,7 @@ class Dictionary:
         hash_table_old = self.hash_table
         self.hash_capacity *= 2
         self.hash_table = [None] * self.hash_capacity
+        self.dict_len = 0
         for cell in hash_table_old:
             if cell is not None:
                 self.__setitem__(cell[0], cell[2])
