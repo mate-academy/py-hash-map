@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
@@ -15,7 +18,7 @@ class Dictionary:
             if item:
                 self.__setitem__(item[0], item[2])
 
-    def __setitem__(self, key: object, value: object) -> None:
+    def __setitem__(self, key: (str, int, tuple), value: Any) -> None:
         if self.length == self.threshold:
             self.resize_hash()
         key_hash = hash(key)
@@ -32,7 +35,7 @@ class Dictionary:
                 return
             index = (index + 1) % self.hash_size
 
-    def __getitem__(self, key: object) -> object:
+    def __getitem__(self, key: (str, int, tuple)) -> object:
         key_hash = hash(key)
         index = key_hash % self.hash_size
         while self.hash_table[index]:
@@ -51,7 +54,7 @@ class Dictionary:
         self.length = 0
         self.hash_table = [[] for _ in range(self.hash_size)]
 
-    def __delitem__(self, key: object) -> None:
+    def __delitem__(self, key: (str, int, tuple)) -> None:
         key_hash = hash(key)
         index = key_hash % self.hash_size
         while self.hash_table[index]:
