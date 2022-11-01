@@ -5,7 +5,6 @@ class Dictionary:
     def __init__(self) -> None:
         self.hash_capacity: int = 8
         self.hash_table: list = [None] * self.hash_capacity
-        self.iter_table: list = []
         self.iter_no = 0
         self.dict_len = 0
 
@@ -19,8 +18,8 @@ class Dictionary:
                 if self.hash_table[hash_index] is None:
                     self.hash_table[hash_index] = [key, hash_key, value]
                     self.dict_len += 1
-                elif self.hash_table[hash_index][0] == key \
-                        and self.hash_table[hash_index][1] == hash_key:
+                elif self.hash_table[hash_index][1] == hash_key \
+                        and self.hash_table[hash_index][0] == key:
                     self.hash_table[hash_index][2] = value
                 else:
                     hash_index: int = (hash_index + 1) % self.hash_capacity
