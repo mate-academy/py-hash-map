@@ -48,7 +48,7 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         hash_key = hash(key)
         hash_index = hash_key % self.hash_capacity
-        while self.hash_table[hash_index][1] != hash_index \
+        while self.hash_table[hash_index][1] != hash_key \
                 and self.hash_table[hash_index][0] != key:
             hash_index += 1
         self.hash_table[hash_index] = None
@@ -80,8 +80,7 @@ class Dictionary:
                 exit()
             return f"{self.hash_table[self.iter_no][0]}: " \
                    f"{self.hash_table[self.iter_no][2]}"
-        else:
-            raise StopIteration
+        raise StopIteration
 
     def __repr__(self) -> str:
         dict_repr = {cell[0]: cell[2]
