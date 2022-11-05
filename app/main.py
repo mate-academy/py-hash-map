@@ -56,7 +56,7 @@ class Dictionary:
 
     def get(self) -> dict:
         return {cell_no[0]: cell_no[2]
-                for cell_no in self.hash_table if cell_no is not None}
+                for cell_no in self.hash_table if cell_no}
 
     def pop(self, key: Hashable) -> Any:
         deleted_value = self.__getitem__(key)
@@ -66,7 +66,7 @@ class Dictionary:
     def update(self, other_dictionary: Any) -> None:
         if isinstance(other_dictionary, Dictionary):
             for other_cell in other_dictionary.hash_table:
-                if other_cell is not None:
+                if other_cell:
                     self.__setitem__(other_cell[0], other_cell[2])
 
     def __iter__(self) -> Any:
@@ -83,8 +83,7 @@ class Dictionary:
         raise StopIteration
 
     def __repr__(self) -> str:
-        dict_repr = {cell[0]: cell[2]
-                     for cell in self.hash_table if cell is not None}
+        dict_repr = self.get()
         return str(dict_repr)
 
     def resize(self) -> None:
@@ -93,5 +92,5 @@ class Dictionary:
         self.hash_table = [None] * self.hash_capacity
         self.dict_len = 0
         for cell in hash_table_old:
-            if cell is not None:
+            if cell:
                 self.__setitem__(cell[0], cell[2])
