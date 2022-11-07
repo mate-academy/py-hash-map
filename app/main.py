@@ -59,11 +59,10 @@ class Dictionary:
         index = hashed_key % self.capacity
         while True:
             if len(self.free_slots[index]) != 0 and\
-                    key == self.free_slots[index][0]\
-                    and self.free_slots[index][1] == hashed_key:
-                self.free_slots[index] = []
+                    self.free_slots[index][1] == hashed_key\
+                    and key == self.free_slots[index][0]:
+                self.free_slots[index][0] = hashed_key
                 self.load_slots -= 1
-                print(self.load_slots)
                 break
             else:
                 index = (index + 1) % self.capacity
