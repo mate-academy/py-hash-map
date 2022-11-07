@@ -10,7 +10,6 @@ class Dictionary:
         self.threshold = int(self.capacity * 2 / 3)
         self.hashtable = [[] for _ in range(self.capacity)]
 
-
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length == self.threshold:
             self.resize_hashtable()
