@@ -1,6 +1,5 @@
-from copy import deepcopy, copy
+from copy import copy
 from dataclasses import dataclass
-from datetime import time, datetime
 from typing import Any, Union
 
 
@@ -46,7 +45,11 @@ class Dictionary:
             self.nodes[hash(key) % self.size].append([key, value])
 
     def __getitem__(self,
-                    key: Union[int, float, bool, str, tuple]) -> Union[Any, KeyError]:
+                    key: Union[int,
+                               float,
+                               bool,
+                               str,
+                               tuple]) -> Union[Any, KeyError]:
         for node in self.nodes[hash(key) % self.size]:
             if key in node:
                 return node[1]
