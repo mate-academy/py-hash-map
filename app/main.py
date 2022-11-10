@@ -52,7 +52,7 @@ class Dictionary:
 
         while True:
             if len(self.hash_table[index_value]) < 1:
-                raise KeyError
+                raise KeyError(key)
             if self.hash_table[index_value][0] == key:
                 return self.hash_table[index_value][2]
             index_value = (index_value + 1) % len(self.hash_table)
