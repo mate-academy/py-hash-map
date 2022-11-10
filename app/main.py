@@ -6,52 +6,56 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.hash_table = [[] for i in range(self.capacity)]
+        self.hash_table = [[] for _ in range(self.capacity)]
 
     def __setitem__(self,
                     key: Union[int, float, str, tuple, bool],
                     value: Any
                     ) -> None:
+
         if self.length >= self.capacity * 2 / 3:
-            self.length = 0
-            self.capacity *= 2
-            old_table = copy.deepcopy(self.hash_table)
-            self.hash_table = [[] for i in range(self.capacity)]
-            for item in old_table:
-                if len(item) > 1:
-                    self.adding_item(item[0], item[2])
+            self.resize()
 
         self.adding_item(key, value)
+
+    def resize(self) -> None:
+        self.length = 0
+        self.capacity *= 2
+        old_table = copy.deepcopy(self.hash_table)
+        self.hash_table = [[] for _ in range(self.capacity)]
+        for item in old_table:
+            if len(item) > 1:
+                self.adding_item(item[0], item[2])
 
     def adding_item(self,
                     key: Union[int, float, str, tuple, bool],
                     value: Any
                     ) -> None:
-        hash_ = hash(key)
-        index_ = hash_ % self.capacity
+        hash_key = hash(key)
+        index_value = hash_key % self.capacity
         while True:
-            if len(self.hash_table[index_]) < 1:
-                self.hash_table[index_] = ([key, hash_, value])
+            if len(self.hash_table[index_value]) < 1:
+                self.hash_table[index_value] = ([key, hash_key, value])
                 self.length += 1
                 break
-            if self.hash_table[index_][0] == key \
-                    and self.hash_table[index_][1] == hash_:
-                self.hash_table[index_][2] = value
+            if self.hash_table[index_value][0] == key \
+                    and self.hash_table[index_value][1] == hash_key:
+                self.hash_table[index_value][2] = value
                 break
-            index_ = (index_ + 1) % len(self.hash_table)
+            index_value = (index_value + 1) % len(self.hash_table)
 
     def __getitem__(self,
                     key: Union[int, float, str, tuple, bool]
                     ) -> Any:
-        hash_ = hash(key)
-        index_ = hash_ % self.capacity
+        hash_key = hash(key)
+        index_value = hash_key % self.capacity
 
         while True:
-            if len(self.hash_table[index_]) < 1:
+            if len(self.hash_table[index_value]) < 1:
                 raise KeyError
-            if self.hash_table[index_][0] == key:
-                return self.hash_table[index_][2]
-            index_ = (index_ + 1) % len(self.hash_table)
+            if self.hash_table[index_value][0] == key:
+                return self.hash_table[index_value][2]
+            index_value = (index_value + 1) % len(self.hash_table)
 
     def __len__(self) -> int:
         return self.length
