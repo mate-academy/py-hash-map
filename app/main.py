@@ -45,11 +45,13 @@ class Dictionary:
                     ) -> Any:
         hash_ = hash(key)
         index_ = hash_ % self.capacity
-        if not self.hash_table[index_]:
-            raise KeyError
-        for lst in self.hash_table[index_:]:
-            if lst[0] == key:
-                return lst[2]
+
+        while True:
+            if len(self.hash_table[index_]) < 1:
+                raise KeyError
+            if self.hash_table[index_][0] == key:
+                return self.hash_table[index_][2]
+            index_ = (index_ + 1) % len(self.hash_table)
 
     def __len__(self) -> int:
         return self.length
