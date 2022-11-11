@@ -34,7 +34,7 @@ class Dictionary:
         hash_key = hash(key)
         index_value = hash_key % self.capacity
         while True:
-            if len(self.hash_table[index_value]) < 1:
+            if not self.hash_table[index_value]:
                 self.hash_table[index_value] = ([key, hash_key, value])
                 self.length += 1
                 break
@@ -51,7 +51,7 @@ class Dictionary:
         index_value = hash_key % self.capacity
 
         while True:
-            if len(self.hash_table[index_value]) < 1:
+            if not self.hash_table[index_value]:
                 raise KeyError(key)
             if self.hash_table[index_value][0] == key:
                 return self.hash_table[index_value][2]
