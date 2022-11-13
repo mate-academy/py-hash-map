@@ -2,7 +2,6 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    pass
 
     def __init__(self) -> None:
         self.size = 0
