@@ -38,8 +38,8 @@ class Dictionary:
                 self.hash_table[index_value] = ([key, hash_key, value])
                 self.length += 1
                 break
-            if self.hash_table[index_value][0] == key \
-                    and self.hash_table[index_value][1] == hash_key:
+            if self.hash_table[index_value][1] == hash_key \
+                    and self.hash_table[index_value][0] == key:
                 self.hash_table[index_value][2] = value
                 break
             index_value = (index_value + 1) % len(self.hash_table)
@@ -53,7 +53,8 @@ class Dictionary:
         while True:
             if not self.hash_table[index_value]:
                 raise KeyError(key)
-            if self.hash_table[index_value][0] == key:
+            if self.hash_table[index_value][1] == hash_key \
+                    and self.hash_table[index_value][0] == key:
                 return self.hash_table[index_value][2]
             index_value = (index_value + 1) % len(self.hash_table)
 
