@@ -30,31 +30,28 @@ class Dictionary:
         hash_key = hash(key)
         index = hash_key % self.capacity
 
-        if len(self.hash_table[index]) == 0:
-            self.hash_table[index] = [key, value, index]
-            self.length += 1
-
-        else:
-            while True:
-                if key == self.hash_table[index][0] and \
-                        hash_key == self.hash_table[index][2]:
-                    self.hash_table[index][1] = value
-                    break
-                index = (index + 1) % self.capacity
+        while True:
+            if len(self.hash_table[index]) == 0:
+                self.hash_table[index] = [key, value, hash_key]
+                self.length += 1
+                break
+            if key == self.hash_table[index][0] and \
+                    hash_key == self.hash_table[index][2]:
+                self.hash_table[index][1] = value
+                break
+            index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Any) -> Any:
         hash_key = hash(key)
         index = hash_key % self.capacity
 
-        if len(self.hash_table[index]) == 0:
-            raise KeyError(f"Opps, key {key} does not exist :(")
-
-        else:
-            while True:
-                if key == self.hash_table[index][0] and \
-                        hash_key == self.hash_table[index][2]:
-                    return self.hash_table[index][1]
-                index = (index + 1) % self.capacity
+        while True:
+            if len(self.hash_table[index]) == 0:
+                raise KeyError(f"Opps, key {key} does not exist :(")
+            if key == self.hash_table[index][0] and \
+                    hash_key == self.hash_table[index][2]:
+                return self.hash_table[index][1]
+            index = (index + 1) % self.capacity
 
     def __len__(self) -> int:
         return self.length
