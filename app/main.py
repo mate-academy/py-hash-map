@@ -25,10 +25,10 @@ class Dictionary:
         index = hash_key % self.capacity
         while True:
             if not self.stock[index]:
-                self.stock[index] = [key, value]
+                self.stock[index] = [key, value, hash_key]
                 self.size += 1
                 return
-            if self.stock[index][0] == key:
+            if self.stock[index][0] == key and self.stock[index][2] == hash_key:
                 self.stock[index][1] = value
                 return
             index = (index + 1) % self.capacity
@@ -39,9 +39,14 @@ class Dictionary:
         while True:
             if not self.stock[index]:
                 raise KeyError(key)
-            if self.stock[index][0] == key:
+            if self.stock[index][0] == key and self.stock[index][2] == hash_key:
                 return self.stock[index][1]
             index = (index + 1) % self.capacity
 
     def __len__(self) -> int:
         return self.size
+
+
+dict_1={'a': 1, 'b': 2}
+dict_2={'b': 3, 'a': 4}
+print({**dict_1, **dict_2})
