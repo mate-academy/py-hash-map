@@ -13,8 +13,8 @@ class Dictionary:
             if self.hash_table[index] is None:
                 self.hash_table[index] = [key, value, hash_]
                 self.length += 1
-            if self.hash_table[index][0] == key and \
-                    self.hash_table[index][2] == hash_:
+            if self.hash_table[index][2] == hash_ and \
+                    self.hash_table[index][0] == key:
                 self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.capacity
