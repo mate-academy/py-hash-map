@@ -35,8 +35,8 @@ class Dictionary:
                 self.hash_table[index] = [key, value, hash_key]
                 self.length += 1
                 break
-            if key == self.hash_table[index][0] and \
-                    hash_key == self.hash_table[index][2]:
+            if hash_key == self.hash_table[index][2] and \
+                    key == self.hash_table[index][0]:
                 self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.capacity
