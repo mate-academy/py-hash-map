@@ -3,11 +3,11 @@ from typing import Any
 
 class Dictionary:
 
-    def __init__(self, capacity: int = 8, length: int = 0) -> None:
-        self.capacity = capacity
+    def __init__(self) -> None:
+        self.capacity = 8
         self.hash_table = [[] for _ in range(self.capacity)]
         self.load_factor = int(2 / 3 * self.capacity)
-        self.length = length
+        self.length = 0
 
     def resize_dict(self) -> None:
         hash_table_copy = self.hash_table
@@ -21,7 +21,7 @@ class Dictionary:
                 self.__setitem__(ind[0], ind[1])
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if isinstance(key, list | set):
+        if isinstance(key, list | set | dict):
             raise KeyError(f"Opps, key {key} must be immutable :(")
 
         if self.length == self.load_factor:
@@ -48,8 +48,8 @@ class Dictionary:
         while True:
             if len(self.hash_table[index]) == 0:
                 raise KeyError(f"Opps, key {key} does not exist :(")
-            if key == self.hash_table[index][0] and \
-                    hash_key == self.hash_table[index][2]:
+            if hash_key == self.hash_table[index][2] and \
+                    key == self.hash_table[index][0]:
                 return self.hash_table[index][1]
             index = (index + 1) % self.capacity
 
