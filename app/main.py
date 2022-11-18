@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -18,7 +18,7 @@ class Dictionary:
             if cell:
                 self.__setitem__(cell[0], cell[1])
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length >= self.threshold:
             self.resize_cells()
         index = hash(key) % self.capacity
@@ -32,7 +32,7 @@ class Dictionary:
                 break
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, input_key: Any) -> None:
+    def __getitem__(self, input_key: Hashable) -> None:
         index = hash(input_key) % self.capacity
         while True:
             if self.cells[index]:
