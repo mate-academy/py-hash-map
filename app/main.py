@@ -24,12 +24,10 @@ class Dictionary:
         index = hash(key) % self.capacity
 
         while True:
-            if self.hash_table[index]:
-                if key == self.hash_table[index][0]:
-                    return self.hash_table[index][1]
-            else:
+            if self.hash_table[index] and key == self.hash_table[index][0]:
+                return self.hash_table[index][1]
+            if not self.hash_table[index]:
                 raise KeyError(f"No key '{key}' in dictionary.")
-
             index = (index + 1) % self.capacity
 
     def resize(self) -> None:
