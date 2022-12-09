@@ -1,10 +1,10 @@
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.length = 0
         self.size = 8
         self.hash_table: list = [[] for _ in range(self.size)]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str | int, value: str | int) -> None:
         index = hash(key) % self.size
         if self.hash_table[index]:
             for item in self.hash_table[index]:
@@ -14,7 +14,7 @@ class Dictionary:
         self.hash_table[index].append([key, value])
         self.length += 1
 
-    def resize(self):
+    def resize(self) -> None:
         self.size += 2
         temp_list = []
         for container in self.hash_table:
@@ -23,7 +23,7 @@ class Dictionary:
         for item in temp_list:
             self.__setitem__(*item)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str | int) -> list:
         index = hash(key) % self.size
         if not self.hash_table[index]:
             raise KeyError
@@ -31,5 +31,5 @@ class Dictionary:
             if item[0] == key:
                 return item[1]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.length
