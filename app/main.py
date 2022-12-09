@@ -1,35 +1,48 @@
+from typing import Any
+
+
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
         self.size = 8
-        self.hash_table: list = [[] for _ in range(self.size)]
+        self.length = 0
+        self.critical_size = int(self.size * 2 / 3)
+        self.hash_list = [[] for _ in range(self.size)]
 
-    def __setitem__(self, key: str | int, value: str | int) -> None:
-        index = hash(key) % self.size
-        if self.hash_table[index]:
-            for item in self.hash_table[index]:
-                if item[0] == key and hash(item[0]) == hash(key):
-                    item[1] = value
-                    return
-        self.hash_table[index].append([key, value])
-        self.length += 1
+    def __setitem__(self, key: Any, value: Any) -> None:
+        if self.length == self.critical_size:
+            self.resize()
+        hashes = hash(key)
+        index = hashes % self.size
+        while True:
+            if not self.hash_list[index]:
+                self.hash_list[index] = [key, hashes, value]
+                self.length += 1
+                break
+            if self.hash_list[index][0] == key and \
+                    self.hash_list[index][1] == hashes:
+                self.hash_list[index][2] = value
+                break
+            index = (index + 1) % self.size
 
     def resize(self) -> None:
-        self.size += 2
-        temp_list = []
-        for container in self.hash_table:
-            for item in container:
-                temp_list.append(item)
-        for item in temp_list:
-            self.__setitem__(*item)
+        self.size *= 2
+        self.critical_size = int(self.size * 2 / 3)
+        self.length = 0
+        old_data = self.hash_list
+        self.hash_list = [[] for _ in range(self.size)]
+        for item in old_data:
+            if item:
+                self.__setitem__(item[0], item[2])
 
-    def __getitem__(self, key: str | int) -> list:
-        index = hash(key) % self.size
-        if not self.hash_table[index]:
-            raise KeyError
-        for item in self.hash_table[index]:
-            if item[0] == key:
-                return item[1]
+    def __getitem__(self, key: Any) -> list:
+        hashes = hash(key)
+        index = hashes % self.size
+        while self.hash_list[index]:
+            if self.hash_list[index][1] == hashes \
+                    and self.hash_list[index][0] == key:
+                return self.hash_list[index][2]
+            index = (index + 1) % self.size
+        raise KeyError
 
     def __len__(self) -> int:
         return self.length
