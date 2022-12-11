@@ -22,7 +22,8 @@ class Dictionary:
                 self.length += 1
                 break
 
-            if self.hash_list[index][0] == key and self.hash_list[index][1] == hashed_key:
+            if self.hash_list[index][0] == key and \
+                    self.hash_list[index][1] == hashed_key:
 
                 self.hash_list[index][2] = value
                 break
@@ -32,7 +33,8 @@ class Dictionary:
         hashed_key = hash(key)
         index = hashed_key % self.size
         while self.hash_list[index]:
-            if self.hash_list[index][0] == key and self.hash_list[index][1] == hashed_key:
+            if self.hash_list[index][0] == key and \
+                    self.hash_list[index][1] == hashed_key:
 
                 return self.hash_list[index][2]
             index = (index + 1) % self.size
