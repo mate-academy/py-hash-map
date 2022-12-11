@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, Union
 
 
@@ -11,30 +12,27 @@ class Dictionary:
     def __setitem__(self, key: Union[int, float, str, bool, tuple],
                     value: Any) -> None:
 
+        if self.length == self.before_to_resize:
+            self.resize()
         hashed_key = hash(key)
         index = hashed_key % self.size
         while True:
-            if self.length == self.before_to_resize:
-                self.resize()
-
             if not self.hash_list[index]:
                 self.hash_list[index] = [key, hashed_key, value]
                 self.length += 1
                 break
 
-            if self.hash_list[index][0] == key and \
-                    self.hash_list[index][1] == hashed_key:
+            if self.hash_list[index][0] == key and self.hash_list[index][1] == hashed_key:
 
                 self.hash_list[index][2] = value
                 break
             index = (index + 1) % self.size
 
-    def __getitem__(self, item: Union[int, float, str, bool, tuple]) -> Any:
-        hashed_key = hash(item)
+    def __getitem__(self, key: Union[int, float, str, bool, tuple]) -> Any:
+        hashed_key = hash(key)
         index = hashed_key % self.size
         while self.hash_list[index]:
-            if self.hash_list[index][0] == item and \
-                    self.hash_list[index][1] == hashed_key:
+            if self.hash_list[index][0] == key and self.hash_list[index][1] == hashed_key:
 
                 return self.hash_list[index][2]
             index = (index + 1) % self.size

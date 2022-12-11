@@ -17,7 +17,7 @@ class Point:
         # which is NOT a best practice, but you will be able to predict
         # a hash value by coordinates of the point and its index
         # in the hashtable as well
-        return hash((self.x + self.y))
+        return hash((self.x, self.y))
 
     @property
     def x(self) -> float:
@@ -26,8 +26,3 @@ class Point:
     @property
     def y(self) -> float:
         return self._y
-
-
-f1 = Point(5, 8)
-f2 = Point(5, 8)
-print(hash(f1.x), hash(f1.y))
