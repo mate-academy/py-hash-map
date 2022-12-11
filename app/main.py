@@ -5,7 +5,7 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.size = 8
-        self.before_to_resize = self.size * 2 / 3
+        self.before_to_resize = int(self.size * 2 / 3)
         self.hash_list = [[] for _ in range(self.size)]
 
     def __setitem__(self, key: Union[int, float, str, bool, tuple],
@@ -45,7 +45,7 @@ class Dictionary:
         self.before_to_resize = int(self.size * 2 / 3)
         self.length = 0
         old_hash_list = self.hash_list
-        self.hash_list = [None] * self.size
+        self.hash_list = [[] for _ in range(self.size)]
         for item in old_hash_list:
             if item:
                 self.__setitem__(item[0], item[2])
