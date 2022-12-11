@@ -6,10 +6,10 @@ class Dictionary:
         self.size = 8
         self.length = 0
         self.critical_size = int(self.size * 2 / 3)
-        self.hash_list = [[] for _ in range(self.size)]
+        self.hash_list = [[]] * self.size
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if self.length == self.critical_size:
+        if self.length > self.critical_size:
             self.resize()
         hashes = hash(key)
         index = hashes % self.size
@@ -29,7 +29,7 @@ class Dictionary:
         self.critical_size = int(self.size * 2 / 3)
         self.length = 0
         old_data = self.hash_list
-        self.hash_list = [[] for _ in range(self.size)]
+        self.hash_list = [[]] * self.size
         for item in old_data:
             if item:
                 self.__setitem__(item[0], item[2])
