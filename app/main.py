@@ -19,9 +19,8 @@ class Dictionary:
             if saved_key == key and hashed_value == saved_hashed_value:
                 self.hash_table[index] = (key, hashed_value, value)
                 break
-            else:
-                print(f"The key {key} collided with {self.hash_table[index]}")
-                index = (index + 1) % len(self.hash_table)
+            print(f"The key {key} collided with {self.hash_table[index]}")
+            index = (index + 1) % len(self.hash_table)
         if self.hash_table[index] is None:
             self.hash_table[index] = (key, hashed_value, value)
             self.length += 1
@@ -46,12 +45,9 @@ class Dictionary:
 
     def resize(self) -> None:
         if self.length > 2 / 3 * self.table_size:
-            old_hash_table = []
-            for container in self.hash_table:
-                if container is not None:
-                    old_hash_table.append(container)
+            copy_table = [data for data in self.hash_table if data is not None]
             self.table_size *= 2
             self.hash_table = [None] * self.table_size
             self.length = 0
-            for key, hashed_value, value in old_hash_table:
+            for key, hashed_value, value in copy_table:
                 self.__setitem__(key, value)
