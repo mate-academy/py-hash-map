@@ -19,14 +19,14 @@ class Dictionary:
             if not self.hash_table[index_key]:
                 self.hash_table[index_key] = [key, hash_key, value]
                 self.length_dict += 1
-                return
+                break
             else:
                 if (
                         key == self.hash_table[index_key][0]
                         and hash_key == self.hash_table[index_key][1]
                 ):
                     self.hash_table[index_key][2] = value
-                    return
+                    break
 
             index_key = self._check_out_of_range(index_key)
 
@@ -79,7 +79,7 @@ class Dictionary:
                 ):
                     self.hash_table[index_key] = []
                     self.length_dict -= 1
-                    return
+                    break
 
             index_key = self._check_out_of_range(index_key)
             count_check += 1
