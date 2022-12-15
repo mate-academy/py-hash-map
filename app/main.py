@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,17 +9,16 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: (int, float, bool, tuple, str),
+            key: Hashable,
             value: Any
     ) -> None:
         hashed_value = hash(key)
         index = hashed_value % self.table_size
         while self.hash_table[index] is not None:
             saved_key, saved_hashed_value, saved_value = self.hash_table[index]
-            if saved_key == key and hashed_value == saved_hashed_value:
+            if hashed_value == saved_hashed_value and saved_key == key:
                 self.hash_table[index] = (key, hashed_value, value)
                 break
-            print(f"The key {key} collided with {self.hash_table[index]}")
             index = (index + 1) % len(self.hash_table)
         if self.hash_table[index] is None:
             self.hash_table[index] = (key, hashed_value, value)
@@ -28,16 +27,15 @@ class Dictionary:
 
     def __getitem__(
             self,
-            key: (int, float, bool, tuple, str)
+            key: Hashable
     ) -> Any:
         hashed_value = hash(key)
         index = hashed_value % self.table_size
         while True:
-            try:
-                if self.hash_table[index][0] == key:
-                    return self.hash_table[index][2]
-            except TypeError:
+            if self.hash_table[index] is None:
                 raise KeyError
+            if self.hash_table[index][0] == key:
+                return self.hash_table[index][2]
             index = (index + 1) % self.table_size
 
     def __len__(self) -> int:
