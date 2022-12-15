@@ -23,6 +23,8 @@ class Dictionary:
         if self.hash_table[index] is None:
             self.hash_table[index] = (key, hashed_value, value)
             self.length += 1
+
+        if self.length > 2 / 3 * self.table_size:
             self.resize()
 
     def __getitem__(
@@ -42,10 +44,9 @@ class Dictionary:
         return self.length
 
     def resize(self) -> None:
-        if self.length > 2 / 3 * self.table_size:
-            copy_table = [data for data in self.hash_table if data is not None]
-            self.table_size *= 2
-            self.hash_table = [None] * self.table_size
-            self.length = 0
-            for key, hashed_value, value in copy_table:
-                self.__setitem__(key, value)
+        copy_table = [data for data in self.hash_table if data is not None]
+        self.table_size *= 2
+        self.hash_table = [None] * self.table_size
+        self.length = 0
+        for key, hashed_value, value in copy_table:
+            self.__setitem__(key, value)
