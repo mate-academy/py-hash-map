@@ -26,11 +26,10 @@ class Dictionary:
     def __getitem__(self, key: Any) -> Any:
         hash_key = hash(key) % self.capacity
         while True:
-            if self.hash_table[hash_key]:
-                if self.hash_table[hash_key][0] == key:
-                    return self.hash_table[hash_key][1]
-            else:
+            if not self.hash_table[hash_key]:
                 raise KeyError
+            if self.hash_table[hash_key][0] == key:
+                return self.hash_table[hash_key][1]
             hash_key = (hash_key + 1) % self.capacity
 
     def __len__(self) -> int:
