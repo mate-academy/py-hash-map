@@ -135,6 +135,8 @@ class Dictionary:
             if node[0] == key:
                 self.hash_table[index_of_item] = None
 
+                self.length -= 1
+
                 self._move_colliding_nodes(index_of_item)
 
                 break
