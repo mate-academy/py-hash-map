@@ -4,13 +4,12 @@ from typing import Any, Union, Tuple, Iterable
 
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
-        self.cache = None
         self.capacity = 8
         self.load_factor = 2 / 3
         self.resize_multiplier = 2
 
-        self.resize_threshold = 0
+        self.length = 0
+        self.resize_threshold = None
         self._update_threshold()
         self.hash_table: list = [None] * self.capacity
 
@@ -33,7 +32,7 @@ class Dictionary:
     ) -> None:
         hash_of_key, index_of_item = self._get_hash_and_index(key)
 
-        node = [key, hash_of_key, value, index_of_item]
+        node = [key, hash_of_key, value]
 
         while True:
             current_item = self.hash_table[index_of_item]
@@ -125,9 +124,6 @@ class Dictionary:
         self,
         key: Union[bool, int, float, str, tuple]
     ) -> None:
-        if self.cache is None:
-            self.cache = self.hash_table.copy()
-
         index_of_item = self._get_hash_and_index(key)[1]
 
         while True:
