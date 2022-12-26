@@ -2,11 +2,11 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self, capacity: int = 8, length_table: int = 0) -> None:
-        self.capacity = capacity
-        self.threshold = (capacity * 2 / 3) + 1
-        self.length_table = length_table
-        self.hash_table = [None for _ in range(capacity)]
+    def __init__(self) -> None:
+        self.capacity = 8
+        self.threshold = (self.capacity * 2 / 3) + 1
+        self.length_table = 0
+        self.hash_table = [None for _ in range(self.capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.threshold <= self.length_table:
