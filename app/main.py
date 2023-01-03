@@ -8,26 +8,31 @@ class Dictionary:
     def __setitem__(self, key: object, value: object) -> None:
         if self.length == self.threshold:
             self.resize()
-        index = hash(key) % self.capacity
+        key_hash = hash(key)
+        index = key_hash % self.capacity
 
         while True:
             if not self.hash_table[index]:
-                self.hash_table[index] = [key, value]
+                self.hash_table[index] = [key, value, key_hash]
                 self.length += 1
                 break
-            if key == self.hash_table[index][0]:
+            if self.hash_table[index][0] == key and \
+                    self.hash_table[index][2] == key_hash:
                 self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.capacity
 
     def __getitem__(self, key: object) -> object:
-        index = hash(key) % self.capacity
+        key_hash = hash(key)
+        index = key_hash % self.capacity
 
         while True:
-            if self.hash_table[index] and key == self.hash_table[index][0]:
-                return self.hash_table[index][1]
             if not self.hash_table[index]:
                 raise KeyError(f"No key '{key}' in dictionary.")
+
+            if key == self.hash_table[index][0] and \
+                    key_hash == self.hash_table[index][2]:
+                return self.hash_table[index][1]
             index = (index + 1) % self.capacity
 
     def resize(self) -> None:
@@ -35,6 +40,7 @@ class Dictionary:
         current_hash_data = self.hash_table
         self.capacity *= 2
         self.threshold = int(2 / 3 * self.capacity) + 1
+        self.length = 0
         self.hash_table = [[]] * self.capacity
 
         for cell in current_hash_data:
@@ -45,8 +51,4 @@ class Dictionary:
         return self.__init__()
 
     def __len__(self) -> int:
-        result = 0
-        for i in range(self.capacity):
-            if self.hash_table[i]:
-                result += 1
-        return result
+        return self.length
