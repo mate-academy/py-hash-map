@@ -16,8 +16,8 @@ class Dictionary:
                 self.hash_table[index] = [key, value, key_hash]
                 self.length += 1
                 break
-            if self.hash_table[index][0] == key and \
-                    self.hash_table[index][2] == key_hash:
+            if self.hash_table[index][2] == key_hash and \
+                    self.hash_table[index][0] == key:
                 self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.capacity
@@ -30,8 +30,8 @@ class Dictionary:
             if not self.hash_table[index]:
                 raise KeyError(f"No key '{key}' in dictionary.")
 
-            if key == self.hash_table[index][0] and \
-                    key_hash == self.hash_table[index][2]:
+            if key_hash == self.hash_table[index][2] and \
+                    key == self.hash_table[index][0]:
                 return self.hash_table[index][1]
             index = (index + 1) % self.capacity
 
