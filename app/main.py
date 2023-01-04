@@ -9,15 +9,17 @@ class Dictionary:
         self.size = 0
         self.hash_table = [(None,)] * self.length
 
+    def resize(self) -> None:
+        if self.size / self.length >= 0.625:
+            self.length *= 2
+            self.hash_table += [(None,)] * self.length
+
     def __setitem__(
             self,
             key: Union[str, int, tuple, Point],
             value: Any
     ) -> list:
-        if self.size / self.length >= 0.625:
-            self.length *= 2
-            self.hash_table += [(None,)] * self.length
-
+        self.resize()
         index = hash(key) % len(self.hash_table)
         if self.hash_table[index][0] is None:
             self.hash_table[index] = [key, value]
