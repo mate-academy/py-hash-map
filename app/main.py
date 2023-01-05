@@ -2,22 +2,50 @@ from typing import Any
 
 
 class Dictionary:
+    pass
 
     def __init__(self) -> None:
-        self.my_dict = []
+        self.size = 0
+        self.capacity = 8
+        self.threshold = int(self.capacity * 2 / 3)
+        self.hash_table = [[] for _ in range(self.capacity)]
 
-    def __setitem__(self, key: Any, item: Any) -> None:
-        for i, v in enumerate(self.my_dict):
-            if key == v[0]:
-                del self.my_dict[i]
+    def resize(self) -> None:
+        old_hash_table = self.hash_table
+        self.capacity *= 2
+        self.threshold = int(self.capacity * 2 / 3)
+        self.size = 0
+        self.hash_table = [[] for _ in range(self.capacity)]
+        for cell in old_hash_table:
+            if cell:
+                self.__setitem__(cell[0], cell[1])
+
+    def __setitem__(self, key: int, value: Any) -> None:
+        if self.size == self.threshold:
+            self.resize()
+        hash_ = hash(key)
+        index = hash_ % self.capacity
+        while True:
+            if not self.hash_table[index]:
+                self.hash_table[index] = [key, value, hash_]
+                self.size += 1
                 break
-        self.my_dict.append((key, hash(key), item))
 
-    def __getitem__(self, key: Any) -> dict:
-        for obj in self.my_dict:
-            if obj[0] == key:
-                return obj[2]
-        raise KeyError
+            if self.hash_table[index][0] == key:
+                self.hash_table[index][1] = value
+                break
+
+            index = (index + 1) % self.capacity
+
+    def __getitem__(self, key: int) -> Any:
+        hash_ = hash(key)
+        index = hash_ % self.capacity
+        while self.hash_table[index]:
+            if self.hash_table[index][2] == hash_ and \
+                    self.hash_table[index][0] == key:
+                return self.hash_table[index][1]
+            index = (index + 1) % self.capacity
+        raise KeyError(key)
 
     def __len__(self) -> int:
-        return len(self.my_dict)
+        return self.size
