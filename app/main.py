@@ -23,11 +23,11 @@ class Dictionary:
     def __setitem__(self, key: int, value: Any) -> None:
         if self.size == self.threshold:
             self.resize()
-        hash_ = hash(key)
-        index = hash_ % self.capacity
+        key_hash = hash(key)
+        index = key_hash % self.capacity
         while True:
             if not self.hash_table[index]:
-                self.hash_table[index] = [key, value, hash_]
+                self.hash_table[index] = [key, value, key_hash]
                 self.size += 1
                 break
 
@@ -38,11 +38,11 @@ class Dictionary:
             index = (index + 1) % self.capacity
 
     def __getitem__(self, key: int) -> Any:
-        hash_ = hash(key)
-        index = hash_ % self.capacity
+        key_hash = hash(key)
+        index = key_hash % self.capacity
         while self.hash_table[index]:
-            if self.hash_table[index][2] == hash_ and \
-                    self.hash_table[index][0] == key:
+            if self.hash_table[index][2] == key_hash \
+                    and self.hash_table[index][0] == key:
                 return self.hash_table[index][1]
             index = (index + 1) % self.capacity
         raise KeyError(key)
