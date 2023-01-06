@@ -10,12 +10,11 @@ class Dictionary:
         self.hash_table = [[None]] * 8
 
     def resize(self) -> list:
-        self.hash_table += [[None]] * len(self.hash_table)
-        for el in self.hash_table:
+        old_hash_table = self.hash_table
+        self.hash_table = [[None]] * len(old_hash_table) * 2
+        self.size = 0
+        for el in old_hash_table:
             if el[0] is not None:
-                index = hash(el[0]) % len(self.hash_table)
-                self.hash_table.insert(index, self.hash_table.pop(
-                    self.hash_table.index(el)))
                 self.__setitem__(el[0], el[1])
         return self.hash_table
 
