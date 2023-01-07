@@ -26,21 +26,19 @@ class Dictionary:
         if self.size / len(self.hash_table) >= 0.625:
             self.hash_table = self.resize()
 
-        len_table = len(self.hash_table)
-        index = hash(key) % len_table
+        index = hash(key) % len(self.hash_table)
         if self.hash_table[index][0] is None:
             self.hash_table[index] = [key, value]
             self.size += 1
-            return self.hash_table
 
         for pairs in self.hash_table:
             if pairs[0] == key:
                 pairs[1] = value
                 return self.hash_table
 
-        next_index = (index + 1) % len_table
+        next_index = (index + 1) % len(self.hash_table)
         while self.hash_table[next_index][0] is not None:
-            next_index = (next_index + 1) % len_table
+            next_index = (next_index + 1) % len(self.hash_table)
         self.hash_table[next_index] = [key, value]
         self.size += 1
         return self.hash_table
