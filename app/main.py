@@ -18,8 +18,10 @@ class Dictionary:
                 self.hash_table[index] = [hash_key, key, value]
                 self.length += 1
                 break
-            if self.hash_table[index][1] == key \
-                    and self.hash_table[index][0] == hash_key:
+            if (
+                self.hash_table[index][1] == key
+                and self.hash_table[index][0] == hash_key
+            ):
                 self.hash_table[index][2] = value
                 break
             index = (index + 1) % self.capacity
@@ -28,8 +30,10 @@ class Dictionary:
         hash_key = hash(key)
         index = hash_key % self.capacity
         while self.hash_table[index] is not None:
-            if self.hash_table[index][0] == hash_key \
-                    and self.hash_table[index][1] == key:
+            if (
+                self.hash_table[index][0] == hash_key
+                and self.hash_table[index][1] == key
+            ):
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
         raise KeyError
