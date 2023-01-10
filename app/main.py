@@ -13,9 +13,9 @@ class Dictionary:
         old_hash_table = self.hash_table
         self.hash_table = [[None]] * len(old_hash_table) * 2
         self.size = 0
-        for value in old_hash_table:
-            if value[0] is not None:
-                self.__setitem__(value[0], value[1])
+        for element in old_hash_table:
+            if element[0] is not None:
+                self.__setitem__(element[0], element[1])
         return self.hash_table
 
     def __setitem__(
