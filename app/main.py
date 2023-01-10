@@ -19,8 +19,8 @@ class Dictionary:
                 self.length += 1
                 break
             if (
-                self.hash_table[index][1] == key
-                and self.hash_table[index][0] == hash_key
+                self.hash_table[index][0] == hash_key
+                and self.hash_table[index][1] == key
             ):
                 self.hash_table[index][2] = value
                 break
