@@ -35,6 +35,14 @@ class Dictionary:
     def __getitem__(self, item: Any) -> Any:
         hash_key = hash(item)
         index = hash_key % self.capacity
+        while True:
+            try:
+                for _ in range(self.capacity):
+                    if self.hash_table[index][0] == item:
+                        return self.hash_table[index][2]
+            except IndexError:
+                raise KeyError("Missing key")
+            break
         for _ in range(self.capacity):
             if self.hash_table[index][0] == item:
                 return self.hash_table[index][2]
