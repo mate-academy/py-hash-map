@@ -33,13 +33,6 @@ class Dictionary:
                 self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.bucket_size
-        # while self.hash_table[index] is not None:
-        #     if key == self.hash_table[index][0]:
-        #         self.length -= 1
-        #         break
-        #     index = (index + 1) % self.bucket_size
-        # self.hash_table[index] = [key, value]
-        # self.length += 1
 
     def __getitem__(self, input_key: Hashable) -> None:
         hashed_value = hash(input_key)
