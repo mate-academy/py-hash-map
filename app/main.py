@@ -47,3 +47,7 @@ class Dictionary:
         for item in copy_table:
             if item:
                 self.__setitem__(item[1], item[2])
+
+    def clear(self):
+        for element in self.hash_table:
+            element.clear()
