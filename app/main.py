@@ -19,21 +19,21 @@ class Dictionary:
                 self.hash_table[index] = [hash_key, key, value]
                 self.length += 1
                 break
-            if self.hash_table[index][0] == hash_key and \
-                    self.hash_table[index][1] == key:
+            if self.hash_table[index][0] == hash_key\
+                    and self.hash_table[index][1] == key:
                 self.hash_table[index][2] = value
                 break
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, item: Hashable) -> Any:
-        hash_key = hash(item)
+    def __getitem__(self, key: Hashable) -> Any:
+        hash_key = hash(key)
         index = hash_key % self.capacity
         while self.hash_table[index] is not None:
-            if self.hash_table[index][0] == hash_key and \
-                    self.hash_table[index][1] == item:
+            if self.hash_table[index][0] == hash_key\
+                    and self.hash_table[index][1] == key:
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
-        raise KeyError
+        raise KeyError(f"{self.hash_table[index]} is None")
 
     def __len__(self) -> int:
         return self.length
