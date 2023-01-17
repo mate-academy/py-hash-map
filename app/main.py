@@ -1,4 +1,4 @@
-from typing import Any, Hashable
+from typing import Any
 
 
 class Dictionary:
@@ -29,7 +29,8 @@ class Dictionary:
                 self.hash_table[index] = current_hash, key, value
                 self.length += 1
                 break
-            if current_hash == self.hash_table[index][0] and key == self.hash_table[index][1]:
+            if (current_hash == self.hash_table[index][0]
+                    and key == self.hash_table[index][1]):
                 self.hash_table[index] = current_hash, key, value
                 break
             index = (index + 1) % self.capacity
@@ -38,7 +39,8 @@ class Dictionary:
         current_hash = hash(key)
         index = current_hash % self.capacity
         while self.hash_table[index]:
-            if current_hash == self.hash_table[index][0] and key == self.hash_table[index][1]:
+            if (current_hash == self.hash_table[index][0]
+                    and key == self.hash_table[index][1]):
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
-            raise KeyError
+        raise KeyError
