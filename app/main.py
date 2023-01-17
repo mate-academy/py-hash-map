@@ -14,9 +14,10 @@ class Dictionary:
         old_hash_table = self.hash_table
         self.capacity *= 2
         self.hash_table = [None] * self.capacity
-        for key_value in old_hash_table:
-            if key_value:
-                self.__setitem__(key_value)
+        for hash_key_value in old_hash_table:
+            hash_, key, value = hash_key_value
+            if hash_key_value:
+                self.__setitem__(key, value)
 
     def __setitem__(self, key: Any, value: Any) -> None:
         if self.length > int(self.capacity * 2 / 3):
@@ -31,22 +32,13 @@ class Dictionary:
             if current_hash == self.hash_table[index][0] and key == self.hash_table[index][1]:
                 self.hash_table[index] = current_hash, key, value
                 break
-
-            else:
-                while self.hash_table[index]:
-                    index += 1
-                self.hash_table[index % self.capacity] = current_hash, key, value
-                break
+            index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Any) -> Any:
         current_hash = hash(key)
         index = current_hash % self.capacity
-        if self.hash_table[index]:
-            if self.hash_table[index][1] == key:
+        while self.hash_table[index]:
+            if current_hash == self.hash_table[index][0] and key == self.hash_table[index][1]:
                 return self.hash_table[index][2]
-            else:
-                for i in range(self.capacity):
-                    if key == self.hash_table[i][1]:
-                        return self.hash_table[index][2]
-                    else:
-                        raise KeyError
+            index = (index + 1) % self.capacity
+            raise KeyError
