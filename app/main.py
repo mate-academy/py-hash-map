@@ -14,6 +14,7 @@ class Dictionary:
         old_hash_table = self.hash_table
         self.capacity *= 2
         self.hash_table = [[]] * self.capacity
+        self.length = 0
         for hash_key_value in old_hash_table:
             if hash_key_value:
                 hash_, key, value = hash_key_value
