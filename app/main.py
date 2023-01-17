@@ -5,7 +5,7 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.hash_table = [[]]*self.capacity
+        self.hash_table = [[]] * self.capacity
 
     def __len__(self) -> int:
         return self.length
@@ -13,7 +13,7 @@ class Dictionary:
     def resize(self) -> None:
         old_hash_table = self.hash_table
         self.capacity *= 2
-        self.hash_table = [[]]*self.capacity
+        self.hash_table = [[]] * self.capacity
         for hash_key_value in old_hash_table:
             if hash_key_value:
                 hash_, key, value = hash_key_value
