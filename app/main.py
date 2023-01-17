@@ -49,5 +49,4 @@ class Dictionary:
                 self.__setitem__(item[1], item[2])
 
     def clear(self) -> None:
-        for element in self.hash_table:
-            element.clear()
+        self.hash_table = [None] * self.capacity
