@@ -11,7 +11,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __getitem__(self, key: Any) -> list:
+    def __getitem__(self, key: Any) -> Any:
         hash_key = hash(key)
         index = hash_key % self.capacity
         while self.hash_table[index]:
