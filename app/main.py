@@ -10,55 +10,52 @@ class Dictionary:
         return self.load
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        index = hash(key) % len(self.items)
-        if self.load > round(len(self.items) * (2 / 3)):
-            self.items += [None] * len(self.items)
-            self.reload()
-        for ind in range(len(self.items)):
-            if self.items[ind] is not None and self.items[ind][0] == key:
-                self.items[ind][-1] = value
+        lengths = len(self.items)
+        new_hash = hash(key)
+        index = new_hash % lengths
+
+        if self.load > round(lengths * (2 / 3)):
+            self.items += [None] * lengths
+            self._rehash()
+
+        for i in range(lengths):
+            if self.items[i] is not None and self.items[i][0] == key:
+                self.items[i][-1] = value
                 return
+
         if self.items[index] is None:
-            self.items[index] = [key, hash(key), value]
+            self.items[index] = [key, new_hash, value]
             self.load += 1
-        else:
-            count = index
-            for ind in range(len(self.items[index:]) - 1):
-                count += 1
-                if self.items[count] is None:
-                    self.items[count] = [key, hash(key), value]
-                    self.load += 1
-                    return
-            for ind in range(len(self.items)):
-                if self.items[ind] is None:
-                    self.items[ind] = [key, hash(key), value]
-                    self.load += 1
-                    break
+            return
+
+        count = index
+        for _ in range(len(self.items[index:]) - 1):
+            count += 1
+            if self.items[count] is None:
+                self.items[count] = [key, new_hash, value]
+                self.load += 1
+                return
+
+        for i in range(lengths):
+            if self.items[i] is None:
+                self.items[i] = [key, new_hash, value]
+                self.load += 1
+                break
 
     def __getitem__(self, key: Any) -> Any:
-        if key == "missing_key":
-            raise KeyError
         for index in self.items:
             if index is not None and key == index[0]:
                 return index[-1]
+        raise KeyError
 
-    def reload(self) -> None:
-        create_new = [None] * len(self.items)
+    def _rehash(self) -> None:
+        lengths = len(self.items)
+        create_new = [None] * lengths
         for item in self.items:
+            index = None
             if item is not None:
                 index = item[1] % len(create_new)
-                if create_new[index] is None:
-                    create_new[index] = item
-                if create_new[index] is not None:
-                    count = index
-                    for ind in range(len(self.items[index:]) - 1):
-                        count += 1
-                        if create_new[count] is None:
-                            create_new[count] = item
-                            return
-                    if create_new[count] != item:
-                        for ind in range(len(self.items)):
-                            if create_new[ind] is None:
-                                create_new[ind] = item
-                                break
+            if index is not None and create_new[index] is None:
+                create_new[index] = item
+                return
         self.items = create_new
