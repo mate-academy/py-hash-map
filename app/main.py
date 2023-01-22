@@ -3,40 +3,53 @@ from typing import Any
 
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
-        self.capacity = 8
-        self.load_factor = 2 / 3
+        self.length: int = 0
+        self.capacity: int = 8
+        self.load_factor: float = 2 / 3
+        self.threshold: int = int(self.capacity * self.load_factor) + 1
         self.hash_table: list = [None] * self.capacity
 
     def __len__(self) -> int:
         return self.length
 
+    def resize(self) -> None:
+        table = [index for index in self.hash_table if index is not None]
+        self.capacity *= 2
+        self.threshold = int(self.capacity * self.load_factor) + 1
+        self.hash_table = [None] * self.capacity
+        self.length = 0
+        for index in table:
+            self.__setitem__(index[0], index[1])
+
     def __setitem__(self, key: Any, value: Any) -> None:
+        if self.length == self.threshold:
+            self.resize()
         hash_key = hash(key) % self.capacity
-        for _ in range(len(self.hash_table)):
+        while True:
             if self.hash_table[hash_key] is None:
                 self.hash_table[hash_key] = [key, value]
                 self.length += 1
-                return
+                break
             if self.hash_table[hash_key] is not None:
                 if self.hash_table[hash_key][0] == key:
                     self.hash_table[hash_key][1] = value
-                    return
-
-            if hash_key == len(self.hash_table) - 1:
-                hash_key = -1
-            hash_key += 1
-
-        if None not in self.hash_table:
-            self.hash_table.append([key, value])
-            self.length += 1
+                    break
+                hash_key += 1
+                if hash_key > len(self.hash_table) - 1:
+                    hash_key = 0
 
     def __getitem__(self, input_key: Any) -> Any:
-        for value in self.hash_table:
-            if value is not None:
-                if value[0] == input_key:
-                    return value[1]
-        raise KeyError
+        hash_ = hash(input_key) % self.capacity
+        hash_key = hash_
+        while True:
+            if self.hash_table[hash_key] is None:
+                raise KeyError
+            if self.hash_table[hash_key][0] == input_key:
+                return self.hash_table[hash_key][1]
+            if hash_key == len(self.hash_table) - 1:
+                hash_key = 0
+                continue
+            hash_key += 1
 
     def clear(self) -> None:
         for index in range(len(self.hash_table)):
@@ -69,6 +82,3 @@ class Dictionary:
                     self.hash_table[index] = None
                     return
         raise KeyError
-
-    def __iter__(self) -> None:
-        return self
