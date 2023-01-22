@@ -43,12 +43,11 @@ class Dictionary:
         self.old_nodes = self.nodes
         self.nodes = [[] for i in range(self.capacity)]
         for element in self.old_nodes:
-            if not element:
-                continue
-            self.__setitem__(
-                key=element[0],
-                value=element[2]
-            )
+            if element:
+                self.__setitem__(
+                    key=element[0],
+                    value=element[2]
+                )
 
     def __len__(self) -> int:
         return self.size
