@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 
 
 class Dictionary:
@@ -18,7 +18,11 @@ class Dictionary:
             if value:
                 self.__setitem__(value[0], value[2])
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(
+            self,
+            key: Union[bool, int, float, str, tuple],
+            value: Any
+    ) -> None:
         if self.length > self.threshold:
             self.resize()
 
@@ -30,18 +34,22 @@ class Dictionary:
                 self.hash_list[index] = [key, current_hash, value]
                 self.length += 1
                 break
-            if self.hash_list[index][0] == key and \
-                    self.hash_list[index][1] == current_hash:
+            if (
+                self.hash_list[index][0] == key
+                and self.hash_list[index][1] == current_hash
+            ):
                 self.hash_list[index][2] = value
                 break
             index = (index + 1) % self.size
 
-    def __getitem__(self, key: Any) -> list:
+    def __getitem__(self, key: Union[bool, int, float, str, tuple]) -> list:
         current_hash = hash(key)
         index = current_hash % self.size
         while self.hash_list[index]:
-            if self.hash_list[index][0] == key and \
-                    self.hash_list[index][1] == current_hash:
+            if (
+                self.hash_list[index][0] == key
+                and self.hash_list[index][1] == current_hash
+            ):
                 return self.hash_list[index][2]
             index = (index + 1) % self.size
         raise KeyError
