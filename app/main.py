@@ -11,14 +11,17 @@ class Dictionary:
         self.keys = []
 
     def add_hash_node(self, key: Any, value: Any) -> None:
-        hash_slot = hash(key) % self.capacity
+        hash_num = hash(key)
+        hash_slot = hash_num % self.capacity
         if self.hash_table[hash_slot] is None:
-            self.hash_table[hash_slot] = (key, hash(key), value)
+            self.hash_table[hash_slot] = (key, hash_num, value)
         else:
-            for i in range(self.capacity):
-                if self.hash_table[i] is None:
-                    self.hash_table[i] = (key, hash(key), value)
-                    break
+            while self.hash_table[hash_slot] is not None:
+                if hash_slot == self.capacity - 1:
+                    hash_slot = 0
+                else:
+                    hash_slot += 1
+            self.hash_table[hash_slot] = (key, hash_num, value)
 
     def resize_hash_table(self) -> None:
         self.hash_table += [None] * self.capacity
@@ -30,9 +33,9 @@ class Dictionary:
                 self.add_hash_node(key, value)
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        hash_num = hash(key)
         try:
-            hash_slot = self.search_key(key)
-            self.hash_table[hash_slot] = (key, hash(key), value)
+            self.__getitem__(key)
         except KeyError:
             self.size += 1
             if self.size <= self.capacity * self.loadfactor:
@@ -41,24 +44,20 @@ class Dictionary:
                 self.resize_hash_table()
                 self.add_hash_node(key, value)
             self.keys.append(key)
+        old_value = self.__getitem__(key)
+        node_index = self.hash_table.index((key, hash_num, old_value))
+        self.hash_table[node_index] = (key, hash_num, value)
 
-    def search_key(self, key: Any) -> int:
+    def __getitem__(self, key: Any) -> Any:
         if key in self.keys:
             hash_slot = hash(key) % self.capacity
             node = self.hash_table[hash_slot]
             if node is not None and node[0] == key:
-                return hash_slot
+                return node[2]
             for index, node in enumerate(self.hash_table):
                 if node is not None and node[0] == key:
-                    return index
+                    return node[2]
         raise KeyError("Key is not in a dictionary")
-
-    def __getitem__(self, key: Any) -> Any:
-        try:
-            hash_slot = self.search_key(key)
-        except KeyError:
-            raise KeyError("Key is not in a dictionary")
-        return self.hash_table[hash_slot][2]
 
     def __len__(self) -> int:
         return self.size
