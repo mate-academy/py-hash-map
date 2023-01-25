@@ -4,58 +4,59 @@ from typing import Any
 
 class Dictionary:
     def __init__(self) -> None:
-        self.capacity = 8
-        self.loadfactor = 2 / 3
-        self.size = 0
-        self.hash_table = [None] * self.capacity
-        self.keys = []
+        self.__capacity = 8
+        self.__loadfactor = 2 / 3
+        self.__size = 0
+        self.__hash_table = [None] * self.__capacity
+        self.__keys = []
 
     def __add_hash_node(self, key: Any, value: Any) -> None:
         hash_num = hash(key)
-        slot = hash_num % self.capacity
-        if self.hash_table[slot] is None:
-            self.hash_table[slot] = (key, hash_num, value)
-        else:
-            while self.hash_table[slot] is not None:
-                slot = slot + 1 if slot < self.capacity - 1 else 0
-            self.hash_table[slot] = (key, hash_num, value)
+        slot = hash_num % self.__capacity
+        while self.__hash_table[slot] is not None:
+            slot = (slot + 1) % self.__capacity
+        self.__hash_table[slot] = (key, hash_num, value)
 
     def __resize_hash_table(self) -> None:
-        self.hash_table += [None] * self.capacity
-        self.capacity = self.capacity * 2
-        for index, hash_node in enumerate(self.hash_table):
+        self.__hash_table += [None] * self.__capacity
+        self.__capacity *= 2
+        for index, hash_node in enumerate(self.__hash_table):
             if hash_node is not None:
                 key, hash_num, value = hash_node
-                self.hash_table[index] = None
+                self.__hash_table[index] = None
                 self.__add_hash_node(key, value)
+
+    @property
+    def is_need_resize(self) -> bool:
+        return self.__size > self.__capacity * self.__loadfactor
 
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_num = hash(key)
         try:
             self.__getitem__(key)
         except KeyError:
-            self.size += 1
-            if self.size > self.capacity * self.loadfactor:
+            self.__size += 1
+            if self.is_need_resize:
                 self.__resize_hash_table()
             self.__add_hash_node(key, value)
-            self.keys.append(key)
+            self.__keys.append(key)
         old_value = self.__getitem__(key)
-        node_index = self.hash_table.index((key, hash_num, old_value))
-        self.hash_table[node_index] = (key, hash_num, value)
+        node_index = self.__hash_table.index((key, hash_num, old_value))
+        self.__hash_table[node_index] = (key, hash_num, value)
 
     def __getitem__(self, key: Any) -> Any:
-        if key in self.keys:
-            hash_slot = hash(key) % self.capacity
-            node = self.hash_table[hash_slot]
+        if key in self.__keys:
+            hash_slot = hash(key) % self.__capacity
+            node = self.__hash_table[hash_slot]
             if node is not None and node[0] == key:
                 return node[2]
-            for index, node in enumerate(self.hash_table):
+            for index, node in enumerate(self.__hash_table):
                 if node is not None and node[0] == key:
                     return node[2]
         raise KeyError("Key is not in a dictionary")
 
     def __len__(self) -> int:
-        return self.size
+        return self.__size
 
     def __iter__(self) -> Dictionary:
         self.index = 0
@@ -63,10 +64,10 @@ class Dictionary:
 
     def __next__(self) -> Any:
         index = self.index
-        if index >= len(self.keys):
+        if index >= len(self.__keys):
             raise StopIteration
         self.index += 1
-        return self.keys[index]
+        return self.__keys[index]
 
     def get(self, key: Any, value: Any = None) -> Any:
         try:
@@ -76,7 +77,7 @@ class Dictionary:
         return dict_value
 
     def clear(self) -> None:
-        self.capacity = 8
-        self.size = 0
-        self.hash_table = [None] * self.capacity
-        self.keys = []
+        self.__capacity = 8
+        self.__size = 0
+        self.__hash_table = [None] * self.__capacity
+        self.__keys = []
