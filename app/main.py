@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, Union, Hashable
 
 
 class Dictionary:
@@ -20,7 +20,7 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: Union[bool, int, float, str, tuple],
+            key: Union[bool, int, float, str, tuple, Hashable],
             value: Any
     ) -> None:
         if self.length > self.threshold:
@@ -42,7 +42,10 @@ class Dictionary:
                 break
             index = (index + 1) % self.size
 
-    def __getitem__(self, key: Union[bool, int, float, str, tuple]) -> list:
+    def __getitem__(
+            self,
+            key: Union[bool, int, float, str, tuple, Hashable]
+    ) -> list:
         current_hash = hash(key)
         index = current_hash % self.size
         while self.hash_list[index]:
