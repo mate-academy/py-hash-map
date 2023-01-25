@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any
 
 
@@ -61,3 +62,29 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.size
+
+    def __iter__(self) -> Dictionary:
+        self.index = 0
+        return self
+
+    def __next__(self) -> Any:
+        index = self.index
+        if index >= len(self.keys):
+            raise StopIteration
+        self.index += 1
+        return self.keys[index]
+
+    def get(self, key: Any, value: Any = None) -> Any:
+        try:
+            self.__getitem__(key)
+        except KeyError:
+            if value is None:
+                return None
+            self.__setitem__(key, value)
+        return self.__getitem__(key)
+
+    def clear(self) -> None:
+        self.capacity = 8
+        self.size = 0
+        self.hash_table = [None] * self.capacity
+        self.keys = []
