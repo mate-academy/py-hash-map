@@ -10,27 +10,24 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.keys = []
 
-    def add_hash_node(self, key: Any, value: Any) -> None:
+    def __add_hash_node(self, key: Any, value: Any) -> None:
         hash_num = hash(key)
-        hash_slot = hash_num % self.capacity
-        if self.hash_table[hash_slot] is None:
-            self.hash_table[hash_slot] = (key, hash_num, value)
+        slot = hash_num % self.capacity
+        if self.hash_table[slot] is None:
+            self.hash_table[slot] = (key, hash_num, value)
         else:
-            while self.hash_table[hash_slot] is not None:
-                if hash_slot == self.capacity - 1:
-                    hash_slot = 0
-                else:
-                    hash_slot += 1
-            self.hash_table[hash_slot] = (key, hash_num, value)
+            while self.hash_table[slot] is not None:
+                slot = slot + 1 if slot < self.capacity - 1 else 0
+            self.hash_table[slot] = (key, hash_num, value)
 
-    def resize_hash_table(self) -> None:
+    def __resize_hash_table(self) -> None:
         self.hash_table += [None] * self.capacity
         self.capacity = self.capacity * 2
         for index, hash_node in enumerate(self.hash_table):
             if hash_node is not None:
                 key, hash_num, value = hash_node
                 self.hash_table[index] = None
-                self.add_hash_node(key, value)
+                self.__add_hash_node(key, value)
 
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_num = hash(key)
@@ -38,11 +35,9 @@ class Dictionary:
             self.__getitem__(key)
         except KeyError:
             self.size += 1
-            if self.size <= self.capacity * self.loadfactor:
-                self.add_hash_node(key, value)
-            else:
-                self.resize_hash_table()
-                self.add_hash_node(key, value)
+            if self.size > self.capacity * self.loadfactor:
+                self.__resize_hash_table()
+            self.__add_hash_node(key, value)
             self.keys.append(key)
         old_value = self.__getitem__(key)
         node_index = self.hash_table.index((key, hash_num, old_value))
@@ -75,12 +70,10 @@ class Dictionary:
 
     def get(self, key: Any, value: Any = None) -> Any:
         try:
-            self.__getitem__(key)
+            dict_value = self.__getitem__(key)
         except KeyError:
-            if value is None:
-                return None
-            self.__setitem__(key, value)
-        return self.__getitem__(key)
+            return value
+        return dict_value
 
     def clear(self) -> None:
         self.capacity = 8
