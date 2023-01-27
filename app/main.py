@@ -1,5 +1,6 @@
 from __future__ import annotations
 from copy import deepcopy
+from typing import Any
 
 
 class Dictionary:
@@ -14,7 +15,7 @@ class Dictionary:
             key = 0
         return key
 
-    def write(self, index: int, key: any, value: any) -> None:
+    def write(self, index: int, key: Any, value: Any) -> None:
         self.hash_table[index][0] = key
         self.hash_table[index][1] = value
 
@@ -35,7 +36,7 @@ class Dictionary:
                     new_key = 0
         del old_hash_tabel
 
-    def __setitem__(self, key: any, value: any) -> None:
+    def __setitem__(self, key: Any, value: Any) -> None:
         key_hash_rewrite = hash(key) % self.capacity
         if self.hash_table[key_hash_rewrite][0] is not None:
             for _ in range(self.capacity):
@@ -55,7 +56,7 @@ class Dictionary:
                 break
             key_hash = self.key_upp(key_hash)
 
-    def __getitem__(self, key: any) -> any:
+    def __getitem__(self, key: Any) -> Any:
         key_hash = hash(key) % self.capacity
         for _ in range(self.capacity):
             if self.hash_table[key_hash][0] == key:
