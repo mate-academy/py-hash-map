@@ -1,6 +1,5 @@
 from typing import Any
 
-
 class Dictionary:
     def __init__(self) -> None:
         self.dict_size = 8
