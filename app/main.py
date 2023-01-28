@@ -26,42 +26,39 @@ class Dictionary:
         for pair_key_value in old_hash_tabel:
             if pair_key_value[0] is None:
                 continue
-            new_key = hash(pair_key_value[0]) % self.capacity
+            index = hash(pair_key_value[0]) % self.capacity
             for _ in range(self.capacity):
-                if self.hash_table[new_key][0] is None:
-                    self.write(new_key, pair_key_value[0], pair_key_value[1])
+                if self.hash_table[index][0] is None:
+                    self.write(index, pair_key_value[0], pair_key_value[1])
                     break
-                new_key += 1
-                if new_key == self.capacity:
-                    new_key = 0
+                index += 1
+                if index == self.capacity:
+                    index = 0
         del old_hash_tabel
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        key_hash_rewrite = hash(key) % self.capacity
-        if self.hash_table[key_hash_rewrite][0] is not None:
-            for _ in range(self.capacity):
-                if self.hash_table[key_hash_rewrite][0] == key:
-                    self.hash_table[key_hash_rewrite][1] = value
-                    return
-                key_hash_rewrite = self.key_upp(key_hash_rewrite)
 
         if self.length > self.capacity * 2 // 3:
             self.resize()
 
-        key_hash = hash(key) % self.capacity
+        index = hash(key) % self.capacity
         for _ in range(self.capacity):
-            if self.hash_table[key_hash][0] is None:
-                self.write(key_hash, key, value)
+            if self.hash_table[index][0] is None:
+                self.write(index, key, value)
                 self.length += 1
                 break
-            key_hash = self.key_upp(key_hash)
+            else:
+                if self.hash_table[index][0] == key:
+                    self.write(index, key, value)
+                    break
+            index = self.key_upp(index)
 
     def __getitem__(self, key: Any) -> Any:
-        key_hash = hash(key) % self.capacity
+        index = hash(key) % self.capacity
         for _ in range(self.capacity):
-            if self.hash_table[key_hash][0] == key:
-                return self.hash_table[key_hash][1]
-            key_hash = self.key_upp(key_hash)
+            if self.hash_table[index][0] == key:
+                return self.hash_table[index][1]
+            index = self.key_upp(index)
         raise KeyError
 
     def __len__(self) -> int:
