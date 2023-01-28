@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,9 +8,11 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.size)]
         self.length = 0
 
-    def __setitem__(self,
-                    key: (int, float, str, bool, tuple),
-                    value: Any) -> None:
+    def __setitem__(
+            self,
+            key: Hashable,
+            value: Any
+    ) -> None:
         if self.length == self.before_resize:
             self.resize()
         hashed_key = hash(key)
@@ -27,7 +29,10 @@ class Dictionary:
                 break
             index = (index + 1) % self.size
 
-    def __getitem__(self, key: (int, float, str, bool, tuple)) -> Any:
+    def __getitem__(
+            self,
+            key: Hashable
+    ) -> Any:
         hashed_key = hash(key)
         index = hashed_key % self.size
         while self.hash_table[index]:
