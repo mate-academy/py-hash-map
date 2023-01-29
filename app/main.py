@@ -1,4 +1,5 @@
 from typing import Any, Union
+from copy import copy
 
 
 class Dictionary:
@@ -9,7 +10,7 @@ class Dictionary:
         self.threshold = int(self.hash_size * 2 / 3)
 
     def resize_hash(self) -> None:
-        old_hash_table = self.hash_table
+        old_hash_table = copy(self.hash_table)
         self.hash_size *= 2
         self.threshold = int(self.hash_size * 2 / 3)
         self.length = 0
@@ -49,10 +50,7 @@ class Dictionary:
         return self.length
 
     def clear(self) -> None:
-        self.hash_size = 8
-        self.threshold = int(self.hash_size * 2 / 3)
-        self.length = 0
-        self.hash_table = [[] for _ in range(self.hash_size)]
+        self.hash_table: list = [None] * self.capacity
 
     def __delitem__(self, key: Any) -> Union[None, KeyError]:
         key_hash = hash(key)
