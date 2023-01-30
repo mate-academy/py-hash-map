@@ -9,10 +9,7 @@ class Dictionary:
         self.capacity = 8
 
     def key_upp(self, key: int) -> int:
-        key += 1
-        if key == self.capacity:
-            key = 0
-        return key
+        return (key + 1) % self.capacity
 
     def write(self, index: int, key: Hashable, value: Any) -> None:
         self.hash_table[index][0] = key
@@ -26,7 +23,6 @@ class Dictionary:
         for key, value in old_hash_table:
             if key:
                 self.__setitem__(key, value)
-        del old_hash_table
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.capacity * 2 // 3:
