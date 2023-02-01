@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Union, Tuple
+from typing import Any, Hashable, Tuple
 
 
 class Dictionary:
@@ -15,7 +15,7 @@ class Dictionary:
 
     def _get_index_and_hash(
             self,
-            key: Union[bool, int, float, str, tuple]
+            key: Hashable
     ) -> Tuple[int, int]:
         index = hash(key) % self.capacity
         hash_of_item = hash(key)
@@ -23,21 +23,21 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: Union[bool, int, float, str, tuple],
+            key: Hashable,
             value: Any
     ) -> None:
         if self.size > self.threshold:
             self._resize()
-        hash_of_item, index = self._get_index_and_hash(key)
-        node = [key, hash_of_item, value]
+        hash_, index = self._get_index_and_hash(key)
+        node = [key, hash_, value]
         while True:
             if not self.hash_table[index]:
                 self.hash_table[index] = node
                 self.size += 1
                 break
             if (
-                    self.hash_table[index][0] == key
-                    and self.hash_table[index][1] == hash_of_item
+                    self.hash_table[index][1] == hash_
+                    and self.hash_table[index][0] == key
             ):
                 self.hash_table[index][2] = value
                 break
@@ -55,13 +55,13 @@ class Dictionary:
 
     def __getitem__(
             self,
-            key: [bool, int, float, str, list, dict]
+            key: Hashable
     ) -> Any:
-        hash_of_item, index = self._get_index_and_hash(key)
+        hash_, index = self._get_index_and_hash(key)
         while self.hash_table[index]:
             if (
-                    self.hash_table[index][0] == key
-                    and self.hash_table[index][1] == hash_of_item
+                    self.hash_table[index][1] == hash_
+                    and self.hash_table[index][0] == key
             ):
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
