@@ -2,11 +2,9 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self, initial_capacity: int = 8,
-                 load_factor: float = 0.66,
-                 ) -> None:
-        self.initial_capacity = initial_capacity
-        self.load_factor = load_factor
+    def __init__(self) -> None:
+        self.initial_capacity = initial_capacity = 8
+        self.load_factor = 0.66
         self.list_size = 0
         self.buckets_size = initial_capacity
         self.list = [[]] * self.initial_capacity
@@ -18,7 +16,6 @@ class Dictionary:
             self.resize_rehash()
 
     def generate_new_list(self) -> None:
-        self.list = []
         self.list_size = 0
         self.list = [[]] * self.buckets_size
 
@@ -33,7 +30,7 @@ class Dictionary:
                 key, index, value = bucket_list
                 self.__setitem__(key, value)
 
-    def __getitem__(self, key: Any) -> list:
+    def __getitem__(self, key: Hashable) -> list:
         index = self.get_index(key)
         while self.list[index]:
             if (
@@ -77,12 +74,6 @@ class Dictionary:
             value = self.list[index][2]
             self.list[index].clear()
             return value
-
-    def get_all(self) -> list:
-        raw_list = []
-        for bucket_list in self.list:
-            raw_list.append(bucket_list)
-        return raw_list
 
     def __len__(self) -> int:
         return self.list_size
