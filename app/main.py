@@ -3,10 +3,10 @@ from typing import Any, Hashable
 
 class Dictionary:
     def __init__(self) -> None:
-        self.initial_capacity = initial_capacity = 8
-        self.load_factor = 0.66
+        self.initial_capacity = 8
+        self.load_factor = 2 / 3
         self.list_size = 0
-        self.buckets_size = initial_capacity
+        self.buckets_size = self.initial_capacity
         self.list = [[]] * self.initial_capacity
 
     def check_load_factor(self) -> None:
@@ -20,7 +20,10 @@ class Dictionary:
         self.list = [[]] * self.buckets_size
 
     def get_index(self, key: Hashable) -> int:
-        return hash(key) % self.buckets_size
+        index = hash(key) % self.buckets_size
+        if self.list[index][0] != key:
+            raise IndexError(f"Key {key} not found in")
+        return index
 
     def resize_rehash(self) -> None:
         temp_data = self.list
@@ -31,18 +34,15 @@ class Dictionary:
                 self.__setitem__(key, value)
 
     def __getitem__(self, key: Hashable) -> list:
-        index = self.get_index(key)
+        index = hash(key) % self.buckets_size
         while self.list[index]:
-            if (
-                    self.list[index][1] == index
-                    and self.list[index][0] == key
-            ):
+            if self.list[index][0] == key:
                 return self.list[index][2]
             index = (index + 1) % self.buckets_size
         raise KeyError
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = self.get_index(key)
+        index = hash(key) % self.buckets_size
         while True:
             if not self.list[index]:
                 self.list[index] = [key, index, value]
@@ -56,24 +56,16 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
-        if index is None:
-            pass
-        if self.list[index][0] != key:
-            raise IndexError(f"Key {key} not found in")
-        else:
+        if self.list[index][0] == key:
             self.list[index].clear()
             self.list_size -= 1
 
     def pop(self, key: Hashable) -> None:
         index = self.get_index(key)
-        if index is None:
-            return None
-        if self.list[index][0] != key:
-            return None
-        else:
-            value = self.list[index][2]
-            self.list[index].clear()
-            return value
+        value = self.list[index][2]
+        self.list[index].clear()
+        self.list_size -= 1
+        return value
 
     def __len__(self) -> int:
         return self.list_size
