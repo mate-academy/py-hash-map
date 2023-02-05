@@ -5,7 +5,8 @@ class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.length = 0
-        self.threshold = int(self.capacity * 2 / 3)
+        self.load_factor = 2 / 3
+        self.threshold = int(self.capacity * self.load_factor)
         self.hash_table = [[]] * self.capacity
 
     def __len__(self) -> int:
@@ -45,7 +46,7 @@ class Dictionary:
 
     def resize_hash_table(self) -> None:
         self.capacity *= 2
-        self.threshold = int(self.capacity * 2 / 3)
+        self.threshold = int(self.capacity * self.load_factor)
         self.length = 0
         old_hash_table = self.hash_table
         self.hash_table = [[]] * self.capacity
