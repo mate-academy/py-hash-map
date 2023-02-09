@@ -62,3 +62,37 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
+
+    def clear(self) -> None:
+        self.length = 0
+        self.hash_table: list = [None] * 8
+        self.hash_table_capacity = 8
+        self.hash_table_threshold = 5
+
+    def __delitem__(self, key) -> None:
+        position = hash(key) % self.hash_table_capacity
+        count = 0
+
+        while True:
+            if self.hash_table[position] is not None and self.hash_table[position][0] == key:
+                self.hash_table[position] = None
+                self.length -= 1
+                break
+
+            count += 1
+            if count == self.hash_table_capacity:
+                raise KeyError
+
+            position += 1
+
+            if position > self.hash_table_threshold - 1:
+                position = 0
+
+    def get(self, key: Any, value: Any = None) -> Any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return value
+
+    def pop(self, key: Any) -> None:
+        self.__delitem__(key)
