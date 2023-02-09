@@ -69,12 +69,13 @@ class Dictionary:
         self.hash_table_capacity = 8
         self.hash_table_threshold = 5
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: Any) -> None:
         position = hash(key) % self.hash_table_capacity
         count = 0
 
         while True:
-            if self.hash_table[position] is not None and self.hash_table[position][0] == key:
+            if self.hash_table[position] is not None \
+                    and self.hash_table[position][0] == key:
                 self.hash_table[position] = None
                 self.length -= 1
                 break
