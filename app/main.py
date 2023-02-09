@@ -13,21 +13,24 @@ class Dictionary:
         index = hash(key) % self.capacity
         while (self.hash_table[index] is not None
                or self.hash_table[index] == 1):
-            if self.hash_table[index] == 1 or self.hash_table[index][0] == key:
+            if self.hash_table[index][0] == key or self.hash_table[index] == 1:
                 self.length -= 1
                 break
             index = (index + 1) % self.capacity
         self.hash_table[index] = (key, value)
         self.length += 1
         if len(self) > self.load_factor * self.capacity:
-            self.capacity *= self.resize
-            old_hash_table = self.hash_table
-            self.hash_table = [None] * self.capacity
-            self.length = 0
-            for item in old_hash_table:
-                if item is not None:
-                    key, value = item
-                    self.__setitem__(key, value)
+            self.make_resize()
+
+    def make_resize(self) -> None:
+        self.capacity *= self.resize
+        old_hash_table = self.hash_table
+        self.hash_table = [None] * self.capacity
+        self.length = 0
+        for item in old_hash_table:
+            if item is not None:
+                key, value = item
+                self.__setitem__(key, value)
 
     def __getitem__(self, key: Callable) -> Callable:
         index = hash(key) % self.capacity
