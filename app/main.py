@@ -52,6 +52,6 @@ class Dictionary:
         old_hash_table = self.hash_table
         self.hash_table = [[]] * self.initial_capacity
         for element in old_hash_table:
-            if len(element) != 0:
+            if len(element) == 3:
                 key, value = element[0], element[2]
                 self.__setitem__(key, value)
