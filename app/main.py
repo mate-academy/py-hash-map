@@ -68,19 +68,19 @@ class Dictionary:
         self.size = 0
         self.table = [[] for _ in range(self.capacity)]
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return
+            return default
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self[key]
             del self[key]
             return value
         except KeyError:
-            return
+            return default
 
     def update(self, other: dict or Dictionary) -> None:
         for key, value in other.items():
