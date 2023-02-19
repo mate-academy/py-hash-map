@@ -1,9 +1,9 @@
-import pprint
-from typing import List
+
+from typing import List, Any
 
 
 class Dictionary:
-    def __init__(self, elements: List[tuple] = None):
+    def __init__(self, elements: List[tuple] = None) -> None:
         if elements is None:
             elements = []
         self._bucket_size = 8
@@ -16,27 +16,28 @@ class Dictionary:
         if len(elements):
             self._assign_buckets(elements)
 
-    def _assign_buckets(self, elements):
-        if not self._len_bucket:
-            self._buckets = [None] * self._bucket_size
-
-        for key, value in elements:
-            if isinstance(key, list | dict | set):
-                raise KeyError
-            hashed_value = hash(key)
+    def _assign_buckets(self, elements: List[tuple]) -> None:
+        for _key, _value in elements:
+            if isinstance(_key, list | dict | set):
+                raise KeyError(
+                    f'The key can`t be like this: "{_key}" is "{type(_key)}"'
+                )
+            hashed_value = hash(_key)
             index = hashed_value % self._bucket_size
 
-            while self._buckets[index] is not None:
+            while self._buckets[index]:
+                if self._buckets[index][0] == _key:
+                    break
                 index = (index + 1) % self._bucket_size
 
-            self._buckets[index] = (key, value,)
+            self._buckets[index] = (_key, _value,)
 
-    def _get_buckets_full(self):
-        return [full_bucket for full_bucket in self._buckets if full_bucket is not None and len(full_bucket)]
+    def _get_buckets_full(self) -> list:
+        return [full_bucket for full_bucket in self._buckets if full_bucket]
 
-    def _resize(self, new_key_value):
+    def _resize(self, new_element: List[tuple]) -> None:
         current_buckets = self._get_buckets_full()
-        current_buckets += new_key_value
+        current_buckets += new_element
 
         while self._len_bucket > self._bucket_resize:
             self._bucket_size *= 2
@@ -46,71 +47,77 @@ class Dictionary:
         self._len_bucket = 0
         self._assign_buckets(current_buckets)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, _key: Any, _value: Any) -> None:
         self._len_bucket = len(self) + 1
 
         if self._len_bucket > self._bucket_resize:
-            self._resize([(key, value)])
+            self._resize([(_key, _value)])
 
         else:
-            self._assign_buckets([(key, value)])
+            self._assign_buckets([(_key, _value)])
 
-    def __getitem__(self, input_key):
+    def __getitem__(self, input_key: Any) -> Any:
         hashed_value = hash(input_key)
         index = hashed_value % self._bucket_size
         if input_key not in self.keys():
-            raise KeyError
-        while self._buckets[index] is not None:
-            key, value = self._buckets[index]
-            if key == input_key:
-                return value
+            raise KeyError(f'There is no such key: "{input_key}"')
+
+        while self._buckets[index]:
+            _key, _value = self._buckets[index]
+            if _key == input_key:
+                if _value == "remote":
+                    raise KeyError(f'There is no such key: "{input_key}"')
+                return _value
             index = (index + 1) % self._bucket_size
 
-    def __str__(self):
-        dict_repr = "  {\n"
-        for key, value in self._get_buckets_full():
-            dict_repr += f"    {key}: {value},\n"
+    def __delitem__(self, input_key: Any) -> None:
+        self._assign_buckets([(input_key, "remote")])
+
+    def __str__(self) -> str:
+        dict_str = "  {\n"
+        for _key, _value in self._get_buckets_full():
+            dict_str += f"    {_key}: {_value},\n"
+        dict_str += "}"
+        return dict_str
+
+    def __repr__(self) -> str:
+        dict_repr = "{"
+        for _key, _value in self._get_buckets_full():
+            dict_repr += f"{_key}: {_value}, "
         dict_repr += "}"
         return dict_repr
 
-    def __repr__(self):
-        dict_repr = "  {\n"
-        for key, value in self._get_buckets_full():
-            dict_repr += f"    {key}: {value},\n"
-        dict_repr += "}"
-        return dict_repr
-
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._get_buckets_full())
 
-    def keys(self):
+    def keys(self) -> list:
         keys_list = []
-        for key, value in self._get_buckets_full():
-            keys_list.append(key)
+        for _key, _value in self._get_buckets_full():
+            keys_list.append(_key)
         return keys_list
 
-    def values(self):
+    def values(self) -> list:
         values_list = []
-        for key, value in self._get_buckets_full():
-            values_list.append(value)
+        for _key, _value in self._get_buckets_full():
+            values_list.append(_value)
         return values_list
 
-#
-# some_dict = Dictionary()
-#
-# # some_dict[5] = "good idea"
-# #
-# # some_dict[6] = "cool idea"
-# #
-# # some_dict[7] = "bad idea"
-#
-# print(len(some_dict))
-#
-# # print(some_dict[123])
-# # some_dict[8] = "great idea"
-# # print(f"""
-# #
-# #     {some_dict}
-# #
-# #     {some_dict}
-# # """)
+    def clear(self) -> None:
+        self._buckets = [[] for i in range(self._bucket_size)]
+
+    def get(self, _key: Any) -> Any:
+        _value = None
+        try:
+            _value = self.__getitem__(_key)
+        except KeyError:
+            return None
+        return _value
+
+    def update(self, elements: List[tuple]) -> None:
+        self._len_bucket = len(self) + len(elements)
+
+        if self._len_bucket > self._bucket_resize:
+            self._resize(elements)
+
+        else:
+            self._assign_buckets(elements)
