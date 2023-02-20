@@ -12,7 +12,6 @@ class Dictionary:
             self._bucket_size *= 2
             self._bucket_resize = self._bucket_size * 2 / 3
         self._buckets = [[] for i in range(self._bucket_size)]
-        self._len_bucket = 0
         if len(elements):
             self._assign_buckets(elements)
 
@@ -32,14 +31,18 @@ class Dictionary:
 
             self._buckets[index] = (_key, _value,)
 
-    def _get_buckets_full(self) -> list:
+    def _get_buckets_full(self) -> list[Any]:
         return [full_bucket for full_bucket in self._buckets if full_bucket]
 
-    def _resize(self, new_element: List[tuple]) -> None:
+    def _resize(
+            self,
+            new_element: List[tuple],
+            len_new_elements: int = 0
+    ) -> None:
         current_buckets = self._get_buckets_full()
         current_buckets += new_element
 
-        while self._len_bucket > self._bucket_resize:
+        while len(self) + len_new_elements > self._bucket_resize:
             self._bucket_size *= 2
             self._bucket_resize = self._bucket_size * 2 / 3
 
@@ -48,11 +51,8 @@ class Dictionary:
         self._assign_buckets(current_buckets)
 
     def __setitem__(self, _key: Any, _value: Any) -> None:
-        self._len_bucket = len(self) + 1
-
-        if self._len_bucket > self._bucket_resize:
-            self._resize([(_key, _value)])
-
+        if len(self) + 1 > self._bucket_resize:
+            self._resize([(_key, _value)], 1)
         else:
             self._assign_buckets([(_key, _value)])
 
@@ -90,13 +90,13 @@ class Dictionary:
     def __len__(self) -> int:
         return len(self._get_buckets_full())
 
-    def keys(self) -> list:
+    def keys(self) -> list[Any]:
         keys_list = []
         for _key, _value in self._get_buckets_full():
             keys_list.append(_key)
         return keys_list
 
-    def values(self) -> list:
+    def values(self) -> list[Any]:
         values_list = []
         for _key, _value in self._get_buckets_full():
             values_list.append(_value)
@@ -114,10 +114,7 @@ class Dictionary:
         return _value
 
     def update(self, elements: List[tuple]) -> None:
-        self._len_bucket = len(self) + len(elements)
-
-        if self._len_bucket > self._bucket_resize:
-            self._resize(elements)
-
+        if len(self) + len(elements) > self._bucket_resize:
+            self._resize(elements, len(elements))
         else:
             self._assign_buckets(elements)
