@@ -8,14 +8,16 @@ class Dictionary:
         self._bucket_size = 8
         self._bucket_resize = self._bucket_size * 2 / 3
 
-        while len(elements) > self._bucket_resize:
+        self._creating_buckets(len(elements))
+        if len(elements):
+            self._assign_buckets(elements)
+
+    def _creating_buckets(self, len_elements: int = 0) -> None:
+        while len_elements > self._bucket_resize:
             self._bucket_size *= 2
             self._bucket_resize = self._bucket_size * 2 / 3
 
         self._buckets = [[] for i in range(self._bucket_size)]
-
-        if len(elements):
-            self._assign_buckets(elements)
 
     def _assign_buckets(self, elements: List[tuple]) -> None:
         for _key, _value in elements:
@@ -47,11 +49,7 @@ class Dictionary:
         current_buckets = self._get_buckets_full()
         current_buckets += new_element
 
-        while len(self) + len_new_elements > self._bucket_resize:
-            self._bucket_size *= 2
-            self._bucket_resize = self._bucket_size * 2 / 3
-
-        self._buckets = [[] for i in range(self._bucket_size)]
+        self._creating_buckets(len(self) + len_new_elements)
         self._assign_buckets(current_buckets)
 
     def __setitem__(self, _key: Any, _value: Any) -> None:
