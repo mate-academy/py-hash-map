@@ -32,7 +32,10 @@ class Dictionary:
             self._buckets[index] = (_key, _value,)
 
     def _get_buckets_full(self) -> list[Any]:
-        return [full_bucket for full_bucket in self._buckets if full_bucket]
+        return [
+            full_bucket for full_bucket in self._buckets
+            if full_bucket and full_bucket[1] != "remote"
+        ]
 
     def _resize(
             self,
@@ -118,3 +121,11 @@ class Dictionary:
             self._resize(elements, len(elements))
         else:
             self._assign_buckets(elements)
+
+
+d = Dictionary()
+d["key"] = "123"
+print(d)
+del d["key"]
+print(d)
+print(len(d))
