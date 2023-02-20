@@ -1,4 +1,3 @@
-
 from typing import List, Any
 
 
@@ -8,17 +7,20 @@ class Dictionary:
             elements = []
         self._bucket_size = 8
         self._bucket_resize = self._bucket_size * 2 / 3
+
         while len(elements) > self._bucket_resize:
             self._bucket_size *= 2
             self._bucket_resize = self._bucket_size * 2 / 3
+
         self._buckets = [[] for i in range(self._bucket_size)]
+
         if len(elements):
             self._assign_buckets(elements)
 
     def _assign_buckets(self, elements: List[tuple]) -> None:
         for _key, _value in elements:
             if isinstance(_key, list | dict | set):
-                raise KeyError(
+                raise TypeError(
                     f'The key can`t be like this: "{_key}" is "{type(_key)}"'
                 )
             hashed_value = hash(_key)
@@ -50,7 +52,6 @@ class Dictionary:
             self._bucket_resize = self._bucket_size * 2 / 3
 
         self._buckets = [[] for i in range(self._bucket_size)]
-        self._len_bucket = 0
         self._assign_buckets(current_buckets)
 
     def __setitem__(self, _key: Any, _value: Any) -> None:
@@ -121,11 +122,3 @@ class Dictionary:
             self._resize(elements, len(elements))
         else:
             self._assign_buckets(elements)
-
-
-d = Dictionary()
-d["key"] = "123"
-print(d)
-del d["key"]
-print(d)
-print(len(d))
