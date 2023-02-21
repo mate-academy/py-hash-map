@@ -7,9 +7,9 @@ class Dictionary:
             elements = []
         self._bucket_size = 8
         self._bucket_resize = self._bucket_size * 2 / 3
-
-        self._creating_buckets(len(elements))
-        if len(elements):
+        self.length = len(elements)
+        self._creating_buckets(self.length)
+        if self.length:
             self._assign_buckets(elements)
 
     def _creating_buckets(self, len_elements: int = 0) -> None:
@@ -34,11 +34,12 @@ class Dictionary:
                 index = (index + 1) % self._bucket_size
 
             self._buckets[index] = (_key, _value,)
+            self.length += 1
 
     def _get_buckets_full(self) -> list[Any]:
         return [
             full_bucket for full_bucket in self._buckets
-            if full_bucket and full_bucket[1] != "remote"
+            if full_bucket and full_bucket[1] != KeyError
         ]
 
     def _resize(
@@ -49,11 +50,11 @@ class Dictionary:
         current_buckets = self._get_buckets_full()
         current_buckets += new_element
 
-        self._creating_buckets(len(self) + len_new_elements)
+        self._creating_buckets(self.length + len_new_elements)
         self._assign_buckets(current_buckets)
 
     def __setitem__(self, _key: Any, _value: Any) -> None:
-        if len(self) + 1 > self._bucket_resize:
+        if self.length + 1 > self._bucket_resize:
             self._resize([(_key, _value)], 1)
         else:
             self._assign_buckets([(_key, _value)])
@@ -67,13 +68,13 @@ class Dictionary:
         while self._buckets[index]:
             _key, _value = self._buckets[index]
             if _key == input_key:
-                if _value == "remote":
+                if _value == KeyError:
                     raise KeyError(f'There is no such key: "{input_key}"')
                 return _value
             index = (index + 1) % self._bucket_size
 
     def __delitem__(self, input_key: Any) -> None:
-        self._assign_buckets([(input_key, "remote")])
+        self._assign_buckets([(input_key, KeyError)])
 
     def __str__(self) -> str:
         dict_str = "  {\n"
@@ -116,7 +117,7 @@ class Dictionary:
         return _value
 
     def update(self, elements: List[tuple]) -> None:
-        if len(self) + len(elements) > self._bucket_resize:
+        if self.length + len(elements) > self._bucket_resize:
             self._resize(elements, len(elements))
         else:
             self._assign_buckets(elements)
