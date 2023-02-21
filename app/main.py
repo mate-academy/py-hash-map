@@ -45,7 +45,7 @@ class Dictionary:
         return self.count
 
     def __contains__(self, key: Any) -> bool:
-        return True if self.get(key) else False
+        return bool(self.get(key))
 
     def __delitem__(self, key: Any) -> None:
         hash_val = hash(key)
