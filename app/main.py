@@ -83,8 +83,8 @@ class Dictionary:
             return default
 
     def update(self, other: dict or Dictionary) -> None:
-        for key, value in other.items():
-            self[key] = value
+        for key in other:
+            self[key] = other[key]
 
     def __iter__(self) -> None:
         for store in self.table:
