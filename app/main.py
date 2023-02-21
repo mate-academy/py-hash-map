@@ -41,6 +41,6 @@ class Dictionary:
         self.length = 0
         old_table = self.hash_table
         self.hash_table = [None] * self.size
-        for item in old_table:
-            if item:
-                self.__setitem__(item[0], item[1])
+        for items in old_table:
+            if items:
+                self.__setitem__(items[0], items[1])
