@@ -45,11 +45,7 @@ class Dictionary:
         return self.count
 
     def __contains__(self, key: Any) -> bool:
-        try:
-            self[key]
-            return True
-        except KeyError:
-            return False
+        return True if self.get(key) else False
 
     def __delitem__(self, key: Any) -> None:
         hash_val = hash(key)
@@ -73,18 +69,13 @@ class Dictionary:
         self.count = 0
 
     def get(self, key: Any, default: Any = None) -> Any:
-        try:
-            return self[key]
-        except KeyError:
-            return default
+        return self.get(key, default)
 
     def pop(self, key: Any, default: Any = None) -> Any:
-        try:
-            value = self[key]
+        value = self.get(key, default)
+        if key in self:
             del self[key]
-            return value
-        except KeyError:
-            return default
+        return value
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
