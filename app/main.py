@@ -111,12 +111,9 @@ class Dictionary:
                     and self._hash_table[i].key == _key):
                 return self._hash_table[i].value
 
-    def update(self, new_dict: Dictionary) -> Dictionary:
+    def update(self, new_dict: Dictionary) -> None:
         for key, value in new_dict.items():
-            for i in range(len(self._hash_table)):
-                self[key] = value
-
-        return self
+            self[key] = value
 
     def __iter__(self) -> Any:
         for i in range(len(self._hash_table)):
