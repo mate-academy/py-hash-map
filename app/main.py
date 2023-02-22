@@ -39,11 +39,6 @@ class Dictionary:
         node = Node(key, value)
         index = node.hash_key % self._capacity
 
-        if (index == len(self._hash_table)
-                and self._hash_table[index] is not None
-                and self._hash_table[index].key != key):
-            index = 0
-
         while (self._hash_table[index] is not None
                and self._hash_table[index].key != key):
             index = (index + 1) % self._capacity
@@ -77,6 +72,7 @@ class Dictionary:
             if (self._hash_table[i] is not None
                     and self._hash_table[i].key == key):
                 self._hash_table[i] = None
+        self._length -= 1
 
     def keys(self) -> Any:
         for i in range(len(self._hash_table)):
