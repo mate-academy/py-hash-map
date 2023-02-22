@@ -16,20 +16,20 @@ class Dictionary:
         if self.length < round(self.hash_capacity * 2 / 3):
             index = hash(key) % self.hash_capacity
             if self.hash_table[index] is None:
-                self.hash_table[index] = [key, value, hash(key)]
+                self.hash_table[index] = (key, value, hash(key))
                 self.length += 1
             elif (self.hash_table[index][0] == key
                   and self.hash_table[index][2] == hash(key)):
-                self.hash_table[index][1] = value
+                self.hash_table[index] = (key, value, hash(key))
             else:
                 for i in range(len(self.hash_table)):
                     if self.hash_table[i] is None:
-                        self.hash_table[i] = [key, value, hash(key)]
+                        self.hash_table[i] = (key, value, hash(key))
                         self.length += 1
                         break
                     elif (self.hash_table[i][0] == key
                           and self.hash_table[i][2] == hash(key)):
-                        self.hash_table[i][1] = value
+                        self.hash_table[i] = (key, value, hash(key))
                         break
         else:
             self.hash_capacity *= 2
