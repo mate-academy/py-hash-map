@@ -16,131 +16,125 @@ class Node:
 class Dictionary:
 
     def __init__(self, **kwargs: Any) -> None:
-        self.length = 0
-        self.dict_keys: list = []
-        self.dict_values: list = []
-        self.capacity: int = INITIAL_CAPACITY
-        self.hash_table: list = [None] * self.capacity
+        self._length = 0
+        self._dict_keys: list = []
+        self._dict_values: list = []
+        self._capacity: int = INITIAL_CAPACITY
+        self._hash_table: list = [None] * self._capacity
         for key, value in kwargs.items():
             self.__setitem__(key, value)
 
     def __str__(self) -> str:
         result_str = "{"
 
-        for i in range(len(self.hash_table)):
+        for i in range(len(self._hash_table)):
 
-            if self.hash_table[i] is not None:
-                result_str += (f"'{self.hash_table[i].key}': "
-                               f"{self.hash_table[i].value}, ")
+            if self._hash_table[i] is not None:
+                result_str += (f"'{self._hash_table[i].key}': "
+                               f"{self._hash_table[i].value}, ")
 
         return f"{result_str}"[:-2] + "}"
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         node = Node(key, value)
-        index = node.hash_key % self.capacity
+        index = node.hash_key % self._capacity
 
-        if (index == len(self.hash_table)
-                and self.hash_table[index] is not None
-                and self.hash_table[index].key != key):
+        if (index == len(self._hash_table)
+                and self._hash_table[index] is not None
+                and self._hash_table[index].key != key):
             index = 0
 
-        while (self.hash_table[index] is not None
-               and self.hash_table[index].key != key):
-            index = (index + 1) % self.capacity
+        while (self._hash_table[index] is not None
+               and self._hash_table[index].key != key):
+            index = (index + 1) % self._capacity
 
-        if self.hash_table[index] is None:
-            self.length += 1
+        if self._hash_table[index] is None:
+            self._length += 1
 
-        self.hash_table[index] = node
+        self._hash_table[index] = node
 
-        if self.length / self.capacity >= LOAD_FACTOR:
+        if self._length / self._capacity >= LOAD_FACTOR:
             self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         key_hash = hash(key)
-        index = key_hash % self.capacity
+        index = key_hash % self._capacity
 
-        while (self.hash_table[index] is not None
-               and self.hash_table[index].key != key):
-            index = (index + 1) % self.capacity
+        while (self._hash_table[index] is not None
+               and self._hash_table[index].key != key):
+            index = (index + 1) % self._capacity
 
-        if self.hash_table[index] is None:
+        if self._hash_table[index] is None:
             raise KeyError(key)
 
-        return self.hash_table[index].value
+        return self._hash_table[index].value
 
     def __len__(self) -> int:
-        return self.length
+        return self._length
 
     def __delitem__(self, key: Hashable) -> None:
-        for i in range(self.length):
-            if (self.hash_table[i] is not None
-                    and self.hash_table[i].key == key):
-                self.hash_table[i] = None
+        for i in range(self._length):
+            if (self._hash_table[i] is not None
+                    and self._hash_table[i].key == key):
+                self._hash_table[i] = None
 
     def keys(self) -> Any:
-        for i in range(len(self.hash_table)):
-            if self.hash_table[i] is not None:
-                self.dict_keys.append(self.hash_table[i].key)
-        return self.dict_keys
+        for i in range(len(self._hash_table)):
+            if self._hash_table[i] is not None:
+                self._dict_keys.append(self._hash_table[i].key)
+        return self._dict_keys
 
     def values(self) -> Any:
-        for i in range(len(self.hash_table)):
-            if self.hash_table[i] is not None:
-                self.dict_values.append(self.hash_table[i].value)
-        return self.dict_values
+        for i in range(len(self._hash_table)):
+            if self._hash_table[i] is not None:
+                self._dict_values.append(self._hash_table[i].value)
+        return self._dict_values
 
     def items(self) -> list:
-        return [(self.hash_table[i].key, self.hash_table[i].value) for i in
-                range(len(self.hash_table)) if self.hash_table[i] is not None]
+        return [(self.hash_table[i].key, self._hash_table[i].value) for i in
+                range(len(self._hash_table)) if
+                self._hash_table[i] is not None]
 
     def clear(self) -> None:
         self.hash_table = []
-        self.dict_keys = []
-        self.dict_values = []
-        self.length = 0
+        self._dict_keys = []
+        self._dict_values = []
+        self._length = 0
 
     def get(self, key: Hashable) -> Any:
         return self.__getitem__(key)
 
     def pop(self, _key: Any) -> Any:
-        for i in range(len(self.hash_table)):
+        for i in range(len(self._hash_table)):
 
-            if (self.hash_table[i] is not None
-                    and self.hash_table[i].key == _key):
-                return self.hash_table[i].value
+            if (self._hash_table[i] is not None
+                    and self._hash_table[i].key == _key):
+                return self._hash_table[i].value
 
     def update(self, new_dict: Dictionary) -> Dictionary:
         for key, value in new_dict.items():
-            for i in range(len(self.hash_table)):
-
-                if (self.hash_table[i] is not None
-                        and self.hash_table[i].key == key):
-                    self.hash_table[i].value = value
-
-                if (self.hash_table[i] is not None
-                        and self.hash_table[i].key != key):
-                    self.__setitem__(key, value)
+            for i in range(len(self._hash_table)):
+                self[key] = value
 
         return self
 
     def __iter__(self) -> Any:
-        for i in range(len(self.hash_table)):
-            if self.hash_table[i] is not None:
-                yield self.hash_table[i]
+        for i in range(len(self._hash_table)):
+            if self._hash_table[i] is not None:
+                yield self._hash_table[i]
 
     def _resize(self) -> None:
-        self.capacity *= RESIZE_FACTOR
-        new_table = [None] * self.capacity
+        self._capacity *= RESIZE_FACTOR
+        new_table = [None] * self._capacity
 
-        for node in self.hash_table:
+        for node in self._hash_table:
             if node is not None:
-                index = node.hash_key % self.capacity
+                index = node.hash_key % self._capacity
 
                 while (new_table[index] is not None
                        and new_table[index].key != node.key):
-                    index = (index + 1) % self.capacity
+                    index = (index + 1) % self._capacity
 
                 new_table[index] = node
 
-        self.hash_table = new_table
+        self._hash_table = new_table
