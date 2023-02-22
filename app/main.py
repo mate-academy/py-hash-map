@@ -1,8 +1,8 @@
-from typing import List, Any
+from typing import List, Any, Optional
 
 
 class Dictionary:
-    def __init__(self, elements: List[tuple] = None) -> None:
+    def __init__(self, elements: Optional[List[tuple]] = None) -> None:
         if elements is None:
             elements = []
         self._bucket_size = 8
@@ -75,6 +75,7 @@ class Dictionary:
 
     def __delitem__(self, input_key: Any) -> None:
         self._assign_buckets([(input_key, KeyError)])
+        self.length -= 1
 
     def __str__(self) -> str:
         dict_str = "  {\n"
@@ -94,24 +95,19 @@ class Dictionary:
         return len(self._get_buckets_full())
 
     def keys(self) -> list[Any]:
-        keys_list = []
-        for _key, _value in self._get_buckets_full():
-            keys_list.append(_key)
-        return keys_list
+        return [_key for _key, _value in self._get_buckets_full()]
 
     def values(self) -> list[Any]:
-        values_list = []
-        for _key, _value in self._get_buckets_full():
-            values_list.append(_value)
-        return values_list
+        return [_value for _key, _value in self._get_buckets_full()]
 
     def clear(self) -> None:
         self._buckets = [[] for i in range(self._bucket_size)]
+        self.length = 0
 
     def get(self, _key: Any) -> Any:
         _value = None
         try:
-            _value = self.__getitem__(_key)
+            _value = self[_key]
         except KeyError:
             return None
         return _value
