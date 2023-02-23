@@ -18,8 +18,7 @@ class Dictionary:
             if self.hash_table[index] is None:
                 self.hash_table[index] = (key, value, hash(key))
                 self.length += 1
-            elif (self.hash_table[index][0] == key
-                  and self.hash_table[index][2] == hash(key)):
+            elif self.hash_table[index][0] == key:
                 self.hash_table[index] = (key, value, hash(key))
             else:
                 for i in range(len(self.hash_table)):
@@ -27,19 +26,21 @@ class Dictionary:
                         self.hash_table[i] = (key, value, hash(key))
                         self.length += 1
                         break
-                    elif (self.hash_table[i][0] == key
-                          and self.hash_table[i][2] == hash(key)):
+                    elif self.hash_table[i][0] == key:
                         self.hash_table[i] = (key, value, hash(key))
                         break
         else:
-            self.hash_capacity *= 2
-            hash_table = self.hash_table.copy()
-            self.hash_table = [None] * self.hash_capacity
-            self.length = 0
-            for place in hash_table:
-                if place is not None:
-                    Dictionary.__setitem__(self, place[0], place[1])
-            Dictionary.__setitem__(self, key, value)
+            self.resize()
+            self[key] = value
+
+    def resize(self) -> None:
+        self.hash_capacity *= 2
+        hash_table = self.hash_table.copy()
+        self.hash_table = [None] * self.hash_capacity
+        self.length = 0
+        for place in hash_table:
+            if place:
+                self[place[0]] = place[1]
 
     def __getitem__(self, key: hashable) -> Any:
         index = hash(key) % self.hash_capacity
@@ -49,9 +50,7 @@ class Dictionary:
             return self.hash_table[index][1]
         else:
             for i in range(len(self.hash_table)):
-                if (self.hash_table[i] is not None
-                        and self.hash_table[i][0] == key
-                        and self.hash_table[i][2] == hash(key)):
+                if self.hash_table[i] and self.hash_table[i][0] == key:
                     return self.hash_table[i][1]
             raise KeyError(f"There is no element with this key: {key}")
 
@@ -66,9 +65,7 @@ class Dictionary:
                 self.hash_table[index] = None
             else:
                 for i in range(len(self.hash_table)):
-                    if (self.hash_table[i] is not None
-                            and self.hash_table[i][0] == key
-                            and self.hash_table[i][2] == hash(key)):
+                    if self.hash_table[i] and self.hash_table[i][0] == key:
                         self.hash_table[i] = None
         else:
             raise KeyError(f"Wrong key: {key}")
