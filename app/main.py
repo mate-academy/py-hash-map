@@ -25,13 +25,11 @@ class Dictionary:
             self.__setitem__(key, value)
 
     def __str__(self) -> str:
-        result_str = "{"
-
         items = []
         for node in self._hash_table:
             if node is not None:
                 items.append(f"'{node.key}': {node.value}")
-        return '{' + ', '.join(items) + '}'
+        return "{" + ", ".join(items) + "}"
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         node = Node(key, value)
