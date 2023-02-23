@@ -27,13 +27,11 @@ class Dictionary:
     def __str__(self) -> str:
         result_str = "{"
 
-        for i in range(len(self._hash_table)):
-
-            if self._hash_table[i] is not None:
-                result_str += (f"'{self._hash_table[i].key}': "
-                               f"{self._hash_table[i].value}, ")
-
-        return f"{result_str}"[:-2] + "}"
+        items = []
+        for node in self._hash_table:
+            if node is not None:
+                items.append(f"'{node.key}': {node.value}")
+        return '{' + ', '.join(items) + '}'
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         node = Node(key, value)
@@ -68,10 +66,17 @@ class Dictionary:
         return self._length
 
     def __delitem__(self, key: Hashable) -> None:
-        for i in range(self._length):
-            if (self._hash_table[i] is not None
-                    and self._hash_table[i].key == key):
-                self._hash_table[i] = None
+        key_hash = hash(key)
+        index = key_hash % self._capacity
+
+        while (self._hash_table[index] is not None
+               and self._hash_table[index].key != key):
+            index = (index + 1) % self._capacity
+
+        if self._hash_table[index] is None:
+            raise KeyError(key)
+
+        self._hash_table[index] = None
         self._length -= 1
 
     def keys(self) -> Any:
@@ -101,11 +106,11 @@ class Dictionary:
         return self.__getitem__(key)
 
     def pop(self, _key: Any) -> Any:
-        for i in range(len(self._hash_table)):
-
-            if (self._hash_table[i] is not None
-                    and self._hash_table[i].key == _key):
-                return self._hash_table[i].value
+        if self._hash_table[hash(_key) % self._capacity] is None:
+            raise KeyError(_key)
+        key_value = self._hash_table[hash(_key) % self._capacity].value
+        self.__delitem__(_key)
+        return key_value
 
     def update(self, new_dict: Dictionary) -> None:
         for key, value in new_dict.items():
