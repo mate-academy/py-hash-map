@@ -44,9 +44,9 @@ class Dictionary:
             if len(element) == 1:
                 self._buckets[index] = (_key,)
                 self.length -= 1
-            else:
-                self._buckets[index] = (_key, _value,)
-                self.length += 1
+
+            self._buckets[index] = (_key, _value,)
+            self.length += 1
 
     def _get_buckets_full(self) -> list[Any]:
         return [
@@ -68,8 +68,7 @@ class Dictionary:
     def __setitem__(self, _key: Any, _value: Any) -> None:
         if self.length + 1 > self._bucket_resize:
             self._resize([(_key, _value)])
-        else:
-            self._assign_buckets([(_key, _value)])
+        self._assign_buckets([(_key, _value)])
 
     def __getitem__(self, input_key: Any) -> Any:
         hashed_value = hash(input_key)
@@ -126,5 +125,4 @@ class Dictionary:
     def update(self, elements: List[tuple]) -> None:
         if self.length + len(elements) > self._bucket_resize:
             self._resize(elements)
-        else:
-            self._assign_buckets(elements)
+        self._assign_buckets(elements)
