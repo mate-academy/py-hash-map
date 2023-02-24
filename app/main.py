@@ -66,10 +66,14 @@ class Dictionary:
         return self.size
 
     def get(self, key: object) -> object:
-        return self.__getitem__(key)
+        for element in self.data:
+            if element is None:
+                continue
+            elif element[0] == key:
+                return element[-1]
 
     def pop(self, key: object) -> object | None:
-        if self.get(key):
+        if self.__getitem__(key):
             for i in range(len(self.data)):
                 if self.data[i] is None:
                     continue
