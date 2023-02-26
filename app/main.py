@@ -23,11 +23,17 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_val = hash(key)
-        store = self.table[hash_val % self.capacity]
-        for node in store:
-            if node.key == key:
-                node.value = value
+        store_index = hash_val % self.capacity
+        while self.table[store_index]:
+            if self.table[store_index][0].key == key:
+                self.table[store_index][0].value = value
                 return
+            else:
+                store_index += 1
+                if store_index >= len(self.table) - 1:
+                    store_index = 0
+
+        store = self.table[store_index]
         store.append(Node(key, value, hash_val))
         self.size += 1
         if self.size >= self.capacity * self.load_factor:
@@ -35,20 +41,22 @@ class Dictionary:
 
     def resize(self) -> None:
         self.capacity *= 2
-        new_table = [[] for _ in range(self.capacity)]
-
-        for store in self.table:
-
-            for node in store:
-                new_table[node.hash % self.capacity].append(node)
-        self.table = new_table
+        old_table = self.table
+        self.table = [[] for _ in range(self.capacity)]
+        self.size = 0
+        for store in old_table:
+            if store:
+                self.__setitem__(store[0].key, store[0].value)
 
     def __getitem__(self, key: Hashable) -> Any:
         hash_val = hash(key)
-        store = self.table[hash_val % self.capacity]
-        for node in store:
-            if node.key == key:
-                return node.value
+        store_index = hash_val % self.capacity
+        while self.table[store_index]:
+            if self.table[store_index][0].key == key:
+                return self.table[store_index][0].value
+            store_index += 1
+            if store_index >= len(self.table) - 1:
+                store_index = 0
         raise KeyError(key)
 
     def __len__(self) -> int:
