@@ -23,8 +23,8 @@ class Dictionary:
 
     def __getitem__(self, key: Any) -> Any:
         index = hash(key) % self.capacity
-        if self.hash_table is None or not self.hash_table[index]:
-            if index + 1 > self.capacity:
+        if not self.hash_table or not self.hash_table[index]:
+            if index + 1 >= self.capacity:
                 index = 0
             if not self.hash_table[index + 1]:
                 raise KeyError
@@ -40,7 +40,7 @@ class Dictionary:
 
     def __delitem__(self, key: Any) -> None:
         index = hash(key) % self.capacity
-        if self.hash_table is None or not self.hash_table[index]:
+        if not self.hash_table or not self.hash_table[index]:
             raise KeyError
         while self.hash_table[index][0] != key:
             index += 1
@@ -70,7 +70,7 @@ class Dictionary:
             self.hash_table = new_hash_table
 
     def find_empty_node(self, hash_table: list, index: int) -> int:
-        while hash_table[index] is not None:
+        while hash_table[index]:
             index += 1
             if index >= self.capacity:
                 index = 0
@@ -81,7 +81,7 @@ class Dictionary:
 
     def get(self, key: Any) -> Any:
         index = hash(key) % self.capacity
-        if self.hash_table is None or not self.hash_table[index]:
+        if not self.hash_table or not self.hash_table[index]:
             if index + 1 > self.capacity:
                 index = 0
             if not self.hash_table[index + 1]:
@@ -95,7 +95,7 @@ class Dictionary:
 
     def pop(self, key: Any) -> Any:
         index = hash(key) % self.capacity
-        if self.hash_table is None or not self.hash_table[index]:
+        if not self.hash_table or not self.hash_table[index]:
             raise KeyError
         while self.hash_table[index][0] != key:
             index += 1
