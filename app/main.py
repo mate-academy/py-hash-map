@@ -92,3 +92,4 @@ class Dictionary:
 
     def clear(self) -> None:
         self.table.clear()
+        self.count = 0
