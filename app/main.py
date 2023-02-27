@@ -1,2 +1,46 @@
+from typing import Any
+
+
 class Dictionary:
-    pass
+    def __init__(self) -> None:
+        self.capacity = 8
+        self.size = 0
+        self.hash_table = [None] * self.capacity
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        if self.size > int(self.capacity * (2 / 3)):
+            self.resize()
+        hashed = hash(key)
+        index = hashed % self.capacity
+        while True:
+            if not self.hash_table[index]:
+                self.hash_table[index] = [key, hashed, value]
+                self.size += 1
+                break
+            if (self.hash_table[index][0] == key
+                    and self.hash_table[index][1] == hashed):
+                self.hash_table[index][2] = value
+                break
+            index = (index + 1) % self.capacity
+
+    def __getitem__(self, key: Any) -> Any:
+        hashed = hash(key)
+        index = hashed % self.capacity
+        while self.hash_table[index]:
+            if (self.hash_table[index][0] == hashed
+                    and self.hash_table[index][1] == key):
+                return self.hash_table[index][2]
+            index = (index + 1) % self.capacity
+        raise KeyError
+
+    def __len__(self) -> int:
+        return self.size
+
+    def resize(self) -> None:
+        self.size = 0
+        self.capacity *= 2
+        hashed_table = self.hash_table
+        self.hash_table = [None] * self.capacity
+        for item in hashed_table:
+            if item:
+                self.__setitem__(item[0], item[2])
