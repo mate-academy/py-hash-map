@@ -17,7 +17,7 @@ class Dictionary:
         if self.capacity * self.load_fac < len(self) + 1:
             self._resize()
         for catalog_ind, link_to_content in self._indices_generator(key):
-            if link_to_content is None:
+            if link_to_content is None and not self._key_exist(key):
                 self._add_to_content_list(key, value, catalog_ind)
                 return
             if self._same_hash_and_key(key, link_to_content):
@@ -34,8 +34,7 @@ class Dictionary:
                 return self.content[link_to_content][2]
 
     def __delitem__(self, key: Hashable) -> None:
-        if key not in set(trio[1] for trio in self.content
-                          if trio != "_deleted_item_"):
+        if not self._key_exist(key):
             raise KeyError(f"there is no {key} record in this Dictionary")
         for catalog_ind, link_to_content in self._indices_generator(key):
             if self._same_hash_and_key(key, link_to_content):
@@ -53,6 +52,10 @@ class Dictionary:
 
     def __str__(self) -> str:
         return "\n".join([f"key {pair[0]}: value {pair[1]}" for pair in self])
+
+    def _key_exist(self, key: Hashable) -> bool:
+        return key in set(trio[1] for trio in self.content
+                          if trio != "_deleted_item_")
 
     def _indices_generator(self, key: Hashable) -> Generator:
         catalog_ind = hash(key) % self.capacity
