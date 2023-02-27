@@ -6,8 +6,11 @@ class Dictionary:
         self.length: int = 0
         self.hash_table: list = [None] * 8
 
+    def hash_index(self, key: Hashable) -> int:
+        return hash(key) % len(self.hash_table)
+
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index: int = hash(key) % len(self.hash_table)
+        index = self.hash_index(key)
         if self.hash_table[index] is None:
             self.hash_table[index]: list = []
         for i, (k, v) in enumerate(self.hash_table[index]):
@@ -21,7 +24,7 @@ class Dictionary:
                 self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        index: int = hash(key) % len(self.hash_table)
+        index = self.hash_index(key)
         if self.hash_table[index] is None:
             raise KeyError("Key not found")
         for k, v in self.hash_table[index]:
@@ -30,7 +33,7 @@ class Dictionary:
         raise KeyError("Key not found")
 
     def __delitem__(self, key: Hashable) -> None:
-        index: int = hash(key) % len(self.hash_table)
+        index = self.hash_index(key)
         if self.hash_table[index] is None:
             raise KeyError("Key not found")
         for i, (k, v) in enumerate(self.hash_table[index]):
