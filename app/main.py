@@ -14,12 +14,12 @@ class Dictionary:
         index = hashed % self.capacity
         while True:
             if not self.hash_table[index]:
-                self.hash_table[index] = [key, hashed, value]
+                self.hash_table[index] = [key, value, hashed]
                 self.size += 1
                 break
             if (self.hash_table[index][0] == key
-                    and self.hash_table[index][1] == hashed):
-                self.hash_table[index][2] = value
+                    and self.hash_table[index][2] == hashed):
+                self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.capacity
 
@@ -27,9 +27,9 @@ class Dictionary:
         hashed = hash(key)
         index = hashed % self.capacity
         while self.hash_table[index]:
-            if (self.hash_table[index][0] == hashed
-                    and self.hash_table[index][1] == key):
-                return self.hash_table[index][2]
+            if (self.hash_table[index][0] == key
+                    and self.hash_table[index][2] == hashed):
+                return self.hash_table[index][1]
             index = (index + 1) % self.capacity
         raise KeyError
 
@@ -43,4 +43,4 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         for item in hashed_table:
             if item:
-                self.__setitem__(item[0], item[2])
+                self.__setitem__(item[0], item[1])
