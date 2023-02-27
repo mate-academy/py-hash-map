@@ -35,7 +35,8 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self._hash_index(key)
         try:
-            for i, (inner_key, inner_value) in enumerate(self.hash_table[index]):
+            for i, (inner_key, inner_value) in \
+                    enumerate(self.hash_table[index]):
                 if inner_key == key:
                     del self.hash_table[index][i]
                     self.length -= 1
