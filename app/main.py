@@ -37,7 +37,8 @@ class Dictionary:
             self._resize()
 
         index = self._hash(key) % self.capacity
-        while self.table[index] is not self.dummy and self.table[index][0] != key:
+        while (self.table[index] is not self.dummy
+               and self.table[index][0]) != key:
             index = (index + 1) % self.capacity
 
         if self.table[index] is self.dummy:
@@ -82,7 +83,8 @@ class Dictionary:
 
     def _find_key(self, key: Hashable) -> int:
         index = self._hash(key) % self.capacity
-        while self.table[index] is not self.dummy and self.table[index][0] != key:
+        while (self.table[index] is not self.dummy
+                and self.table[index][0]) != key:
             index = (index + 1) % self.capacity
         return index if self.table[index] is not self.dummy else None
 
@@ -104,7 +106,8 @@ class Dictionary:
         return hash(key)
 
     def items(self) -> list:
-        return [(node[0], node[2]) for node in self.table if node is not self.dummy]
+        return [(node[0], node[2]) for node in self.table
+                if node is not self.dummy]
 
     def clear(self) -> None:
         self.table.clear()
