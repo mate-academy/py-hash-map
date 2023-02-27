@@ -62,9 +62,6 @@ class Dictionary:
                 return element[-1]
         raise KeyError("Dictionary doesn't have any value with provided key!")
 
-    def __len__(self) -> int:
-        return self.size
-
     def get(self, key: object) -> object:
         for element in self.data:
             if element is None:
@@ -72,15 +69,19 @@ class Dictionary:
             elif element[0] == key:
                 return element[-1]
 
+    def __len__(self) -> int:
+        return self.size
+
     def pop(self, key: object) -> object | None:
         if self.__getitem__(key):
             for i in range(len(self.data)):
                 if self.data[i] is None:
                     continue
                 elif self.data[i][0] == key:
+                    pop_item = self.get(key)
                     self.data[i] = None
                     self.size -= 1
-                    return self.get(key)
+                    return pop_item
 
     def __delitem__(self, key: object) -> None:
         for i in range(len(self.data)):
@@ -93,6 +94,7 @@ class Dictionary:
         raise KeyError("Dictionary doesn't have any value with provided key!")
 
     def update(self, iterable: Iterable) -> None:
+        print(iterable)
         for element in iterable:
             self.__setitem__(element[0], element[-1])
 
