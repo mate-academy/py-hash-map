@@ -1,7 +1,5 @@
-import hashable as hashable
-
 from math import ceil
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -10,7 +8,7 @@ class Dictionary:
         self.capacity = 11
         self.hash_table = [None] * self.capacity
 
-    def __setitem__(self, key: hashable, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size >= ceil(self.capacity * 2 / 3):
             self._resize()
 
@@ -31,7 +29,7 @@ class Dictionary:
             else:
                 index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: hashable) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hashed_key = hash(key)
         index = hashed_key % self.capacity
 
