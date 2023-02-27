@@ -13,31 +13,25 @@ class Dictionary:
         return self.length
 
     def __setitem__(self, key: hashable, value: Any) -> None:
-        if self.length > round(self.hash_capacity * 2 / 3):
+        if self.length <= round(self.hash_capacity * 2 / 3):
+            index = hash(key) % self.hash_capacity
+            if self.hash_table[index] is None:
+                self.hash_table[index] = (key, value, hash(key))
+                self.length += 1
+            elif self._check_key(key, index):
+                self.hash_table[index] = (key, value, hash(key))
+            else:
+                while (self.hash_table[index] is not None
+                       and not self._check_key(key, index)):
+                    index = (index + 1) % self.hash_capacity
+                if self.hash_table[index] is None:
+                    self.hash_table[index] = (key, value, hash(key))
+                    self.length += 1
+                else:
+                    self.hash_table[index] = (key, value, hash(key))
+        else:
             self.resize()
             self[key] = value
-        else:
-            hash_key = hash(key)
-            index = hash_key % self.hash_capacity
-            if self.hash_table[index] is None:
-                self.hash_table[index] = (key, value, hash_key)
-                self.length += 1
-            elif (hash_key == self.hash_table[index][2]
-                  and self.hash_table[index][0] == key):
-                self.hash_table[index] = (key, value, hash_key)
-            else:
-                table_rotated = (self.hash_table[index:]
-                                 + self.hash_table[:index])
-                for i in range(len(table_rotated)):
-                    new_index = -(len(table_rotated) - (i + index))
-                    if table_rotated[i] is None:
-                        self.hash_table[new_index] = (key, value, hash_key)
-                        self.length += 1
-                        break
-                    elif (hash_key == self.hash_table[new_index][2]
-                          and self.hash_table[new_index][0] == key):
-                        self.hash_table[new_index] = (key, value, hash_key)
-                        break
 
     def resize(self) -> None:
         self.hash_capacity *= 2
@@ -49,22 +43,21 @@ class Dictionary:
                 self[place[0]] = place[1]
 
     def __getitem__(self, key: hashable) -> Any:
-        hash_key = hash(key)
-        index = hash_key % self.hash_capacity
+        index = hash(key) % self.hash_capacity
         if self.hash_table[index] is None:
             raise KeyError(f"There is no element with this key: {key}")
-        elif (hash_key == self.hash_table[index][2]
-              and self.hash_table[index][0] == key):
+        elif self._check_key(key, index):
             return self.hash_table[index][1]
         else:
-            table_rotated = self.hash_table[index:] + self.hash_table[:index]
-            for i in range(len(table_rotated)):
-                new_index = -(len(table_rotated) - (i + index))
-                if (self.hash_table[new_index]
-                        and hash_key == self.hash_table[new_index][2]
-                        and self.hash_table[new_index][0] == key):
-                    return self.hash_table[new_index][1]
+            while self.hash_table[index] and not self._check_key(key, index):
+                index = (index + 1) % self.hash_capacity
+            if self.hash_table[index] or self._check_key(key, index):
+                return self.hash_table[index][1]
             raise KeyError(f"There is no element with this key: {key}")
+
+    def _check_key(self, key: hashable, index: int) -> bool:
+        return (hash(key) == self.hash_table[index][2]
+                and self.hash_table[index][0] == key)
 
     def clear(self) -> None:
         self.hash_table = [None] * 8
@@ -73,14 +66,11 @@ class Dictionary:
     def __delitem__(self, key: hashable) -> None:
         if self[key]:
             index = hash(key) % self.hash_capacity
-            if (hash(key) == self.hash_table[index][2]
-                    and self.hash_table[index][0] == key):
+            if self._check_key(key, index):
                 self.hash_table[index] = None
             else:
                 for i in range(len(self.hash_table)):
-                    if (self.hash_table[i]
-                            and hash(key) == self.hash_table[i][2]
-                            and self.hash_table[i][0] == key):
+                    if self.hash_table[i] and self._check_key(key, i):
                         self.hash_table[i] = None
         else:
             raise KeyError(f"Wrong key: {key}")
