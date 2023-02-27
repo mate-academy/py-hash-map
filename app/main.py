@@ -1,4 +1,19 @@
+from __future__ import annotations
 from typing import Mapping, Any, Hashable
+
+
+class DictDummy:
+    __slots__ = "a"
+    __instances = []
+
+    def __new__(cls, *args, **kwargs) -> DictDummy:
+        if not DictDummy.__instances:
+            instance = cls
+            DictDummy.__instances.append(instance)
+        return DictDummy.__instances[0]
+
+    def __hash__(self) -> int:
+        return hash(None) - 1
 
 
 class Dictionary:
@@ -6,11 +21,12 @@ class Dictionary:
         self.capacity = capacity
         self.load_factor = load_factor
         self.count = 0
-        self.table = [None] * self.capacity
+        self.dummy = DictDummy()
+        self.table = [self.dummy] * self.capacity
 
     def __iter__(self) -> Any:
         for item in self.table:
-            if item is not None:
+            if item is not self.dummy:
                 yield item[0]
 
     def __len__(self) -> int:
@@ -21,10 +37,10 @@ class Dictionary:
             self._resize()
 
         index = self._hash(key) % self.capacity
-        while self.table[index] is not None and self.table[index][0] != key:
+        while self.table[index] is not self.dummy and self.table[index][0] != key:
             index = (index + 1) % self.capacity
 
-        if self.table[index] is None:
+        if self.table[index] is self.dummy:
             self.count += 1
             self.table[index] = (key, self._hash(key), value)
         else:
@@ -40,7 +56,7 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self._find_key(key)
         if index is not None:
-            self.table[index] = None
+            self.table[index] = self.dummy
             self.count -= 1
         else:
             raise KeyError(f"{key} is not in {self}")
@@ -56,7 +72,7 @@ class Dictionary:
             return default
         else:
             value = self.table[index][2]
-            self.table[index] = None
+            self.table[index] = self.dummy
             self.count -= 1
             return value
 
@@ -66,18 +82,18 @@ class Dictionary:
 
     def _find_key(self, key: Hashable) -> int:
         index = self._hash(key) % self.capacity
-        while self.table[index] is not None and self.table[index][0] != key:
+        while self.table[index] is not self.dummy and self.table[index][0] != key:
             index = (index + 1) % self.capacity
-        return index if self.table[index] is not None else None
+        return index if self.table[index] is not self.dummy else None
 
     def _resize(self) -> None:
         self.capacity *= 2
-        new_table = [None] * self.capacity
+        new_table = [self.dummy] * self.capacity
         for item in self.table:
-            if item is not None:
+            if item is not self.dummy:
                 index = item[1] % self.capacity
                 while (
-                    new_table[index] is not None
+                    new_table[index] is not self.dummy
                     and new_table[index][0] != item[0]
                 ):
                     index = (index + 1) % self.capacity
@@ -88,7 +104,7 @@ class Dictionary:
         return hash(key)
 
     def items(self) -> list:
-        return [(node[0], node[2]) for node in self.table if node is not None]
+        return [(node[0], node[2]) for node in self.table if node is not self.dummy]
 
     def clear(self) -> None:
         self.table.clear()
