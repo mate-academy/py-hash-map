@@ -14,7 +14,7 @@ class Dictionary:
         self.capacity = INITIAL_CAPACITY
         self.size = 0
         self._load_factor_calculation()
-        self.data = []
+        self._list_creation()
 
     def _resize(self) -> None:
         temp_data = self.data
@@ -55,31 +55,29 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         index = hash_key % self.capacity
-        if (
-            self.data
-            and self.data[index][0] == key
-            and hash_key == self.data[index][1]
-        ):
-            return self.data[index][-1]
+        if self.data[index] is None:
+            raise KeyError(
+                "Dictionary doesn't have any value with provided key!"
+            )
 
         for element in self.data:
             if element is None:
                 continue
             elif element[0] == key:
                 return element[-1]
-        raise KeyError("Dictionary doesn't have any value with provided key!")
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: None = None) -> Any:
         for element in self.data:
             if element is None:
                 continue
             elif element[0] == key:
                 return element[-1]
+        return default
 
     def __len__(self) -> int:
         return self.size
 
-    def pop(self, key: Hashable, default: str = "Default value") -> Any | None:
+    def pop(self, key: Hashable, default: None = None) -> Any | None:
         if self.__getitem__(key):
             for i in range(len(self.data)):
                 if self.data[i] is None:
@@ -92,11 +90,11 @@ class Dictionary:
         return default
 
     def __delitem__(self, key: Hashable) -> None:
-        for i in range(len(self.data)):
-            if self.data[i] is None:
+        for index, item in enumerate(self.data):
+            if item is None:
                 continue
-            elif self.data[i][0] == key:
-                self.data[i] = None
+            elif item[0] == key:
+                self.data[index] = None
                 self.size -= 1
                 return
         raise KeyError("Dictionary doesn't have any value with provided key!")
@@ -111,10 +109,12 @@ class Dictionary:
 
     def __next__(self) -> tuple:
         self.index += 1
+        if self.index >= len(self.data):
+            raise StopIteration
         return self.data[self.index]
 
     def clear(self) -> None:
         self.capacity = 8
         self.size = 0
         self._load_factor_calculation()
-        self.data = []
+        self._list_creation()
