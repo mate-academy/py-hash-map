@@ -11,7 +11,6 @@ class Node:
     value: Any
 
 
-# O(1)
 class Dictionary:
     def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
         self.capacity = capacity
