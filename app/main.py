@@ -1,15 +1,24 @@
-from typing import Iterable, Hashable, Any, Generator
+from typing import Iterable, Hashable, Any, Generator, List
+from dataclasses import dataclass
+
+
+@dataclass
+class Node:
+    key_hash: int
+    key: Hashable
+    value: Any
+    deleted = False
 
 
 class Dictionary:
     min_size = 8
     load_fac = 0.65
 
-    def __init__(self, iterable: Iterable = (),) -> None:
-        self.capacity = (max(self.min_size,
-                             int(len([iterable]) / self.load_fac)))
+    def __init__(self, iterable: Iterable = (), ) -> None:
+        self.capacity = (max(self.min_size, len([iterable]) * 2))
         self.indices: list = [None] * self.capacity
         self.content = []
+        self.length = 0
         if iterable:
             self._add_from_iterable(iterable)
 
@@ -17,80 +26,73 @@ class Dictionary:
         if self.capacity * self.load_fac < len(self) + 1:
             self._resize()
         for catalog_ind, link_to_content in self._indices_generator(key):
-            if link_to_content is None and not self._key_exist(key):
+            if link_to_content is None or link_to_content.deleted:
                 self._add_to_content_list(key, value, catalog_ind)
                 return
-            if self._same_hash_and_key(key, link_to_content):
-                self.content[link_to_content] = "_deleted_item_"
+            if hash(key) == link_to_content.key_hash and key == link_to_content.key:
+                link_to_content.deleted = True
+                self.length -= 1
                 self._add_to_content_list(key, value, catalog_ind)
                 return
 
     def __getitem__(self, key: Hashable) -> Any:
+        if not self._key_exist(key):
+            raise KeyError(f"{key} key doesn't exist in this Dictionary")
         for catalog_ind, link_to_content in self._indices_generator(key):
-            if link_to_content is None:
-                raise KeyError(f"there is no {key} record in this Dictionary")
-            elif (isinstance(link_to_content, int)
-                  and self._same_hash_and_key(key, link_to_content)):
-                return self.content[link_to_content][2]
+            if not link_to_content.deleted and key == link_to_content.key:
+                return link_to_content.value
 
     def __delitem__(self, key: Hashable) -> None:
         if not self._key_exist(key):
-            raise KeyError(f"there is no {key} record in this Dictionary")
+            raise KeyError(f"{key} key doesn't exist in this Dictionary")
         for catalog_ind, link_to_content in self._indices_generator(key):
-            if self._same_hash_and_key(key, link_to_content):
-                self.indices[catalog_ind] = None
-                self.content[link_to_content] = "_deleted_item_"
+            if hash(key) == link_to_content.key_hash and key == link_to_content.key:
+                link_to_content.deleted = True
+                self.length -= 1
                 return
 
     def __len__(self) -> int:
-        return sum(1 for ind in self.indices if ind is not None)
+        return self.length
 
     def __iter__(self) -> Iterable:
-        current_pairs = [(trio[1], trio[2]) for trio in self.content
-                         if trio != "_deleted_item_"]
-        return iter(current_pairs)
+        return iter([(node.key, node.value)
+                     for node in self.content if not node.deleted])
 
     def __str__(self) -> str:
-        return "\n".join([f"key {pair[0]}: value {pair[1]}" for pair in self])
+        return "\n".join([f"key {node.key}: value {node.value}"
+                          for node in self.content if not node.deleted])
 
     def _key_exist(self, key: Hashable) -> bool:
-        return key in set(trio[1] for trio in self.content
-                          if trio != "_deleted_item_")
+        return key in set(node.key for node in self.content if not node.deleted)
 
     def _indices_generator(self, key: Hashable) -> Generator:
         catalog_ind = hash(key) % self.capacity
-        link_to_content = self.indices[catalog_ind]
-        yield catalog_ind, link_to_content
         while True:
+            yield catalog_ind, (self.content[self.indices[catalog_ind]]
+                                if self.indices[catalog_ind] is not None else None)
             catalog_ind = (catalog_ind + 1) % self.capacity
-            link_to_content = self.indices[catalog_ind]
-            yield catalog_ind, link_to_content
-
-    def _resize(self) -> None:
-        self.capacity *= 2
-        self.indices: list = [None] * self.capacity
-        copy_content = self.content[:]
-        self.content.clear()
-        for i in range(len(copy_content)):
-            if copy_content[i] != "_deleted_item_":
-                self.__setitem__(copy_content[i][1], copy_content[i][2])
-
-    def _add_from_iterable(self, iterable: Iterable) -> None:
-        for key, value in iterable:
-            self.__setitem__(key, value)
-
-    def _same_hash_and_key(self,
-                           key: Hashable,
-                           link_to_content: int) -> bool:
-        return (hash(key) == self.content[link_to_content][0]
-                and key == self.content[link_to_content][1])
 
     def _add_to_content_list(self,
                              key: Hashable,
                              value: Any,
                              catalog_ind: int) -> None:
-        self.content.append([hash(key), key, value])
+        self.content.append(Node(hash(key), key, value))
         self.indices[catalog_ind] = len(self.content) - 1
+        self.length += 1
+
+    def _resize(self) -> None:
+        self.length = 0
+        self.capacity *= 2
+        self.indices: list = [None] * self.capacity
+        copy_content = self.content[:]
+        self.content.clear()
+        for i in range(len(copy_content)):
+            if not copy_content[i].deleted:
+                self.__setitem__(copy_content[i].key, copy_content[i].value)
+
+    def _add_from_iterable(self, iterable: Iterable) -> None:
+        for key, value in iterable:
+            self.__setitem__(key, value)
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
