@@ -37,14 +37,6 @@ class Dictionary:
         else:
             return self.table[index][2]
 
-    def __delitem__(self, key: Hashable) -> None:
-        index = self._find_key(key)
-        if index is not None:
-            self.table[index] = None
-            self.count -= 1
-        else:
-            raise KeyError(f"{key} is not in {self}")
-
     def pop(self, key: object = None, default: Any = None) -> Any:
         if key is None:
             raise ValueError(
