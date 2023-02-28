@@ -12,23 +12,17 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
+    def __str__(self) -> str:
+        return str(self.hash_table)
+
     def __setitem__(self, key: hashable, value: Any) -> None:
         if self.length <= round(self.hash_capacity * 2 / 3):
-            index = hash(key) % self.hash_capacity
+            index = self._get_index(key)
             if self.hash_table[index] is None:
                 self.hash_table[index] = (key, value, hash(key))
                 self.length += 1
-            elif self._check_key(key, index):
-                self.hash_table[index] = (key, value, hash(key))
             else:
-                while (self.hash_table[index] is not None
-                       and not self._check_key(key, index)):
-                    index = (index + 1) % self.hash_capacity
-                if self.hash_table[index] is None:
-                    self.hash_table[index] = (key, value, hash(key))
-                    self.length += 1
-                else:
-                    self.hash_table[index] = (key, value, hash(key))
+                self.hash_table[index] = (key, value, hash(key))
         else:
             self.resize()
             self[key] = value
@@ -43,17 +37,17 @@ class Dictionary:
                 self[place[0]] = place[1]
 
     def __getitem__(self, key: hashable) -> Any:
-        index = hash(key) % self.hash_capacity
-        if self.hash_table[index] is None:
-            raise KeyError(f"There is no element with this key: {key}")
-        elif self._check_key(key, index):
+        index = self._get_index(key)
+        if self.hash_table[index] and self._check_key(key, index):
             return self.hash_table[index][1]
-        else:
-            while self.hash_table[index] and not self._check_key(key, index):
-                index = (index + 1) % self.hash_capacity
-            if self.hash_table[index] or self._check_key(key, index):
-                return self.hash_table[index][1]
-            raise KeyError(f"There is no element with this key: {key}")
+        raise KeyError(f"There is no element with this key: {key}")
+
+    def _get_index(self, key: hashable) -> int:
+        index = hash(key) % self.hash_capacity
+        while (self.hash_table[index] is not None
+                and not self._check_key(key, index)):
+            index = (index + 1) % self.hash_capacity
+        return index
 
     def _check_key(self, key: hashable, index: int) -> bool:
         return (hash(key) == self.hash_table[index][2]
@@ -65,34 +59,37 @@ class Dictionary:
 
     def __delitem__(self, key: hashable) -> None:
         if self[key]:
-            index = hash(key) % self.hash_capacity
-            if self._check_key(key, index):
-                self.hash_table[index] = None
-            else:
-                for i in range(len(self.hash_table)):
-                    if self.hash_table[i] and self._check_key(key, i):
-                        self.hash_table[i] = None
+            index = self._get_index(key)
+            self.hash_table[index] = None
         else:
             raise KeyError(f"Wrong key: {key}")
 
-    def get(self, key: hashable) -> Any:
+    def get(self, key: hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return
+            return default
 
-    def pop(self, key: hashable, *args: str) -> Any:
+    def pop(self, key: hashable, default: Any = None) -> Any:
         try:
-            return self[key]
+            pop_value = self[key]
+            del self[key]
+            return pop_value
         except KeyError:
-            if not args:
+            if not default:
                 raise
             else:
-                default, = args
                 return default
 
-    def update(self, key: hashable, value: Any) -> None:
-        self[key] = value
+    def update(self, *args) -> None:
+        update_data, = args
+        if type(update_data) == dict:
+            for key, value in update_data.items():
+                self[key] = value
+        else:
+            for pair in update_data:
+                key, value = pair
+                self[key] = value
 
     def __iter__(self) -> hashable:
         for el in self.hash_table:
