@@ -40,20 +40,26 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: object) -> None:
         hash_table_index = self.find_index(key)
 
-        # if index inside list is None:
         if self.bucket[hash_table_index] is None:
             self.bucket[hash_table_index] = Node(key, value)
             self.empty_indexes.remove(hash_table_index)
+            if len(self.empty_indexes) + 1 <= self.initial_capacity - self.load_factor:
+                self.resize()
+            return
 
-        # if index inside is occupied
-        if self.bucket[hash_table_index] is not None:
-            if self.bucket[hash_table_index].key == key:
-                self.bucket[hash_table_index] = Node(key, value)
-            else:
-                random_index = random.choice(self.empty_indexes)
-                self.empty_indexes.remove(random_index)
-                self.bucket[hash_table_index].next.append(random_index)
-                self.bucket[random_index] = Node(key, value)
+        if self.bucket[hash_table_index].key == key:
+            self.bucket[hash_table_index] = Node(key, value)
+            return
+
+        for index in self.bucket[hash_table_index].next:
+            if self.bucket[index].key == key:
+                self.bucket[index].value = value
+                return
+
+        random_index = random.choice(self.empty_indexes)
+        self.empty_indexes.remove(random_index)
+        self.bucket[hash_table_index].next.append(random_index)
+        self.bucket[random_index] = Node(key, value)
 
         if len(self.empty_indexes) + 1 <= self.initial_capacity - self.load_factor:
             self.resize()
@@ -91,10 +97,11 @@ class Dictionary:
 
 if __name__ == '__main__':
     d = Dictionary()
-
-    d[1] = "one"
-    d[2] = "two"
-    d["str"] = "string"
-    d[6] = 6
-    d[8] = 8
-    print(d.bucket)
+    d = Dictionary()
+    d[15] = "A"
+    d[3] = "B"
+    d[5] = "C"
+    d[13] = "D"
+    d[9] = "E"
+    d[13] = "K"
+    d[30] = "F"
