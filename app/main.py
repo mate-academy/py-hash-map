@@ -85,9 +85,7 @@ class Dictionary:
         try:
             return self[key]
         except KeyError:
-            if default:
-                return default
-            return
+            return default
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
