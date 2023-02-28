@@ -79,7 +79,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def pop(self, key: Hashable, default="Default value") -> Any | None:
+    def pop(self, key: Hashable, default: str = "Default value") -> Any | None:
         if self.__getitem__(key):
             for i in range(len(self.data)):
                 if self.data[i] is None:
