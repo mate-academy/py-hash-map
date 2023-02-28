@@ -6,7 +6,7 @@ class Node:
     def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
-        self.hash = hash(key)
+        self.removed = False
 
     def __repr__(self) -> str:
         return f"{self.key} : {self.value}"
@@ -45,18 +45,25 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         cur_index = self._get_index(key)
-        while self._data[cur_index] and self._data[cur_index].key != key:
+        while (
+            self._data[cur_index] is not None
+            and (self._data[cur_index].removed
+                 or self._data[cur_index].key != key)
+        ):
             cur_index = (cur_index + 1) % self._capacity
-        if self._data[cur_index]:
-            return self._data[cur_index].value
-        raise KeyError
+        if self._data[cur_index] is None:
+            raise KeyError
+        return self._data[cur_index].value
 
     def __setitem__(self, key: Hashable, value: Any) -> Any:
         if self._size + 1 > self._capacity * Dictionary._THRESHOLD:
             self._resize()
         new_node = Node(key, value)
         cur_index = self._get_index(key)
-        while self._data[cur_index] is not None:
+        while (
+            self._data[cur_index] is not None
+            and not self._data[cur_index].removed
+        ):
             if self._data[cur_index].key == key:
                 self._data[cur_index] = new_node
                 return
@@ -71,12 +78,16 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         cur_index = self._get_index(key)
-        while self._data[cur_index] and self._data[cur_index].key != key:
+        while (
+            self._data[cur_index] is not None
+            and (self._data[cur_index].removed
+                 or self._data[cur_index].key != key)
+        ):
             cur_index = (cur_index + 1) % self._capacity
-        if self._data[cur_index]:
-            self._data[cur_index] = None
-        else:
+        if self._data[cur_index] is None:
             raise KeyError
+        self._data[cur_index].removed = True
+        self._size -= 1
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
@@ -84,7 +95,7 @@ class Dictionary:
         except KeyError:
             return default
 
-    def update(self, other: Dictionary) -> None:
+    def update(self, other: Dictionary | dict) -> None:
         if isinstance(other, Dictionary | dict):
             for key in other:
                 self.__setitem__(key, other[key])
@@ -94,7 +105,11 @@ class Dictionary:
         return self
 
     def __next__(self) -> Any:
-        while self._ind < self._capacity and self._data[self._ind] is None:
+        while (
+            self._ind < self._capacity
+            and (self._data[self._ind] is None
+                 or self._data[self._ind].removed)
+        ):
             self._ind += 1
         if self._ind == self._capacity:
             raise StopIteration
