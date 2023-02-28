@@ -1,5 +1,4 @@
 from typing import Any, Hashable
-from copy import deepcopy
 
 
 class Dictionary:
@@ -20,13 +19,13 @@ class Dictionary:
             if not self.table[current_index]:
                 self.table[current_index] = [key, value, hashed]
                 self.size += 1
-                return
+                break
             if (
                 key == self.table[current_index][0]
                 and hashed == self.table[current_index][2]
             ):
                 self.table[current_index][1] = value
-                return
+                break
 
     def __getitem__(self, key: Hashable) -> Any:
         hashed = hash(key)
@@ -46,7 +45,7 @@ class Dictionary:
         return self.size
 
     def resize(self) -> None:
-        new_copy = deepcopy(self.table)
+        new_copy = self.table
         self.size = 0
         self.capacity *= 2
         self.table = [[] for _ in range(self.capacity)]
