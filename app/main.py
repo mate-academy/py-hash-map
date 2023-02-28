@@ -1,4 +1,4 @@
-from typing import Hashable, Any
+from typing import Hashable, Any, Iterable
 
 
 class Dictionary:
@@ -87,13 +87,18 @@ class Dictionary:
         except KeyError:
             if default:
                 return default
+            return
+
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            value = self[key]
+            del self[key]
+            return value
+        except KeyError:
+            if default:
+                return default
             raise KeyError
 
-    def pop(self, key: Hashable) -> Any:
-        value = self[key]
-        del self[key]
-        return value
-
-    def update(self, new_dict: dict) -> None:
-        for key, value in new_dict.items():
-            self[key] = value
+    def update(self, new_items: Iterable) -> None:
+        for item in new_items:
+            self[item[0]] = item[-1]
