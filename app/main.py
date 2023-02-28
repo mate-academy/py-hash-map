@@ -1,4 +1,4 @@
-from typing import Any, Hashable, Iterator
+from typing import Any, Hashable, Iterator, Iterable, Tuple
 from collections import namedtuple
 
 
@@ -23,11 +23,11 @@ class Dictionary:
                 self.length += 1
                 if self.length > self._capacity * self._load_factor:
                     self._resize()
-                return
+                break
             elif node.key == key:
                 new_node = Node(key, value, hash_value)
                 self.hash_table[next_index] = new_node
-                return
+                break
 
     def __getitem__(self, key: Hashable) -> Any:
         hash_value = hash(key)
@@ -95,9 +95,22 @@ class Dictionary:
             value = self[key]
             del self[key]
             return value
-        except KeyError:
-            return default
+        except KeyError as error:
+            if default is not None:
+                return default
+            raise error
 
-    def update(self, other: dict) -> None:
-        for key, value in other.items():
-            self[key] = value
+    def update(self, other: Iterable[Tuple]) -> None:
+        if isinstance(other, Dictionary):
+            for key in other:
+                self[key] = other[key]
+        elif isinstance(other, dict):
+            for key, value in other.items():
+                self[key] = value
+        else:
+            for item in other:
+                if isinstance(item, tuple) and len(item) == 2:
+                    key, value = item
+                    self[key] = value
+                else:
+                    raise TypeError("Iterable with tuples expected")
