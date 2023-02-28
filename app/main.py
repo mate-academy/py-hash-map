@@ -17,7 +17,7 @@ class Dictionary:
         return self.count
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.count + 1 / self.capacity >= self.load_factor:
+        if self.count / self.capacity >= self.load_factor:
             self._resize()
 
         index = self._hash(key) % self.capacity
