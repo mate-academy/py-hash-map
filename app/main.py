@@ -79,7 +79,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def pop(self, key: Hashable) -> Any | None:
+    def pop(self, key: Hashable, default="Default value") -> Any | None:
         if self.__getitem__(key):
             for i in range(len(self.data)):
                 if self.data[i] is None:
@@ -89,6 +89,7 @@ class Dictionary:
                     self.data[i] = None
                     self.size -= 1
                     return pop_item
+        return default
 
     def __delitem__(self, key: Hashable) -> None:
         for i in range(len(self.data)):
@@ -101,7 +102,6 @@ class Dictionary:
         raise KeyError("Dictionary doesn't have any value with provided key!")
 
     def update(self, iterable: Iterable) -> None:
-        print(iterable)
         for element in iterable:
             self.__setitem__(element[0], element[-1])
 
