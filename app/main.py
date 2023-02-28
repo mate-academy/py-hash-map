@@ -23,6 +23,9 @@ class Dictionary:
         self._capacity: int = INITIAL_CAPACITY
         self._hash_table: list = [None] * self._capacity
 
+        for key, value in kwargs.items():
+            self.__setitem__(key, value)
+
     def __str__(self) -> str:
         items = []
         for node in self._hash_table:
@@ -55,7 +58,7 @@ class Dictionary:
             index = (index + 1) % self._capacity
 
         if self._hash_table[index] is None:
-            raise KeyError(key)
+            raise KeyError(key, "Key not in dictionary")
 
         return self._hash_table[index].value
 
@@ -100,22 +103,27 @@ class Dictionary:
         self._length = 0
 
     def get(self, key: Hashable, default: Any = None) -> Any:
-        try:
-            self.__getitem__(key)
-        except KeyError:
-            return default
+        # If key don't find in dictionary __getitem_raise a KeyError
+        return self.__getitem__(key)
 
-    def pop(self, _key: Any, default: Any = None) -> Any:
-        try:
-            key_value = self[_key]
-            self.__delitem__(key_value)
-            return key_value
-        except KeyError:
-            return default
+    def pop(self, key: Any, default: Any = None) -> Any:
+        # If key don't find in dictionary __getitem_raise a KeyError
+        key_value = self[key]
+        self.__delitem__(key)
+        return key_value
 
-    def update(self, new_dict: Dictionary) -> None:
-        for key, value in new_dict.items():
+
+    def update(self, new_item: Any = None) -> None:
+        if isinstance(new_item, Dictionary) or isinstance(new_item, dict):
+            for key, value in new_item.items():
+                self[key] = value
+        if isinstance(new_item, tuple):
+            key, value = new_item
             self[key] = value
+        if isinstance(new_item, list) or isinstance(new_item, set):
+            for item in new_item:
+                key, value = item
+                self[key] = value
 
     def __iter__(self) -> Any:
         for i in range(len(self._hash_table)):
