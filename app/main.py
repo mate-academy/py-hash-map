@@ -26,8 +26,8 @@ class Dictionary:
         index = hash(key) % self.capacity
 
         while (
-                self.hash_table[index] is not None and
-                self.hash_table[index].key != key
+                self.hash_table[index] is not None
+                and self.hash_table[index].key != key
         ):
             index = self._cyclic_increment(index)
 
