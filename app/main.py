@@ -67,26 +67,29 @@ class Dictionary:
                 return element[-1]
 
     def get(self, key: Hashable, default: None = None) -> Any:
-        for element in self.data:
-            if element is None:
-                continue
-            elif element[0] == key:
-                return element[-1]
-        return default
+        try:
+            value = self.__getitem__(key)
+        except KeyError:
+            return default
+        else:
+            return value
 
     def __len__(self) -> int:
         return self.size
 
-    def pop(self, key: Hashable, default: None = None) -> Any | None:
-        if self.__getitem__(key):
-            for i in range(len(self.data)):
-                if self.data[i] is None:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        if self.get(key):
+            for index, item in enumerate(self.data):
+                if item is None:
                     continue
-                elif self.data[i][0] == key:
+                elif item[0] == key:
                     pop_item = self.get(key)
-                    self.data[i] = None
-                    self.size -= 1
+                    self.__delitem__(key)
                     return pop_item
+        elif default is None:
+            raise KeyError(
+                "Key is not found and default argument wasn't provided"
+            )
         return default
 
     def __delitem__(self, key: Hashable) -> None:
