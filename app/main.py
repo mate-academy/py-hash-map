@@ -19,7 +19,10 @@ class Dictionary:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
-        self.table = [[] for _ in range(self.capacity)]
+        self.table = self.create_table()
+
+    def create_table(self):
+        return [[] for _ in range(self.capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_val = hash(key)
@@ -27,22 +30,22 @@ class Dictionary:
         while self.table[store_index]:
             if self.table[store_index][0].key == key:
                 self.table[store_index][0].value = value
-                return
+                break
             else:
                 store_index += 1
                 if store_index >= len(self.table) - 1:
                     store_index = 0
-
-        store = self.table[store_index]
-        store.append(Node(key, value, hash_val))
-        self.size += 1
-        if self.size >= self.capacity * self.load_factor:
-            self.resize()
+        else:
+            store = self.table[store_index]
+            store.append(Node(key, value, hash_val))
+            self.size += 1
+            if self.size >= self.capacity * self.load_factor:
+                self.resize()
 
     def resize(self) -> None:
         self.capacity *= 2
         old_table = self.table
-        self.table = [[] for _ in range(self.capacity)]
+        self.table = self.create_table()
         self.size = 0
         for store in old_table:
             if store:
@@ -74,7 +77,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.size = 0
-        self.table = [[] for _ in range(self.capacity)]
+        self.table = self.create_table()
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
