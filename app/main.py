@@ -46,15 +46,7 @@ class Dictionary:
         return self.hash_table[index].value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-
-        index = self._calculate_index(key)
-
-        if self.hash_table[index] is None:
-            if self.size + 1 >= self.current_max_size:
-                self.resize()
-                return self.__setitem__(key, value)
-            self.size += 1
-        index = self._calculate_index(key)
+        index = self._calculate_index(key)  # 0..15
 
         if self.hash_table[index] is None:
             if self.size + 1 >= self.current_max_size:
