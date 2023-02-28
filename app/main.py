@@ -1,5 +1,4 @@
-from __future__ import annotations
-from typing import Any, Iterable
+from typing import Any, Iterable, Hashable
 
 
 class Dictionary:
@@ -10,7 +9,7 @@ class Dictionary:
         self.length = 0
         self.hash_table = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % len(self.hash_table)
         while self.hash_table[index] and self.hash_table[index][0] != key:
             index = (index + 1) % len(self.hash_table)
@@ -22,7 +21,7 @@ class Dictionary:
             if self.length >= self.threshold:
                 self.resize()
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         index = hash(key) % len(self.hash_table)
         while self.hash_table[index]:
             if self.hash_table[index][0] == key:
@@ -39,11 +38,11 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.threshold = int(self.capacity * self.load_factor)
         self.length = 0
-        for i in new_table:
-            if i:
-                self[i[0]] = i[2]
+        for key_hash_value in new_table:
+            if key_hash_value:
+                self[key_hash_value[0]] = key_hash_value[2]
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % len(self.hash_table)
         while self.hash_table[index]:
             if self.hash_table[index][0] == key:
@@ -53,7 +52,7 @@ class Dictionary:
             index = (index + 1) % len(self.hash_table)
         raise KeyError(key)
 
-    def get(self, key: Any, default: None = None) -> None:
+    def get(self, key: Hashable, default: None = None) -> None:
         try:
             return self[key]
         except KeyError:
@@ -63,22 +62,27 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.length = 0
 
-    def pop(self, key: Any) -> None:
-        try:
-            self.pop(key)
-        except KeyError:
-            return
+    def pop(self, key: Hashable, default: None = None) -> None:
+        if self[key]:
+            value = self[key]
+            del self[key]
+            return value
+        else:
+            if default:
+                return default
+            else:
+                raise KeyError(key)
 
     def update(self, other: [dict | Iterable]) -> None:
         if isinstance(other, dict):
             for key, value in other.items():
                 self[key] = value
-            return
+                break
         for key, value in other:
             self[key] = value
-        return
+            break
 
     def __iter__(self) -> None:
-        for item in self.hash_table:
-            if item:
-                yield item[0]
+        for key_hash_value in self.hash_table:
+            if key_hash_value:
+                yield key_hash_value[0]
