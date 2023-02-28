@@ -21,7 +21,7 @@ class Dictionary:
         self.size = 0
         self.table = self.create_table()
 
-    def create_table(self):
+    def create_table(self) -> []:
         return [[] for _ in range(self.capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
