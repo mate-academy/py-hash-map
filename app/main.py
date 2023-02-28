@@ -44,7 +44,7 @@ class Dictionary:
             ):
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
-        raise KeyError
+        raise KeyError(f"Cannot find value with key: {key}")
 
     def __len__(self) -> int:
         return self.size
