@@ -1,4 +1,4 @@
-from typing import Iterable, Hashable, Any, Generator, List
+from typing import Iterable, Hashable, Any, Generator
 from dataclasses import dataclass
 
 
@@ -25,12 +25,12 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.capacity * self.load_fac < len(self) + 1:
             self._resize()
-        for catalog_ind, link_to_content in self._indices_generator(key):
-            if link_to_content is None or link_to_content.deleted:
+        for catalog_ind, node_link in self._indices_generator(key):
+            if node_link is None or node_link.deleted:
                 self._add_to_content_list(key, value, catalog_ind)
                 return
-            if hash(key) == link_to_content.key_hash and key == link_to_content.key:
-                link_to_content.deleted = True
+            if hash(key) == node_link.key_hash and key == node_link.key:
+                node_link.deleted = True
                 self.length -= 1
                 self._add_to_content_list(key, value, catalog_ind)
                 return
@@ -38,16 +38,16 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         if not self._key_exist(key):
             raise KeyError(f"{key} key doesn't exist in this Dictionary")
-        for catalog_ind, link_to_content in self._indices_generator(key):
-            if not link_to_content.deleted and key == link_to_content.key:
-                return link_to_content.value
+        for catalog_ind, node_link in self._indices_generator(key):
+            if not node_link.deleted and key == node_link.key:
+                return node_link.value
 
     def __delitem__(self, key: Hashable) -> None:
         if not self._key_exist(key):
             raise KeyError(f"{key} key doesn't exist in this Dictionary")
-        for catalog_ind, link_to_content in self._indices_generator(key):
-            if hash(key) == link_to_content.key_hash and key == link_to_content.key:
-                link_to_content.deleted = True
+        for catalog_ind, node_link in self._indices_generator(key):
+            if hash(key) == node_link.key_hash and key == node_link.key:
+                node_link.deleted = True
                 self.length -= 1
                 return
 
@@ -63,14 +63,15 @@ class Dictionary:
                           for node in self.content if not node.deleted])
 
     def _key_exist(self, key: Hashable) -> bool:
-        return key in set(node.key for node in self.content if not node.deleted)
+        return key in set(node.key for node in self.content
+                          if not node.deleted)
 
     def _indices_generator(self, key: Hashable) -> Generator:
-        catalog_ind = hash(key) % self.capacity
+        index = hash(key) % self.capacity
         while True:
-            yield catalog_ind, (self.content[self.indices[catalog_ind]]
-                                if self.indices[catalog_ind] is not None else None)
-            catalog_ind = (catalog_ind + 1) % self.capacity
+            yield index, (self.content[self.indices[index]]
+                          if self.indices[index] is not None else None)
+            index = (index + 1) % self.capacity
 
     def _add_to_content_list(self,
                              key: Hashable,
