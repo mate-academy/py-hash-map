@@ -21,9 +21,6 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hashed = hash(key)
-        threshold = int(self.capacity * self.load_factor)
-        if self.length == threshold:
-            self.resize()
         index = hashed % self.capacity
         while True:
             if not self.data[index]:
@@ -35,14 +32,16 @@ class Dictionary:
                     self.data[index][2] = value
                     break
             index = (index + 1) % self.capacity
+        threshold = int(self.capacity * self.load_factor)
+        if self.length == threshold:
+            self.resize()
 
     def __getitem__(self, key: Any) -> object:
         hashed = hash(key)
         index = hashed % self.capacity
         while self.data[index]:
             if self.data[index][0] == key:
-                if self.data[index][1] == hashed:
-                    return self.data[index][2]
+                return self.data[index][2]
             index = (index + 1) % self.capacity
         raise KeyError
 
