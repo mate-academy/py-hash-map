@@ -1,31 +1,38 @@
-from copy import deepcopy
+from __future__ import annotations
+
 from typing import Iterable
+from typing import Hashable, Any
+
+
+INITIAL_CAPACITY = 8
+RESIZE_THRESHOLD = 0.66
+CAPACITY_MULTIPLIER = 2
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.capacity = 8
+        self.capacity = INITIAL_CAPACITY
         self.size = 0
         self._load_factor_calculation()
         self.data = []
 
     def _resize(self) -> None:
-        temp = deepcopy(self.data)
-        self.capacity *= 2
+        temp_data = self.data
+        self.capacity *= CAPACITY_MULTIPLIER
         self._load_factor_calculation()
         self._list_creation()
         self.size = 0
-        for element in temp:
+        for element in temp_data:
             if element:
                 self.__setitem__(element[0], element[-1])
 
     def _load_factor_calculation(self) -> None:
-        self.load_factor = round(self.capacity * 0.66)
+        self.load_factor = round(self.capacity * RESIZE_THRESHOLD)
 
     def _list_creation(self) -> None:
         self.data = [None for _ in range(self.capacity)]
 
-    def __setitem__(self, key: object, value: object) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size == self.load_factor:
             self._resize()
         if not self.data:
@@ -45,7 +52,7 @@ class Dictionary:
                 break
             index += 1
 
-    def __getitem__(self, key: object) -> None:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         index = hash_key % self.capacity
         if (
@@ -62,7 +69,7 @@ class Dictionary:
                 return element[-1]
         raise KeyError("Dictionary doesn't have any value with provided key!")
 
-    def get(self, key: object) -> object:
+    def get(self, key: Hashable) -> Any:
         for element in self.data:
             if element is None:
                 continue
@@ -72,7 +79,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def pop(self, key: object) -> object | None:
+    def pop(self, key: Hashable) -> Any | None:
         if self.__getitem__(key):
             for i in range(len(self.data)):
                 if self.data[i] is None:
@@ -83,7 +90,7 @@ class Dictionary:
                     self.size -= 1
                     return pop_item
 
-    def __delitem__(self, key: object) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         for i in range(len(self.data)):
             if self.data[i] is None:
                 continue
@@ -98,7 +105,7 @@ class Dictionary:
         for element in iterable:
             self.__setitem__(element[0], element[-1])
 
-    def __iter__(self) -> object:
+    def __iter__(self) -> Dictionary:
         self.index = -1
         return self
 
