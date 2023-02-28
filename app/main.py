@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Iterable
 
 
 class Dictionary:
@@ -63,17 +63,20 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.length = 0
 
-    def pop(self, key: Any, default: None = None) -> None:
+    def pop(self, key: Any) -> None:
         try:
-            value = self[key]
-            del self[key]
-            return value
+            self.pop(key)
         except KeyError:
-            return default
+            return
 
-    def update(self, other_dict: dict) -> None:
-        for key, value in other_dict.items():
+    def update(self, other: [dict | Iterable]) -> None:
+        if isinstance(other, dict):
+            for key, value in other.items():
+                self[key] = value
+            return
+        for key, value in other:
             self[key] = value
+        return
 
     def __iter__(self) -> None:
         for item in self.hash_table:
