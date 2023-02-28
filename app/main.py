@@ -28,9 +28,8 @@ class Dictionary:
                 self.length += 1
                 break
             if key == self.data[index][0]:
-                if hashed == self.data[index][1]:
-                    self.data[index][2] = value
-                    break
+                self.data[index][2] = value
+                break
             index = (index + 1) % self.capacity
         threshold = int(self.capacity * self.load_factor)
         if self.length == threshold:
