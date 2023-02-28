@@ -112,7 +112,6 @@ class Dictionary:
         self.__delitem__(key)
         return key_value
 
-
     def update(self, new_item: Any = None) -> None:
         if isinstance(new_item, Dictionary) or isinstance(new_item, dict):
             for key, value in new_item.items():
