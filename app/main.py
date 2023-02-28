@@ -28,12 +28,12 @@ class Dictionary:
         for catalog_ind, node_link in self._indices_generator(key):
             if node_link is None or node_link.deleted:
                 self._add_to_content_list(key, value, catalog_ind)
-                return
+                break
             if hash(key) == node_link.key_hash and key == node_link.key:
                 node_link.deleted = True
                 self.length -= 1
                 self._add_to_content_list(key, value, catalog_ind)
-                return
+                break
 
     def __getitem__(self, key: Hashable) -> Any:
         if not self._key_exist(key):
@@ -49,7 +49,7 @@ class Dictionary:
             if hash(key) == node_link.key_hash and key == node_link.key:
                 node_link.deleted = True
                 self.length -= 1
-                return
+                break
 
     def __len__(self) -> int:
         return self.length
