@@ -4,8 +4,8 @@ from typing import Hashable, Any
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
-        self.load_factor = 0.6
-        self.hash_table = [[]] * self.capacity
+        self.load_factor = 2 / 3
+        self.hash_table: list = [[]] * self.capacity
         self.size = 0
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
@@ -30,7 +30,7 @@ class Dictionary:
         self.capacity *= 2
         self.size = 0
         hash_table = self.hash_table
-        self.hash_table = [[]] * self.capacity
+        self.hash_table: list = [[]] * self.capacity
         for node in hash_table:
             if node:
                 self.__setitem__(node[0], node[2])
