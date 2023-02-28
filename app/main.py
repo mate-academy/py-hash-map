@@ -17,7 +17,7 @@ class Dictionary:
         return self.count
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.count / self.capacity >= self.load_factor:
+        if self.count + 1 / self.capacity >= self.load_factor:
             self._resize()
 
         index = self._hash(key) % self.capacity
@@ -37,10 +37,16 @@ class Dictionary:
         else:
             return self.table[index][2]
 
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
+
     def pop(self, key: object = None, default: Any = None) -> Any:
-        if key is None:
-            raise ValueError(
-                "pop() method with `Dictionary` works only with defined key"
+        if key is None and default is None:
+            raise KeyError(
+                "Either existing key or default value should be provided"
             )
 
         index = self._find_key(key)
@@ -52,7 +58,9 @@ class Dictionary:
             self.count -= 1
             return value
 
-    def update(self, other: Mapping[Hashable, Any]) -> None:
+    def update(self, other: Mapping[Hashable, Any] = None) -> None:
+        if other is None:
+            return
         for key, value in other.items():
             self[key] = value
 
