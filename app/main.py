@@ -67,11 +67,9 @@ class Dictionary:
             value = self[key]
             del self[key]
             return value
-        else:
-            if default:
-                return default
-            else:
-                raise KeyError(key)
+        if default:
+            return default
+        raise KeyError(key)
 
     def update(self, other: [dict | Iterable]) -> None:
         if isinstance(other, dict):
