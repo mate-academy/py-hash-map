@@ -89,7 +89,7 @@ class Dictionary:
             value = self[key]
             del self[key]
             return value
-        except KeyError as error:
+        except KeyError:
             if default is not None:
                 return default
 
