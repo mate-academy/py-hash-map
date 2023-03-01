@@ -99,7 +99,7 @@ class Dictionary:
         for _key, _value in self._get_buckets_full():
             dict_str += f"    {_key}: {_value},\n"
         dict_str += "}"
-        return f"{self._buckets}"
+        return dict_str
 
     def __repr__(self) -> str:
         dict_repr = "{"
