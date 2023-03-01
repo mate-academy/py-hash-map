@@ -3,45 +3,42 @@ from typing import Any, Hashable
 
 class Dictionary:
 
-    def __init__(self, table_len: int = 8, load_factor: float = 0.75) -> None:
-        self.table_len = table_len
+    def __init__(self, capacity: int = 8, load_factor: float = 0.67) -> None:
+        self.capacity = capacity
         self.load_factor = load_factor
-        self.length = 0
-        self.hash_table: list = [None] * 8
+        self.size = 0
+        self.table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.table_len < int(self.length * 2 / 3):
-            self.resize()
-        hash_key = hash(key)
-        index = hash_key % self.table_len
-        while True:
-            if not self.hash_table[index]:
-                self.hash_table[index] = [key, value, hash_key]
-                self.length += 1
-                break
-            elif self.hash_table[index][0] == key and self.hash_table[index][2] == hash_key:
-                self.hash_table[index][1] = value
-                break
-            else:
-                index = (index + 1) % self.table_len
+        index = self._get_index(key)
+        if self.table[index] is None:
+            self.size += 1
+            self.table[index] = (key, hash(key), value)
+        elif self.table[index] is not None:
+            self.table[index] = (key, hash(key), value)
+        if self.size > self.capacity * self.load_factor:
+            self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_key = hash(key)
-        index = hash_key % self.table_len
-        while self.hash_table[index]:
-            if self.hash_table[index][0] == key:
-                return self.hash_table[index][1]
-            index = (index + 1) % self.table_len
-        raise KeyError
+        index = self._get_index(key)
+        if self.table[index] is None:
+            raise KeyError(key)
+        return self.table[index][2]
 
     def __len__(self) -> int:
-        return self.length
+        return self.size
 
-    def resize(self) -> None:
-        self.table_len *= 2
-        self.length = 0
-        start_table = self.hash_table
-        self.hash_table = [None] * self.table_len
-        for cell in start_table:
-            if cell:
-                self.__setitem__(cell[0], cell[1])
+    def _get_index(self, key: Hashable) -> int:
+        index = hash(key) % self.capacity
+        while self.table[index] is not None and self.table[index][0] != key:
+            index = (index + 1) % self.capacity
+        return index
+
+    def _resize(self) -> None:
+        self.capacity *= 2
+        old_table = self.table
+        self.table = [None] * self.capacity
+        self.size = 0
+        for node in old_table:
+            if node:
+                self[node[0]] = node[2]
