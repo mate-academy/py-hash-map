@@ -10,17 +10,17 @@ class Dictionary:
         self.table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = self._get_index(key)
+        index = self.get_index(key)
         if self.table[index] is None:
             self.size += 1
             self.table[index] = (key, hash(key), value)
         elif self.table[index] is not None:
             self.table[index] = (key, hash(key), value)
         if self.size > self.capacity * self.load_factor:
-            self._resize()
+            self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self._get_index(key)
+        index = self.get_index(key)
         if self.table[index] is None:
             raise KeyError(key)
         return self.table[index][2]
@@ -28,13 +28,13 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def _get_index(self, key: Hashable) -> int:
+    def get_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
         while self.table[index] is not None and self.table[index][0] != key:
             index = (index + 1) % self.capacity
         return index
 
-    def _resize(self) -> None:
+    def resize(self) -> None:
         self.capacity *= 2
         old_table = self.table
         self.table = [None] * self.capacity
