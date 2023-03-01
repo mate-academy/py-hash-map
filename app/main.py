@@ -60,25 +60,19 @@ class Dictionary:
             if node.key == key:
                 self.hash_table[next_index] = None
                 self.length -= 1
-                self._rehash()
+                self._resize(new_capacity=self._capacity)
                 return
 
-    def _resize(self) -> None:
-        self._capacity = self._capacity * 2
+    def _resize(self, new_capacity: int = None) -> None:
+        if new_capacity is None:
+            new_capacity = self._capacity * 2
         old_table = self.hash_table
-        self.hash_table = [None] * self._capacity
+        self.hash_table = [None] * new_capacity
         self.length = 0
+        self._capacity = new_capacity
         for node in old_table:
             if node is not None:
                 self.__setitem__(node.key, node.value)
-
-    def _rehash(self) -> None:
-        new_table = Dictionary(self._capacity, self._load_factor)
-        for node in self.hash_table:
-            if node is not None:
-                new_table.__setitem__(node.key, node.value)
-        self.hash_table = new_table.hash_table
-        self.length = new_table.length
 
     def clear(self) -> None:
         self.hash_table = [None] * self._capacity
@@ -98,7 +92,6 @@ class Dictionary:
         except KeyError as error:
             if default is not None:
                 return default
-            raise error
 
     def update(self, other: Iterable[Tuple]) -> None:
         if isinstance(other, Dictionary):
