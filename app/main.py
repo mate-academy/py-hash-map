@@ -81,11 +81,13 @@ class Dictionary:
             self.hash_table[index] = None
             self.length -= 1
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         index = self.calculate_index(key)
         current_element = self.hash_table[index]
         if current_element:
             return current_element.value
+        if default:
+            return default
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
         index = self.calculate_index(key)
