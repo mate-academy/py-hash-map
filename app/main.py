@@ -58,21 +58,8 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> int | None:
-        try:
-            value = self[key]
-            del self[key]
-            return value
-        except KeyError:
-            return default
-
-    def update(self, other: dict) -> None:
-        for key, value in other.items():
-            self[key] = value
-
     def clear(self) -> None:
-        self._length = 0
-        self.table = [None] * self.capacity
+        self.__init__()
 
     def __iter__(self) -> None:
         for node in self.table:
