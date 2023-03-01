@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Hashable
+from typing import Any, Hashable, Iterable
 import math
 
 
@@ -87,20 +87,26 @@ class Dictionary:
         if current_element:
             return current_element.value
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         index = self.calculate_index(key)
         current_element = self.hash_table[index]
-        if current_element is None:
+        if current_element is None and default is None:
             raise KeyError("No element with this key")
+        if current_element is None and default:
+            return default
         value_to_return = current_element.value
         self.hash_table[index] = None
         self.length -= 1
         return value_to_return
 
-    def update(self, other: Dictionary) -> None:
-        for element in other.hash_table:
-            if element:
-                self.__setitem__(element.key, element.value)
+    def update(self, other: Dictionary | Iterable) -> None:
+        if isinstance(other, Dictionary):
+            for element in other.hash_table:
+                if element:
+                    self.__setitem__(element.key, element.value)
+        else:
+            for element in other:
+                self.__setitem__(element[0], element[1])
 
     def __iter__(self) -> Hashable:
         for element in self.hash_table:
