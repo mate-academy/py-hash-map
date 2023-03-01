@@ -37,59 +37,59 @@ class Dictionary(Mapping):
         else:
             return self.table[index][2]
 
-    # def get(self, key: Hashable, default: Any = None) -> Any:
-    #     try:
-    #         return self.__getitem__(key)
-    #     except KeyError:
-    #         return default
-    #
-    # def pop(self, key: object = None, default: Any = None) -> Any:
-    #     if key is None and default is None:
-    #         raise KeyError(
-    #             "Either existing key or default value should be provided"
-    #         )
-    #
-    #     index = self._find_key(key)
-    #     if index is None:
-    #         return default
-    #     else:
-    #         value = self.table[index][2]
-    #         self.table[index] = None
-    #         self.count -= 1
-    #         return value
-    #
-    # def update(self, *args, **kwargs) -> None:
-    #     if args:
-    #         other = args[0]
-    #         if isinstance(other, Mapping | Dictionary):
-    #             for key, value in other.items():
-    #                 self[key] = value
-    #         else:
-    #             for key, value in other:
-    #                 self[key] = value
-    #     if kwargs:
-    #         for key, value in kwargs.items():
-    #             self[key] = value
-    #
-    # def _find_key(self, key: Hashable) -> int:
-    #     index = self._hash(key) % self.capacity
-    #     while self.table[index] is not None and self.table[index][0] != key:
-    #         index = (index + 1) % self.capacity
-    #     return index if self.table[index] is not None else None
-    #
-    # def _resize(self) -> None:
-    #     self.capacity *= 2
-    #     new_table = [None] * self.capacity
-    #     for item in self.table:
-    #         if item is not None:
-    #             index = item[1] % self.capacity
-    #             while (
-    #                 new_table[index] is not None
-    #                 and new_table[index][0] != item[0]
-    #             ):
-    #                 index = (index + 1) % self.capacity
-    #             new_table[index] = item
-    #     self.table = new_table
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
+
+    def pop(self, key: object = None, default: Any = None) -> Any:
+        if key is None and default is None:
+            raise KeyError(
+                "Either existing key or default value should be provided"
+            )
+
+        index = self._find_key(key)
+        if index is None:
+            return default
+        else:
+            value = self.table[index][2]
+            self.table[index] = None
+            self.count -= 1
+            return value
+
+    def update(self, *args, **kwargs) -> None:
+        if args:
+            other = args[0]
+            if isinstance(other, Mapping | Dictionary):
+                for key, value in other.items():
+                    self[key] = value
+            else:
+                for key, value in other:
+                    self[key] = value
+        if kwargs:
+            for key, value in kwargs.items():
+                self[key] = value
+
+    def _find_key(self, key: Hashable) -> int:
+        index = self._hash(key) % self.capacity
+        while self.table[index] is not None and self.table[index][0] != key:
+            index = (index + 1) % self.capacity
+        return index if self.table[index] is not None else None
+
+    def _resize(self) -> None:
+        self.capacity *= 2
+        new_table = [None] * self.capacity
+        for item in self.table:
+            if item is not None:
+                index = item[1] % self.capacity
+                while (
+                    new_table[index] is not None
+                    and new_table[index][0] != item[0]
+                ):
+                    index = (index + 1) % self.capacity
+                new_table[index] = item
+        self.table = new_table
 
     def _hash(self, key: Hashable) -> int:
         return hash(key)
