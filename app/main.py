@@ -58,7 +58,7 @@ class Dictionary:
             index = (index + 1) % self._capacity
 
         if self._hash_table[index] is None:
-            raise KeyError(key, "Key not in dictionary")
+            raise KeyError(key)
 
         return self._hash_table[index].value
 
@@ -102,15 +102,21 @@ class Dictionary:
         self._dict_values = []
         self._length = 0
 
-    def get(self, key: Hashable, default: Any = None) -> Any:
-        # If key don't find in dictionary __getitem_raise a KeyError
-        return self.__getitem__(key)
+    def get(self, key: Hashable = None, default: Any = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
     def pop(self, key: Any, default: Any = None) -> Any:
-        # If key don't find in dictionary __getitem_raise a KeyError
-        key_value = self[key]
-        self.__delitem__(key)
-        return key_value
+        try:
+            value = self[key]
+            self.__delitem__(key)
+            return value
+        except KeyError:
+            if default:
+                return default
+            raise KeyError(key)
 
     def update(self, new_item: Any = None) -> None:
         if isinstance(new_item, Dictionary) or isinstance(new_item, dict):
