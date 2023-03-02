@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Hashable, Any
+from typing import Hashable, Any, Iterable
 
 
 class Node:
@@ -86,14 +86,17 @@ class Dictionary:
             return default
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
+
         try:
             value = self[key]
             del self[key]
             return value
         except KeyError:
-            return default
+            if default:
+                return default
+            raise
 
-    def update(self, other: dict or Dictionary) -> None:
+    def update(self, other: Iterable or Dictionary) -> None:
         for key in other:
             self[key] = other[key]
 
