@@ -1,7 +1,6 @@
-from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Hashable, Iterable
-import math
+from math import floor
 
 
 @dataclass
@@ -45,7 +44,7 @@ class Dictionary:
         return index
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        threshold = math.floor(self.load_factor * self.capacity)
+        threshold = floor(self.load_factor * self.capacity)
         if self.length >= threshold:
             self.resize()
         index = self.calculate_index(key)
@@ -86,8 +85,7 @@ class Dictionary:
         current_element = self.hash_table[index]
         if current_element:
             return current_element.value
-        if default:
-            return default
+        return default
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
         index = self.calculate_index(key)
@@ -101,7 +99,7 @@ class Dictionary:
         self.length -= 1
         return value_to_return
 
-    def update(self, other: Dictionary | Iterable) -> None:
+    def update(self, other: Iterable) -> None:
         if isinstance(other, Dictionary):
             for element in other.hash_table:
                 if element:
