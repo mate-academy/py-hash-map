@@ -54,5 +54,5 @@ class Dictionary:
         return -1
 
     @staticmethod
-    def _hash(key: Any) -> int:
+    def _hash(key: Hashable) -> int:
         return hash(key)
