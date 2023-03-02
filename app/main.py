@@ -1,10 +1,5 @@
-from __future__ import annotations
 from dataclasses import dataclass
 from typing import Hashable, Any
-
-INITIAL_CAPACITY = 8
-RESIZE_THRESHOLD = 2 / 3
-CAPACITY_MULTIPLIER = 2
 
 
 @dataclass
@@ -14,14 +9,14 @@ class Node:
 
 
 class Dictionary:
-    def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
+    def __init__(self, capacity: int = 8) -> None:
         self.capacity = capacity
-        self.hash_table: list[Node | list | None] = [None] * self.capacity
+        self.hash_table: list[Node | None] = [None] * self.capacity
         self.size = 0
 
     @property
     def current_max_size(self) -> float:
-        return RESIZE_THRESHOLD * self.capacity
+        return self.capacity * 2 / 3
 
     def _calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
