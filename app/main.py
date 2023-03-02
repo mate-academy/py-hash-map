@@ -66,13 +66,11 @@ class Dictionary:
             elif element[0] == key:
                 return element[-1]
 
-    def get(self, key: Hashable, default: None = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
-            value = self.__getitem__(key)
+            return self.__getitem__(key)
         except KeyError:
             return default
-        else:
-            return value
 
     def __len__(self) -> int:
         return self.size
