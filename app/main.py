@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Hashable, Any, Iterable
 
 
@@ -96,9 +95,10 @@ class Dictionary:
                 return default
             raise
 
-    def update(self, other: Iterable or Dictionary) -> None:
-        for key in other:
-            self[key] = other[key]
+    def update(self, other: Iterable or dict) -> None:
+        if isinstance(other, Dictionary | dict):
+            for key in other:
+                self.__setitem__(key, other[key])
 
     def __iter__(self) -> None:
         for store in self.table:
