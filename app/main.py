@@ -1,19 +1,21 @@
-from math import ceil
 from typing import Any, Hashable
+
+
+CAPACITY = 8
+LOAD_FACTOR = 2 / 3
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.size = 0
-        self.capacity = 11
+        self.capacity = CAPACITY
         self.hash_table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.size >= ceil(self.capacity * 2 / 3):
+        if self.size >= int(self.capacity * LOAD_FACTOR):
             self._resize()
 
-        hashed_key = hash(key)
-        index = hashed_key % self.capacity
+        hashed_key, index = self.hash_key_and_index(key)
 
         while True:
             if not self.hash_table[index]:
@@ -30,8 +32,7 @@ class Dictionary:
                 index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
-        hashed_key = hash(key)
-        index = hashed_key % self.capacity
+        hashed_key, index = self.hash_key_and_index(key)
 
         while self.hash_table[index]:
             if self.hash_table[index][0] == key:
@@ -42,6 +43,11 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.size
+
+    def hash_key_and_index(self, key: Hashable) -> tuple:
+        hashed_key = hash(key)
+        index = hashed_key % self.capacity
+        return hashed_key, index
 
     def _resize(self) -> None:
         self.capacity *= 2
