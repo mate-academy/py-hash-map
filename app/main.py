@@ -8,17 +8,6 @@ class Dictionary:
         self.dict_threshold = int(self.dict_size * 2 / 3)
         self.hash_list = [[] * self.dict_size]
 
-    def resize(self) -> None:
-        self.dict_size *= 2
-        self.dict_threshold = int(self.dict_size * 2 / 3)
-        self.dict_length = 0
-        old_table = self.hash_list
-        self.hash_list = [[]] * self.dict_size
-
-        for item in old_table:
-            if item:
-                self.__setitem__(item[0], item[2])
-
     def __setitem__(self, key: Any, value: Any) -> None:
 
         if self.dict_length > self.dict_threshold:
@@ -55,3 +44,14 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.dict_length
+
+    def resize(self) -> None:
+        self.dict_size *= 2
+        self.dict_threshold = int(self.dict_size * 2 / 3)
+        self.dict_length = 0
+        old_table = self.hash_list
+        self.hash_list = [[]] * self.dict_size
+
+        for item in old_table:
+            if item:
+                self.__setitem__(item[0], item[2])
