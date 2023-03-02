@@ -10,13 +10,14 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = hash(key) % len(self.hash_table)
+        hash_key = hash(key)
+        index = hash_key % len(self.hash_table)
         while self.hash_table[index] and self.hash_table[index][0] != key:
             index = (index + 1) % len(self.hash_table)
         if self.hash_table[index] and self.hash_table[index][0] == key:
-            self.hash_table[index] = (key, hash(key), value)
+            self.hash_table[index] = (key, hash_key, value)
         else:
-            self.hash_table[index] = (key, hash(key), value)
+            self.hash_table[index] = (key, hash_key, value)
             self.length += 1
             if self.length >= self.threshold:
                 self.resize()
@@ -34,11 +35,11 @@ class Dictionary:
 
     def resize(self) -> None:
         self.capacity *= 2
-        new_table = self.hash_table
+        old_table = self.hash_table
         self.hash_table = [None] * self.capacity
         self.threshold = int(self.capacity * self.load_factor)
         self.length = 0
-        for key_hash_value in new_table:
+        for key_hash_value in old_table:
             if key_hash_value:
                 self[key_hash_value[0]] = key_hash_value[2]
 
