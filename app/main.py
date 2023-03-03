@@ -60,11 +60,11 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
         self.size = 0
 
-    def get(self, key: Hashable, value: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return value
+            return default
 
     def __len__(self) -> int:
         return self.size
