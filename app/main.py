@@ -42,11 +42,12 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> None:
         key_hash = hash(key)
         index = key_hash % self.capacity
-        while self.hash_table[index]:
-            if self.hash_table[index][:2] == [key, key_hash]:
-                return self.hash_table[index][2]
+        while (self.hash_table[index] is not None
+               and self.hash_table[index][0] != key):
             index = (index + 1) % self.capacity
-        raise KeyError
+        if self.hash_table[index] is None:
+            raise KeyError(f"Cannot find value for key: {key}")
+        return self.hash_table[index][2]
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.capacity
