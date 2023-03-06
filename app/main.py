@@ -12,42 +12,50 @@ class Dictionary(object):
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.limit:
             self.resize()
+
         index = self._get_index(key)
-        bucket = self.hash_table[index]
-        if len(bucket) == 0:
-            bucket.append((key, hash(key), value))
-            self.length += 1
+
+        if self.hash_table[index]:
+            self.hash_table[index] = (key, hash(key), value, )
         else:
-            bucket[0] = (key, hash(key), value)
-        return
+            self.hash_table[index] = (key, hash(key), value, )
+            self.length += 1
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self._get_index(key)
+        index = self._get_index(key, False)
+
         if not self.hash_table[index]:
             raise KeyError(key)
-        elif self.hash_table[index][0][0] == key:
-            return self.hash_table[index][0][2]
+        elif self.hash_table[index][0] == key:
+            return self.hash_table[index][2]
 
     def __delitem__(self, key: Hashable) -> None:
-        index = self._get_index(key)
+        index = self._get_index(key, False)
         bucket = self.hash_table[index]
-        if len(bucket) == 0 or bucket[0][0] != key:
+
+        if len(bucket) == 0 or bucket[0] != key:
             raise KeyError(key)
         else:
             self.hash_table[index] = []
             self.length -= 1
-            return
 
     def __len__(self) -> int:
         return self.length
 
-    def _get_index(self, key: Hashable) -> int:
+    def _get_index(self, key: Hashable, available: bool = True) -> int:
         index = hash(key) % self.capacity
+
+        if not self.hash_table[index] and available:
+            return index
+
         while self.hash_table[index]:
-            k, h, v = self.hash_table[index][0]
+            k, h, v = self.hash_table[index]
+
             if k == key and h == hash(key):
                 return index
+
             index = (index + 1) % self.capacity
+
         return index
 
     def resize(self) -> None:
@@ -56,6 +64,7 @@ class Dictionary(object):
         self.limit = self.capacity * self.load_factor
         self.hash_table = [[] for _ in range(self.capacity)]
         self.length = 0
+
         for bucket in old_hash_table:
-            for k, h, v in bucket:
-                self.__setitem__(k, v)
+            if bucket:
+                self.__setitem__(bucket[0], bucket[2])
