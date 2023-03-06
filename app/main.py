@@ -20,7 +20,16 @@ class Dictionary:
     def calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
 
+        while (
+            self.hash_table[index] is not None
+            and self.hash_table[index].key != key
+        ):
+            index = self.cyclic_increment(index)
+
         return index
+
+    def cyclic_increment(self, index: int) -> int:
+        return (index + 1) % self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size > self.load_factor * self.capacity:
@@ -34,11 +43,7 @@ class Dictionary:
             if self.hash_table[index].key == key:
                 self.hash_table[index] = Node(key, value)
             else:
-                while (
-                    self.hash_table[index] is not None
-                    and self.hash_table[index].key != key
-                ):
-                    index = (index + 1) % self.capacity
+                index = self.calculate_index(key)
 
                 if self.hash_table[index] is None:
                     self.hash_table[index] = Node(key, value)
@@ -51,12 +56,6 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.calculate_index(key)
-
-        while (
-            self.hash_table[index] is not None
-            and self.hash_table[index].key != key
-        ):
-            index = (index + 1) % self.capacity
 
         if self.hash_table[index] is None:
             raise KeyError(f"Cannot find value for key: {key}")
