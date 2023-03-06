@@ -95,8 +95,8 @@ class Dictionary:
                 return default
             raise
 
-    def update(self, other: Iterable or dict) -> None:
-        if isinstance(other, Dictionary | dict):
+    def update(self, other: Iterable | dict) -> None:
+        if isinstance(other, Iterable | Dictionary | dict):
             for key in other:
                 self.__setitem__(key, other[key])
 
