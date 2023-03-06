@@ -28,11 +28,10 @@ class Dictionary:
         return index
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.size >= self.load_factor * self.capacity:
+            self.resize()
         index = self.calculate_index(key)
         if self.hash_table[index] is None:
-            if self.size >= self.load_factor * self.capacity:
-                self.resize()
-                return self.__setitem__(key, value)
             self.size += 1
         self.hash_table[index] = Node(key, value)
 
