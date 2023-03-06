@@ -13,25 +13,27 @@ class Dictionary:
         if self.length > self.limit:
             self.resize()
         index = self._get_index(key)
-        for i, (k, h, v) in enumerate(self.hash_table[index]):
-            if k == key and h == hash(key):
-                self.hash_table[index][i] = (key, hash(key), value)
+        bucket = self.hash_table[index]
+        for i in range(len(bucket)):
+            if bucket[i][0] == key:
+                bucket[i] = (key, hash(key), value)
                 return
-        self.hash_table[index].append((key, hash(key), value))
+        bucket.append((key, hash(key), value))
         self.length += 1
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_index(key)
         for k, h, v in self.hash_table[index]:
-            if k == key and h == hash(key):
+            if k == key:
                 return v
         raise KeyError(key)
 
     def __delitem__(self, key: Hashable) -> None:
         index = self._get_index(key)
-        for i, (k, h, v) in enumerate(self.hash_table[index]):
-            if k == key and h == hash(key):
-                del self.hash_table[index][i]
+        bucket = self.hash_table[index]
+        for i in range(len(bucket)):
+            if bucket[i][0] == key:
+                del bucket[i]
                 self.length -= 1
                 return
         raise KeyError(key)
