@@ -96,9 +96,16 @@ class Dictionary:
             raise
 
     def update(self, other: Iterable | dict) -> None:
+
         if isinstance(other, Iterable | Dictionary | dict):
-            for key in other:
-                self.__setitem__(key, other[key])
+            if isinstance(other, Dictionary | dict):
+
+                for key in other:
+                    self.__setitem__(key, other[key])
+
+            else:
+                for key, value in other:
+                    self.__setitem__(key, value)
 
     def __iter__(self) -> None:
         for store in self.table:
