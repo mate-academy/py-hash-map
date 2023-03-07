@@ -25,10 +25,9 @@ class Dictionary:
                 if self.length > self.capacity * self.load_factor:
                     self.resize()
                 break
-            if node.hash_code == hash_code:
-                if node.key == key:
-                    self._table[index] = Node(key, value, hash_code)
-                    break
+            if node.hash_code == hash_code and node.key == key:
+                self._table[index] = Node(key, value, hash_code)
+                break
             index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Any) -> Any:
@@ -38,9 +37,8 @@ class Dictionary:
             node = self._table[index]
             if node is None:
                 raise KeyError(key)
-            if node.hash_code == hash_code:
-                if node.key == key:
-                    return node.value
+            if node.hash_code == hash_code and node.key == key:
+                return node.value
             index = (index + 1) % self.capacity
         raise KeyError(key)
 
@@ -51,11 +49,10 @@ class Dictionary:
             node = self._table[index]
             if node is None:
                 raise KeyError(key)
-            if node.hash_code == hash_code:
-                if node.key == key:
-                    self._table[index] = None
-                    self.length -= 1
-                    break
+            if node.hash_code == hash_code and node.key == key:
+                self._table[index] = None
+                self.length -= 1
+                break
 
     def __iter__(self) -> Any:
         yield from self.nodes
