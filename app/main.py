@@ -4,9 +4,8 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    capacity = 8
-
     def __init__(self) -> None:
+        self.capacity = 8
         self.table = self.table_update()
         self.size = 0
         self.trashold = int(self.capacity * (2 / 3)) + 1
@@ -53,9 +52,14 @@ class Dictionary:
                         break
 
     def __getitem__(self, key: Hashable) -> Any:
-        for i in self.table:
-            if i is not None and i[0] == key:
-                return i[2]
+        hash_key = hash(key)
+        index = hash_key % self.capacity
+        if self.table[index] and self.table[index][0:2] == [key, hash_key]:
+            return self.table[index][2]
+        else:
+            for i in self.table:
+                if i is not None and i[0] == key:
+                    return i[2]
         raise KeyError(key)
 
     def __len__(self) -> int:
