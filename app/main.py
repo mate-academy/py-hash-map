@@ -1,20 +1,20 @@
-from typing import Hashable, Any
-from app.point import Point
 import random
+
+from typing import Any, Hashable
 
 
 class Dictionary:
     capacity = 8
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.table = self.table_update()
         self.size = 0
-        self.trashold = int(self.capacity * (2/3)) + 1
+        self.trashold = int(self.capacity * (2 / 3)) + 1
 
-    def table_update(self):
+    def table_update(self) -> list:
         return [None] * self.capacity
 
-    def increase_capacity(self):
+    def increase_capacity(self) -> None:
         self.capacity *= 2
         temp_table = [None] * self.capacity
         for hash_table_list in self.table:
@@ -26,7 +26,7 @@ class Dictionary:
         self.table = temp_table
         self.trashold = int(self.capacity * (2 / 3)) + 1
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size + 1 == self.trashold:
             self.increase_capacity()
 
@@ -35,6 +35,7 @@ class Dictionary:
 
         if self.table[index] is None:
             self.table[index] = [key, key_hash, value]
+            self.size += 1
         elif self.table[index][0] == key and self.table[index][1] == key_hash:
             self.table[index] = [key, key_hash, value]
         else:
@@ -44,25 +45,18 @@ class Dictionary:
                 while self.table[index] is not None:
                     index = random.randint(0, self.capacity - 1)
                 self.table[index] = [key, key_hash, value]
+                self.size += 1
             else:
                 for index, el in enumerate(self.table):
                     if el is not None and el[0] == key and el[1] == key_hash:
                         self.table[index][2] = value
                         break
-        self.size += 1
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable) -> Any:
         for i in self.table:
             if i is not None and i[0] == key:
                 return i[2]
         raise KeyError(key)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.size
-
-
-if __name__ == '__main__':
-    pass
-
-
-
