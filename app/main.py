@@ -51,9 +51,6 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.capacity
-        while (self.hash_table[index] is not None
-               and self.hash_table[index][0] != key):
-            index = (index + 1) % self.capacity
         if self.hash_table[index] is None:
             raise KeyError(key)
         self.hash_table[index] = None
