@@ -32,8 +32,8 @@ class Dictionary:
 
     def __index__(self, key: Any) -> int:
         index = hash(key) % self.capacity
-        while self.hash_table[index] is not None\
-                and self.hash_table[index][0] != key:
+        while (self.hash_table[index] is not None
+                and self.hash_table[index][0] != key):
             index = (index + 1) % self.capacity
         return index
 
@@ -56,19 +56,19 @@ class Dictionary:
             raise KeyError
         self.hash_table[hash(key) % self.capacity] = None
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Any, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return None
+            return default
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Any, default: Any = None) -> Any:
         try:
             item = self[key]
             del self[key]
             return item
         except KeyError:
-            raise KeyError
+            return default
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
