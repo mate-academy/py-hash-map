@@ -50,17 +50,14 @@ class Dictionary:
 
     def resize(self) -> None:
         self.capacity *= 2
-        temp_table = []
-
-        for element in self.hash_table:
-            if element is not None:
-                temp_table.append(element)
+        temp_table = self.hash_table.copy()
 
         self.hash_table = [None] * self.capacity
 
         for element in temp_table:
-            index = self._calculate_index(element.key)
-            self.hash_table[index] = Node(element.key, element.value)
+            if element is not None:
+                index = self._calculate_index(element.key)
+                self.hash_table[index] = Node(element.key, element.value)
 
         temp_table.clear()
 
