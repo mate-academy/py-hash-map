@@ -6,11 +6,11 @@ from typing import Any, Hashable
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
-        self.table = self.table_update()
+        self.table = self.get_empty_table()
         self.size = 0
         self.trashold = int(self.capacity * (2 / 3)) + 1
 
-    def table_update(self) -> list:
+    def get_empty_table(self) -> list:
         return [None] * self.capacity
 
     def increase_capacity(self) -> None:
