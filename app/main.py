@@ -68,8 +68,11 @@ class Dictionary:
             del self[key]
             return item
         except KeyError:
+            if not default:
+                raise KeyError
             return default
 
-    def update(self, other: dict) -> None:
-        for key, value in other.items():
+    def update(self, other: dict | tuple) -> None:
+        iter_other = other if isinstance(other, tuple) else other.items()
+        for key, value in iter_other:
             self[key] = value
