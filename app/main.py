@@ -8,7 +8,6 @@ class Dictionary(object):
         self.length = 0
         self.limit = capacity * load_factor
         self.hash_table = [[] for _ in range(capacity)]
-        self.collision = []
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.limit:
@@ -26,30 +25,19 @@ class Dictionary(object):
         index = self._get_index(key, False)
 
         if not self.hash_table[index]:
-            # if len(self.collision) > 0:
-            for i in self.collision:
-                if i[0] == index:
-                    if self.hash_table[i[1]][0] == key:
-                        return self.hash_table[i[1]][2]
-                    else:
-                        continue
             raise KeyError(key)
         elif self.hash_table[index][0] == key:
             return self.hash_table[index][2]
 
     def __delitem__(self, key: Hashable) -> None:
         index = self._get_index(key, False)
-        h_index = hash(key) % self.capacity
         bucket = self.hash_table[index]
 
         if len(bucket) == 0 or bucket[0] != key:
             raise KeyError(key)
         else:
-            self.hash_table[index] = []
-            if h_index != index:
-                temp = (h_index, index)
-                if temp in self.collision:
-                    self.collision.remove(temp)
+            self.hash_table.remove(self.hash_table[index])
+            self.hash_table.append([])
             self.length -= 1
 
     def __len__(self) -> int:
@@ -57,7 +45,6 @@ class Dictionary(object):
 
     def _get_index(self, key: Hashable, available: bool = True) -> int:
         index = hash(key) % self.capacity
-        old_index = index
         if not self.hash_table[index] and available:
             return index
 
@@ -68,8 +55,6 @@ class Dictionary(object):
                 return index
 
             index = (index + 1) % self.capacity
-        if old_index != index:
-            self.collision.append((old_index, index))
         return index
 
     def resize(self) -> None:
