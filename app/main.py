@@ -52,9 +52,11 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
     def __delitem__(self, key: Any) -> None:
-        if self.hash_table[hash(key) % self.capacity] is None:
+        index = self.__index__(key)
+        if self.hash_table[index] is None:
             raise KeyError
-        self.hash_table[hash(key) % self.capacity] = None
+        self.hash_table[index] = None
+        self.size -= 1
 
     def get(self, key: Any, default: Any = None) -> Any:
         try:
