@@ -15,19 +15,17 @@ class Dictionary(object):
 
         index = self._get_index(key)
 
-        if self.hash_table[index]:
-            self.hash_table[index] = (key, hash(key), value, )
-        else:
-            self.hash_table[index] = (key, hash(key), value, )
+        if not self.hash_table[index]:
             self.length += 1
+
+        self.hash_table[index] = (key, hash(key), value,)
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_index(key, False)
 
         if not self.hash_table[index]:
             raise KeyError(key)
-        elif self.hash_table[index][0] == key:
-            return self.hash_table[index][2]
+        return self.hash_table[index][2]
 
     def __delitem__(self, key: Hashable) -> None:
         index = self._get_index(key, False)
