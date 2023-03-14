@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
 
-    load_factor = 2 / 3
+    LOAD_FACTOR = 2 / 3
 
     def __init__(self) -> None:
         self.capacity = 8
@@ -20,58 +20,50 @@ class Dictionary:
                 key, value, hash_value = node
                 self.__setitem__(key, value)
 
-    def __setitem__(self, key: int | float | str | bool, value: Any) -> None:
-        if self.length > int(self.capacity * self.load_factor):
-            self.resize()
-
+    def find_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
-        while self.hash_table[index]:
-            if self.hash_table[index][0] == key:
-                break
+
+        while (
+            self.hash_table[index]
+            and self.hash_table[index][0] != key
+        ):
             index = (index + 1) % self.capacity
-        else:
+
+        return index
+
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        index = self.find_index(key)
+
+        if not self.hash_table[index]:
+            if self.length > int(self.capacity * self.LOAD_FACTOR):
+                self.resize()
+                return self.__setitem__(key, value)
+
             self.length += 1
+
         self.hash_table[index] = key, value, hash(key)
 
-    def __getitem__(self, key: int | float | str | bool) -> Any:
-        index = hash(key) % self.capacity
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self.find_index(key)
 
-        while self.hash_table[index]:
-            if (
-                    hash(key) == self.hash_table[index][2]
-                    and key == self.hash_table[index][0]
-            ):
-                return self.hash_table[index][1]
+        if not self.hash_table[index]:
+            raise KeyError(
+                f"There is no key/value pair assigned to key: '{key}'"
+            )
 
-            index = (index + 1) % self.capacity
+        return self.hash_table[index][1]
 
-        raise KeyError(f"There is no key/value pair assigned to key: '{key}'")
-
-    def __delitem__(self, key: int | float | str | bool) -> None:
-        index = hash(key) % self.capacity
+    def __delitem__(self, key: Hashable) -> None:
+        index = self.find_index(key)
 
         if not self.hash_table[index][1]:
             pass
 
-        while self.hash_table[index]:
-            if (
-                    hash(key) == self.hash_table[index][2]
-                    and key == self.hash_table[index][0]
-            ):
-                self.hash_table[index] = (
-                    None,
-                    None,
-                    self.hash_table[index][2]
-                )
-                self.length - 1
+        self.hash_table[index] = (None, None, self.hash_table[index][2])
+        self.length - 1
 
-            index = (index + 1) % self.capacity
-
-    @classmethod
-    def clear(cls) -> None:
-        cls.capacity = 8
-        cls.length = 0
-        cls.hash_table: list = [None] * cls.capacity
+    def clear(self) -> None:
+        self.__init__()
 
     def __len__(self) -> int:
         return self.length
