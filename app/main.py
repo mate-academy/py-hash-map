@@ -85,13 +85,17 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Hashable, default: Any = None) -> Any:
+    _temp = object()
+
+    def pop(self, key: Hashable, default: Any = _temp) -> Any:
         try:
             value = self[key]
             del self[key]
             return value
         except KeyError:
-            return default
+            if default is not self._temp:
+                return default
+            raise
 
     def items(self) -> list[tuple]:
         return [(node.key, node.value,)
