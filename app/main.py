@@ -6,14 +6,14 @@ class Dictionary:
         self.length = length
         self.capacity = capacity
         self.load_factor = int(self.capacity * 2 / 3)
-        self.hash_table: list = [[]] * self.capacity
+        self.hash_table: list = [None] * self.capacity
 
     def resize(self) -> None:
         self.length = 0
         self.capacity *= 2
         self.load_factor = int(self.capacity * (2 / 3))
         prev_hash_table = self.hash_table
-        self.hash_table: list = [[]] * self.capacity
+        self.hash_table: list = [None] * self.capacity
         for item in prev_hash_table:
             if item:
                 key, _, value = item
