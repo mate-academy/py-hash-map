@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Hashable
 
 
 @dataclass
@@ -12,7 +12,7 @@ class Node:
 class Dictionary:
     default_size = 8
     load_factor = 2 / 3
-    resize = 2
+    re_size = 2
 
     def __init__(self) -> None:
         self.hashtable: List[Optional[Node]] = \
@@ -32,16 +32,16 @@ class Dictionary:
             index = (index + 1) % self.capacity
         raise KeyError
 
-    def re_size(self) -> None:
+    def resize(self) -> None:
         previous_nodes = [node for node in self.hashtable if node is not None]
-        self.capacity *= Dictionary.resize
+        self.capacity *= Dictionary.re_size
         self.hashtable = [None for _ in range(self.capacity)]
         self.size = 0
 
         for node in previous_nodes:
             self.__setitem__(node.key, node.value)
 
-    def __setitem__(self, key: Any, value: Any) -> Any:
+    def __setitem__(self, key: Hashable, value: Any) -> Any:
         hash_ = hash(key)
         index = hash_ % self.capacity
 
@@ -57,4 +57,4 @@ class Dictionary:
         self.size += 1
 
         if (self.size + 1) > Dictionary.load_factor * self.capacity:
-            self.re_size()
+            self.resize()
