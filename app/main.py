@@ -12,11 +12,11 @@ class Node:
 class Dictionary:
     default_size = 8
     load_factor = 2 / 3
-    re_size = 2
+    new_size = 2
 
     def __init__(self) -> None:
         self.hashtable: List[Optional[Node]] = \
-            [None for _ in range(Dictionary.default_size)]
+            [None] * Dictionary.default_size
         self.size = 0
         self.capacity = Dictionary.default_size
 
@@ -34,7 +34,7 @@ class Dictionary:
 
     def resize(self) -> None:
         previous_nodes = [node for node in self.hashtable if node is not None]
-        self.capacity *= Dictionary.re_size
+        self.capacity *= Dictionary.new_size
         self.hashtable = [None for _ in range(self.capacity)]
         self.size = 0
 
