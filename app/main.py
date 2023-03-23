@@ -6,16 +6,17 @@ class Dictionary:
         self.length = 0
         self.capacity = 8
         self.threshold = 2 / 3 * self.capacity
-        self.bucket = [[] for _ in range(self.capacity)]
+        self.bucket = [[]] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         empty_slot = hash(key) % self.capacity
         while True:
             if not self.bucket[empty_slot]:
-                self.bucket[empty_slot] = [hash(key), key, value]
+                self.bucket[empty_slot] = [key, hash(key), value]
                 self.length += 1
                 break
-            if self.bucket[empty_slot][0] == key and self.bucket[empty_slot][1] == hash(key):
+            if self.bucket[empty_slot][0] == key and \
+                    self.bucket[empty_slot][1] == hash(key):
                 self.bucket[empty_slot][2] = value
                 break
             empty_slot = (empty_slot + 1) % self.capacity
@@ -25,7 +26,8 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         empty_slot = hash(key) % self.capacity
         while self.bucket[empty_slot]:
-            if key == self.bucket[empty_slot][0] and self.bucket[empty_slot][1] == hash(key):
+            if key == self.bucket[empty_slot][0] and \
+                    self.bucket[empty_slot][1] == hash(key):
                 return self.bucket[empty_slot][2]
             empty_slot = (empty_slot + 1) % self.capacity
         raise KeyError(key)
