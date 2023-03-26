@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -19,13 +19,13 @@ class Dictionary:
                 key, _, value = item
                 self.__setitem__(key, value)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        if self.length > self.load_factor:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.length == self.load_factor:
             self.resize()
         index = hash(key) % self.capacity
         while True:
             if not self.hash_table[index]:
-                self.hash_table[index] = [key, hash(key), value]
+                self.hash_table[index] = [key, value, hash(key)]
                 self.length += 1
                 break
             if self.hash_table[index][0] == key:
@@ -33,11 +33,11 @@ class Dictionary:
                 break
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, item: Any) -> Any:
-        index = hash(item) % self.capacity
+    def __getitem__(self, key: Hashable) -> Any:
+        index = hash(key) % self.capacity
 
         while self.hash_table[index]:
-            if self.hash_table[index][0] == item:
+            if self.hash_table[index][0] == key:
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
         raise KeyError
