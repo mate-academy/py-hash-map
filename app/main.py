@@ -25,7 +25,7 @@ class Dictionary:
         index = hash(key) % self.capacity
         while True:
             if not self.hash_table[index]:
-                self.hash_table[index] = [key,  hash(key), value]
+                self.hash_table[index] = [key, hash(key), value]
                 self.length += 1
                 break
             if self.hash_table[index][0] == key:
