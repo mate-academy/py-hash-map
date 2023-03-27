@@ -11,9 +11,12 @@ class Dictionary:
             self,
             key: Any
     ) -> Any:
-        for cell in self.hash_table:
-            if cell and cell[0] == key:
-                return cell[2]
+        cell = hash(key) % self.capacity
+        for _ in range(self.capacity):
+            if self.hash_table[cell] and self.hash_table[cell][0] == key:
+                return self.hash_table[cell][2]
+            else:
+                cell = (cell + 1) % self.capacity
         raise KeyError
 
     def __setitem__(
@@ -33,9 +36,7 @@ class Dictionary:
                 self.hash_table[cell_number][2] = value
                 break
             else:
-                cell_number += 1
-                if cell_number == self.capacity:
-                    cell_number = 0
+                cell_number = (cell_number + 1) % self.capacity
 
     def resize(self) -> None:
         self.cells_occupied = 0
