@@ -1,3 +1,6 @@
+from typing import Hashable, Any
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.load_factor = 2 / 3
@@ -18,9 +21,7 @@ class Dictionary:
                 hash_, key, value = hash_key_value
                 self.__setitem__(key, value)
 
-    def __setitem__(self, key: any, value: any) -> None:
-        if key is None:
-            raise KeyError()
+    def __setitem__(self, key: Hashable, value: Any) -> None:
 
         if self.length > self.threshold:
             self.resize()
@@ -43,7 +44,7 @@ class Dictionary:
 
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: any) -> any:
+    def __getitem__(self, key: Hashable) -> Any:
         current_hash = hash(key)
         index = current_hash % self.capacity
         while self.hash_list[index]:
