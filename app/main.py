@@ -108,7 +108,7 @@ class Dictionary:
         return [self[key] for key in self.keys]
 
     @property
-    def keys(self) -> Dictionary:
+    def keys(self) -> list:
         return self._keys.copy()
 
     @property
