@@ -27,15 +27,13 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._get_index(key)
-        while True:
-            if self.hash_table[index] is None:
-                self.hash_table[index] = (key, value)
-                self.size += 1
-                break
-            elif self.hash_table[index][0] == key:
-                self.hash_table[index] = (key, value)
-                return
-            index = (index + 1) % self.capacity
+        if self.hash_table[index] is None:
+            self.hash_table[index] = (key, value)
+            self.size += 1
+        elif self.hash_table[index][0] == key:
+            self.hash_table[index] = (key, value)
+        else:
+            raise ValueError("Hash collision occurred")
         if self.size > self.capacity * self.LOAD_FACTOR:
             self._resize()
 
@@ -72,7 +70,7 @@ class Dictionary:
             del self[key]
             return value
         else:
-            return default
+            raise KeyError(key)
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
