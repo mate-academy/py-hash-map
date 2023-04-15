@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import NamedTuple, Any
-from collections import deque
+from typing import NamedTuple, Any, Union
 
 
-IMMUTABLE = [str, int, float, tuple]
+IMMUTABLE = Union[str, int, float, tuple]
 
 
 class Pair(NamedTuple):
@@ -22,7 +21,7 @@ class Dictionary:
         if not (0 < load_factor_threshold <= 1):
             raise ValueError("Load factor must be a number between (0, 1)")
         self._keys = []
-        self._buckets = [deque() for _ in range(capacity)]
+        self._buckets = [[] for _ in range(capacity)]
         self._load_factor_threshold = load_factor_threshold
 
     def __len__(self) -> int:
