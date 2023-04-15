@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Pair:
@@ -14,7 +14,7 @@ class Dictionary:
         self.size = 0
         self.hashtable = [None] * self.capacity
 
-    def __setitem__(self, key: int, value: Any) -> Any:
+    def __setitem__(self, key: Hashable, value: Any) -> Any:
         index = hash(key) % self.capacity
         while self.hashtable[index] is not None:
             if self.hashtable[index].key == key:
@@ -34,7 +34,7 @@ class Dictionary:
         for cell in current_cell:
             self.__setitem__(cell.key, cell.value)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         while self.hashtable[index] is not None:
             if self.hashtable[index].key == key:
