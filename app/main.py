@@ -1,8 +1,5 @@
 from __future__ import annotations
-from typing import NamedTuple, Any, Union
-
-
-IMMUTABLE = Union[str, int, float, tuple]
+from typing import NamedTuple, Any, Hashable
 
 
 class Pair(NamedTuple):
@@ -27,7 +24,7 @@ class Dictionary:
     def __len__(self) -> int:
         return len(self.pairs)
 
-    def __delitem__(self, key: IMMUTABLE) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         bucket = self._buckets[self._index(key)]
         for index, pair in enumerate(bucket):
             if pair.key == key:
@@ -37,7 +34,7 @@ class Dictionary:
         else:
             raise KeyError(key)
 
-    def __setitem__(self, key: IMMUTABLE, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.load_factor >= self._load_factor_threshold:
             self._resize_and_rehash()
 
@@ -50,14 +47,14 @@ class Dictionary:
             bucket.append(Pair(key, value))
             self._keys.append(key)
 
-    def __getitem__(self, key: IMMUTABLE) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         bucket = self._buckets[self._index(key)]
         for _, pair in enumerate(bucket):
             if pair.key == key:
                 return pair.value
         raise KeyError(key)
 
-    def __contains__(self, key: IMMUTABLE) -> bool:
+    def __contains__(self, key: Hashable) -> bool:
         try:
             self[key]
         except KeyError:
@@ -86,13 +83,13 @@ class Dictionary:
             return False
         return set(self.pairs) == set(other.pairs)
 
-    def _index(self, key: IMMUTABLE) -> int:
+    def _index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def copy(self) -> Dictionary:
         return Dictionary.from_dict(dict(self.pairs), self.capacity)
 
-    def get(self, key: IMMUTABLE, default: Any = None) -> Any | None:
+    def get(self, key: Hashable, default: Any = None) -> Any | None:
         try:
             return self[key]
         except KeyError:
