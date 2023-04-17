@@ -16,8 +16,8 @@ class Dictionary:
         idx = hash_item % self.capacity
 
         while self.buckets[idx]:
-            if (self.buckets[idx][1] == key
-                    and self.buckets[idx][0] == hash_item):
+            if (self.buckets[idx][0] == hash_item
+                    and self.buckets[idx][1] == key):
                 return self.buckets[idx][2]
 
             idx = (idx + 1) % self.capacity
