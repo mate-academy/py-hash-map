@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -14,7 +14,7 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: str | int | float | tuple,
+            key: Hashable,
             value: Any
     ) -> None:
         index_ = hash(key) % self.capacity
@@ -28,16 +28,10 @@ class Dictionary:
             self.occupied += 1
             self.hash_table[index_] = [key, value]
         if self.occupied >= self.capacity * self.load_factor:
-            table_copy = self.hash_table
-            self.capacity = self.capacity * 2
-            self.hash_table = [None] * self.capacity
-            self.occupied = 0
-            for node in table_copy:
-                if node:
-                    self[node[0]] = node[1]
+            self.__resize()
 
     def __getitem__(self,
-                    key: str | int | float | tuple
+                    key: Hashable
                     ) -> Any:
         index_ = hash(key) % self.capacity
         while self.hash_table[index_]:
@@ -48,3 +42,12 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.occupied
+
+    def __resize(self) -> None:
+        table_copy = self.hash_table
+        self.capacity = self.capacity * 2
+        self.hash_table = [None] * self.capacity
+        self.occupied = 0
+        for node in table_copy:
+            if node:
+                self[node[0]] = node[1]
