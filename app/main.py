@@ -6,23 +6,19 @@ class Dictionary:
         self.length = 0
         self.hash_table: list = [None] * 8
         self.capacity = 8
-        self.is_resizing = False
 
     def resize(self) -> None:
         self.capacity *= 2
         self.length = 0
         temp_table = [item for item in self.hash_table if item is not None]
         self.hash_table = [None] * self.capacity
-        self.is_resizing = True
         for item in temp_table:
             key, hash_key, value = item
             self.__setitem__(key, value)
-        self.is_resizing = False
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.capacity * 2 / 3:
-            if not self.is_resizing:
-                self.resize()
+            self.resize()
         hash_key = hash(key)
         index = hash_key % self.capacity
         node = [key, hash_key, value]
@@ -42,9 +38,11 @@ class Dictionary:
         while True:
             if self.hash_table[index] is None:
                 raise KeyError
-            if hash_key == self.hash_table[index][1]:
-                if key == self.hash_table[index][0]:
-                    return self.hash_table[index][2]
+            if (
+                hash_key == self.hash_table[index][1]
+                and key == self.hash_table[index][0]
+            ):
+                return self.hash_table[index][2]
             index = (index + 1) % self.capacity
 
     def __len__(self) -> int:
