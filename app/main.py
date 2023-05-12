@@ -26,7 +26,7 @@ class Dictionary:
                 [hash(key), key, value]
             )
 
-    def __setitem__(self, key: Any, value: Any) -> Any:
+    def __setitem__(self, key: Any, value: Any) -> None:
         if self.__len__() + 1 > self.capacity * self.load_factor:
             reinit_args = []
             for i in range(self.capacity):
@@ -56,10 +56,7 @@ class Dictionary:
         hash_node = self.hash_table[current_node]
         while len(hash_node) != 0:
             try:
-                if (
-                    hash_node[0][0] == hash(key)
-                    and hash_node[0][1]
-                ) == key:
+                if hash_node[0][0] == hash(key) and hash_node[0][1] == key:
                     return hash_node[0][2]
             except KeyError as error:
                 raise error
