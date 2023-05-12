@@ -22,9 +22,7 @@ class Dictionary:
                 if current_node + node_step >= self.capacity:
                     node_step -= self.capacity
                 hash_node = self.hash_table[current_node + node_step]
-            hash_node.append(
-                [hash(key), key, value]
-            )
+            hash_node.append([hash(key), key, value])
 
     def __setitem__(self, key: Any, value: Any) -> None:
         if self.__len__() + 1 > self.capacity * self.load_factor:
@@ -46,9 +44,7 @@ class Dictionary:
             if current_node + node_step >= self.capacity:
                 node_step -= self.capacity
             hash_node = self.hash_table[current_node + node_step]
-        hash_node.append(
-            [hash(key), key, value]
-        )
+        hash_node.append([hash(key), key, value])
 
     def __getitem__(self, key: Any) -> Any:
         current_node = hash(key) % self.capacity
