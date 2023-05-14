@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -10,7 +10,7 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.size = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Hashable) -> None:
         if self.size > self.capacity * Dictionary.LOAD_FACTOR:
             self._resize()
 
@@ -26,13 +26,13 @@ class Dictionary:
         self.hash_table[index] = (key, hash_key, value)
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         return self.hash_table[self._get_item_index(key)][2]
 
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         self.hash_table[self._get_item_index(key)] = None
 
     def __iter__(self) -> Dictionary:
@@ -53,13 +53,13 @@ class Dictionary:
         self.capacity = [None] * self.capacity
         self.size = 0
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable) -> Any:
         try:
             return self[key]
         except KeyError:
             return None
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         value = self[key]
         self.__delitem__(key)
         return value
@@ -80,7 +80,7 @@ class Dictionary:
                 new_hash_table[index] = item
         self.hash_table = new_hash_table
 
-    def _get_item_index(self, key: Any) -> None:
+    def _get_item_index(self, key: Hashable) -> None:
         hash_key = hash(key)
         index = hash_key % self.capacity
 
