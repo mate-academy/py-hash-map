@@ -10,7 +10,7 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.size = 0
 
-    def __setitem__(self, key: Hashable, value: Hashable) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size > self.capacity * Dictionary.LOAD_FACTOR:
             self._resize()
 
