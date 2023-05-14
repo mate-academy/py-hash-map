@@ -3,15 +3,14 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    LOAD_FACTOR = 2 / 3
-
     def __init__(self) -> None:
         self.capacity = 8
         self.hash_table = [None] * self.capacity
         self.size = 0
+        self.load_factor = 2 / 3
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.size > self.capacity * Dictionary.LOAD_FACTOR:
+        if self.size > self.capacity * self.load_factor:
             self._resize()
 
         hash_key = hash(key)
@@ -80,7 +79,7 @@ class Dictionary:
                 new_hash_table[index] = item
         self.hash_table = new_hash_table
 
-    def _get_item_index(self, key: Hashable) -> None:
+    def _get_item_index(self, key: Hashable) -> int:
         hash_key = hash(key)
         index = hash_key % self.capacity
 
