@@ -1,5 +1,5 @@
 from typing import Any
-
+from app.main import Dictionary
 
 class Point:
     def __init__(self, x: float, y: float) -> None:
@@ -17,7 +17,7 @@ class Point:
         # which is NOT a best practice, but you will be able to predict
         # a hash value by coordinates of the point and its index
         # in the hashtable as well
-        return hash((self.x, self.y))
+        return hash((self.x + self.y))
 
     @property
     def x(self) -> float:
