@@ -30,9 +30,9 @@ class Dictionary:
         bucket_index = self._get_bucket_index(key)
         bucket = self.buckets[bucket_index]
 
-        for k, v in bucket:
-            if k == key:
-                return v
+        for find_key, value in bucket:
+            if find_key == key:
+                return value
 
         raise KeyError(key)
 
