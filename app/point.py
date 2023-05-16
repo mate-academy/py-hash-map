@@ -1,6 +1,7 @@
 from typing import Any
 from app.main import Dictionary
 
+
 class Point:
     def __init__(self, x: float, y: float) -> None:
         self._x = x
@@ -26,3 +27,12 @@ class Point:
     @property
     def y(self) -> float:
         return self._y
+
+
+d = Dictionary()
+d[Point(1, 2)] = 9
+d[Point(5, 2)] = 13
+print(d[Point(5, 2)])
+print(hash(d[Point(1, 2)]))
+print(hash(Point(4, 2)))
+print(len(d))
