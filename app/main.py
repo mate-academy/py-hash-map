@@ -17,26 +17,28 @@ class Dictionary:
         self.initial_capacity *= 2
         self.hash_table = [None] * self.initial_capacity
         self.size = 0
-        [self.__setitem__(node[0], node[-1]) for node in nodes]
+        [self.__setitem__(node[0], node[1]) for node in nodes]
 
     def __setitem__(self, key: Hashable, value: Hashable) -> None:
-        index = hash(key) % self.initial_capacity
+        hash_value = hash(key)
+        index = hash_value % self.initial_capacity
+        if self.size > int(self.initial_capacity * self.load_factor):
+            self.resize()
         while self.hash_table[index] is not None:
             if self.hash_table[index][0] == key:
-                self.hash_table[index][-1] = value
+                self.hash_table[index][1] = value
                 break
             index = (index + 1) % self.initial_capacity
         else:
-            self.hash_table[index] = [key, value]
+            self.hash_table[index] = [key, value, hash_value]
             self.size += 1
-            if self.size > int(self.initial_capacity * self.load_factor):
-                self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self.initial_capacity
+        hash_value = hash(key)
+        index = hash_value % self.initial_capacity
         while self.hash_table[index] is not None:
-            if self.hash_table[index][0] == key:
-                return self.hash_table[index][-1]
+            if self.hash_table[index][2] == hash_value and self.hash_table[index][0] == key:
+                return self.hash_table[index][1]
             index = (index + 1) % self.initial_capacity
         raise KeyError
 
