@@ -1,10 +1,10 @@
-from typing import Any, Iterator
+from typing import Any, Iterator, Hashable
 from dataclasses import dataclass
 
 
 @dataclass
 class Node:
-    key: Any
+    key: Hashable
     value: Any
     hash_value: int | float
     next_node: "Node" = None
@@ -17,7 +17,7 @@ class Dictionary:
         self._capacity = 8
         self._hash_table = [None] * self._capacity
 
-    def _get_index_and_hash(self, key: Any) -> tuple:
+    def _get_index_and_hash(self, key: Hashable) -> tuple:
         keys_hash = hash(key)
         index = keys_hash % self._capacity
         return index, keys_hash
@@ -33,7 +33,7 @@ class Dictionary:
                 self[node.key] = node.value
                 node = node.next_node
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         index, _ = self._get_index_and_hash(key)
         current_node = self._hash_table[index]
         while current_node is not None:
@@ -42,7 +42,7 @@ class Dictionary:
             current_node = current_node.next_node
         raise KeyError(f"There are no key {key}")
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index, keys_hash = self._get_index_and_hash(key)
 
         if self._hash_table[index] is None:
@@ -69,7 +69,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self._length
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index, _ = self._get_index_and_hash(key)
 
         node = self._hash_table[index]
@@ -104,13 +104,13 @@ class Dictionary:
         self._capacity = 8
         self._hash_table = [None] * self._capacity
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return None
+            return default
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         index, _ = self._get_index_and_hash(key)
 
         node = self._hash_table[index]
