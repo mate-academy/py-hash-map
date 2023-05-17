@@ -9,7 +9,11 @@ class Dictionary:
         self.size = 0
 
     def resize(self) -> None:
-        nodes = [key_and_value for key_and_value in self.hash_table if key_and_value is not None]
+        nodes = [
+            key_and_value
+            for key_and_value in self.hash_table
+            if key_and_value is not None
+        ]
         self.initial_capacity *= 2
         self.hash_table = [None] * self.initial_capacity
         self.size = 0
@@ -44,7 +48,7 @@ class Dictionary:
         self.hash_table = [None] * self.initial_capacity
         self.size = 0
 
-    def __delitem__(self, key: Hashable):
+    def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.initial_capacity
         while self.hash_table[index] is not None:
             if self.hash_table[index][0] == key:
