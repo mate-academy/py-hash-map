@@ -36,7 +36,11 @@ class Dictionary:
         hash_value = hash(key)
         index = hash_value % self.initial_capacity
         while len(self.hash_table[index]) == 3:
-            if self.hash_table[index][0] == key:
+            if (
+                    hash_value == self.hash_table[index][-1]
+            ) and (
+                    self.hash_table[index][0] == key
+            ):
                 return self.hash_table[index][1]
             index = (index + 1) % self.initial_capacity
         raise KeyError
