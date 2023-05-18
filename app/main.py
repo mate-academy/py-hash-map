@@ -6,7 +6,7 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.capacity = 8
         self.size = 0
-        self.hash_table = [None] * 8
+        self.hash_table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_key = hash(key)
