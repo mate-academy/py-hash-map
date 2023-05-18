@@ -34,15 +34,18 @@ class Dictionary:
                 node = node.next_node
 
     def __getitem__(self, key: Hashable) -> None:
-        index, _ = self._get_index_and_hash(key)
-        current_node = self._hash_table[index]
-        while current_node is not None:
-            if current_node.key == key:
-                return current_node.value
-            current_node = current_node.next_node
+        index, keys_hash = self._get_index_and_hash(key)
+        current = self._hash_table[index]
+        while current is not None:
+            if current.hash_value == keys_hash and current.key == key:
+                return current.value
+            current = current.next_node
         raise KeyError(f"There are no key {key}")
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self._length >= self._capacity * 2 / 3:
+            self._resize()
+
         index, keys_hash = self._get_index_and_hash(key)
 
         if self._hash_table[index] is None:
@@ -62,9 +65,6 @@ class Dictionary:
 
         current.next_node = Node(key, value, keys_hash)
         self._length += 1
-
-        if self._length >= self._capacity * 2 / 3:
-            self._resize()
 
     def __len__(self) -> int:
         return self._length
