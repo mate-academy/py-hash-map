@@ -5,26 +5,25 @@ class Dictionary:
     def __init__(self) -> None:
         self.initial_capacity = 8
         self.load_factor = 0.6
-        self.hash_table = [None] * self.initial_capacity
+        self.hash_table = [[] for _ in range(self.initial_capacity)]
         self.size = 0
 
     def resize(self) -> None:
-        nodes = [
-            key_and_value
-            for key_and_value in self.hash_table
-            if key_and_value is not None
-        ]
+        old_table = self.hash_table
         self.initial_capacity *= 2
-        self.hash_table = [None] * self.initial_capacity
         self.size = 0
-        [self.__setitem__(node[0], node[1]) for node in nodes]
+        self.hash_table = [[] for _ in range(self.initial_capacity)]
+        for table in old_table:
+            if table:
+                key, value, hash_value = table
+                self.__setitem__(key, value)
 
     def __setitem__(self, key: Hashable, value: Hashable) -> None:
-        hash_value = hash(key)
-        index = hash_value % self.initial_capacity
         if self.size > int(self.initial_capacity * self.load_factor):
             self.resize()
-        while self.hash_table[index] is not None:
+        hash_value = hash(key)
+        index = hash_value % self.initial_capacity
+        while len(self.hash_table[index]) == 3:
             if self.hash_table[index][0] == key:
                 self.hash_table[index][1] = value
                 break
@@ -36,12 +35,8 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         hash_value = hash(key)
         index = hash_value % self.initial_capacity
-        while self.hash_table[index] is not None:
-            if (
-                    self.hash_table[index][2] == hash_value
-            ) and (
-                    self.hash_table[index][0] == key
-            ):
+        while len(self.hash_table[index]) == 3:
+            if self.hash_table[index][0] == key:
                 return self.hash_table[index][1]
             index = (index + 1) % self.initial_capacity
         raise KeyError
@@ -51,13 +46,13 @@ class Dictionary:
 
     def clear(self) -> None:
         self.initial_capacity = 8
-        self.hash_table = [None] * self.initial_capacity
+        self.hash_table = [[] for _ in range(self.initial_capacity)]
         self.size = 0
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.initial_capacity
-        while self.hash_table[index] is not None:
+        while len(self.hash_table[index]) == 3:
             if self.hash_table[index][0] == key:
-                self.hash_table[index] = None
+                self.hash_table[index] = []
                 self.size -= 1
             break
