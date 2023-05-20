@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -14,7 +14,7 @@ class Dictionary:
         for key in busy_bucket:
             self.__setitem__(key[0], key[1])
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         keys = [key[0] for key in self.buckets if key]
         if key in keys:
             old_value = (key, self[key])
@@ -32,11 +32,10 @@ class Dictionary:
         if self.__len__() > self.bucket_size * 2 / 3:
             self.resize_bucket()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         for bucket in self.buckets:
-            if bucket:
-                if bucket[0] == key:
-                    return bucket[1]
+            if bucket and bucket[0] == key:
+                return bucket[1]
         raise KeyError
 
     def __len__(self) -> int:
