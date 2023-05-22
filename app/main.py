@@ -15,22 +15,7 @@ class Dictionary:
         self.hash_table = list([None] * len(self.hash_table) * 2)
         for element in cache_table:
             if element is not None:
-                index_hash_table = hash(element[0]) % len(self.hash_table)
-                if self.hash_table[index_hash_table] is None:
-                    self.hash_table[index_hash_table] = element
-                    self.length += 1
-                else:
-                    for i in range(1, len(self.hash_table)):
-                        if self.hash_table[
-                            (index_hash_table + i)
-                            % len(self.hash_table)
-                        ] is None:
-                            self.hash_table[
-                                (index_hash_table + i)
-                                % len(self.hash_table)
-                            ] = element
-                            self.length += 1
-                            break
+                self.__setitem__(element[0], element[1])
 
     def __setitem__(self, key: Any, value: Any) -> None:
         index_hash_table = hash(key) % len(self.hash_table)
@@ -40,7 +25,9 @@ class Dictionary:
         elif self.hash_table[index_hash_table][0] == key:
             self.hash_table[index_hash_table] = (key, value, hash(key))
         else:
-            for i in range(1, len(self.hash_table)):
+            i = 0
+            while True:
+                i += 1
                 if self.hash_table[
                     (index_hash_table + i)
                     % len(self.hash_table)
