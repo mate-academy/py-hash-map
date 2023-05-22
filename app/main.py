@@ -19,63 +19,56 @@ class Dictionary:
     def _get_key_position(self, key: Any) -> int:
         key_hash = hash(key) % self.capacity
         position = key_hash
-        while (
-                (self.container[position] is not None) and
-                (self.container[position][1] > position)
-        ):
+        while \
+                (self.container[position] is not None) and \
+                (self.container[position][1] > position):
             position += 1
-        while (
-                (position < self.capacity) and
-                (self.container[position] is not None) and
-                (self.container[position][1] < key_hash)
-        ):
+        while \
+                (position < self.capacity) and \
+                (self.container[position] is not None) and \
+                (self.container[position][1] < key_hash):
             position += 1
         if position >= self.capacity:
             position = 0
-            while (
-                    (self.container[position] is not None) and
-                    (self.container[position][1] < key_hash)
-            ):
+            while \
+                    (self.container[position] is not None) and \
+                    (self.container[position][1] < key_hash):
                 position += 1
-        while (
-                (position < self.capacity) and
-                (self.container[position] is not None) and
-                (self.container[position][1] == key_hash) and
-                (self.container[position][0] != key)
-        ):
+        while \
+                (position < self.capacity) and \
+                (self.container[position] is not None) and \
+                (self.container[position][1] == key_hash) and \
+                (self.container[position][0] != key):
             position += 1
         if position >= self.capacity:
             position = 0
-            while (
-                    (self.container[position] is not None) and
-                    (self.container[position][1] == key_hash) and
-                    (self.container[position][0] != key)
-            ):
+            while \
+                    (self.container[position] is not None) and \
+                    (self.container[position][1] == key_hash) and \
+                    (self.container[position][0] != key):
                 position += 1
         return position
 
     def _move_up(self, position: int) -> None:
         move_border = position + 1
-        while (
-                (move_border < self.capacity) and
-                (self.container[move_border] is not None) and
-                (self.container[move_border][1] < move_border)
-        ):
+        while \
+                (move_border < self.capacity) and \
+                (self.container[move_border] is not None) and \
+                (self.container[move_border][1] < move_border):
             move_border += 1
-        self.container[position:move_border - 1] = self.container[position + 1:move_border]
-        if (
-                (move_border < self.capacity) or
-                (self.container[0] is None) or
-                (self.container[0][1] == 0)
-        ):
+        self.container[position:move_border - 1] = \
+            self.container[position + 1:move_border]
+        if \
+                (move_border < self.capacity) or \
+                (self.container[0] is None) or \
+                (self.container[0][1] == 0):
             self.container[move_border - 1] = None
         else:
             self.container[-1] = self.container[0]
             move_border = 1
-            while (
-                    (self.container[move_border] is not None) and
-                    (self.container[move_border][1] != move_border)
-            ):
+            while \
+                    (self.container[move_border] is not None) and \
+                    (self.container[move_border][1] != move_border):
                 move_border += 1
             self.container[:move_border - 1] = self.container[1:move_border]
             self.container[move_border - 1] = None
@@ -83,16 +76,17 @@ class Dictionary:
 
     def _move_down(self, position: int) -> None:
         move_border = position + 1
-        while (
-                (move_border < self.capacity) and
-                (self.container[move_border] is not None)
-        ):
+        while \
+                (move_border < self.capacity) and \
+                (self.container[move_border] is not None):
             move_border += 1
         if move_border < self.capacity:
-            self.container[position + 1:move_border + 1] = self.container[position:move_border]
+            self.container[position + 1:move_border + 1] = \
+                self.container[position:move_border]
         else:
             last = self.container[-1]
-            self.container[position + 1:move_border + 1] = self.container[position:move_border]
+            self.container[position + 1:move_border + 1] = \
+                self.container[position:move_border]
             move_border = 0
             while self.container[move_border] is not None:
                 move_border += 1
@@ -105,21 +99,21 @@ class Dictionary:
         key_hash = hash(key) % self.capacity
         new_item = (key, key_hash, value)
         position = self._get_key_position(key)
-        if (
-                (self.container[position] is not None) and
-                (self.container[position][0] != key)
-        ):
+        if \
+                (self.container[position] is not None) and \
+                (self.container[position][0] != key):
             self._move_down(position)
+        elif self.container[position] is None:
+            self.len += 1
         self.container[position] = new_item
         if self.len > self.capacity * 2 / 3:
             self.resize(self.capacity * 2)
 
     def __getitem__(self, key: Any) -> Any:
         position = self._get_key_position(key)
-        if (
-                (self.container[position] is not None) and
-                (self.container[position][0] == key)
-        ):
+        if \
+                (self.container[position] is not None) and \
+                (self.container[position][0] == key):
             return self.container[position][2]
         else:
             raise KeyError(key)
@@ -133,30 +127,27 @@ class Dictionary:
 
     def __delitem__(self, key: Any) -> None:
         position = self._get_key_position(key)
-        if (
-                (self.container[position] is not None) and
-                (self.container[position][0] == key)
-        ):
+        if \
+                (self.container[position] is not None) and \
+                (self.container[position][0] == key):
             self._move_up(position)
         else:
             raise KeyError(key)
 
     def get(self, key: Any, default: Any = None) -> Any:
         position = self._get_key_position(key)
-        if (
-                (self.container[position] is not None) and
-                (self.container[position][0] == key)
-        ):
+        if \
+                (self.container[position] is not None) and \
+                (self.container[position][0] == key):
             return self.container[position][2]
         else:
             return default
 
     def pop(self, key: Any) -> Any:
         position = self._get_key_position(key)
-        if (
-                (self.container[position] is not None) and
-                (self.container[position][0] == key)
-        ):
+        if \
+                (self.container[position] is not None) and \
+                (self.container[position][0] == key):
             value = self.container[position][2]
             self._move_up(position)
             return value
