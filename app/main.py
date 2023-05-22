@@ -9,7 +9,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def table_resize(self):
+    def table_resize(self) -> None:
         cache_table = self.hash_table
         self.length = 0
         self.hash_table = list([None] * len(self.hash_table) * 2)
@@ -28,7 +28,7 @@ class Dictionary:
                             self.hash_table[
                                 (index_hash_table + i)
                                 % len(self.hash_table)
-                                ] = element
+                            ] = element
                             self.length += 1
                             break
 
