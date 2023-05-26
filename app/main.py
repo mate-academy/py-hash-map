@@ -4,6 +4,9 @@ from typing import Union
 class Dictionary:
 
     def __init__(self, keys: list[Union] = None, values: list[Union] = None) -> None:
+        if keys is None and values is None:
+            keys = []
+            values = []
         self.length: int = 0
         self.hash_table: list = [None] * 8
         self.keys = keys
@@ -54,4 +57,12 @@ class Dictionary:
         return self.length
 
 
+items = [(1, "one"), (2, "two"), (3, "tree"), (4, "four")]
+
+dictionary = Dictionary()
+for key, value in items:
+    dictionary[key] = value
+
+for key, value in items:
+    print(key, dictionary[key])
 
