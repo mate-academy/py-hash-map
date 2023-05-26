@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Union, Any, Hashable
+from typing import List, Any, Hashable
 import traceback
 
 
@@ -91,13 +91,13 @@ class Dictionary:
     def get(
             self,
             key: Hashable
-    ) -> Union[None, any]:
+    ) -> Any:
         return self.__getitem__(key)
 
     def pop(
             self,
             key: Hashable
-    ) -> Union[None, Any]:
+    ) -> Any:
         try:
             self.length -= 1
             return [self.get(key), self.__delitem__(key)][0]
