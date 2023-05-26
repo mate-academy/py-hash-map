@@ -72,7 +72,7 @@ class Dictionary:
                 self.hash_table[index] = ["dummy", 0, "fake_hash"]
                 self.length -= 1
                 return
-            index = (hashed_key + 1) % self.capacity
+            index = (index + 1) % self.capacity
         raise KeyError(f"Incorrect key {key}")
 
     def resize(self) -> None:
