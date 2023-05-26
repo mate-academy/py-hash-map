@@ -3,99 +3,55 @@ from typing import Union
 
 class Dictionary:
 
-    def __init__(self) -> None:
-        self.hash_table: list = [
-            [None, None],
-            [None, None],
-            [None, None],
-            [None, None],
-            [None, None],
-            [None, None],
-            [None, None],
-            [None, None]
-        ]
+    def __init__(self, keys: list[Union] = None, values: list[Union] = None) -> None:
+        self.length: int = 0
+        self.hash_table: list = [None] * 8
+        self.keys = keys
+        self.values = values
+        self.need_key: Union = None
+        for i in range(len(keys)):
+            self.__setitem__(keys[i], values[i])
 
     def __setitem__(self, key: Union, value: Union) -> None:
-        index_hash = self.hashed(key)
-        if self.hash_table[index_hash][0] is key:
-            self.hash_table[index_hash][1] = value
-            return
         if (
-            self.hash_table.count([None, None])
-            == int(len(self.hash_table) / 3 + 1)
+            self.hash_table.count(None)
+                == (
+                    len(self.hash_table)
+                    - int(len(self.hash_table) * 2 / 3)
+                )
         ):
             copy_old_table = self.hash_table.copy()
-            self.hash_table = [[None, None]] * len(self.hash_table) * 2
-            for cell in range(len(copy_old_table)):
-                if copy_old_table[cell] != [None, None]:
-                    new_cell = self.hashed(self.hash_table[cell][0])
-                    self.adding_new_value(
-                        new_cell,
-                        copy_old_table[cell][0],
-                        copy_old_table[cell][1]
-                    )
-        if self.hash_table[index_hash][0] is None:
-            self.hash_table[index_hash][0] = key
-            self.hash_table[index_hash][1] = value
-            return
-        self.adding_new_value(10, key, value)
-
-    def adding_new_value(self, index_hash_table, key, value) -> None:
-        for _ in range(len(self.hash_table)):
-            if not self.hash_table[index_hash_table][0]:
-                self.hash_table[index_hash_table][0] = key
-                self.hash_table[index_hash_table][1] = value
-                return
-            if index_hash_table == len(self.hash_table) - 1:
-                index_hash_table = 0
-            else:
-                index_hash_table += 1
+            self.hash_table = [None] * len(self.hash_table) * 2
+            for cell in copy_old_table:
+                if cell:
+                    self.need_key = cell[0]
+                    self.hash_table[hash(self)] = cell
+        self.need_key = key
+        self.hash_table[hash(self)] = [key, value]
+        self.length = len(self.hash_table) - self.hash_table.count(None)
 
     def __getitem__(self, key: Union) -> Union:
-        if (
-            self.hash_table[self.hashed(key)][1] is None
-            and key is None
-        ):
+        self.need_key = key
+        if not self.hash_table[hash(self)]:
             raise KeyError
-        index_hash_table = self.hashed(key)
-        for _ in range(len(self.hash_table)):
-            if self.hash_table[index_hash_table][0] is key:
-                return self.hash_table[index_hash_table][1]
-            if index_hash_table == len(self.hash_table) - 1:
-                index_hash_table = 0
+        return self.hash_table[hash(self)][1]
+
+    def __hash__(self) -> int:
+        first_hash = hash(self.need_key) % len(self.hash_table)
+        for _ in self.hash_table:
+            if (
+                    not self.hash_table[first_hash]
+                    or self.hash_table[first_hash][0] == self.need_key
+            ):
+                return first_hash
+            if first_hash == len(self.hash_table) - 1:
+                first_hash = 0
             else:
-                index_hash_table += 1
-
-    def __delitem__(self, key: Union, value: Union) -> None:
-        if key is None:
-            raise KeyError
-        self.hash_table[self.hashed(key)] = [None, None]
-
-    def hashed(self, key: Union) -> int:
-        return hash(key) % len(self.hash_table)
+                first_hash += 1
 
     def __len__(self) -> Union:
-        return len(self.hash_table)
+
+        return self.length
 
 
-if __name__ == "__main__":
-    new_dict = Dictionary()
-    new_dict.__setitem__(key="kukaracha", value=123)
-    print(new_dict.hash_table)
-    new_dict.__setitem__(key="kuka", value=10003)
-    print(new_dict.hash_table)
-    new_dict.__setitem__(key="dulda", value="arz")
-    print(new_dict.hash_table)
-    new_dict.__setitem__(key=True, value=4)
-    print(new_dict.hash_table)
-    new_dict.__setitem__(key=43, value="arbuz")
-    print(new_dict.hash_table)
-    new_dict.__setitem__(key=113, value="maza")
-    print(new_dict.hash_table)
-    print(new_dict.__getitem__("kuka"))
-    print(new_dict.__getitem__("dulda"))
-    print(new_dict.__getitem__(True))
-    print(new_dict.__getitem__(43))
-    print(new_dict.__getitem__(113))
-    print(new_dict.__getitem__("kukaracha"))
-    print(new_dict.__len__())
+
