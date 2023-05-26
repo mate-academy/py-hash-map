@@ -1,8 +1,6 @@
 from __future__ import annotations
-from typing import List, Union, Any
+from typing import List, Union, Any, Hashable
 import traceback
-
-from app.point import Point
 
 
 class Dictionary:
@@ -22,61 +20,59 @@ class Dictionary:
         self.current_element = 0
         return self
 
-    def __next__(self) -> Union[int, float, str, bool, tuple, Point]:
+    def __next__(self) -> Hashable:
         while self.hash_table[self.current_element] is None:
             self.current_element += 1
             if self.current_element > self.capacity - 1:
                 raise StopIteration
-        result = self.hash_table[self.current_element][0]
+        result = self.hash_table[self.current_element]
         self.current_element += 1
         return result
 
     def __setitem__(
             self,
-            key: Union[int, float, str, bool, tuple, Point],
+            key: Hashable,
             value: Any
     ) -> None:
+        if self.length >= round(self.capacity * self.load_factor):
+            self.resize()
         hashed_key = hash(key)
         index = hashed_key % self.capacity
         while self.hash_table[index] is not None:
-            current_key, current_value = self.hash_table[index]
-            if current_key == key:
-                self.hash_table[index] = [current_key, value]
+            current_key, current_value, hash_of_key = self.hash_table[index]
+            if current_key == key and hash_of_key == hashed_key:
+                self.hash_table[index] = [current_key, value, hashed_key]
                 return
-            hashed_key += 1
-            index = hashed_key % self.capacity
-        self.hash_table[index] = [key, value]
+            index = (index + 1) % self.capacity
+        self.hash_table[index] = [key, value, hashed_key]
         self.length += 1
-        if self.length >= round(self.capacity * self.load_factor):
-            self.resize()
 
     def __getitem__(
             self,
-            item: Union[int, float, str, bool, tuple, Point]
-    ) -> any:
+            item: Hashable
+    ) -> Any:
         hashed_item = hash(item)
         index = hashed_item % self.capacity
         while self.hash_table[index] is not None:
-            key, value = self.hash_table[index]
-            if key == item:
+            key, value, hash_of_key = self.hash_table[index]
+            if key == item and hash_of_key == hashed_item:
                 return value
             index = (index + 1) % self.capacity
         raise KeyError(f"Incorrect key {item}")
 
     def __delitem__(
             self,
-            key: Union[int, float, str, bool, tuple, Point]
+            key: Hashable
     ) -> None:
         hashed_key = hash(key)
         index = hashed_key % self.capacity
         while self.hash_table[index] is not None:
-            current_key, current_value = self.hash_table[index]
-            if current_key == key:
-                self.hash_table[index] = ["dummy", 0]
+            current_key, current_value, hash_of_key = self.hash_table[index]
+            if current_key == key and hash_of_key == hashed_key:
+                self.hash_table[index] = ["dummy", 0, "fake_hash"]
                 self.length -= 1
                 return
-            hashed_key += 1
-            index = hashed_key % self.capacity
+            index = (hashed_key + 1) % self.capacity
         raise KeyError(f"Incorrect key {key}")
 
     def resize(self) -> None:
@@ -86,7 +82,7 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         for item in temporary_list:
             if item is not None:
-                key, value = item
+                key, value, hash_of_key = item
                 self.__setitem__(key, value)
 
     def clear(self) -> None:
@@ -94,14 +90,14 @@ class Dictionary:
 
     def get(
             self,
-            key: Union[int, float, str, bool, tuple, Point]
+            key: Hashable
     ) -> Union[None, any]:
         return self.__getitem__(key)
 
     def pop(
             self,
-            key: Union[int, float, str, bool, tuple, Point]
-    ) -> Union[None, any]:
+            key: Hashable
+    ) -> Union[None, Any]:
         try:
             self.length -= 1
             return [self.get(key), self.__delitem__(key)][0]
@@ -111,5 +107,5 @@ class Dictionary:
     def update(self, dictionary: Dictionary) -> None:
         for item in dictionary.hash_table:
             if item is not None:
-                key, value = item
+                key, value, hash_of_key = item
                 self.__setitem__(key, value)
