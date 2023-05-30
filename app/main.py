@@ -29,7 +29,7 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         key_hash = hash(key)
         item_index = key_hash % self.base_length
-        for i in range(self.base_length):
+        for _ in range(self.base_length):
             if self.hash_table[item_index] is not None:
                 if (self.hash_table[item_index][0] == key
                         and self.hash_table[item_index][1] == key_hash):
