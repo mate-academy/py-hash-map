@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,7 +9,7 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
         self.storage = 0
 
-    def __getitem__(self, key: (int, float, str, tuple, bool)) -> list:
+    def __getitem__(self, key: Hashable) -> list:
         key_hash = hash(key)
         index = key_hash % self.capacity
         while True:
@@ -25,7 +25,7 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: (int, float, str, tuple, bool),
+            key: Hashable,
             value: Any
     ) -> None:
         if self.storage == self.threshold:
