@@ -6,7 +6,7 @@ class Dictionary:
         self.capacity = 8
         self.threshold = int(self.capacity * 2 / 3)
         self.hash_table = [[] for _ in range(self.capacity)]
-        self.storage = 2
+        self.storage = 0
 
     def __getitem__(self, key: (int, float, str, tuple, bool)) -> list:
         key_hash = hash(key)
