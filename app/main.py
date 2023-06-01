@@ -50,4 +50,3 @@ class Dictionary:
         for item in hash_table_:
             if item:
                 self.__setitem__(item[1], item[2])
-
