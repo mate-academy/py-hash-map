@@ -37,7 +37,7 @@ class Dictionary:
         self.hash_table[self.__hash__()] = [key_dict, value_dict]
         self.length = len(self.hash_table) - self.hash_table.count(None)
 
-    def __getitem__(self, key_dict: Hashable) -> Union:
+    def __getitem__(self, key_dict: Hashable) -> Any:
         self.need_key = key_dict
         if not self.hash_table[self.__hash__()]:
             raise KeyError
@@ -56,15 +56,15 @@ class Dictionary:
             else:
                 first_hash = (first_hash + 1) % len(self.hash_table)
 
-    def __len__(self) -> Union:
+    def __len__(self) -> int:
         return self.length
 
-    def get(self, key_dict: Hashable) -> Union:
+    def get(self, key_dict: Hashable) -> Any:
         self.need_key = key_dict
         if key_dict in self.hash_table[self.__hash__()]:
             return self.hash_table[self.__hash__()][1]
 
-    def pop(self, key_dict: Hashable) -> Union:
+    def pop(self, key_dict: Hashable) -> Any:
         value_uni = self[key_dict]
         self.hash_table[self.__hash__()] = None
         return value_uni
