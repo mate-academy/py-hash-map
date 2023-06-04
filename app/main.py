@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Hashable, Union
 
 
 class Dictionary:
@@ -19,7 +19,7 @@ class Dictionary:
         for i in range(len(keys)):
             self.__setitem__(keys[i], values[i])
 
-    def __setitem__(self, key_dict: Union, value_dict: Union) -> None:
+    def __setitem__(self, key_dict: Hashable, value_dict: Any) -> None:
         if (
             self.hash_table.count(None)
             == (
@@ -47,8 +47,8 @@ class Dictionary:
         first_hash = hash(self.need_key) % len(self.hash_table)
         while True:
             if (
-                    not self.hash_table[first_hash]
-                    or self.hash_table[first_hash][0] == self.need_key
+                not self.hash_table[first_hash]
+                or self.hash_table[first_hash][0] == self.need_key
             ):
                 return first_hash
             if first_hash == len(self.hash_table) - 1:
@@ -86,11 +86,12 @@ class Dictionary:
         return result
 
 
-items = [(1, "one"), (2, "two"), (3, "tree"), (4, "four")]
+if __name__ == "__main__":
+    items = [(1, "one"), (2, "two"), (3, "tree"), (4, "four")]
 
-dictionary = Dictionary()
-for key, value in items:
-    dictionary[key] = value
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
 
-for key, value in items:
-    print(key, dictionary[key])
+    for key, value in items:
+        print(key, dictionary[key])
