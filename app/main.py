@@ -35,8 +35,9 @@ class Dictionary:
         if not self.buckets[index]:
             raise KeyError
         for element in self.buckets[index]:
-            if key == element.key:
-                return element.value
+            if element.hash == hash(key):
+                if key == element.key:
+                    return element.value
 
     def __len__(self) -> int:
         return self.size
@@ -68,3 +69,12 @@ class Dictionary:
                 self.buckets[index].remove(node)
                 self.size -= 1
                 return
+
+    def clear(self) -> None:
+        self.buckets.clear()
+        self.size = 0
+
+    def __iter__(self) -> Hashable:
+        for internal_list in self.buckets:
+            for node in internal_list:
+                yield node.key
