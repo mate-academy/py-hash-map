@@ -1,14 +1,14 @@
 from __future__ import annotations
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional, Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
-        self.hash_table: list = [None] * 8
+        self.hash_table: list[tuple | str | None] = [None] * 8
         self._doom_value = "Some doom value"
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = hash(key)
 
         if self.length + 1 > len(self.hash_table) * 2 / 3:
@@ -26,7 +26,7 @@ class Dictionary:
         self.hash_table[index] = (key, value)
         self.length += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_value = hash(key)
         index = hash_value % len(self.hash_table)
 
@@ -52,7 +52,7 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table = [None] * len(self.hash_table)
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         try:
             hash_value = hash(key)
             index = hash_value % len(self.hash_table)
@@ -66,7 +66,7 @@ class Dictionary:
         except TypeError:
             raise
 
-    def pop(self, key: Any, default_value: Any = None) -> Any:
+    def pop(self, key: Hashable, default_value: Optional[Any] = None) -> Any:
         value = self.get(key)
 
         if value is None:
@@ -75,21 +75,23 @@ class Dictionary:
         self.__delitem__(key)
         return value
 
-    def get(self, key: Any, default_value: Any = None) -> Any:
+    def get(self, key: Hashable, default_value: Optional[Any] = None) -> Any:
         try:
             self.__getitem__(key)
         except KeyError:
             return default_value
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterable[Hashable]:
         return [element[0] for element in self.hash_table
                 if element != self._doom_value and element is not None]
 
-    def items(self) -> Iterable:
+    def items(self) -> Iterable[tuple[Hashable, Any]]:
         return [element for element in self.hash_table
                 if element != self._doom_value and element is not None]
 
-    def update(self, dictionary: Dictionary = None, **kwargs) -> None:
+    def update(self,
+               dictionary: Optional[Dictionary] = None,
+               **kwargs) -> None:
         if dictionary is not None:
             for key, value in dictionary.items():
                 self[key] = value
