@@ -53,14 +53,20 @@ class Dictionary:
         if self.load_factor >= self._load_factor_threshold:
             self._resize_and_rehash()
 
+        """all the available slots in the hash table,
+        starting from the calculated by hash index"""
         for index, pair in self._probe(key):
             if pair is DELETED:
                 continue
+            # Don't need to compare hash.
             if pair is None or pair.key == key:
                 self._slots[index] = Pair(key, value)
                 break
 
     def __getitem__(self, key: Hashable) -> Any:
+        """calculate the index of an element based
+        on the hash code of the provided key
+         and return whatever sits under that index. """
         for _, pair in self._probe(key):
             if pair is None:
                 raise KeyError(key)
@@ -127,6 +133,9 @@ class Dictionary:
         return len(occupied_or_deleted) / self.capacity
 
     def _index(self, key: Hashable) -> int:
+        """Turn an arbitrary key into a numeric hash value
+         and use the % operator to constrain the resulting index
+         within the available address space."""
         return hash(key) % self.capacity
 
     def clear(self) -> None:
@@ -134,8 +143,12 @@ class Dictionary:
         self._slots = 8 * [None]
 
     def _probe(self, key: Hashable) -> Any:
+        """ linear probing will be used in create/reading
+         operations in the hash table"""
         index = self._index(key)
         for _ in range(self.capacity):
+            """At each step, return
+             the current index and the associated pair"""
             yield index, self._slots[index]
             index = (index + 1) % self.capacity
 
