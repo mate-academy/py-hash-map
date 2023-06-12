@@ -58,7 +58,6 @@ class Dictionary:
         for index, pair in self._probe(key):
             if pair is DELETED:
                 continue
-            # Don't need to compare hash.
             if pair is None or pair.key == key:
                 self._slots[index] = Pair(key, value)
                 break
@@ -81,8 +80,7 @@ class Dictionary:
             self[key]
         except KeyError:
             return False
-        else:
-            return True
+        return True
 
     def __eq__(self, other: object) -> bool:
         if self is other:
