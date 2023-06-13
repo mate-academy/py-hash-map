@@ -50,11 +50,10 @@ class Dictionary:
                 break
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        """all the available slots in the hash table,
+               starting from the calculated by hash index"""
         if self.load_factor >= self._load_factor_threshold:
             self._resize_and_rehash()
-
-        """all the available slots in the hash table,
-        starting from the calculated by hash index"""
         for index, pair in self._probe(key):
             if pair is DELETED:
                 continue
@@ -142,7 +141,10 @@ class Dictionary:
 
     def _probe(self, key: Hashable) -> Any:
         """ linear probing will be used in create/reading
-         operations in the hash table"""
+         operations in the hash table.
+        At each step, return the current index
+        and the associated pair"""
+
         index = self._index(key)
         for _ in range(self.capacity):
             """At each step, return
