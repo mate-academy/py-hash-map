@@ -1,6 +1,6 @@
 from __future__ import annotations
 from copy import copy
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -19,29 +19,29 @@ class Dictionary:
         self.clear()
         for cell in data:
             if cell[0]:
-                self.__setitem__(cell[1], cell[2])
+                self.__setitem__(cell[0], cell[1])
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.__need_resize():
             self.__capacity_resize()
             self.__rewrite_data()
         key_hash = hash(key)
         cell = key_hash % self.__capacity
         while True:
-            if not self.__data[cell][0] or self.__data[cell][1] == key:
-                self.__data[cell] = [key_hash, key, value]
+            if not self.__data[cell][0] or self.__data[cell][0] == key:
+                self.__data[cell] = [key, value]
                 return
             cell = (cell + 1) % self.__capacity
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         cell = self.__find_item(key)
-        return self.__data[cell][2]
+        return self.__data[cell][1]
 
-    def __find_item(self, key: Any) -> int:
+    def __find_item(self, key: Hashable) -> int:
         key_hash = hash(key)
         cell = start = key_hash % self.__capacity
         while cell != start - 1:
-            if self.__data[cell][1] == key:
+            if self.__data[cell][0] == key:
                 return cell
             cell = (cell + 1) % self.__capacity
         raise KeyError("There is no such key!")
@@ -50,19 +50,19 @@ class Dictionary:
         return len([1 for cell in self.__data if cell[0]])
 
     def clear(self) -> None:
-        self.__data = [[None, None, None] for _ in range(self.__capacity)]
+        self.__data = [[None, None] for _ in range(self.__capacity)]
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         cell = self.__find_item(key)
-        self.__data[cell] = [None, None, None]
+        self.__data[cell] = [None, None]
 
-    def get(self, key: Any, value: Any) -> Any:
+    def get(self, key: Hashable, value: Any) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
             return value
 
-    def pop(self, key: Any) -> None:
+    def pop(self, key: Hashable) -> None:
         self.__delitem__(key)
 
     def update(self, another: Dictionary) -> None:
@@ -73,5 +73,5 @@ class Dictionary:
         cells = [i for i in self.__data if i[0]]
         current_element = 0
         while current_element < len(cells):
-            yield cells[current_element][1], cells[current_element][2]
+            yield cells[current_element][0], cells[current_element][1]
             current_element += 1
