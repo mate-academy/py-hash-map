@@ -39,8 +39,8 @@ class Dictionary:
 
     def __find_item(self, key: Hashable) -> int:
         key_hash = hash(key)
-        cell = start = key_hash % self.__capacity
-        while cell != start - 1:
+        cell = key_hash % self.__capacity
+        while self.__data[cell][0]:
             if self.__data[cell][0] == key:
                 return cell
             cell = (cell + 1) % self.__capacity
