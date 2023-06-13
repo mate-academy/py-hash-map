@@ -36,7 +36,10 @@ class Dictionary:
         key_hash = hash(key)
         cell = key_hash % self.capacity
         while True:
-            if not self.data[cell][0] or self.data[cell][0] == key_hash:
+            if not self.data[cell][0] or (
+                self.data[cell][0] == key_hash
+                and self.data[cell][1] == key
+            ):
                 self.data[cell] = [key_hash, key, value]
                 return
             cell = (cell + 1) % self.capacity
@@ -47,11 +50,11 @@ class Dictionary:
 
     def __find_item(self, key: Any) -> int:
         key_hash = hash(key)
-        cell = key_hash % self.capacity
-        while cell < self.capacity:
+        cell = start = key_hash % self.capacity
+        while cell != start - 1:
             if self.data[cell][1] == key:
                 return cell
-            cell += 1
+            cell = (cell + 1) % self.capacity
         raise KeyError("There is no such key!")
 
     def __len__(self) -> int:
