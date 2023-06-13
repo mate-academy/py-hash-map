@@ -20,7 +20,7 @@ class Dictionary:
         self.__capacity *= 2
 
     def __need_resize(self) -> bool:
-        return (self.__len__() + 1) / self.capacity > 2/3
+        return (self.__len__() + 1) / self.capacity > 2 / 3
 
     def __rewrite_data(self) -> None:
         data = copy(self.data)
@@ -29,7 +29,7 @@ class Dictionary:
             if cell[0]:
                 self.__setitem__(cell[1], cell[2])
 
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: Any, value: Any) -> None:
         if self.__need_resize():
             self.__capacity_resize()
             self.__rewrite_data()
@@ -41,11 +41,11 @@ class Dictionary:
                 return
             cell = (cell + 1) % self.capacity
 
-    def __getitem__(self, key) -> Any:
+    def __getitem__(self, key: Any) -> Any:
         cell = self.__find_item(key)
         return self.data[cell][2]
 
-    def __find_item(self, key) -> int:
+    def __find_item(self, key: Any) -> int:
         key_hash = hash(key)
         cell = key_hash % self.capacity
         while cell < self.capacity:
@@ -54,45 +54,32 @@ class Dictionary:
             cell += 1
         raise KeyError("There is no such key!")
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len([1 for cell in self.data if cell[0]])
 
-    def clear(self):
+    def clear(self) -> None:
         self.__data = [[None, None, None] for _ in range(self.capacity)]
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Any) -> None:
         cell = self.__find_item(key)
         self.data[cell] = [None, None, None]
 
-    def get(self, key, value):
+    def get(self, key: Any, value: Any) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
             return value
 
-    def pop(self, key):
+    def pop(self, key: Any) -> None:
         self.__delitem__(key)
 
     def update(self, another: Dictionary) -> None:
         for key, value in another:
             self.__setitem__(key, value)
 
-    def __iter__(self):
+    def __iter__(self) -> None:
         cells = [i for i in self.data if i[0]]
         current_element = 0
         while current_element < len(cells):
             yield cells[current_element][1], cells[current_element][2]
             current_element += 1
-
-
-if __name__ == '__main__':
-    from point import Point
-    point1 = Point(1, 2)
-    point2 = Point(1, 2)
-    test = Dictionary()
-    test[point1] = 1
-    test[point2] = 2
-    print(point1 == point2)
-    print(test.data)
-
-
