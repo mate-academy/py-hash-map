@@ -1,6 +1,8 @@
 class Dictionary:
+    """dict clone"""
 
-    def __init__(self, key, value):  # hash imitation
+
+    def __init__(self, key, value):
         self.key = key
         self.value = value
         self.capacity = 8
@@ -8,27 +10,39 @@ class Dictionary:
 
         print(self.hash_table)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value):  # mandatory
         self.key = key
         self.value = value
         pass
 
-    def __getitem__(self, item):
+    def __getitem__(self, key):
         pass
 
     def __len__(self):
         pass
 
     def __hash__(self):
+
+        def __repr__(self):
+            return f"{{{self.key} : {self.value}}}"
+
+    def clear(self):  # extra
         pass
 
-    def __repr__(self):
-        return f"{{{self.key} : {self.value}}}"
+    def __delitem__(self, key):  # extra
+        pass
 
+    def get(self):  # extra
+        pass
 
-ex = Dictionary(key="qw", value="12")
-print(Dictionary)
-print(ex)
+    def pop(self):  # extra
+        pass
 
-dicttest = {"qw": 12}
-print(dicttest)
+    def update(self):  # extra
+        pass
+
+    def __iter__(self):  # extra
+        pass
+
+    def hash(self):  # optional
+        pass
