@@ -4,10 +4,6 @@ class Dictionary:
     def __init__(self, key, value):  # mandatory
         self.key = key
         self.value = value
-        self.capacity = 8
-        self.hash_table: list = [None] * self.capacity
-
-        print(self.hash_table)
 
     def __setitem__(self, key, value):  # mandatory
         self.key = key
@@ -38,15 +34,21 @@ class Dictionary:
     def __iter__(self):  # extra
         pass
 
-    def hash(self):  # optional
-        pass
+    def custom_hash(self):  # optional
+        hash_capacity: int = 8
+        hash_table: list = [None] * self.capacity
 
     def __repr__(self):  # optional
         return f"{{{self.key} : {self.value}}}"
 
 
 def quick_prints():  # TODO: DELETE IT
-    pass
+    doppelganger = Dictionary(32, "asd")
+    print(f"REPR EXAMPLE: {doppelganger}")
+    print(doppelganger.__dict__)
+    print(f"KEY: {doppelganger.key}")
+    print(f"VALUE: {doppelganger.value}")
+    print("____________________________")
 
 
 if __name__ == '__main__':
