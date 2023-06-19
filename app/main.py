@@ -36,33 +36,36 @@ class Dictionary:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
         self.key = key
         self.value = value
+        print("init call")  # TODO: DELETE IT
 
     def __setitem__(self, key, value) -> None:  # mandatory
         """ Set self[key] to value. """
         self.key = key
         self.value = value
-        pass
+        print("setitem testing")  # TODO: DELETE IT
 
     def __getitem__(self, key) -> Any:  # mandatory
         """ x.__getitem__(y) <==> x[y] """
+        print("getitem testing")  # TODO: DELETE IT
 
     def __len__(self) -> int:  # mandatory
         """ Return len(self). """
+        print("len testing")  # TODO: DELETE IT
 
     def clear(self) -> None:  # extra
         """ D.clear() -> None.  Remove all items from D. """
-        print("clear testing")
+        print("clear testing")  # TODO: DELETE IT
 
     def __delitem__(self, key) -> None:  # extra
         """ Delete self[key]. """
-        print("delitem testing")
+        print("delitem testing")  # TODO: DELETE IT
 
     def get(self):  # extra #
         """
         Return the value for key if key is in the dictionary,
         else default.
         """
-        print("get testing")
+        print("get testing")  # TODO: DELETE IT
 
     def pop(self):  # extra
         """
@@ -72,7 +75,7 @@ class Dictionary:
         If the key is not found, return the default if given; otherwise,
         raise a KeyError.
         """
-        print("pop testing")
+        print("pop testing")  # TODO: DELETE IT
 
     def update(self):  # extra
         """
@@ -84,6 +87,7 @@ class Dictionary:
         In either case, this is followed by: for k in F:  D[k] = F[k]
         """
         print("update testing")
+
     def __iter__(self):  # extra
         """ Implement iter(self). """
 
@@ -94,7 +98,7 @@ class Dictionary:
         """
         hash_capacity: int = 8
         hash_table: list = [None] * self.capacity
-        print("hash testing")
+        print("hash testing")  # TODO: DELETE IT
 
     def __repr__(self):  # optional
         return f"{{{self.key} : {self.value}}}"
