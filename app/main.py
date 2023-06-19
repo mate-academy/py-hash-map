@@ -51,16 +51,18 @@ class Dictionary:
 
     def clear(self) -> None:  # extra
         """ D.clear() -> None.  Remove all items from D. """
-        print("NO")
+        print("clear testing")
 
     def __delitem__(self, key) -> None:  # extra
         """ Delete self[key]. """
+        print("delitem testing")
 
     def get(self):  # extra #
         """
         Return the value for key if key is in the dictionary,
         else default.
         """
+        print("get testing")
 
     def pop(self):  # extra
         """
@@ -70,6 +72,7 @@ class Dictionary:
         If the key is not found, return the default if given; otherwise,
         raise a KeyError.
         """
+        print("pop testing")
 
     def update(self):  # extra
         """
@@ -80,7 +83,7 @@ class Dictionary:
             for k, v in E: D[k] = v
         In either case, this is followed by: for k in F:  D[k] = F[k]
         """
-
+        print("update testing")
     def __iter__(self):  # extra
         """ Implement iter(self). """
 
@@ -91,6 +94,7 @@ class Dictionary:
         """
         hash_capacity: int = 8
         hash_table: list = [None] * self.capacity
+        print("hash testing")
 
     def __repr__(self):  # optional
         return f"{{{self.key} : {self.value}}}"
