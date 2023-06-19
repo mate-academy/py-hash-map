@@ -1,6 +1,17 @@
+import time
 from datetime import date, datetime
 from enum import Enum
 from typing import Any, Union
+
+
+def timer_decorator(func):  # TODO: DELETE IT
+    def wrapper():
+        start_time = time.time()
+        func()
+        end_time = time.time()
+        print(f"{func.__name__} execution took: {end_time - start_time}")
+
+    return wrapper
 
 
 class Dictionary:
@@ -8,7 +19,7 @@ class Dictionary:
     Dict(object) clone
 
     some_dict = {"One": 1}          => {"Key": "value"}
-    var = Dictionary_obj("One", 1)  => [("One", 1)]
+    var = Dictionary_obj("One", 1)  => list_1: ["One"] by_index: [1]<-index[0]
     """
 
     def __init__(
@@ -30,13 +41,14 @@ class Dictionary:
         dict(**kwargs) -> new dictionary initialized with the name=value pairs
             in the keyword argument list.  For example:  dict(one=1, two=2)
         """
+        print("init call")  # TODO: DELETE IT
         approved_data_types = [int, float, complex, str, bool, tuple,
                                frozenset, bytes, None, Enum, date, datetime]
         if type(key) not in approved_data_types:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
         self.key = key
         self.value = value
-        print("init call")  # TODO: DELETE IT
+        self.custom_dict_example = []
 
     def __setitem__(self, key, value) -> None:  # mandatory
         """ Set self[key] to value. """
@@ -60,7 +72,7 @@ class Dictionary:
         """ Delete self[key]. """
         print("delitem testing")  # TODO: DELETE IT
 
-    def get(self):  # extra #
+    def get(self):  # extra
         """
         Return the value for key if key is in the dictionary,
         else default.
@@ -104,18 +116,59 @@ class Dictionary:
         return f"{{{self.key} : {self.value}}}"
 
 
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __hash__(self):
+        return self.__hash__()
+
+    def __eq__(self, other):
+        if self.x == other.x and self.y == other.y:
+            return True
+        return False
+
+    def __repr__(self):
+        return f"Point example: x ={self.x} ; y= {self.y}"
+
+
 def quick_prints():  # TODO: DELETE IT
     doppelganger = Dictionary("One", 1)  # Custom
     print(f"REPR EXAMPLE: {doppelganger}")
     print(doppelganger.__dict__)
-    print(f"KEY: {doppelganger.key}")
-    print(f"VALUE: {doppelganger.value}")
+
     print("____________________________")
 
     guido_dict = {1: "one", 2: {"two"}, None: ":)", ":)": None}  # Original
     guido_dict[":)"] = guido_dict[1]
-    print(guido_dict)
+    print(f"Py dict example : {guido_dict}")
+    point_for_tests = Point(1, 2)
+    print(point_for_tests)
 
 
-if __name__ == "__main__":
+@timer_decorator
+def two_diff_lists():  # TODO: DELETE IT
+    custom_num = 1_000_000
+    custom_index_we_lf = 500_000
+    big_list = [i for i in range(custom_num)]
+    big_list_2 = [i ** 2 for i in range(custom_num)]
+    result = [big_list[custom_index_we_lf], big_list_2[custom_index_we_lf]]
+    print(result)
+
+
+@timer_decorator
+def one_list_with_lists():  # TODO: DELETE IT
+    custom_num = 1_000_000
+    custom_index_we_lf = 500_000
+    big_list = [[i, i ** 2]
+                for i in range(custom_num)]
+    result = big_list[custom_index_we_lf]
+    print(result)
+
+
+if __name__ == "__main__":  # TODO: DELETE IT
     quick_prints()
+
+    two_diff_lists()  # 0.33 <<<---------!!!!!!!!!!!!!!
+    one_list_with_lists()  # 0.62
