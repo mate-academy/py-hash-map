@@ -1,8 +1,7 @@
 class Dictionary:
     """dict clone"""
 
-
-    def __init__(self, key, value):
+    def __init__(self, key, value): # mandatory
         self.key = key
         self.value = value
         self.capacity = 8
@@ -15,16 +14,11 @@ class Dictionary:
         self.value = value
         pass
 
-    def __getitem__(self, key):
+    def __getitem__(self, key):  # mandatory
         pass
 
-    def __len__(self):
+    def __len__(self):  # mandatory
         pass
-
-    def __hash__(self):
-
-        def __repr__(self):
-            return f"{{{self.key} : {self.value}}}"
 
     def clear(self):  # extra
         pass
@@ -46,3 +40,6 @@ class Dictionary:
 
     def hash(self):  # optional
         pass
+
+    def __repr__(self):  # optional
+        return f"{{{self.key} : {self.value}}}"
