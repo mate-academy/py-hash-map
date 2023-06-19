@@ -1,7 +1,7 @@
 class Dictionary:
     """dict clone"""
 
-    def __init__(self, key, value): # mandatory
+    def __init__(self, key, value):  # mandatory
         self.key = key
         self.value = value
         self.capacity = 8
@@ -43,3 +43,11 @@ class Dictionary:
 
     def __repr__(self):  # optional
         return f"{{{self.key} : {self.value}}}"
+
+
+def quick_prints():  # TODO: DELETE IT
+    pass
+
+
+if __name__ == '__main__':
+    quick_prints()
