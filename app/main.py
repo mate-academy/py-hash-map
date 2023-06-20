@@ -23,18 +23,20 @@ class Dictionary:
             if node[0] == key:
                 node[2] = value
                 return
-        nodes.append((key, self._hash(key), value))
+        nodes.append([key, self._hash(key), value])
         self.size += 1
         self._check_resize()
 
-    def __getitem__(self, key) -> Any:
+    def __getitem__(self,
+                    key: int | float | str | bool | tuple
+                    ) -> Any:
         index = self._get_index(key)
         nodes = self.table[index]
         if nodes is not None:
             for node in nodes:
                 if node[0] == key:
                     return node[2]
-        return KeyError(key)
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.size
