@@ -9,11 +9,12 @@ class Dictionary:
         self.hash_table: list = [None] * self.capacity
 
     def __len__(self) -> int:
+        print(self.capacity)
         return self.size
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        threshhold = self.capacity * self.load_factor
-        if threshhold > self.hash_table.count(None):
+        threshhold = int(self.capacity * self.load_factor)
+        if self.capacity - threshhold > self.hash_table.count(None):
             self.resize()
         if not isinstance(key, Hashable):
             raise TypeError(f"unhashable type: '{type(key)}'")
