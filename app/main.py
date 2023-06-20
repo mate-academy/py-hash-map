@@ -1,12 +1,15 @@
 from typing import Any
-from dataclasses import dataclass
 
 
-@dataclass
 class Node:
-    key: Any
-    value: Any
-    next = None
+    def __init__(
+        self,
+        key: Any,
+        value: Any
+    ) -> None:
+        self.key = key
+        self.value = value
+        self.next = None
 
 
 class Dictionary:
