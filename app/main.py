@@ -55,6 +55,7 @@ class Dictionary:
         while self.hash_table[index]:
             if self.hash_table[index][0] == key:
                 self.hash_table[index] = None
+            index = (index + 1) % self.capacity
 
     def resize(self) -> None:
         hash_table = self.hash_table
