@@ -20,11 +20,11 @@ class Dictionary:
             raise TypeError(f"unhashable type: '{type(key)}'")
         index = self.get_index_from_hash(key)
         while True:
-            if self.hash_table[index] is None:
+            if not self.hash_table[index]:
                 self.hash_table[index] = (key, hash(key), value)
                 self.size += 1
                 break
-            elif self.hash_table[index] is not None:
+            elif self.hash_table[index]:
                 if self.hash_table[index][0] == key:
                     self.hash_table[index] = (key, hash(key), value)
                     break
@@ -38,7 +38,7 @@ class Dictionary:
             raise TypeError(f"unhashable type: '{type(key)}'")
 
         index = self.get_index_from_hash(key)
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             if self.hash_table[index][0] == key:
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
@@ -52,7 +52,7 @@ class Dictionary:
             raise TypeError(f"unhashable type: '{type(key)}'")
 
         index = self.get_index_from_hash(key)
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             if self.hash_table[index][0] == key:
                 self.hash_table[index] = None
 
@@ -62,7 +62,7 @@ class Dictionary:
         self.capacity *= 2
         self.hash_table = [None] * self.capacity
         for item in hash_table:
-            if item is not None:
+            if item:
                 self.__setitem__(item[0], item[2])
 
     def get_index_from_hash(self, key: Any) -> int:
