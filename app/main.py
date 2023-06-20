@@ -7,7 +7,6 @@ class Dictionary:
         self.threshold: float = 0.66
         self.size: int = 0
         self.hash_table: list = [None] * 8
-        self.keys: list = []
 
     def __getitem__(self, key: Any) -> Any:
         index = self.__index_from_key(key)
