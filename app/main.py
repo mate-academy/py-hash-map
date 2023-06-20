@@ -1,23 +1,23 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.capacity: int = 8
-        self.threshold: float = 0.66
-        self.size: int = 0
-        self.hash_table: list = [None] * 8
+        self.capacity = 8
+        self.threshold = 0.66
+        self.size = 0
+        self.hash_table = [None] * 8
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.__index_from_key(key)
 
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             if self.__item_key(self.hash_table[index]) == key:
                 return self.__item_value(self.hash_table[index])
             index = (index + 1) % self.capacity
         raise KeyError(key)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size > self.capacity * self.threshold:
             self.__resize()
 
@@ -49,7 +49,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def __index_from_key(self, key: Any) -> int:
+    def __index_from_key(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def __index_from_hash(self, hash_: int) -> int:
