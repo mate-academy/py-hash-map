@@ -60,10 +60,11 @@ class Dictionary:
         return print_str
 
     def __getitem__(self, key: Any) -> Node:
-        ind = hash(key) % self.capacity
-        if self.hash_table[ind] == "_" or self.hash_table[ind].key != key:
-            raise KeyError("There is no element with this key")
-        return self.hash_table[ind]
+        for node in self.hash_table:
+            if node != "_":
+                if node.key == key:
+                    return node.value
+        raise KeyError
 
     def __len__(self) -> int:
         len_ = 0
