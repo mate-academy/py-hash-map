@@ -12,7 +12,7 @@ class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.threshold = round(self.capacity * 2/3)
+        self.threshold = round(self.capacity * 2 / 3)
         self.hash_table = ["_" for i in range(self.capacity)]
 
     def collision(self, node: Node, node_ind: int) -> int:
@@ -38,7 +38,7 @@ class Dictionary:
             if elem != "_":
                 self.__setitem__(elem.key, elem.value)
 
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: Any, value: Any) -> None:
         new_node = Node(key, value)
         self.size += 1
         if self.size <= self.threshold:
@@ -59,7 +59,7 @@ class Dictionary:
                 print_str += " " + str(node.key) + str(node.value)
         return print_str
 
-    def __getitem__(self, key) -> Node:
+    def __getitem__(self, key: Any) -> Node:
         ind = hash(key) % self.capacity
         if self.hash_table[ind] == "_" or self.hash_table[ind].key != key:
             raise KeyError("There is no element with this key")
@@ -75,6 +75,5 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table = ["_" for i in range(self.capacity)]
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: Any) -> None:
         self.hash_table[key] = "_"
-
