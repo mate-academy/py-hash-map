@@ -24,7 +24,7 @@ class Dictionary:
         key_hash = hash(key)
         index = key_hash % self._capacity
 
-        while self._hash_table[index] is not None:
+        while self._hash_table[index]:
             if self._hash_table[index].key == key:
                 self._hash_table[index].value = value
                 return
