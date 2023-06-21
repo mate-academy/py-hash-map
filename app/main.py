@@ -48,7 +48,6 @@ class Dictionary:
         self.capacity *= 2
         old_hash_table_items = [item for item in self.hash_table
                                 if item is not None]
-        print("old hash: ", old_hash_table_items)
         self.hash_table = [None] * self.capacity
         for key, _hash, value in old_hash_table_items:
             self[key] = value
