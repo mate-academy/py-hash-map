@@ -15,6 +15,7 @@ class Node:
 
 class Dictionary:
     def __init__(self) -> None:
+        self.length = 0
         self.hash_table: list = [None] * 8
         self.load_capacity = (2 / 3)
         self.capacity = 8
@@ -28,6 +29,7 @@ class Dictionary:
         for node in old_dict:
             if node is not None:
                 self.__setitem__(node.node_key, node.node_value)
+                self.length -= 1
 
     def __setitem__(self, key: int | float | str | tuple, value: Any) -> None:
 
@@ -35,29 +37,37 @@ class Dictionary:
 
         if self.hash_table[index] is None:
             self.hash_table[index] = Node(key, hash(key), value)
+            self.set_length()
 
-        if self.check_for_presence(key):
-            self.check_for_presence(key).set_value(value)
+        node_present = self.check_for_presence(key)
+        if node_present:
+            node_present.set_value(value)
 
         else:
             index = self.get_random_index(index)
             self.hash_table[index] = Node(key, hash(key), value)
+            self.set_length()
 
         self.save_space()
 
     def __getitem__(self, key: int | float | str | tuple) -> Any:
-
-        if self.check_for_presence(key):
-            return self.check_for_presence(key).node_value
+        node_present = self.check_for_presence(key)
+        if node_present:
+            return node_present.node_value
 
         else:
             raise KeyError(key)
 
     def __len__(self) -> int:
-        return len(self.hash_table) - self.hash_table.count(None)
+        return self.length
 
     def check_for_presence(self,
                            key: int | float | str | tuple) -> Node | bool:
+
+        index = hash(key) % self.capacity
+
+        if self.hash_table[index] is not None and self.hash_table[index].node_key == key:
+            return self.hash_table[index]
 
         for node in self.hash_table:
 
@@ -76,5 +86,10 @@ class Dictionary:
             index = randint(0, self.capacity - 1)
         return index
 
+    def set_length(self):
+        self.length += 1
+
     def print(self) -> None:
         print(self.hash_table)
+
+
