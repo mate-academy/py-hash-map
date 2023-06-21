@@ -91,3 +91,12 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.__size
+
+    def keys(self) -> Hashable:
+        return [node[0] for node in self.__table if node]
+
+    def values(self) -> Any:
+        return [node[1] for node in self.__table if node]
+
+    def items(self) -> tuple[Hashable, Any]:
+        return [(key, self[key]) for key in self.keys()]
