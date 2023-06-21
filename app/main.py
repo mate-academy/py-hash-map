@@ -11,8 +11,8 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.hash_table: list = [None] * self.capacity
-        self.load_capacity = 2/3
+        self.hash_table: list = [None] * 8
+        self.load_capacity = 2 / 3
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.get_index(key)
@@ -29,7 +29,8 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
-        while self.hash_table[index] is not None and self.hash_table[index].key != key:
+        while (self.hash_table[index] is not None
+               and self.hash_table[index].key != key):
             index = (index + 1) % self.capacity
         if self.hash_table[index] is None:
             raise KeyError(f"Key {key} is not found")
@@ -52,5 +53,5 @@ class Dictionary:
             new_hash_table[index] = node
         self.hash_table = new_hash_table
 
-    def get_index(self, key):
+    def get_index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
