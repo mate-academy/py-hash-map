@@ -19,7 +19,8 @@ class Dictionary:
         curr_id = node_ind
         while True:
             if curr_id < len(self.hash_table):
-                if self.hash_table[curr_id] is None or self.hash_table[curr_id].key == node.key:
+                if (self.hash_table[curr_id] is None
+                        or self.hash_table[curr_id].key == node.key):
                     return curr_id
             else:
                 curr_id = 0
