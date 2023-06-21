@@ -1,5 +1,5 @@
 import random
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -10,16 +10,20 @@ class Dictionary:
         self.__universal_a = random.randint(1, self.__capacity - 1)
         self.__universal_b = random.randint(0, self.__capacity - 1)
 
-    def __shift_hash_value(self, hash_value: int, probe: int, key: Any) -> int:
+    def __shift_hash_value(
+        self,
+        hash_value: int,
+        probe: int
+    ) -> int:
         return (hash_value + probe**2) % self.__capacity
 
-    def __universal_hash(self, key: Any) -> int:
+    def __universal_hash(self, key: Hashable) -> int:
         return (
             (self.__universal_a * hash(key) + self.__universal_b)
             % self.__capacity
         ) % self.__capacity
 
-    def insert(self, key: Any, value: Any) -> None:
+    def insert(self, key: Hashable, value: Any) -> None:
         if self.__load_factor() >= 2 / 3:
             self.__expand()
         hash_value = self.__universal_hash(key)
@@ -28,18 +32,18 @@ class Dictionary:
             if self.__table[hash_value][0] == key:
                 self.__table[hash_value] = (key, value)
                 return
-            hash_value = self.__shift_hash_value(hash_value, probe, key)
+            hash_value = self.__shift_hash_value(hash_value, probe)
             probe += 1
         self.__table[hash_value] = (key, value)
         self.__size += 1
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable) -> Any:
         hash_value = self.__universal_hash(key)
         probe = 1
         while self.__table[hash_value] is not None:
             if self.__table[hash_value][0] == key:
                 return self.__table[hash_value][1]
-            hash_value = self.__shift_hash_value(hash_value, probe, key)
+            hash_value = self.__shift_hash_value(hash_value, probe)
             probe += 1
         raise KeyError("Key not found")
 
@@ -52,9 +56,7 @@ class Dictionary:
                 hash_value = self.__universal_hash(key)
                 probe = 1
                 while new_table[hash_value] is not None:
-                    hash_value = self.__shift_hash_value(
-                        hash_value, probe, key
-                    )
+                    hash_value = self.__shift_hash_value(hash_value, probe)
                     probe += 1
                 new_table[hash_value] = (key, value)
         self.__table = new_table
@@ -62,10 +64,10 @@ class Dictionary:
     def __load_factor(self) -> float:
         return self.__size / self.__capacity
 
-    def contains(self, key: Any) -> bool:
+    def contains(self, key: Hashable) -> bool:
         return self.get(key) is not None
 
-    def remove(self, key: Any) -> None:
+    def remove(self, key: Hashable) -> None:
         hash_value = self.__universal_hash(key)
         probe = 1
         while self.__table[hash_value] is not None:
@@ -73,19 +75,19 @@ class Dictionary:
                 self.__table[hash_value] = None
                 self.__size -= 1
                 return
-            hash_value = self.__shift_hash_value(hash_value, probe, key)
+            hash_value = self.__shift_hash_value(hash_value, probe)
             probe += 1
 
-    def __contains__(self, key: Any) -> bool:
+    def __contains__(self, key: Hashable) -> bool:
         return self.contains(key)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         return self.get(key)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self.insert(key, value)
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         self.remove(key)
 
     def __len__(self) -> int:
