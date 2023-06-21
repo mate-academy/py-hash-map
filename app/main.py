@@ -1,72 +1,77 @@
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Hashable
+
+
+CAPACITY = 8
+LOAD_FACTOR = 2 / 3
+CAPACITY_MULTIPLY = 2
+
+
+@dataclass
+class Node:
+    key: Hashable
+    key_hash: int
+    value: Any
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
-        self.capacity = 8
-        self.load_factor = 5
-        self.hash_table: list = [None] * self.capacity
-        self.capacity_cases = [None] * self.capacity
-        self.keys = [None] * self.capacity
+        self.capacity = CAPACITY
+        self.hash_table: list[None | Node] = [None] * CAPACITY
 
     def __len__(self) -> int:
         return self.length
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if self.length > self.load_factor:
+        if self.length >= int(self.capacity * LOAD_FACTOR):
             self.resize()
 
-        self.append_item_to_hash_table(key, value, self.hash_table, self.keys)
+        self.append_node_to_hash_table(key, value, self.hash_table)
 
-    def append_item_to_hash_table(
+    def append_node_to_hash_table(
             self,
             key: Any,
             value: Any,
-            hash_table: list[list | None],
-            keys: list[Any]
+            hash_table: list[Node | None],
     ) -> None:
-        if key in keys:
-            hash_index = keys.index(key)
-            hash_table[hash_index][-1] = value
-            return
+        key_hash = hash(key)
+        hash_index = key_hash % self.capacity
 
-        hash_index = hash(key) % self.capacity
+        while hash_table[hash_index] is not None:
+            if hash_table[hash_index].key == key:
+                hash_table[hash_index].value = value
+                return
 
-        if hash_table[hash_index] is not None:
-            hash_index = hash_table.index(None)
+            hash_index = (hash_index + 1) % self.capacity
 
-        hash_table[hash_index] = [key, hash(key), value]
-        self.capacity_cases[hash_index] = key
-        keys[hash_index] = key
+        hash_table[hash_index] = Node(key, key_hash, value)
         self.length += 1
 
     def __getitem__(self, key: Any) -> Any:
-        if key not in self.keys:
-            raise KeyError
+        hash_key = hash(key)
+        hash_index = hash_key % self.capacity
 
-        hash_index = hash(key) % self.capacity
+        while (
+                self.hash_table[hash_index] is not None
+                and self.hash_table[hash_index].key != key
+        ):
+            hash_index = (hash_index + 1) % self.capacity
 
-        if self.hash_table[hash_index][0] == key:
-            return self.hash_table[hash_index][-1]
+        if self.hash_table[hash_index] is None:
+            raise KeyError(f"Key {key} doesn't exist")
 
-        hash_index = self.capacity_cases.index(key)
-
-        return self.hash_table[hash_index][-1]
+        return self.hash_table[hash_index].value
 
     def resize(self) -> None:
         self.length = 0
-        self.capacity *= 2
-        self.load_factor = int(self.capacity * (2 / 3))
-        self.capacity_cases = [None] * self.capacity
-        keys = [None] * self.capacity
-        resized_hash_table = [None] * self.capacity
+        self.capacity *= CAPACITY_MULTIPLY
+        old_hash_table = [
+            item
+            for item in self.hash_table
+            if item is not None
+        ]
+        self.hash_table = [None] * self.capacity
 
-        for item in self.hash_table:
-            if item is not None:
-                self.append_item_to_hash_table(
-                    item[0], item[-1], resized_hash_table, keys
-                )
-
-        self.hash_table = resized_hash_table
-        self.keys = keys
+        for item in old_hash_table:
+            self.__setitem__(item.key, item.value)
