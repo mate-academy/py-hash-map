@@ -13,15 +13,13 @@ class Dictionary:
         self.capacity = 8
         self.size = 0
         self.threshold = round(self.capacity * 2 / 3)
-        self.hash_table = [None for i in range(self.capacity)]
+        self.hash_table = [None] * self.capacity
 
     def collision(self, node: Node, node_ind: int) -> int:
         curr_id = node_ind
         while True:
             if curr_id < len(self.hash_table):
-                if self.hash_table[curr_id] is None:
-                    return curr_id
-                if self.hash_table[curr_id].key == node.key:
+                if self.hash_table[curr_id] is None or self.hash_table[curr_id].key == node.key:
                     return curr_id
             else:
                 curr_id = 0
@@ -32,7 +30,7 @@ class Dictionary:
         self.capacity *= 2
         self.threshold = round(self.capacity * 2 / 3)
         old_table = self.hash_table.copy()
-        self.hash_table = [None for i in range(self.capacity)]
+        self.hash_table = [None] * self.capacity
         self.size = 0
         for elem in old_table:
             if elem is not None:
@@ -75,7 +73,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.size = 0
-        self.hash_table = [None for i in range(self.capacity)]
+        self.hash_table = [None] * self.capacity
 
     def __delitem__(self, key: Any) -> None:
         self.hash_table[key] = None
