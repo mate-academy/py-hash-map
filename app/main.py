@@ -27,7 +27,7 @@ class Dictionary:
             self.__expand()
         hash_value = self.__universal_hash(key)
         probe = 1
-        while self.__table[hash_value] is not None:
+        while self.__table[hash_value]:
             if self.__table[hash_value][0] == key:
                 self.__table[hash_value] = (key, value)
                 return
@@ -39,7 +39,7 @@ class Dictionary:
     def get(self, key: Hashable) -> Any:
         hash_value = self.__universal_hash(key)
         probe = 1
-        while self.__table[hash_value] is not None:
+        while self.__table[hash_value]:
             if self.__table[hash_value][0] == key:
                 return self.__table[hash_value][1]
             hash_value = self.__shift_hash_value(hash_value, probe)
@@ -50,11 +50,11 @@ class Dictionary:
         self.__capacity *= 2
         new_table = [None] * self.__capacity
         for item in self.__table:
-            if item is not None:
+            if item:
                 key, value = item
                 hash_value = self.__universal_hash(key)
                 probe = 1
-                while new_table[hash_value] is not None:
+                while new_table[hash_value]:
                     hash_value = self.__shift_hash_value(hash_value, probe)
                     probe += 1
                 new_table[hash_value] = (key, value)
@@ -69,7 +69,7 @@ class Dictionary:
     def remove(self, key: Hashable) -> None:
         hash_value = self.__universal_hash(key)
         probe = 1
-        while self.__table[hash_value] is not None:
+        while self.__table[hash_value]:
             if self.__table[hash_value][0] == key:
                 self.__table[hash_value] = None
                 self.__size -= 1
