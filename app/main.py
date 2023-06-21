@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
     def __init__(
         self,
-        key: Any,
+        key: Hashable,
         value: Any
     ) -> None:
         self.key = key
@@ -23,7 +23,7 @@ class Dictionary:
         self.table = [None] * self.capacity
         self.table_size = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.__get_index(key)
         if self.table[index] is None:
             self.table[index] = Node(key, value)
@@ -43,7 +43,7 @@ class Dictionary:
         if self.table_size >= self.capacity * self.load_factor:
             self.__resize_table()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.__get_index(key)
         current = self.table[index]
         while current:
@@ -71,7 +71,7 @@ class Dictionary:
 
         self.table = new_table
 
-    def __get_index(self, key: Any) -> int:
+    def __get_index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def __len__(self) -> int:
