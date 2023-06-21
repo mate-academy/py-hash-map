@@ -1,5 +1,11 @@
 from typing import Hashable, Any
-#import Staticmothod
+from dataclasses import dataclass
+
+
+@dataclass
+class Node:
+    key: Hashable
+    value: Any
 
 
 class Dictionary:
@@ -7,37 +13,54 @@ class Dictionary:
         self.length = 0
         self.capacity = 8
         self.load_factor = 0.66
+        self.increaser = 2
         self.hash_table: list = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        new_node = (hash(key), key, value)
-        self.length += 1
-        if self.capacity * self.load_factor >= self.length:
+        new_node = Node(key, value)
+        index = hash(new_node.key) % self.capacity
+
+        while self.hash_table[index] is not None:
+            if self.hash_table[index].key == key:
+                self.hash_table[index] = new_node
+                return
+
+            index = (index + 1) % self.capacity
+
+        if self.length + 1 > self.capacity * self.load_factor:
             self.__resize()
-        index = self.find_empty_cell(new_node)
+            self.__setitem__(key, value)
+            return
+
+        self.length += 1
+
         self.hash_table[index] = new_node
 
+    def __getitem__(self, key: Hashable) -> Any:
+        key_hash = hash(key)
+        index = key_hash % self.capacity
+
+        while (self.hash_table[index] is not None
+               and self.hash_table[index].key != key):
+            index = (index + 1) % self.capacity
+
+        if self.hash_table[index] is None:
+            raise KeyError(f"{key} does not exist")
+
+        return self.hash_table[index].value
 
     def __resize(self) -> None:
-        new_hash_table: list = [None] * self.capacity
-        pass
+        old_hash_table = self.hash_table
+        self.length = 0
+        self.capacity *= self.increaser
+        self.hash_table = [None] * self.capacity
+
+        for item in old_hash_table:
+            if item is not None:
+                self.__setitem__(item.key, item.value)
 
     def __len__(self) -> int:
         return self.length
 
-    def find_empty_cell(self, node: tuple) -> int:
-        index = node[0] % self.capacity
-        while True:
-            if index == self.capacity:
-                index = 0
-            if self.hash_table[index] is None:
-                return index
-            index += 1
-
-
-
-
-    # @staticmethod
-    # def __get_key_hash(self, key: Hashable) -> Any:
-    #     return hash(key)
-
+    def __str__(self) -> str:
+        return str(self.hash_table)
