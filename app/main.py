@@ -15,7 +15,6 @@ class Node:
 
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
         self.hash_table: list = [None] * 8
         self.load_capacity = (2 / 3)
         self.capacity = 8
