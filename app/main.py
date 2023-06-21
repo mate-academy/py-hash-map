@@ -15,21 +15,22 @@ def timer_decorator(func):  # TODO: DELETE IT
 
 
 class Dictionary:
+    __APPROVED_DATA_TYPES = [int, float, complex, str, bool, tuple,
+                             frozenset, bytes, None, Enum, date, datetime]
+    list_testo = [")"]
+    hash_table = [[] for cell in range(8)]
+    print(hash_table)
+    capacity = 8
+
     """
     Dict(object) clone
 
-    some_dict = {"One": 1}          => {"Key": "value"}
-    var = Dictionary_obj("One", 1)  => list_1: ["One"] by_index: [1]<-index[0]
+    some_dict = {"One": 1}         => {"Key": "value"}
+    var = Dictionary_obj("One", 1) => list_1: ["One"] by_index: [1]<-index[0]
+    O(n) + O(1)
     """
 
-    def __init__(
-            self,
-            key: Union[
-                int, float, complex, str, bool, tuple, frozenset,
-                bytes, None, Enum, date, datetime
-            ],
-            value: Any
-    ) -> None:  # mandatory
+    def __init__(self):  # mandatory?
         """
         dict() -> new empty dictionary
         dict(mapping) -> new dictionary initialized from a mapping object's
@@ -42,19 +43,22 @@ class Dictionary:
             in the keyword argument list.  For example:  dict(one=1, two=2)
         """
         print("init call")  # TODO: DELETE IT
-        approved_data_types = [int, float, complex, str, bool, tuple,
-                               frozenset, bytes, None, Enum, date, datetime]
-        if type(key) not in approved_data_types:
-            raise TypeError(f"unhashable type: '{type(key).__name__}'")
-        self.key = key
-        self.value = value
-        self.custom_dict_example = []
 
-    def __setitem__(self, key, value) -> None:  # mandatory
-        """ Set self[key] to value. """
-        self.key = key
-        self.value = value
+    def __setitem__(
+            self,
+            key: Union[
+                int, float, complex, str, bool, tuple, frozenset,
+                bytes, None, Enum, date, datetime
+            ],
+            value: Any
+    ) -> None:  # mandatory
         print("setitem testing")  # TODO: DELETE IT
+        """ Set self[key] to value. """
+        if type(key) not in self.__APPROVED_DATA_TYPES:
+            raise TypeError(f"unhashable type: '{type(key).__name__}'")
+        self.key, self.value = key, value
+
+        print(self.hash_table)
 
     def __getitem__(self, key) -> Any:  # mandatory
         """ x.__getitem__(y) <==> x[y] """
@@ -122,7 +126,7 @@ class Point:
         self.y = y
 
     def __hash__(self):
-        return self.__hash__()
+        return hash((self.x, self.y))
 
     def __eq__(self, other):
         if self.x == other.x and self.y == other.y:
@@ -130,38 +134,42 @@ class Point:
         return False
 
     def __repr__(self):
-        return f"Point example: x ={self.x} ; y= {self.y}"
+        return (f"Point example: x = {self.x} ; y = {self.y}\n"
+                f"Hash: {self.__hash__()}")
 
 
 def quick_prints():  # TODO: DELETE IT
-    doppelganger = Dictionary("One", 1)  # Custom
-    print(f"REPR EXAMPLE: {doppelganger}")
-    print(doppelganger.__dict__)
+    doppelganger = Dictionary()  # Custom
+    doppelganger.__setitem__("KEY", "VALUE")
+    doppelganger.__setitem__("KEY_2", 77)
+    print(doppelganger)
 
     print("____________________________")
 
-    guido_dict = {1: "one", 2: {"two"}, None: ":)", ":)": None}  # Original
-    guido_dict[":)"] = guido_dict[1]
-    print(f"Py dict example : {guido_dict}")
-    point_for_tests = Point(1, 2)
-    print(point_for_tests)
+    # guido_dict = {1: "one", 2: {"two"}, None: ":)", ":)": None}  # Original
+    # guido_dict[":)"] = guido_dict[1]
+    # print(f"Py dict example : {guido_dict}")
+    # point_for_tests = Point(1, 2)
+    # point_for_tests_2 = Point(3, 4)
+    # print(point_for_tests)
+    # print(point_for_tests_2)
 
 
 @timer_decorator
 def two_diff_lists():  # TODO: DELETE IT
-    custom_num = 1_000_000
-    custom_index_we_lf = 500_000
+    custom_num = 10_000_000
+    custom_index_we_lf = 5_000_000
     big_list = [i for i in range(custom_num)]
-    big_list_2 = [i ** 2 for i in range(custom_num)]
+    big_list_2 = ["value" for i in range(custom_num)]
     result = [big_list[custom_index_we_lf], big_list_2[custom_index_we_lf]]
     print(result)
 
 
 @timer_decorator
 def one_list_with_lists():  # TODO: DELETE IT
-    custom_num = 1_000_000
-    custom_index_we_lf = 500_000
-    big_list = [[i, i ** 2]
+    custom_num = 10_000_000
+    custom_index_we_lf = 5_000_000
+    big_list = [[i, "value"]
                 for i in range(custom_num)]
     result = big_list[custom_index_we_lf]
     print(result)
@@ -170,5 +178,5 @@ def one_list_with_lists():  # TODO: DELETE IT
 if __name__ == "__main__":  # TODO: DELETE IT
     quick_prints()
 
-    two_diff_lists()  # 0.33 <<<---------!!!!!!!!!!!!!!
-    one_list_with_lists()  # 0.62
+    # two_diff_lists()  # 3.35 <<<---------!!!!!!!!!!!!!!
+    # one_list_with_lists()  # 6.40
