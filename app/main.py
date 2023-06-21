@@ -15,13 +15,6 @@ def timer_decorator(func):  # TODO: DELETE IT
 
 
 class Dictionary:
-    __APPROVED_DATA_TYPES = [int, float, complex, str, bool, tuple,
-                             frozenset, bytes, None, Enum, date, datetime]
-    list_testo = [")"]
-    hash_table = [[] for cell in range(8)]
-    print(hash_table)
-    capacity = 8
-
     """
     Dict(object) clone
 
@@ -43,6 +36,21 @@ class Dictionary:
             in the keyword argument list.  For example:  dict(one=1, two=2)
         """
         print("init call")  # TODO: DELETE IT
+        self.__APPROVED_DATA_TYPES = [int, float, complex, str, bool, tuple,
+                                      frozenset, bytes, None, Enum, date, datetime]
+        self.hash_table = [[] for cell in range(8)]
+        self.capacity = 8
+        self.load_factor = 2 / 3
+
+    def edit_hash_table(self, key, value):
+        hash_index = hash(key) % self.capacity
+        self.hash_table[hash_index].append([key,value])
+        self.hash_space_taken = len(self.hash_table) - self.hash_table.count([])
+        if self.hash_space_taken / self.capacity > self.load_factor:
+            self.capacity *= 2
+            self.hash_table += [[] for cell in range(self.capacity)]
+        print(len(self.hash_table))
+        print(f"{self.hash_table}")
 
     def __setitem__(
             self,
@@ -57,8 +65,7 @@ class Dictionary:
         if type(key) not in self.__APPROVED_DATA_TYPES:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
         self.key, self.value = key, value
-
-        print(self.hash_table)
+        self.edit_hash_table(key, value)
 
     def __getitem__(self, key) -> Any:  # mandatory
         """ x.__getitem__(y) <==> x[y] """
@@ -112,8 +119,6 @@ class Dictionary:
         For the list, dict, and set, we cannot get the hash value.
         Only hashed values can be hashed.
         """
-        hash_capacity: int = 8
-        hash_table: list = [None] * self.capacity
         print("hash testing")  # TODO: DELETE IT
 
     def __repr__(self):  # optional
@@ -142,6 +147,20 @@ def quick_prints():  # TODO: DELETE IT
     doppelganger = Dictionary()  # Custom
     doppelganger.__setitem__("KEY", "VALUE")
     doppelganger.__setitem__("KEY_2", 77)
+    doppelganger.__setitem__("KEY_3", 77)
+    doppelganger.__setitem__("KEY_4", 77)
+    doppelganger.__setitem__("KEY_5", 77)
+    doppelganger.__setitem__("KEY_6", 77)
+    doppelganger.__setitem__("KEY_7", 77)
+    doppelganger.__setitem__("KEY_8", 77)
+    doppelganger.__setitem__("KEY", "VALUE")
+    doppelganger.__setitem__("KEY_2", 77)
+    doppelganger.__setitem__("KEY_3", 77)
+    doppelganger.__setitem__("KEY_4", 77)
+    doppelganger.__setitem__("KEY_5", 77)
+    doppelganger.__setitem__("KEY_6", 77)
+    doppelganger.__setitem__("KEY_7", 77)
+    doppelganger.__setitem__("KEY_8", 77)
     print(doppelganger)
 
     print("____________________________")
