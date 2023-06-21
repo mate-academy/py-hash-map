@@ -66,7 +66,8 @@ class Dictionary:
 
         index = hash(key) % self.capacity
 
-        if self.hash_table[index] is not None and self.hash_table[index].node_key == key:
+        if (self.hash_table[index] is not None
+                and self.hash_table[index].node_key == key):
             return self.hash_table[index]
 
         for node in self.hash_table:
@@ -86,10 +87,5 @@ class Dictionary:
             index = randint(0, self.capacity - 1)
         return index
 
-    def set_length(self):
+    def set_length(self) -> None:
         self.length += 1
-
-    def print(self) -> None:
-        print(self.hash_table)
-
-
