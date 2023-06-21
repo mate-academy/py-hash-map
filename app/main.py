@@ -19,8 +19,7 @@ class Dictionary:
 
     def __universal_hash(self, key: Hashable) -> int:
         return (
-            (self.__universal_a * hash(key) + self.__universal_b)
-            % self.__capacity
+            self.__universal_a * hash(key) + self.__universal_b
         ) % self.__capacity
 
     def insert(self, key: Hashable, value: Any) -> None:
