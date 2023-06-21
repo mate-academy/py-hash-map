@@ -21,7 +21,7 @@ class Dictionary:
 
     def insert(self, key: Any, value: Any) -> None:
         if self.__load_factor() >= 2 / 3:
-            self.__resize()
+            self.__expand()
         hash_value = self.__universal_hash(key)
         probe = 1
         while self.__table[hash_value] is not None:
@@ -43,7 +43,7 @@ class Dictionary:
             probe += 1
         raise KeyError("Key not found")
 
-    def __resize(self) -> None:
+    def __expand(self) -> None:
         self.__capacity *= 2
         new_table = [None] * self.__capacity
         for item in self.__table:
@@ -75,6 +75,9 @@ class Dictionary:
                 return
             hash_value = self.__shift_hash_value(hash_value, probe, key)
             probe += 1
+
+    def __contains__(self, key: Any) -> bool:
+        return self.contains(key)
 
     def __getitem__(self, key: Any) -> Any:
         return self.get(key)
