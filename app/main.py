@@ -25,7 +25,7 @@ class Dictionary:
 
     def _calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
-        while (self.hash_table[index] is not None
+        while (self.hash_table[index]
                and self.hash_table[index].key != key):
             index = self._cyclic_increment(index)
         return index
@@ -44,9 +44,9 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._calculate_index(key)
 
-        if self.hash_table[index] is None:  # add new element
+        if self.hash_table[index] is None:
             if self.size + 1 >= self.current_max_size:
-                self.resize()  # O(N)  # resize without added key & value
+                self.resize()
                 return self.__setitem__(key, value)
 
             self.size += 1
@@ -59,7 +59,7 @@ class Dictionary:
         self.__init__(self.capacity * 2)
 
         for node in old_hash_table:
-            if node is not None:
+            if node:
                 self.__setitem__(node.key, node.value)
 
     def __str__(self) -> str:
