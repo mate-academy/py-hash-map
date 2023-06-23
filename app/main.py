@@ -5,12 +5,12 @@ from dataclasses import dataclass
 
 @dataclass
 class Node:
-    node_key: Hashable
-    node_hash: int
-    node_value: Any
+    key: Hashable
+    hash: int
+    value: Any
 
     def set_value(self, value: Any) -> None:
-        self.node_value = value
+        self.value = value
 
 
 class Dictionary:
@@ -28,7 +28,7 @@ class Dictionary:
 
         for node in old_dict:
             if node:
-                self.__setitem__(node.node_key, node.node_value)
+                self.__setitem__(node.key, node.value)
                 self.length -= 1
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
@@ -53,7 +53,7 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         node_present = self.check_for_presence(key)
         if node_present:
-            return node_present.node_value
+            return node_present.value
 
         else:
             raise KeyError(key)
@@ -67,12 +67,12 @@ class Dictionary:
         index = hash(key) % self.capacity
 
         if (self.hash_table[index]
-                and self.hash_table[index].node_key == key):
+                and self.hash_table[index].key == key):
             return self.hash_table[index]
 
         for node in self.hash_table:
 
-            if node and node.node_key == key:
+            if node and node.key == key:
                 return node
 
         return False
