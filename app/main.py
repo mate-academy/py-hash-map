@@ -6,7 +6,7 @@ from dataclasses import dataclass
 @dataclass
 class Node:
     key: Hashable
-    hash: int
+    node_hash: int
     value: Any
 
     def set_value(self, value: Any) -> None:
