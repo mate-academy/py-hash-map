@@ -20,7 +20,7 @@ class Dictionary:
         new_node = Node(key, value)
         index = hash(new_node.key) % self.capacity
 
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             if self.hash_table[index].key == key:
                 self.hash_table[index] = new_node
                 return
@@ -40,11 +40,10 @@ class Dictionary:
         key_hash = hash(key)
         index = key_hash % self.capacity
 
-        while (self.hash_table[index] is not None
-               and self.hash_table[index].key != key):
+        while self.hash_table[index] and self.hash_table[index].key != key:
             index = (index + 1) % self.capacity
 
-        if self.hash_table[index] is None:
+        if not self.hash_table[index]:
             raise KeyError(f"{key} does not exist")
 
         return self.hash_table[index].value
@@ -56,7 +55,7 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
         for item in old_hash_table:
-            if item is not None:
+            if item:
                 self.__setitem__(item.key, item.value)
 
     def __len__(self) -> int:
