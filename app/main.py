@@ -1,11 +1,11 @@
 from random import randint
-from typing import Any
+from typing import Any, Hashable
 from dataclasses import dataclass
 
 
 @dataclass
 class Node:
-    node_key: int | float | str | tuple
+    node_key: Hashable
     node_hash: int
     node_value: Any
 
@@ -31,7 +31,7 @@ class Dictionary:
                 self.__setitem__(node.node_key, node.node_value)
                 self.length -= 1
 
-    def __setitem__(self, key: int | float | str | tuple, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
 
         index = hash(key) % self.capacity
 
@@ -50,7 +50,7 @@ class Dictionary:
 
         self.save_space()
 
-    def __getitem__(self, key: int | float | str | tuple) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         node_present = self.check_for_presence(key)
         if node_present:
             return node_present.node_value
@@ -62,7 +62,7 @@ class Dictionary:
         return self.length
 
     def check_for_presence(self,
-                           key: int | float | str | tuple) -> Node | bool:
+                           key: Hashable) -> Node | bool:
 
         index = hash(key) % self.capacity
 
