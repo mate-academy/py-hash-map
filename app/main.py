@@ -1,3 +1,4 @@
+import copy
 import time
 from datetime import date, datetime
 from enum import Enum
@@ -35,22 +36,36 @@ class Dictionary:
         dict(**kwargs) -> new dictionary initialized with the name=value pairs
             in the keyword argument list.  For example:  dict(one=1, two=2)
         """
+        self.old_hash_table = None
         print("init call")  # TODO: DELETE IT
         self.__APPROVED_DATA_TYPES = [int, float, complex, str, bool, tuple,
                                       frozenset, bytes, None, Enum, date, datetime]
-        self.hash_table = [[] for cell in range(8)]
-        self.capacity = 8
-        self.load_factor = 2 / 3
+        self.hash_table = [[] for i in range(8)]  # [key #value #hash]
+        # self.hash_table = []
+        self.capacity = len(self.hash_table)
+        self.resize_breakpoint = 2 / 3
 
-    def edit_hash_table(self, key, value):
-        hash_index = hash(key) % self.capacity
-        self.hash_table[hash_index].append([key,value])
-        self.hash_space_taken = len(self.hash_table) - self.hash_table.count([])
-        if self.hash_space_taken / self.capacity > self.load_factor:
-            self.capacity *= 2
-            self.hash_table += [[] for cell in range(self.capacity)]
-        print(len(self.hash_table))
-        print(f"{self.hash_table}")
+    def hash_table_resize(self):
+        print("resize start")
+        self.hash_table += [[] for i in range(self.capacity)]
+        self.capacity *= 2
+        self.old_hash_table = copy.deepcopy(self.hash_table)
+        self.hash_table.clear()
+        self.hash_table = [[] for i in range(self.capacity)]
+        print(f"SHOW ME HASH TABLE: {self.hash_table} len16")
+        print("____________________RESIZE____________________")
+        for node in self.old_hash_table:
+            if len(node):
+                print(f"old node: {node}")
+                print(f"index we looking for {node[2]}")
+                self.hash_table[
+                    node[2] % self.capacity
+                ] = node
+
+        print(F"NEW HASH TABLE LOOKS LIKE : {self.hash_table}")
+        print("___________________RESIZE ENDED____________________")
+        del self.old_hash_table
+
 
     def __setitem__(
             self,
@@ -64,16 +79,44 @@ class Dictionary:
         """ Set self[key] to value. """
         if type(key) not in self.__APPROVED_DATA_TYPES:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
+
+        self.current_load_factor = (self.capacity - self.hash_table.count([])) / self.capacity
+        if self.current_load_factor > self.resize_breakpoint:
+            print("we need resize here")
+            self.hash_table_resize()
+
         self.key, self.value = key, value
-        self.edit_hash_table(key, value)
+        for node in self.hash_table:  # reassign value
+            if hash(key) in node:
+                print("DUPLICATE")
+                print("node", node)
+                node[1] = self.value
+                return
+        self.new_element = [self.key, self.value, hash(self.key)]
+        self.elem_index = self.new_element[2] % self.capacity
+
+        if len(self.hash_table[self.elem_index]) > 0:
+            self.hash_table[self.hash_table.index([])] = self.new_element
+        else:
+            self.hash_table[self.elem_index] = self.new_element
+
+        print(self)
 
     def __getitem__(self, key) -> Any:  # mandatory
         """ x.__getitem__(y) <==> x[y] """
         print("getitem testing")  # TODO: DELETE IT
+        for node in self.hash_table:
+            if hash(key) in node:
+                return node[1]
 
     def __len__(self) -> int:  # mandatory
         """ Return len(self). """
         print("len testing")  # TODO: DELETE IT
+        counter = 0
+        for i in self.hash_table:
+            if i:
+                counter += 1
+        return counter
 
     def clear(self) -> None:  # extra
         """ D.clear() -> None.  Remove all items from D. """
@@ -122,7 +165,10 @@ class Dictionary:
         print("hash testing")  # TODO: DELETE IT
 
     def __repr__(self):  # optional
-        return f"{{{self.key} : {self.value}}}"
+        # return f"{{{self.key} : {self.value}}}"
+        return f"TABLE : {self.hash_table}\n" \
+               f"CAPACITY: {self.capacity}\n" \
+               f"LOAD FACTOR: {self.current_load_factor}\n"
 
 
 class Point:
@@ -145,23 +191,23 @@ class Point:
 
 def quick_prints():  # TODO: DELETE IT
     doppelganger = Dictionary()  # Custom
-    doppelganger.__setitem__("KEY", "VALUE")
-    doppelganger.__setitem__("KEY_2", 77)
-    doppelganger.__setitem__("KEY_3", 77)
-    doppelganger.__setitem__("KEY_4", 77)
-    doppelganger.__setitem__("KEY_5", 77)
-    doppelganger.__setitem__("KEY_6", 77)
-    doppelganger.__setitem__("KEY_7", 77)
-    doppelganger.__setitem__("KEY_8", 77)
-    doppelganger.__setitem__("KEY", "VALUE")
-    doppelganger.__setitem__("KEY_2", 77)
-    doppelganger.__setitem__("KEY_3", 77)
-    doppelganger.__setitem__("KEY_4", 77)
-    doppelganger.__setitem__("KEY_5", 77)
-    doppelganger.__setitem__("KEY_6", 77)
-    doppelganger.__setitem__("KEY_7", 77)
-    doppelganger.__setitem__("KEY_8", 77)
-    print(doppelganger)
+
+    doppelganger.__setitem__(0,"0")
+    doppelganger.__setitem__(0, "1")
+    doppelganger.__setitem__(0, "2")
+    doppelganger.__setitem__(0, "3")
+    print(doppelganger, "CHECK HERE")
+    doppelganger.__setitem__(1, "1")
+    doppelganger.__setitem__(2, "2")
+    doppelganger.__setitem__(3, "3")
+    doppelganger.__setitem__(4, "4")
+    doppelganger.__setitem__("key 5", "5")
+    doppelganger.__setitem__("key 6", "6")
+
+
+
+    print(doppelganger.__getitem__(4))
+    print(len(doppelganger))
 
     print("____________________________")
 
