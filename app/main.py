@@ -22,7 +22,7 @@ class Dictionary:
         index = self.get_index(item)
         cnt = 0
         while cnt < self.capacity:
-            if self.hash_table[index] is not None:
+            if not self.hash_table[index]:
                 if self.hash_table[index][0] == item:
                     return self.hash_table[index][2]
             index = (index + 1) % self.capacity
