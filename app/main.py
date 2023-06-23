@@ -15,6 +15,7 @@ class Dictionary:
     def __setitem__(self,
                     key: Hashable,
                     value: Any) -> None:
+        self._check_resize()
         index = self._get_index(key)
         if self.table[index] is None:
             self.table[index] = []
@@ -25,7 +26,6 @@ class Dictionary:
                 return
         nodes.append([key, hash(key), value])
         self.size += 1
-        self._check_resize()
 
     def __getitem__(self,
                     key: Hashable
@@ -37,7 +37,6 @@ class Dictionary:
         for node in nodes:
             if node[0] == key:
                 return node[2]
-
 
     def __len__(self) -> int:
         return self.size
@@ -60,7 +59,7 @@ class Dictionary:
 
         for node in old_hash_table:
             if node is not None:
-                self.__setitem__(node[0], node[2])
+                self.__setitem__(node[0][0], node[0][2])
 
     def clear(self) -> None:
         self.table = [None] * self.initial_capacity
