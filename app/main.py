@@ -27,7 +27,7 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
         for node in old_dict:
-            if node is not None:
+            if node:
                 self.__setitem__(node.node_key, node.node_value)
                 self.length -= 1
 
@@ -66,13 +66,13 @@ class Dictionary:
 
         index = hash(key) % self.capacity
 
-        if (self.hash_table[index] is not None
+        if (self.hash_table[index]
                 and self.hash_table[index].node_key == key):
             return self.hash_table[index]
 
         for node in self.hash_table:
 
-            if node is not None and node.node_key == key:
+            if node and node.node_key == key:
                 return node
 
         return False
@@ -83,7 +83,7 @@ class Dictionary:
             self.rearrange_dict()
 
     def get_random_index(self, index: int) -> int:
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             index = randint(0, self.capacity - 1)
         return index
 
