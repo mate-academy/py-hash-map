@@ -5,65 +5,34 @@ from enum import Enum
 from typing import Any, Union
 
 
-def timer_decorator(func):  # TODO: DELETE IT
-    def wrapper():
-        start_time = time.time()
-        func()
-        end_time = time.time()
-        print(f"{func.__name__} execution took: {end_time - start_time}")
-
-    return wrapper
-
-
 class Dictionary:
     """
     Dict(object) clone
-
-    some_dict = {"One": 1}         => {"Key": "value"}
-    var = Dictionary_obj("One", 1) => [[key, value, hash],[]..to len(capacity)]
+    _ = Dictionary_obj("One", 1) =>
+    [["One", 1, hash("One")],[]..to len(capacity)]
     """
 
     def __init__(self):  # mandatory?
-        """
-        dict() -> new empty dictionary
-        dict(mapping) -> new dictionary initialized from a mapping object's
-            (key, value) pairs
-        dict(iterable) -> new dictionary initialized as if via:
-            d = {}
-            for k, v in iterable:
-                d[k] = v
-        dict(**kwargs) -> new dictionary initialized with the name=value pairs
-            in the keyword argument list.  For example:  dict(one=1, two=2)
-        """
         self.old_hash_table = None
-        # print("init call")  # TODO: DELETE IT
         self.__APPROVED_DATA_TYPES = [int, float, complex, str, bool, tuple,
                                       frozenset, bytes, None, Enum, date, datetime]
         self.hash_table = [[] for i in range(8)]  # [key #value #hash]
-        # self.hash_table = []
         self.capacity = len(self.hash_table)
         self.resize_breakpoint = 2 / 3
 
     def hash_table_resize(self):
-        # print("resize start")
-        self.hash_table += [[] for i in range(self.capacity)]
-        self.capacity *= 2
-        self.old_hash_table = copy.deepcopy(self.hash_table)
-        self.hash_table.clear()
-        self.hash_table = [[] for i in range(self.capacity)]
-        # print(f"SHOW ME HASH TABLE: {self.hash_table} len16")
-        # print("____________________RESIZE____________________")
-        for node in self.old_hash_table:
-            if len(node):
-                # print(f"old node: {node}")
-                # print(f"index we looking for {node[2]}")
-                self.hash_table[
-                    node[2] % self.capacity
-                    ] = node
 
-        # print(F"NEW HASH TABLE LOOKS LIKE : {self.hash_table}")
-        # print("___________________RESIZE ENDED____________________")
-        del self.old_hash_table
+        self.capacity *= 2
+        print("resize action ________________________________")
+        old_hash_table = copy.deepcopy(self.hash_table)
+        print(old_hash_table)
+        self.hash_table = [[] for i in range(self.capacity)]
+        print(self.hash_table, print(len(self.hash_table)))
+        for i in old_hash_table:
+            if len(i):
+                print(i[0], i[1], i[2])
+                if self.hash_table[i[2] % len(self.hash_table)] == []:
+                    self.hash_table[i[2] % len(self.hash_table)] = i
 
     def __setitem__(
             self,
@@ -73,21 +42,18 @@ class Dictionary:
             ],
             value: Any
     ) -> None:  # mandatory
-        # print("setitem testing")  # TODO: DELETE IT
+
         """ Set self[key] to value. """
         if type(key) not in self.__APPROVED_DATA_TYPES:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
 
         self.current_load_factor = (self.capacity - self.hash_table.count([])) / self.capacity
         if self.current_load_factor > self.resize_breakpoint:
-            # print("we need resize here")
             self.hash_table_resize()
 
         self.key, self.value = key, value
         for node in self.hash_table:  # reassign value
-            if hash(key) in node:
-                # print("DUPLICATE")
-                # print("node", node)
+            if hash(self.key) in node:
                 node[1] = self.value
                 return
         self.new_element = [self.key, self.value, hash(self.key)]
@@ -98,11 +64,9 @@ class Dictionary:
         else:
             self.hash_table[self.elem_index] = self.new_element
 
-        # print(self)
-
     def __getitem__(self, key) -> Any:  # mandatory
         """ x.__getitem__(y) <==> x[y] """
-        # print("getitem testing")  # TODO: DELETE IT
+
         for node in self.hash_table:
             if hash(key) in node:
                 return node[1]
@@ -110,13 +74,12 @@ class Dictionary:
 
     def __len__(self) -> int:  # mandatory
         """ Return len(self). """
-        # print("len testing")  # TODO: DELETE IT
-
-        elem_counter = 0  # filled
-        for node in self.hash_table:
-            if node:
-                elem_counter += 1
-        return elem_counter
+        # print("return len")
+        # print(f"hash table len: {len(self.hash_table)}")
+        # print(f"empty: {self.hash_table.count([])}")
+        # print(self.hash_table)
+        self.counter = 0
+        return sum(1 for node in self.hash_table if node)
 
     def clear(self) -> None:  # extra
         """ D.clear() -> None.  Remove all items from D. """
@@ -171,87 +134,71 @@ class Dictionary:
                f"LOAD FACTOR: {self.current_load_factor}\n"
 
 
-# class Point:
-#     def __init__(self, x, y):
-#         self.x = x
-#         self.y = y
-#
-#     def __hash__(self):
-#         # print(f"hash default: {hash(self)}")
-#         return hash(self.x, self.y)
-#
-#     def __eq__(self, other):
-#         if self.x == other.x and self.y == other.y:
-#             return True
-#         return False
-#
-#     def __repr__(self):
-#         return (f"Point example: x = {self.x} ; y = {self.y}\n"
-#                 f"Hash: {self.__hash__()}")
+class Point:
+    def __init__(self, x: float, y: float) -> None:
+        self._x = x
+        self._y = y
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, Point):
+            return False
+        return self.x == other.x and self.y == other.y
+
+    def __hash__(self) -> int:
+        # Change the implementation of the hash to debug your code.
+        # For example, you can return self.x + self.y as a hash
+        # which is NOT a best practice, but you will be able to predict
+        # a hash value by coordinates of the point and its index
+        # in the hashtable as well
+        return hash((self.x, self.y))
+
+    @property
+    def x(self) -> float:
+        return self._x
+
+    @property
+    def y(self) -> float:
+        return self._y
+
+    def __repr__(self):
+        return (f"Point example: x = {self.x} ; y = {self.y}\n"
+                f"Hash: {self.__hash__()}")
+
+
+def timer_decorator(func):  # TODO: DELETE IT
+    def wrapper():
+        start_time = time.time()
+        func()
+        end_time = time.time()
+        print(f"{func.__name__} execution took: {end_time - start_time}")
+
+    return wrapper
 
 
 def quick_prints():  # TODO: DELETE IT
-    doppelganger = Dictionary()  # Custom
-    doppelganger.__setitem__(900, "int test")
-    doppelganger.__setitem__(100.0, "float test")
-    doppelganger.__setitem__("string_test_key", "str")
-    doppelganger.__setitem__(1, 2)
-    print(doppelganger)
-    print(len(doppelganger))
+    items = [(f"Element {i}", i) for i in range(7)]
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
+    print(len(dictionary))
+    print(len(items))
 
 
-#
-#     doppelganger.__setitem__(0, "0")
-#     doppelganger.__setitem__(0, "1")
-#     doppelganger.__setitem__(0, "2")
-#     doppelganger.__setitem__(0, "3")
-#     # print(doppelganger, "CHECK HERE")
-#     doppelganger.__setitem__(1, "1")
-#     doppelganger.__setitem__(2, "2")
-#     doppelganger.__setitem__(3, "3")
-#     doppelganger.__setitem__(4, "4")
-#     doppelganger.__setitem__("key 5", "5")
-#     doppelganger.__setitem__("key 6", "6")
-#     doppelganger["KEYKEYKEY"] = "VALVLAVLAVLA"
-#     print(len(doppelganger))
-# print("check doppel len here")
-# print(len(doppelganger))
-# example_point = Point(1, 2)
-# doppelganger.__setitem__(example_point, "Custom hashable classes can be used as keys")
-
-# print("____________________________")
-
-# guido_dict = {1: "one", 2: {"two"}, None: ":)", ":)": None}  # Original
-# guido_dict[":)"] = guido_dict[1]
-# print(f"Py dict example : {guido_dict}")
-# point_for_tests = Point(1, 2)
-# point_for_tests_2 = Point(3, 4)
-# print(point_for_tests)
-# print(point_for_tests_2)
-
-#
-# @timer_decorator
-# def two_diff_lists():  # TODO: DELETE IT
-#     custom_num = 10_000_000
-#     custom_index_we_lf = 5_000_000
-#     big_list = [i for i in range(custom_num)]
-#     big_list_2 = ["value" for i in range(custom_num)]
-#     result = [big_list[custom_index_we_lf], big_list_2[custom_index_we_lf]]
-#     print(result)
-#
-#
-# @timer_decorator
-# def one_list_with_lists():  # TODO: DELETE IT
-#     custom_num = 10_000_000
-#     custom_index_we_lf = 5_000_000
-#     big_list = [[i, "value"]
-#                 for i in range(custom_num)]
-#     result = big_list[custom_index_we_lf]
-#     print(result)
-#
-#
 if __name__ == "__main__":  # TODO: DELETE IT
     quick_prints()
 
-    # two_diff_lists()  # 3.35 <<<---------!!!!!!!!!!!!!!
-    # one_list_with_lists()  # 6.40
+    # def hash_table_resize(self):
+    #     print("resize action ________________________________")
+    #     self.hash_table += [[] for i in range(self.capacity)]
+    #     self.capacity *= 2
+    #     self.old_hash_table = copy.deepcopy(self.hash_table)
+    #     self.hash_table.clear()
+    #     self.hash_table = [[] for i in range(self.capacity)]
+    #
+    #     for node in self.old_hash_table:
+    #         if len(node):
+    #             self.hash_table[
+    #                 node[2] % self.capacity
+    #                 ] = node
+    #
+    #     del self.old_hash_table
