@@ -21,18 +21,15 @@ class Dictionary:
         self.resize_breakpoint = 2 / 3
 
     def hash_table_resize(self):
-
-        self.capacity *= 2
-        print("resize action ________________________________")
-        old_hash_table = copy.deepcopy(self.hash_table)
-        print(old_hash_table)
+        self.old_hash_table = copy.deepcopy(self.hash_table)
         self.hash_table = [[] for i in range(self.capacity)]
-        print(self.hash_table, print(len(self.hash_table)))
-        for i in old_hash_table:
+        for i in self.old_hash_table:
             if len(i):
-                print(i[0], i[1], i[2])
-                if self.hash_table[i[2] % len(self.hash_table)] == []:
-                    self.hash_table[i[2] % len(self.hash_table)] = i
+                index_by_new_hash = i[2] % self.capacity
+                if not len(self.hash_table[index_by_new_hash]):
+                    self.hash_table[index_by_new_hash] = i
+                else:
+                    self.hash_table[self.hash_table.index([])] = i
 
     def __setitem__(
             self,
@@ -49,6 +46,8 @@ class Dictionary:
 
         self.current_load_factor = (self.capacity - self.hash_table.count([])) / self.capacity
         if self.current_load_factor > self.resize_breakpoint:
+            self.capacity *= 2
+            print("resize call from __set__")
             self.hash_table_resize()
 
         self.key, self.value = key, value
@@ -63,6 +62,7 @@ class Dictionary:
             self.hash_table[self.hash_table.index([])] = self.new_element
         else:
             self.hash_table[self.elem_index] = self.new_element
+        print("--->", self.hash_table)
 
     def __getitem__(self, key) -> Any:  # mandatory
         """ x.__getitem__(y) <==> x[y] """
@@ -134,37 +134,6 @@ class Dictionary:
                f"LOAD FACTOR: {self.current_load_factor}\n"
 
 
-class Point:
-    def __init__(self, x: float, y: float) -> None:
-        self._x = x
-        self._y = y
-
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, Point):
-            return False
-        return self.x == other.x and self.y == other.y
-
-    def __hash__(self) -> int:
-        # Change the implementation of the hash to debug your code.
-        # For example, you can return self.x + self.y as a hash
-        # which is NOT a best practice, but you will be able to predict
-        # a hash value by coordinates of the point and its index
-        # in the hashtable as well
-        return hash((self.x, self.y))
-
-    @property
-    def x(self) -> float:
-        return self._x
-
-    @property
-    def y(self) -> float:
-        return self._y
-
-    def __repr__(self):
-        return (f"Point example: x = {self.x} ; y = {self.y}\n"
-                f"Hash: {self.__hash__()}")
-
-
 def timer_decorator(func):  # TODO: DELETE IT
     def wrapper():
         start_time = time.time()
@@ -175,13 +144,16 @@ def timer_decorator(func):  # TODO: DELETE IT
     return wrapper
 
 
+@timer_decorator
 def quick_prints():  # TODO: DELETE IT
-    items = [(f"Element {i}", i) for i in range(7)]
+    items = [(f"Egorka #{i}", i) for i in range(10)]
     dictionary = Dictionary()
     for key, value in items:
         dictionary[key] = value
     print(len(dictionary))
     print(len(items))
+    dictionary["Egorka #0"] = ":)"
+    print(dictionary.hash_table)
 
 
 if __name__ == "__main__":  # TODO: DELETE IT
