@@ -41,7 +41,9 @@ class Dictionary:
     ) -> None:  # mandatory
 
         """ Set self[key] to value. """
-        if type(key) not in self.__APPROVED_DATA_TYPES:
+        try:
+            type(key) in self.__APPROVED_DATA_TYPES
+        except Exception:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
 
         self.current_load_factor = (self.capacity - self.hash_table.count([])) / self.capacity
@@ -146,14 +148,15 @@ def timer_decorator(func):  # TODO: DELETE IT
 
 @timer_decorator
 def quick_prints():  # TODO: DELETE IT
-    items = [(f"Egorka #{i}", i) for i in range(10)]
+    items = [(f"Egorka #{i}", i) for i in range(10_000)]
     dictionary = Dictionary()
     for key, value in items:
         dictionary[key] = value
+    print("res")
     print(len(dictionary))
     print(len(items))
     dictionary["Egorka #0"] = ":)"
-    print(dictionary.hash_table)
+
 
 
 if __name__ == "__main__":  # TODO: DELETE IT
