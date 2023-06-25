@@ -46,12 +46,6 @@ class Dictionary:
         except Exception:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
 
-        self.current_load_factor = (self.capacity - self.hash_table.count([])) / self.capacity
-        if self.current_load_factor > self.resize_breakpoint:
-            self.capacity *= 2
-            print("resize call from __set__")
-            self.hash_table_resize()
-
         self.key, self.value = key, value
         for node in self.hash_table:  # reassign value
             if hash(self.key) in node:
@@ -64,7 +58,11 @@ class Dictionary:
             self.hash_table[self.hash_table.index([])] = self.new_element
         else:
             self.hash_table[self.elem_index] = self.new_element
-        print("--->", self.hash_table)
+        self.current_load_factor = (self.capacity - self.hash_table.count([])) / self.capacity
+        if self.current_load_factor > self.resize_breakpoint:
+            self.capacity *= 2
+            print("resize call from __set__")
+            self.hash_table_resize()
 
     def __getitem__(self, key) -> Any:  # mandatory
         """ x.__getitem__(y) <==> x[y] """
@@ -133,7 +131,7 @@ class Dictionary:
         # return f"{{{self.key} : {self.value}}}"
         return f"TABLE : {self.hash_table}\n" \
                f"CAPACITY: {self.capacity}\n" \
-               f"LOAD FACTOR: {self.current_load_factor}\n"
+
 
 
 def timer_decorator(func):  # TODO: DELETE IT
@@ -148,32 +146,24 @@ def timer_decorator(func):  # TODO: DELETE IT
 
 @timer_decorator
 def quick_prints():  # TODO: DELETE IT
-    items = [(f"Egorka #{i}", i) for i in range(10_000)]
+
     dictionary = Dictionary()
-    for key, value in items:
-        dictionary[key] = value
-    print("res")
-    print(len(dictionary))
-    print(len(items))
-    dictionary["Egorka #0"] = ":)"
+    dictionary[0] = 2
+    dictionary[1] = 2
+    dictionary[2] = 2
+    dictionary[3] = 2
+    dictionary[4] = 2
+    dictionary[5] = 2
+    dictionary[6] = 2
+    dictionary[7] = 2
+
+
+    print(dictionary)
+
 
 
 
 if __name__ == "__main__":  # TODO: DELETE IT
     quick_prints()
 
-    # def hash_table_resize(self):
-    #     print("resize action ________________________________")
-    #     self.hash_table += [[] for i in range(self.capacity)]
-    #     self.capacity *= 2
-    #     self.old_hash_table = copy.deepcopy(self.hash_table)
-    #     self.hash_table.clear()
-    #     self.hash_table = [[] for i in range(self.capacity)]
-    #
-    #     for node in self.old_hash_table:
-    #         if len(node):
-    #             self.hash_table[
-    #                 node[2] % self.capacity
-    #                 ] = node
-    #
-    #     del self.old_hash_table
+
