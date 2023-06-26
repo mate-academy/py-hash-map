@@ -8,6 +8,7 @@ class Node:
         value: Any
     ) -> None:
         self.key = key
+        self.hash_value = hash(key)
         self.value = value
         self.next = None
 
@@ -25,20 +26,19 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.__get_index(key)
-        if self.table[index] is None:
-            self.table[index] = Node(key, value)
-            self.table_size += 1
-        else:
+        if self.table[index]:
             current = self.table[index]
             while True:
                 if current.key == key:
                     current.value = value
                     return
-                if current.next is None:
+                if not current.next:
                     break
                 current = current.next
             current.next = Node(key, value)
-            self.table_size += 1
+        else:
+            self.table[index] = Node(key, value)
+        self.table_size += 1
 
         if self.table_size >= self.capacity * self.load_factor:
             self.__resize_table()
@@ -60,13 +60,13 @@ class Dictionary:
             current = self.table[i]
             while current:
                 index = self.__get_index(current.key)
-                if new_table[index] is None:
-                    new_table[index] = Node(current.key, current.value)
-                else:
+                if new_table[index]:
                     new_current = new_table[index]
                     while new_current.next:
                         new_current = new_current.next
                     new_current.next = Node(current.key, current.value)
+                else:
+                    new_table[index] = Node(current.key, current.value)
                 current = current.next
 
         self.table = new_table
