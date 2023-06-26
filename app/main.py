@@ -42,7 +42,7 @@ class Dictionary:
         key_hash = hash(key)
         index = key_hash % self._capacity
 
-        if self._hash_table[index] is None:
+        if not self._hash_table[index]:
             raise KeyError
 
         while self._hash_table[index].key != key:
@@ -51,9 +51,7 @@ class Dictionary:
         return self._hash_table[index].value
 
     def _resize(self) -> None:
-        previous_nodes = [
-            node for node in self._hash_table if node is not None
-        ]
+        previous_nodes = [node for node in self._hash_table if node]
         self.__init__(self._capacity * self._capacity_multiplier)
 
         for node in previous_nodes:
