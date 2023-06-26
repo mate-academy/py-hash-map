@@ -16,8 +16,7 @@ class Dictionary:
         threshhold = int(self.capacity * self.load_factor)
         if self.capacity - threshhold > self.hash_table.count(None):
             self.resize()
-        if not isinstance(key, Hashable):
-            raise TypeError(f"unhashable type: '{type(key)}'")
+
         index = self.get_index_from_hash(key)
         while True:
             if not self.hash_table[index]:
@@ -34,8 +33,6 @@ class Dictionary:
                     index = 0
 
     def __getitem__(self, key: Hashable) -> Any:
-        if not isinstance(key, Hashable):
-            raise TypeError(f"unhashable type: '{type(key)}'")
 
         index = self.get_index_from_hash(key)
         while self.hash_table[index]:
@@ -48,8 +45,6 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
     def __delitem__(self, key: Hashable) -> None:
-        if not isinstance(key, Hashable):
-            raise TypeError(f"unhashable type: '{type(key)}'")
 
         index = self.get_index_from_hash(key)
         while self.hash_table[index]:
@@ -66,5 +61,5 @@ class Dictionary:
             if item:
                 self.__setitem__(item[0], item[2])
 
-    def get_index_from_hash(self, key: Any) -> int:
+    def get_index_from_hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
