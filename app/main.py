@@ -46,7 +46,7 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
-        if self.table[index] is None:
+        if not self.table[index]:
             raise KeyError(key)
         self.table[index] = None
         self.size -= 1
