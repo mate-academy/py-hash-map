@@ -38,7 +38,7 @@ class Dictionary:
         self._hash_table[index] = Node(key, key_hash, value)
         self._length += 1
 
-    def __getitem__(self, key: int) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         key_hash = hash(key)
         index = key_hash % self._capacity
 
