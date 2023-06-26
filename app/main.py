@@ -4,7 +4,7 @@ from typing import Any, Iterator
 
 
 class Dictionary:
-    def __init__(self):  # mandatory?
+    def __init__(self):
 
         self.buckets_table = [[] for bucket in range(8)]
         self.capacity = len(self.buckets_table)
@@ -42,13 +42,13 @@ class Dictionary:
                 self.resize_breakpoint):
             self.buckets_table_resize()
 
-    def __getitem__(self, key: Hashable) -> Any:  # mandatory
+    def __getitem__(self, key: Hashable) -> Any:
         for bucket in self.buckets_table:
             if len(bucket) and key == bucket[0]:
                 return bucket[1]
         raise KeyError(key)
 
-    def __len__(self) -> int:  # mandatory
+    def __len__(self) -> int:
         return sum(1 for bucket in self.buckets_table if bucket)
 
     def clear(self) -> None:  # extra
@@ -87,11 +87,11 @@ class Dictionary:
         """
         pass
 
-    def __iter__(self) -> Iterator:  # extra
+    def __iter__(self) -> Iterator:
         """ Implement iter(self). """
         return iter(bucket[0] for bucket in self.buckets_table if len(bucket))
 
-    def __repr__(self) -> str:  # optional
+    def __repr__(self) -> str:
 
         return f"TABLE : {self.buckets_table}\n" \
                f"CAPACITY: {self.capacity}\n"
