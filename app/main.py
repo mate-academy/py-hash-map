@@ -23,22 +23,22 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        self.set_node_to_hash_table(key, value, self.hash_table)
+
         if self.length >= int(self.capacity * LOAD_FACTOR):
             self.resize()
 
-        self.append_node_to_hash_table(key, value, self.hash_table)
-
-    def append_node_to_hash_table(
+    def set_node_to_hash_table(
             self,
-            key: Any,
+            key: Hashable,
             value: Any,
             hash_table: list[Node | None],
     ) -> None:
         key_hash = hash(key)
         hash_index = key_hash % self.capacity
 
-        while hash_table[hash_index] is not None:
+        while hash_table[hash_index]:
             if hash_table[hash_index].key == key:
                 hash_table[hash_index].value = value
                 return
@@ -48,17 +48,17 @@ class Dictionary:
         hash_table[hash_index] = Node(key, key_hash, value)
         self.length += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         hash_index = hash_key % self.capacity
 
         while (
-                self.hash_table[hash_index] is not None
+                self.hash_table[hash_index]
                 and self.hash_table[hash_index].key != key
         ):
             hash_index = (hash_index + 1) % self.capacity
 
-        if self.hash_table[hash_index] is None:
+        if not self.hash_table[hash_index]:
             raise KeyError(f"Key {key} doesn't exist")
 
         return self.hash_table[hash_index].value
@@ -69,7 +69,7 @@ class Dictionary:
         old_hash_table = [
             item
             for item in self.hash_table
-            if item is not None
+            if item
         ]
         self.hash_table = [None] * self.capacity
 
