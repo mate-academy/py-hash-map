@@ -53,7 +53,7 @@ class Dictionary:
 
     def __iter__(self) -> None:
         for node in self.table:
-            if node is not None:
+            if node:
                 yield node[0]
 
     # later implement methods get, pop, update (just for myself)
