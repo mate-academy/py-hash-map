@@ -72,8 +72,8 @@ class Dictionary:
         if key in self:
             for i in range(self.capacity):
                 if self.hash_table[i] and self.hash_table[i][0] == key:
-                        popped_value = self.hash_table[i]
-                        self.hash_table[i] = None
-                        return popped_value
+                    popped_value = self.hash_table[i]
+                    self.hash_table[i] = None
+                    return popped_value
         else:
             raise KeyError
