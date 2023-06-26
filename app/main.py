@@ -9,28 +9,25 @@ class Dictionary:
         self.hash_table: list = [None] * self.capacity
 
     def __len__(self) -> int:
-        print(self.capacity)
         return self.size
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        threshhold = int(self.capacity * self.load_factor)
-        if self.capacity - threshhold > self.hash_table.count(None):
-            self.resize()
 
         index = self.get_index_from_hash(key)
+
         while True:
             if not self.hash_table[index]:
                 self.hash_table[index] = (key, hash(key), value)
                 self.size += 1
+                threshhold = int(self.capacity * self.load_factor)
+                if self.capacity - threshhold > self.hash_table.count(None):
+                    self.resize()
                 break
             elif self.hash_table[index]:
                 if self.hash_table[index][0] == key:
                     self.hash_table[index] = (key, hash(key), value)
                     break
-                if index + 1 < self.capacity:
-                    index += 1
-                else:
-                    index = 0
+                index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
 
