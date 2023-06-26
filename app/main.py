@@ -4,14 +4,14 @@ from typing import Any, Iterator
 
 
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.buckets_table = [[] for bucket in range(8)]
         self.capacity = len(self.buckets_table)
         self.resize_breakpoint = 2 / 3
         self.old_buckets_table = None
 
-    def buckets_table_resize(self):
+    def buckets_table_resize(self) -> None:
         self.capacity *= 2
         self.old_buckets_table = copy.deepcopy(self.buckets_table)
         self.buckets_table = [[] for bucket in range(self.capacity)]
@@ -38,8 +38,8 @@ class Dictionary:
             self.buckets_table[self.buckets_table.index([])] = new_k_v_pair
         else:
             self.buckets_table[index] = new_k_v_pair
-        if ((self.capacity - self.buckets_table.count([])) / self.capacity >
-                self.resize_breakpoint):
+        if ((self.capacity - self.buckets_table.count([])) / self.capacity
+                > self.resize_breakpoint):
             self.buckets_table_resize()
 
     def __getitem__(self, key: Hashable) -> Any:
@@ -59,14 +59,14 @@ class Dictionary:
         """ Delete self[key]. """
         pass
 
-    def get(self):  # extra
+    def get(self) -> Any:  # extra
         """
         Return the value for key if key is in the dictionary,
         else default.
         """
         pass
 
-    def pop(self):  # extra
+    def pop(self) -> None:  # extra
         """
         D.pop(k[,d]) -> v, remove specified key
         and return the corresponding value.
@@ -76,7 +76,7 @@ class Dictionary:
         """
         pass
 
-    def update(self):  # extra
+    def update(self) -> None:  # extra
         """
         D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
         If E is present and has a .keys() method, then does:
