@@ -1,6 +1,5 @@
-import time
 from typing import Any
-import random
+
 
 class Point:
     def __init__(self, x: float, y: float) -> None:
@@ -18,13 +17,7 @@ class Point:
         # which is NOT a best practice, but you will be able to predict
         # a hash value by coordinates of the point and its index
         # in the hashtable as well
-
-        return hash((self._x, self._y, random.random()))
-
-    def __repr__(self):
-        return f"Point: ({self.x}, {self.y}) | hash: {hash(self)}"
-
-
+        return hash((self.x, self.y))
 
     @property
     def x(self) -> float:
