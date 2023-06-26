@@ -76,7 +76,6 @@ class Dictionary:
         # print(f"hash table len: {len(self.hash_table)}")
         # print(f"empty: {self.hash_table.count([])}")
         # print(self.hash_table)
-        self.counter = 0
         return sum(1 for node in self.hash_table if node)
 
     def clear(self) -> None:  # extra
@@ -120,7 +119,7 @@ class Dictionary:
         return iter(node[0] for node in self.hash_table if len(node))
 
     def __repr__(self):  # optional
-        # return f"{{{self.key} : {self.value}}}"
+
         return f"TABLE : {self.hash_table}\n" \
                f"CAPACITY: {self.capacity}\n"
 
@@ -139,18 +138,11 @@ def timer_decorator(func):  # TODO: DELETE IT
 def quick_prints():  # TODO: DELETE IT
 
     dictionary = Dictionary()
-    point_1 = Point(1,2)
-    print(point_1)
-    point_2 = Point(1,2)
-    point_3 = Point(1, 2)
-    point_4 = Point(1, 2)
-    point_5 = Point(1, 2)
-    point_6 = Point(1, 2)
-    print(point_2)
-    print(point_3)
-    print(point_4)
-    print(point_5)
-    print(point_6)
+    dictionary[1] = "one"
+    dictionary[2] = "two"
+    dictionary[3] = "three"
+    dictionary[4] = "four"
+    print(dictionary)
 
 
 if __name__ == "__main__":  # TODO: DELETE IT
