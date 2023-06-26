@@ -3,8 +3,7 @@ import time
 from datetime import date, datetime
 from enum import Enum
 from typing import Any, Union
-
-
+from app.point import Point
 class Dictionary:
     """
     Dict(object) clone
@@ -19,6 +18,7 @@ class Dictionary:
         self.hash_table = [[] for i in range(8)]  # [key #value #hash]
         self.capacity = len(self.hash_table)
         self.resize_breakpoint = 2 / 3
+        self.items_order = [] # [[item, order = 1],[item, order = 2]]
 
     def hash_table_resize(self):
         self.old_hash_table = copy.deepcopy(self.hash_table)
@@ -48,7 +48,7 @@ class Dictionary:
 
         self.key, self.value = key, value
         for node in self.hash_table:  # reassign value
-            if hash(self.key) in node:
+            if self.key in node:
                 node[1] = self.value
                 return
         self.new_element = [self.key, self.value, hash(self.key)]
@@ -65,10 +65,8 @@ class Dictionary:
             self.hash_table_resize()
 
     def __getitem__(self, key) -> Any:  # mandatory
-        """ x.__getitem__(y) <==> x[y] """
-
         for node in self.hash_table:
-            if hash(key) in node:
+            if key in node:
                 return node[1]
         raise KeyError
 
@@ -119,19 +117,12 @@ class Dictionary:
 
     def __iter__(self):  # extra
         """ Implement iter(self). """
-
-    def hash(self):  # optional
-        """
-        For the list, dict, and set, we cannot get the hash value.
-        Only hashed values can be hashed.
-        """
-        # print("hash testing")  # TODO: DELETE IT
+        return iter(node[0] for node in self.hash_table if len(node))
 
     def __repr__(self):  # optional
         # return f"{{{self.key} : {self.value}}}"
         return f"TABLE : {self.hash_table}\n" \
-               f"CAPACITY: {self.capacity}\n" \
-
+               f"CAPACITY: {self.capacity}\n"
 
 
 def timer_decorator(func):  # TODO: DELETE IT
@@ -148,22 +139,19 @@ def timer_decorator(func):  # TODO: DELETE IT
 def quick_prints():  # TODO: DELETE IT
 
     dictionary = Dictionary()
-    dictionary[0] = 2
-    dictionary[1] = 2
-    dictionary[2] = 2
-    dictionary[3] = 2
-    dictionary[4] = 2
-    dictionary[5] = 2
-    dictionary[6] = 2
-    dictionary[7] = 2
-
-
-    print(dictionary)
-
-
+    point_1 = Point(1,2)
+    print(point_1)
+    point_2 = Point(1,2)
+    point_3 = Point(1, 2)
+    point_4 = Point(1, 2)
+    point_5 = Point(1, 2)
+    point_6 = Point(1, 2)
+    print(point_2)
+    print(point_3)
+    print(point_4)
+    print(point_5)
+    print(point_6)
 
 
 if __name__ == "__main__":  # TODO: DELETE IT
     quick_prints()
-
-
