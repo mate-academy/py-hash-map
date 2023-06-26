@@ -23,7 +23,8 @@ class Dictionary:
 
         if self.length > self.capacity * self.load_factor:
             self.resize()
-            return self.__setitem__(key, value)
+            self[key] = value
+            return
 
         self.hash_table[index] = (key, hash(key), value)
         self.length += 1
@@ -49,4 +50,4 @@ class Dictionary:
         self.hash_table = self.capacity * [None]
         for item in new_hash_table:
             if item:
-                self.__setitem__(item[0], item[2])
+                self[item[0]] = item[2]
