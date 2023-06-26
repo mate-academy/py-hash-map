@@ -16,18 +16,17 @@ class Dictionary:
         index = self.get_index_from_hash(key)
 
         while True:
-            if not self.hash_table[index]:
+            if not self.hash_table[index] or self.hash_table[index][0] == key:
+                if not self.hash_table[index]:
+                    self.size += 1
                 self.hash_table[index] = (key, hash(key), value)
-                self.size += 1
+
                 threshhold = int(self.capacity * self.load_factor)
                 if self.capacity - threshhold > self.hash_table.count(None):
                     self.resize()
                 break
-            elif self.hash_table[index]:
-                if self.hash_table[index][0] == key:
-                    self.hash_table[index] = (key, hash(key), value)
-                    break
-                index = (index + 1) % self.capacity
+
+            index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
 
