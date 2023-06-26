@@ -10,6 +10,7 @@ CAPACITY_MULTIPLIER = 2
 class Node:
     key: Hashable
     value: Any
+    hash_value: int
 
 
 class Dictionary:
@@ -46,19 +47,20 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._calculate_index(key)
 
-        if not self.hash_table[index]:  # add new element
+        if not self.hash_table[index]:
             if self.size + 1 >= self.current_max_size:
-                self.resize()  # O(N)  # resize without added key & value
+                self.resize()
                 return self.__setitem__(key, value)
 
             self.size += 1
 
-        self.hash_table[index] = Node(key, value)
+        node = Node(key, value, hash(key))
+        self.hash_table[index] = node
 
     def resize(self) -> None:
         old_hash_table = self.hash_table
 
-        self.__init__(self.capacity * 2)
+        self.__init__(self.capacity * CAPACITY_MULTIPLIER)
 
         for node in old_hash_table:
             if node:
