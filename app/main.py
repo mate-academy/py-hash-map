@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Hashable
+from typing import Any, Hashable, Iterable
 
 
 class Dictionary:
@@ -63,17 +63,25 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def update(self, other: Dictionary) -> None:
-        for item in other.hash_table:
-            if item:
+    def update(self, other: Dictionary | Iterable = None) -> None:
+        if isinstance(other, Dictionary):
+            for item in other.hash_table:
+                if item:
+                    self[item[0]] = other[item[0]]
+        elif isinstance(other, Iterable):
+            for item in other:
                 self[item[0]] = other[item[0]]
+        else:
+            raise ValueError
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         if key in self:
             for i in range(self.capacity):
                 if self.hash_table[i] and self.hash_table[i][0] == key:
                     popped_value = self.hash_table[i]
                     self.hash_table[i] = None
                     return popped_value
+        elif default:
+            return default
         else:
             raise KeyError
