@@ -1,12 +1,13 @@
 import copy
+import pprint
 from collections.abc import Hashable
-from typing import Any, Iterator
+from typing import Union, Any, Iterator
 
 
 class Dictionary:
     def __init__(self) -> None:
 
-        self.buckets_table = [[] for bucket in range(8)]
+        self.buckets_table = [[] for _ in range(8)]
         self.capacity = len(self.buckets_table)
         self.resize_breakpoint = 2 / 3
         self.old_buckets_table = None
@@ -59,24 +60,22 @@ class Dictionary:
             if len(bucket) and bucket[0] == key:
                 bucket.clear()
 
-    def get(self, key: Hashable, default=None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         for bucket in self.buckets_table:
             if len(bucket) and key == bucket[0]:
                 return bucket[1]
         return default
 
-    def pop(self, key: Hashable, default=None) -> None:  # extra
-        """
-        D.pop(k[,d]) -> v, remove specified key
-        and return the corresponding value.
+    def update(self, other_dict: "Dictionary") -> None:
+        for bucket in other_dict.buckets_table:
+            if len(bucket):
+                self.__setitem__(bucket[0], bucket[1])
 
-        If the key is not found, return the default if given; otherwise,
-        raise a KeyError.
-        """
+    def pop(self, key: Hashable, default: Any = None) -> Union[None, Any]:
         value = None
         for bucket in self.buckets_table:
             if len(bucket) and bucket[0] == key:
-                result = bucket[1]
+                value = bucket[1]
                 bucket.clear()
         if default is not None:
             return default
@@ -84,19 +83,17 @@ class Dictionary:
             return value
         raise KeyError
 
-    def update(self, other_dict) -> None:
-        for bucket in other_dict.buckets_table:
-            if len(bucket):
-                self.__setitem__(bucket[0], bucket[1])
-
     def __iter__(self) -> Iterator:
 
         return iter(bucket[0] for bucket in self.buckets_table if len(bucket))
 
     def __repr__(self) -> str:
-        return f"CUSTOM_HASH_TABLE : {self.buckets_table}\n" \
-               f"CAPACITY: {self.capacity}\n" \
-               f"LEN: {self.__len__()}"
+        return ("CUSTOM_HASH_TABLE: [KEY, VALUE, HASH(KEY)]\n"
+                + ("*" * 42) + "\n" + pprint.pformat(
+                    object=self.buckets_table,
+                    indent=0)[1:-1]
+                + "\n" + "CAPACITY: " + str(self.capacity) + "\n"
+                + "LEN: " + str(self.__len__())) + "\n" + ("*" * 42)
 
     def __str__(self) -> str:
         return "{" + ", ".join([bucket[0] + " : " + str(bucket[1])
@@ -104,21 +101,10 @@ class Dictionary:
                                 if len(bucket)]) + "}"
 
 
-items_d1 = [(f"val{i}", i) for i in range(3)]
+items = [(f"Element {i}", i) for i in range(21)]
+dictionary = Dictionary()
+for key, value in items:
+    dictionary[key] = value
 
-dictionary_1 = Dictionary()
-
-for key, value in items_d1:
-    dictionary_1[key] = value
-
-guidict = {"val1": (2), "val2": 4, "val3": 123}
-print(guidict)
-iterator_t = guidict.__iter__()
-print(iterator_t.__next__())
-print(iterator_t.__next__())
-print(iterator_t.__next__())
-
-my = dictionary_1.__iter__()
-print(my.__next__())
-print(my.__next__())
-print(my.__next__())
+print(dictionary.__repr__())
+print(dictionary.__str__())
