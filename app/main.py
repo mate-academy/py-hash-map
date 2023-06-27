@@ -81,15 +81,18 @@ class Dictionary:
         except KeyError as e:
             return e
 
-    def pop(self, key: Hashable) -> Any:
-        try:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        if key in self:
             result = self[key]
             del self[key]
             return result
-        except KeyError as e:
-            return e
+        if default:
+            return default
+        raise KeyError
 
-    def update(self, other: "Dictionary") -> None:
+    def update(self, other: "Dictionary" = None) -> None:
+        if not other:
+            return
         if isinstance(other, dict):
             other = other.items()
         for key, value in other:
