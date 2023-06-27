@@ -10,7 +10,7 @@ CAPACITY_MULTIPLIER = 2
 class Node:
     key: Hashable
     value: Any
-    hash_from_key: int
+    hash_of_key: int
 
 
 class Dictionary:
@@ -30,7 +30,7 @@ class Dictionary:
         key_index = hash_key % self.capacity
 
         while self.hash_table[key_index]:
-            if (self.hash_table[key_index].hash_from_key == hash_key
+            if (self.hash_table[key_index].hash_of_key == hash_key
                     and self.hash_table[key_index].key == key):
                 self.hash_table[key_index].value = value
                 return
@@ -47,12 +47,13 @@ class Dictionary:
         node_data = [node for node in self.hash_table if node]
 
         for node in node_data:
-            key_index = node.hash_from_key % self.capacity
+            key_index = node.hash_of_key % self.capacity
             while new_hash_table[key_index]:
-                if (new_hash_table[key_index].hash_from_key == node.hash_from_key
+                if (new_hash_table[key_index].hash_of_key == node.hash_of_key
                         and new_hash_table[key_index].key == node.key):
                     new_hash_table[key_index].value = node.value
                     break
+
                 key_index = (key_index + 1) % self.capacity
             else:
                 new_hash_table[key_index] = node
@@ -64,13 +65,12 @@ class Dictionary:
         key_hash = hash(key)
         index = key_hash % self.capacity
 
-        while (self.hash_table[index] and
-               (self.hash_table[index].key != key or
-                self.hash_table[index].hash_from_key != key_hash)):
+        while (self.hash_table[index]
+               and (self.hash_table[index].key != key
+                    or self.hash_table[index].hash_of_key != key_hash)):
             index = (index + 1) % self.capacity
 
         if not self.hash_table[index]:
             raise KeyError(f"Key {key} doesn't exist!")
 
         return self.hash_table[index].value
-
