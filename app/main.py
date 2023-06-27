@@ -10,7 +10,7 @@ CAPACITY_MULTIPLIER = 2
 class Node:
     key: Hashable
     value: Any
-    hash_data: int
+    hash_from_key: int
 
 
 class Dictionary:
@@ -30,12 +30,11 @@ class Dictionary:
         key_index = hash_key % self.capacity
 
         while self.hash_table[key_index]:
-            if (self.hash_table[key_index].hash_data == hash_key
+            if (self.hash_table[key_index].hash_from_key == hash_key
                     and self.hash_table[key_index].key == key):
                 self.hash_table[key_index].value = value
                 return
-            else:
-                key_index = (key_index + 1) % self.capacity
+            key_index = (key_index + 1) % self.capacity
 
         self.hash_table[key_index] = Node(key, value, hash_key)
         self.length += 1
@@ -45,35 +44,33 @@ class Dictionary:
         self.capacity *= CAPACITY_MULTIPLIER
 
         new_hash_table: List[Node | None] = [None] * self.capacity
-        node_data = [node for node in self.hash_table if node is not None]
+        node_data = [node for node in self.hash_table if node]
 
         for node in node_data:
-            key_index = node.hash_data % self.capacity
+            key_index = node.hash_from_key % self.capacity
             while new_hash_table[key_index]:
-                if (new_hash_table[key_index].hash_data == node.hash_data
+                if (new_hash_table[key_index].hash_from_key == node.hash_from_key
                         and new_hash_table[key_index].key == node.key):
-
-                    self.hash_table[key_index].value = node.value
-                    return
-                else:
-                    key_index = (key_index + 1) % self.capacity
-
-            new_hash_table[key_index] = node
-            self.length += 1
+                    new_hash_table[key_index].value = node.value
+                    break
+                key_index = (key_index + 1) % self.capacity
+            else:
+                new_hash_table[key_index] = node
+                self.length += 1
 
         self.hash_table = new_hash_table
 
     def __getitem__(self, key: Hashable) -> Any:
-
         key_hash = hash(key)
-
         index = key_hash % self.capacity
 
-        while (self.hash_table[index] is not None
-               and self.hash_table[index].key != key):
+        while (self.hash_table[index] and
+               (self.hash_table[index].key != key or
+                self.hash_table[index].hash_from_key != key_hash)):
             index = (index + 1) % self.capacity
 
-        if self.hash_table[index] is None:
+        if not self.hash_table[index]:
             raise KeyError(f"Key {key} doesn't exist!")
 
         return self.hash_table[index].value
+
