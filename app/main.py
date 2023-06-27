@@ -35,12 +35,14 @@ class Dictionary:
                 return
         new_k_v_pair = [key, value, hash(key)]
         index = hash(key) % self.capacity
-        if len(self.buckets_table[index]) > 0:
-            self.buckets_table[self.buckets_table.index([])] = new_k_v_pair
+        empty_bucket_index = next((i for i, x in enumerate(self.buckets_table)
+                                   if not x), None)
+        if empty_bucket_index is not None:
+            self.buckets_table[empty_bucket_index] = new_k_v_pair
         else:
             self.buckets_table[index] = new_k_v_pair
-        if ((self.capacity - self.buckets_table.count([])) / self.capacity
-                > self.resize_breakpoint):
+        if ((self.capacity - self.buckets_table.count([]))
+                / self.capacity > self.resize_breakpoint):
             self.buckets_table_resize()
 
     def __getitem__(self, key: Hashable) -> Any:
@@ -99,12 +101,3 @@ class Dictionary:
         return "{" + ", ".join([bucket[0] + " : " + str(bucket[1])
                                 for bucket in self.buckets_table
                                 if len(bucket)]) + "}"
-
-
-items = [(f"Element {i}", i) for i in range(21)]
-dictionary = Dictionary()
-for key, value in items:
-    dictionary[key] = value
-
-print(dictionary.__repr__())
-print(dictionary.__str__())
