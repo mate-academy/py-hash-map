@@ -90,6 +90,7 @@ class Dictionary:
                 self.__setitem__(bucket[0], bucket[1])
 
     def __iter__(self) -> Iterator:
+
         return iter(bucket[0] for bucket in self.buckets_table if len(bucket))
 
     def __repr__(self) -> str:
