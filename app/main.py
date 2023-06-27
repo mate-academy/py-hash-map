@@ -49,24 +49,23 @@ class Dictionary:
         raise KeyError(key)
 
     def __len__(self) -> int:
-        return sum(1 for bucket in self.buckets_table if bucket)
+        return sum(1 for bucket in self.buckets_table if len(bucket))
 
-    def clear(self) -> None:  # extra
-        """ D.clear() -> None.  Remove all items from D. """
-        pass
+    def clear(self) -> None:
+        self.buckets_table = [[] for bucket in range(self.capacity)]
 
-    def __delitem__(self, key: Hashable) -> None:  # extra
-        """ Delete self[key]. """
-        pass
+    def __delitem__(self, key: Hashable) -> None:
+        for bucket in self.buckets_table:
+            if len(bucket) and bucket[0] == key:
+                bucket.clear()
 
-    def get(self) -> Any:  # extra
-        """
-        Return the value for key if key is in the dictionary,
-        else default.
-        """
-        pass
+    def get(self, key: Hashable, default=None) -> Any:
+        for bucket in self.buckets_table:
+            if len(bucket) and key == bucket[0]:
+                return bucket[1]
+        return default
 
-    def pop(self) -> None:  # extra
+    def pop(self, key: Hashable, default=None) -> None:  # extra
         """
         D.pop(k[,d]) -> v, remove specified key
         and return the corresponding value.
@@ -74,24 +73,51 @@ class Dictionary:
         If the key is not found, return the default if given; otherwise,
         raise a KeyError.
         """
-        pass
+        value = None
+        for bucket in self.buckets_table:
+            if len(bucket) and bucket[0] == key:
+                result = bucket[1]
+                bucket.clear()
+        if default is not None:
+            return default
+        if value is not None:
+            return value
+        raise KeyError
 
-    def update(self) -> None:  # extra
-        """
-        D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
-        If E is present and has a .keys() method, then does:
-            for k in E: D[k] = E[k]
-        If E is present and lacks a .keys() method, then does:
-            for k, v in E: D[k] = v
-        In either case, this is followed by: for k in F:  D[k] = F[k]
-        """
-        pass
+    def update(self, other_dict) -> None:
+        for bucket in other_dict.buckets_table:
+            if len(bucket):
+                self.__setitem__(bucket[0], bucket[1])
 
     def __iter__(self) -> Iterator:
-        """ Implement iter(self). """
         return iter(bucket[0] for bucket in self.buckets_table if len(bucket))
 
     def __repr__(self) -> str:
+        return f"CUSTOM_HASH_TABLE : {self.buckets_table}\n" \
+               f"CAPACITY: {self.capacity}\n" \
+               f"LEN: {self.__len__()}"
 
-        return f"TABLE : {self.buckets_table}\n" \
-               f"CAPACITY: {self.capacity}\n"
+    def __str__(self) -> str:
+        return "{" + ", ".join([bucket[0] + " : " + str(bucket[1])
+                                for bucket in self.buckets_table
+                                if len(bucket)]) + "}"
+
+
+items_d1 = [(f"val{i}", i) for i in range(3)]
+
+dictionary_1 = Dictionary()
+
+for key, value in items_d1:
+    dictionary_1[key] = value
+
+guidict = {"val1": (2), "val2": 4, "val3": 123}
+print(guidict)
+iterator_t = guidict.__iter__()
+print(iterator_t.__next__())
+print(iterator_t.__next__())
+print(iterator_t.__next__())
+
+my = dictionary_1.__iter__()
+print(my.__next__())
+print(my.__next__())
+print(my.__next__())
