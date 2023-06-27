@@ -10,13 +10,7 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self.capacity
         if self.length >= round(self.capacity * 2 / 3) - 1:
-            self.length = 0
-            self.capacity *= 2
-            hash_table = self.hash_table[:]
-            self.hash_table = [None] * self.capacity
-            for node in hash_table:
-                if node:
-                    self[node[0]] = node[2]
+            self.resize()
         if not self.hash_table[index]:
             self.length += 1
             self.hash_table[index] = [key, hash(key), value]
@@ -42,6 +36,16 @@ class Dictionary:
             if self.hash_table[index] and self.hash_table[index][0] == key:
                 return self.hash_table[index][2]
         raise KeyError
+
+    def resize(self) -> None:
+        self.length = 0
+        self.capacity *= 2
+        hash_table = self.hash_table[:]
+        self.hash_table = [None] * self.capacity
+        for node in hash_table:
+            if node:
+                self[node[0]] = node[2]
+
 
     def __len__(self) -> int:
         return self.length
