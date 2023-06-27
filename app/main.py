@@ -4,9 +4,9 @@ from typing import Any, Hashable
 
 @dataclass
 class Node:
-    key: Any
+    key: Hashable
     value: Any
-    hash_: Hashable
+    hash_of_key: int
 
 
 class Dictionary:
@@ -20,7 +20,7 @@ class Dictionary:
         current_id = node_ind
         while True:
             if current_id < len(self.hash_table):
-                if (self.hash_table[current_id] is None
+                if (not self.hash_table[current_id]
                         or self.hash_table[current_id].key == node.key):
                     return current_id
             else:
@@ -38,15 +38,15 @@ class Dictionary:
             if elem:
                 self.__setitem__(elem.key, elem.value)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         new_node = Node(key, value, hash(key))
         self.size += 1
         if self.size <= self.threshold:
-            ind = hash(new_node.key) % self.capacity
-            if self.hash_table[ind]:
-                ind = self.collision(new_node, ind)
-            self.hash_table[ind] = new_node
-            new_node.hash_ = ind
+            index = new_node.hash_of_key % self.capacity
+            if self.hash_table[index]:
+                index = self.collision(new_node, index)
+            self.hash_table[index] = new_node
+            new_node.hash_of_key = index
         else:
             self.resize()
             self.__setitem__(key, value)
@@ -60,7 +60,7 @@ class Dictionary:
                 print_str += " " + str(node.key) + str(node.value)
         return print_str
 
-    def __getitem__(self, key: Any) -> Node:
+    def __getitem__(self, key: Hashable) -> Node:
         for node in self.hash_table:
             if node:
                 if node.key == key:
@@ -78,6 +78,6 @@ class Dictionary:
         self.size = 0
         self.hash_table = [None] * self.capacity
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         self.hash_table[key] = None
         self.size -= 1
