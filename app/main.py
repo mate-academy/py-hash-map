@@ -46,6 +46,5 @@ class Dictionary:
             if node:
                 self[node[0]] = node[2]
 
-
     def __len__(self) -> int:
         return self.length
