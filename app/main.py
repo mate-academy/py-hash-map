@@ -30,20 +30,22 @@ class Dictionary:
         except TypeError:
             raise TypeError(f"unhashable type: '{type(key).__name__}'")
 
-        for bucket in self.buckets_table:
-            if bucket and bucket[0] == key:
-                bucket[1] = value
-                return
-
-        new_k_v_pair = [key, value, hash(key)]
+        k_v_pair = [key, value, hash(key)]
         index = hash(key) % self.capacity
-        empty_bucket_index = next((i for i, x in enumerate(self.buckets_table)
-                                   if not x), None)
 
-        if empty_bucket_index is not None:
-            self.buckets_table[empty_bucket_index] = new_k_v_pair
+        if not self.buckets_table[index]:
+            self.buckets_table[index] = k_v_pair
         else:
-            self.buckets_table[index] = new_k_v_pair
+
+            while self.buckets_table[index][0] != key:
+                index = (index + 1) % self.capacity
+
+                if not self.buckets_table[index]:
+                    self.buckets_table[index] = k_v_pair
+                    break
+
+            if self.buckets_table[index][0] == key:
+                self.buckets_table[index] = k_v_pair
 
         if ((self.capacity - self.buckets_table.count([]))
                 / self.capacity > self.resize_breakpoint):
