@@ -12,28 +12,31 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length == self.threshold:
             self.resize_hashtable()
+
         hashed_key = hash(key)
         index = hashed_key % self.capacity
+
         while True:
-            if not self.hashtable[index]:
+            cell = self.hashtable[index]  # Get the cell at the current index
+            if not cell:
                 self.hashtable[index] = [key, value, hashed_key]
                 self.length += 1
                 return
-            if key == self.hashtable[index][0] and \
-                    hashed_key == self.hashtable[index][2]:
-                self.hashtable[index][1] = value
+            if key == cell[0] and hashed_key == cell[2]:
+                cell[1] = value
                 return
             index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_key = hash(key)
-        index = hash_key % self.capacity
+        hashed_key = hash(key)
+        index = hashed_key % self.capacity
+
         while True:
-            if not self.hashtable[index]:
+            cell = self.hashtable[index]  # Get the cell at the current index
+            if not cell:
                 raise KeyError(key)
-            if self.hashtable[index][0] == key and\
-                    self.hashtable[index][2] == hash_key:
-                return self.hashtable[index][1]
+            if cell[0] == key and cell[2] == hashed_key:
+                return cell[1]
             index = (index + 1) % self.capacity
 
     def __len__(self) -> int:
@@ -47,4 +50,4 @@ class Dictionary:
         self.hashtable = [[] for _ in range(self.capacity)]
         for item in copied_hashtable:
             if item:
-                self.__setitem__(item[0], item[1])
+                self[item[0]] = item[1]
