@@ -7,14 +7,14 @@ class Dictionary:
         hash_key = hash(key)
         index = hash_key % len(self.hash_table)
 
-        if self.hash_table[index][0] == key:
+        if self.hash_table[index] and self.hash_table[index][0] == key:
             return self.hash_table[index][1]
         else:
             for item in self.hash_table:
                 if item and item[0] == key:
                     return item[1]
 
-        return None
+        raise KeyError
 
     def __setitem__(self, key, value):
         if self.length > len(self.hash_table) * 2 / 3:
@@ -25,7 +25,7 @@ class Dictionary:
         index = hash_key % len(self.hash_table)
 
         if self.hash_table[index] and self.hash_table[index][0] == key:
-            self.hash_table[index][1] = value
+            self.hash_table[index] = (key, value, hash_key)
         else:
             while self.hash_table[index]:
                 index = index + 1 if index != len(self.hash_table) - 1 else 0
