@@ -9,22 +9,18 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self.capacity
-        if self.length >= round(self.capacity * 2 / 3) - 1:
+        while True:
+            if not self.hash_table[index]:
+                self.length += 1
+                self.hash_table[index] = [key, hash(key), value]
+                break
+            if self.hash_table[index][0] == key:
+                self.hash_table[index][2] = value
+                break
+            index = index + 1
+            index = index % self.capacity
+        if self.length >= round(self.capacity * 2 / 3):
             self.resize()
-        if not self.hash_table[index]:
-            self.length += 1
-            self.hash_table[index] = [key, hash(key), value]
-        else:
-            while True:
-                if not self.hash_table[index]:
-                    self.length += 1
-                    self.hash_table[index] = [key, hash(key), value]
-                    break
-                if self.hash_table[index][0] == key:
-                    self.hash_table[index][2] = value
-                    break
-                index = index + 1
-                index = index % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
