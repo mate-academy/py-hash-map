@@ -90,7 +90,9 @@ class Dictionary:
             return default
         raise KeyError
 
-    def update(self, other: "Dictionary" = None) -> None:
+    def update(
+            self, other: ["Dictionary", dict, tuple] = None
+    ) -> None:
         if not other:
             return
         if isinstance(other, dict):
