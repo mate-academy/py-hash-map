@@ -40,17 +40,14 @@ class Dictionary:
         return self.length
 
     def resize(self) -> None:
-        old_nodes = []
+        self.capacity *= 2
+        new_hash_table = [None] * self.capacity
         for node in self.hash_table:
             if node:
-                old_nodes.append(node)
-        self.capacity = self.capacity * 2
-        new_hash_table = [None] * self.capacity
-        for node in old_nodes:
-            index = self.get_index(node.key)
-            while new_hash_table[index]:
-                index = (index + 1) % self.capacity
-            new_hash_table[index] = node
+                index = self.get_index(node.key)
+                while new_hash_table[index]:
+                    index = (index + 1) % self.capacity
+                new_hash_table[index] = node
         self.hash_table = new_hash_table
 
     def get_index(self, key: Hashable) -> int:
