@@ -11,7 +11,7 @@ class Dictionary:
             return self.hash_table[index][1]
         else:
             for item in self.hash_table:
-                if item[0] == key:
+                if item and item[0] == key:
                     return item[1]
 
         return None
