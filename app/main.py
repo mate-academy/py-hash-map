@@ -24,11 +24,14 @@ class Dictionary:
         item = (key, value, hash_key)
         index = hash_key % len(self.hash_table)
 
-        while self.hash_table[index]:
-            index = index + 1 if index != len(self.hash_table) - 1 else 0
+        if self.hash_table[index] and self.hash_table[index][0] == key:
+            self.hash_table[index][1] = value
+        else:
+            while self.hash_table[index]:
+                index = index + 1 if index != len(self.hash_table) - 1 else 0
 
-        self.hash_table[index] = item
-        self.length += 1
+            self.hash_table[index] = item
+            self.length += 1
 
     def extend_hash_table(self):
         extending = [None] * len(self.hash_table)
