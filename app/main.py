@@ -16,7 +16,7 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.get_index(key)
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             if self.hash_table[index].key == key:
                 self.hash_table[index].value = value
                 return
@@ -29,10 +29,10 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
-        while (self.hash_table[index] is not None
+        while (self.hash_table[index]
                and self.hash_table[index].key != key):
             index = (index + 1) % self.capacity
-        if self.hash_table[index] is None:
+        if not self.hash_table[index]:
             raise KeyError(f"Key {key} is not found")
         return self.hash_table[index].value
 
@@ -42,13 +42,13 @@ class Dictionary:
     def resize(self) -> None:
         old_nodes = []
         for node in self.hash_table:
-            if node is not None:
+            if node:
                 old_nodes.append(node)
         self.capacity = self.capacity * 2
         new_hash_table = [None] * self.capacity
         for node in old_nodes:
             index = self.get_index(node.key)
-            while new_hash_table[index] is not None:
+            while new_hash_table[index]:
                 index = (index + 1) % self.capacity
             new_hash_table[index] = node
         self.hash_table = new_hash_table
