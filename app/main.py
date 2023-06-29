@@ -54,6 +54,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.hash_table = [None] * self.capacity
+        self.length = 0
 
     def __delitem__(self, key: Hashable) -> None:
         hash_key = hash(key)
