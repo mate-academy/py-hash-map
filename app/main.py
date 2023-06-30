@@ -46,9 +46,11 @@ class Dictionary:
             if not is_key_exists:
 
                 while self.hash_table[index]:
-                    index = index + 1\
-                        if index != len(self.hash_table) - 1 \
+                    index = (
+                        index + 1
+                        if index != len(self.hash_table) - 1
                         else 0
+                    )
 
                 self.hash_table[index] = item
                 self.length += 1
@@ -65,11 +67,35 @@ class Dictionary:
                 new_index = hash_key % len(self.hash_table)
 
                 while self.hash_table[new_index]:
-                    new_index = new_index + 1 \
-                        if new_index != len(self.hash_table) - 1\
+                    new_index = (
+                        new_index + 1
+                        if new_index != len(self.hash_table)
                         else 0
+                    )
 
                 self.hash_table[new_index] = item
 
     def __len__(self) -> int:
         return self.length
+
+
+d = Dictionary()
+# d[1] = "a"
+# d[9] = "b"
+# d[124] = "c"
+# d[14] = "d"
+# d[15] = "e"
+# d[0] = "f"
+# d[10] = "g"
+
+# d["one"] = 1
+# d["two"] = 2
+# d["tree"] = 3
+# d["four"] = 4
+#
+# print(d["one"])
+# print(d["two"])
+# print(d["tree"])
+# print(d["four"])
+
+print(d.hash_table)
