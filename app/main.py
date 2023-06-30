@@ -1,9 +1,14 @@
+from typing import Any
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.hash_table: list = [None] * 8
 
-    def __getitem__(self, key):
+    def __getitem__(
+            self, key: int | float | bool | str | tuple
+    ) -> None:
         hash_key = hash(key)
         index = hash_key % len(self.hash_table)
 
@@ -16,7 +21,11 @@ class Dictionary:
 
         raise KeyError
 
-    def __setitem__(self, key, value):
+    def __setitem__(
+            self,
+            key: int | float | bool | str | tuple,
+            value: Any
+    ) -> None:
         if self.length > len(self.hash_table) * 2 / 3:
             self.extend_hash_table()
 
@@ -37,12 +46,14 @@ class Dictionary:
             if not is_key_exists:
 
                 while self.hash_table[index]:
-                    index = index + 1 if index != len(self.hash_table) - 1 else 0
+                    index = index + 1\
+                        if index != len(self.hash_table) - 1 \
+                        else 0
 
                 self.hash_table[index] = item
                 self.length += 1
 
-    def extend_hash_table(self):
+    def extend_hash_table(self) -> None:
         extending = [None] * len(self.hash_table)
         self.hash_table += extending
 
@@ -54,7 +65,9 @@ class Dictionary:
                 new_index = hash_key % len(self.hash_table)
 
                 while self.hash_table[new_index]:
-                    new_index = new_index + 1 if new_index != len(self.hash_table) - 1 else 0
+                    new_index = new_index + 1 \
+                        if new_index != len(self.hash_table) - 1\
+                        else 0
 
                 self.hash_table[new_index] = item
 
