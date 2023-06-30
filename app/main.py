@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -7,7 +7,7 @@ class Dictionary:
         self.hash_table: list = [None] * 8
 
     def __getitem__(
-            self, key: int | float | bool | str | tuple
+            self, key: Hashable
     ) -> None:
         hash_key = hash(key)
         index = hash_key % len(self.hash_table)
@@ -27,7 +27,7 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: int | float | bool | str | tuple,
+            key: Hashable,
             value: Any
     ) -> None:
         if self.length > len(self.hash_table) * 2 / 3:
