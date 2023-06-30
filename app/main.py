@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List
+from typing import Any, List, Hashable
 
 
 class Dictionary:
@@ -17,7 +17,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_ = hash(key)
         index = hash_ % self.hash_table_len
         while self.hash_table[index]:
@@ -36,7 +36,7 @@ class Dictionary:
         if self.length > self.hash_table_len * self.load_factor:
             self.resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.find_index(key)
         return self.hash_table[index][2]
 
@@ -50,22 +50,22 @@ class Dictionary:
             self.__setitem__(el[0], el[2])
 
     @staticmethod
-    def by_id(item: tuple[Any, int, Any, int]) -> int:
+    def by_id(item: tuple[Hashable, int, Any, int]) -> int:
         return item[3]
 
-    def sort_items(self) -> List[tuple[Any, int, Any, int]]:
+    def sort_items(self) -> List[tuple[Hashable, int, Any, int]]:
         return sorted((item for item in self.hash_table if item),
                       key=self.by_id)
 
     def clear(self) -> None:
         self.__init__()
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self.find_index(key)
         self.hash_table[index] = None
         self.length -= 1
 
-    def find_index(self, key: Any) -> int:
+    def find_index(self, key: Hashable) -> int:
         hash_ = hash(key)
         index = hash_ % self.hash_table_len
         full_loop_index = index
@@ -76,14 +76,14 @@ class Dictionary:
             if index == full_loop_index:
                 raise KeyError(f"no item with key `{key}`")
 
-    def get(self, key: Any, value: Any = None) -> Any:
+    def get(self, key: Hashable, value: Any = None) -> Any:
         try:
             index = self.find_index(key)
         except KeyError:
             return value
         return self.hash_table[index][2]
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         index = self.find_index(key)
         temporary_value = self.hash_table[index][2]
         self.hash_table[index] = None
@@ -96,7 +96,7 @@ class Dictionary:
             if item:
                 self.__setitem__(item[0], item[2])
 
-    def __iter__(self) -> Any:
+    def __iter__(self) -> Dictionary:
         """
         cool feature: remembers state of `dictionary` upon calling `__iter__`
         """
@@ -106,7 +106,7 @@ class Dictionary:
 
         return self
 
-    def __next__(self) -> Any:
+    def __next__(self) -> Hashable:
         """
         cool feature: returns a RuntimeError if new items were added and/or
         items were deleted from `dictionary` during iteration, even when
