@@ -12,7 +12,11 @@ class Dictionary:
         hash_key = hash(key)
         index = hash_key % len(self.hash_table)
 
-        if self.hash_table[index] and self.hash_table[index][0] == key:
+        if (
+                self.hash_table[index]
+                and self.hash_table[index][2] == hash_key
+                and self.hash_table[index][0] == key
+        ):
             return self.hash_table[index][1]
         else:
             for item in self.hash_table:
@@ -77,25 +81,3 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
-
-
-d = Dictionary()
-# d[1] = "a"
-# d[9] = "b"
-# d[124] = "c"
-# d[14] = "d"
-# d[15] = "e"
-# d[0] = "f"
-# d[10] = "g"
-
-# d["one"] = 1
-# d["two"] = 2
-# d["tree"] = 3
-# d["four"] = 4
-#
-# print(d["one"])
-# print(d["two"])
-# print(d["tree"])
-# print(d["four"])
-
-print(d.hash_table)
