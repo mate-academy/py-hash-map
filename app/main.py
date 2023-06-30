@@ -103,7 +103,6 @@ class Dictionary:
         self.dup_hash_table = self.hash_table[:]
         self.iter_count = 0
         self.sorted_items = self.sort_items()
-
         return self
 
     def __next__(self) -> Hashable:
