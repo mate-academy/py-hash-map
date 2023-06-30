@@ -27,11 +27,20 @@ class Dictionary:
         if self.hash_table[index] and self.hash_table[index][0] == key:
             self.hash_table[index] = (key, value, hash_key)
         else:
-            while self.hash_table[index]:
-                index = index + 1 if index != len(self.hash_table) - 1 else 0
+            is_key_exists = False
 
-            self.hash_table[index] = item
-            self.length += 1
+            for i in range(len(self.hash_table)):
+                if self.hash_table[i] and self.hash_table[i][0] == key:
+                    self.hash_table[i] = item
+                    is_key_exists = True
+
+            if not is_key_exists:
+
+                while self.hash_table[index]:
+                    index = index + 1 if index != len(self.hash_table) - 1 else 0
+
+                self.hash_table[index] = item
+                self.length += 1
 
     def extend_hash_table(self):
         extending = [None] * len(self.hash_table)
@@ -51,26 +60,3 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
-
-
-d = Dictionary()
-# d[1] = "a"
-# d[9] = "b"
-# d[124] = "c"
-# d[14] = "d"
-# d[15] = "e"
-# d[0] = "f"
-# d[10] = "g"
-
-# d["one"] = 1
-# d["two"] = 2
-# d["tree"] = 3
-# d["four"] = 4
-#
-# print(d["one"])
-# print(d["two"])
-# print(d["tree"])
-# print(d["four"])
-
-print(d.hash_table)
-
