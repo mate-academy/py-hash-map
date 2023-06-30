@@ -65,19 +65,7 @@ class Dictionary:
 
         for i in range(len(self.hash_table) // 2):
             if self.hash_table[i]:
-                item = self.hash_table[i]
-                self.hash_table[i] = None
-                key, value, hash_key = item
-                new_index = hash_key % len(self.hash_table)
-
-                while self.hash_table[new_index]:
-                    new_index = (
-                        new_index + 1
-                        if new_index != len(self.hash_table)
-                        else 0
-                    )
-
-                self.hash_table[new_index] = item
+                self.__setitem__(self.hash_table[i][0], self.hash_table[i][1])
 
     def __len__(self) -> int:
         return self.length
