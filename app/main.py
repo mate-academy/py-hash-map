@@ -14,7 +14,12 @@ class Dictionary:
         representation += "}"
         return representation
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(
+            self,
+            key: str | int | float | tuple,
+            value: Any
+    ) -> None:
+
         for current_pair in self.stored_data:
             if current_pair[0] == key:
                 current_pair[1] = value
@@ -22,7 +27,7 @@ class Dictionary:
 
         self.stored_data.append([key, value])
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: str | int | float | tuple) -> Any:
         for current_pair in self.stored_data:
             cur_key, cur_value = current_pair
             if key == cur_key:
@@ -36,17 +41,17 @@ class Dictionary:
     def clear(self) -> None:
         self.stored_data = []
 
-    def __delitem__(self, key: Any) -> Any:
+    def __delitem__(self, key: str | int | float | tuple) -> Any:
         for current_pair in self.stored_data:
             if key == current_pair[0]:
                 returned_value = current_pair[1]
                 self.stored_data.remove(current_pair)
                 return returned_value
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: str | int | float | tuple) -> Any:
         return self.__getitem__(key)
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: str | int | float | tuple) -> Any:
         return self.__delitem__(key)
 
     def update(self, appended_dictionary: dict) -> None:
