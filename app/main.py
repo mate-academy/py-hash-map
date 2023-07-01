@@ -64,5 +64,4 @@ class Dictionary:
                 self.stored_data.append([key, value])
 
     def __iter__(self) -> None:
-        keys_list = [current_pair[0] for current_pair in self.stored_data]
-        yield from keys_list
+        yield from (current_pair[0] for current_pair in self.stored_data)
