@@ -26,11 +26,13 @@ class Dictionary:
         return ", ".join([f"({node})" for node in self._hash_table])
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self._capacity
+        key_hash = hash(key)
+        index = key_hash % self._capacity
 
         while self._hash_table[index]:
-            if self._hash_table[index].key == key:
-                return self._hash_table[index].value
+            if self._hash_table[index].key_hash == key_hash:
+                if self._hash_table[index].key == key:
+                    return self._hash_table[index].value
             index = (index + 1) % self._capacity
 
         if not self._hash_table[index]:
@@ -41,9 +43,10 @@ class Dictionary:
         index = key_hash % self._capacity
 
         while self._hash_table[index]:
-            if self._hash_table[index].key == key:
-                self._hash_table[index].value = value
-                return
+            if self._hash_table[index].key_hash == key_hash:
+                if self._hash_table[index].key == key:
+                    self._hash_table[index].value = value
+                    return
             index = (index + 1) % self._capacity
 
         if self._length == self._load_factor:
@@ -61,15 +64,17 @@ class Dictionary:
             self.__setitem__(node.key, node.value)
 
     def __delitem__(self, key: Hashable) -> None:
-        index = hash(key) % self._capacity
+        key_hash = hash(key)
+        index = key_hash % self._capacity
         end_index = (index + self._capacity - 1) % self._capacity
 
         while index != end_index:
             if self._hash_table[index]:
-                if self._hash_table[index].key == key:
-                    self._hash_table[index] = None
-                    self._length -= 1
-                    return
+                if self._hash_table[index].key_hash == key_hash:
+                    if self._hash_table[index].key == key:
+                        self._hash_table[index] = None
+                        self._length -= 1
+                        return
             index = (index + 1) % self._capacity
 
         raise KeyError(f"Key `{key}` is not in this dictionary.")
