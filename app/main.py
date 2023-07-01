@@ -82,7 +82,10 @@ class Dictionary:
         return iter(hash_table_without_none)
 
     def get(self, key: Hashable) -> Any:
-        return self.__getitem__(key)
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return None
 
     def pop(self, key: Hashable) -> Any:
         table_index = int(self.hash_for_key(key) * self.capacity)
