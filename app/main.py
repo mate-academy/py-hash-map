@@ -77,9 +77,16 @@ class Dictionary:
         self.hash_table = [[] for bucket in range(self.capacity)]
 
     def __delitem__(self, key: Hashable) -> None:
-        for bucket in self.hash_table:
-            if len(bucket) and bucket[0] == key:
-                bucket.clear()
+        item = self.hash_table[hash(key) % self.capacity]
+        if item[0] == key:
+            item.clear()
+            return
+
+        for collision in self.collisions:
+            if collision[0] == key:
+                self.hash_table[collision[1]].clear()
+                return
+        raise KeyError(key)
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         self.__getitem__(key)
@@ -113,6 +120,6 @@ class Dictionary:
                 + "LEN: " + str(self.__len__())) + "\n" + ("*" * 42)
 
     def __str__(self) -> str:
-        return "{" + ", ".join([bucket[0] + " : " + str(bucket[1])
+        return "{" + ", ".join([str(bucket[0]) + " : " + str(bucket[1])
                                 for bucket in self.hash_table
                                 if len(bucket)]) + "}"
