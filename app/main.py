@@ -101,6 +101,9 @@ class Dictionary:
         if value is not None:
             return value
 
+        if default is not None:
+            return default
+
         raise KeyError
 
     def update(self, other_dict: "Dictionary") -> None:
