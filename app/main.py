@@ -91,7 +91,14 @@ class Dictionary:
         raise KeyError
 
     def update(
-            self, other: ["Dictionary", dict, tuple] = None
+            self,
+            other: [
+                "Dictionary",
+                dict,
+                list[tuple],
+                list[set],
+                list[list]
+            ] = None
     ) -> None:
         if not other:
             return
