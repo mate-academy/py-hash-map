@@ -95,10 +95,6 @@ class Dictionary:
         self.__getitem__(key)
 
     def pop(self, key: Hashable, default: Any = None) -> Union[None, Any]:
-        """
-        D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
-        If the key is not found, return the default if given; otherwise, raise a KeyError.
-        """
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
@@ -128,4 +124,3 @@ class Dictionary:
         return "{" + ", ".join([str(bucket[0]) + " : " + str(bucket[1])
                                 for bucket in self.hash_table
                                 if len(bucket)]) + "}"
-
