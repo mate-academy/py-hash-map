@@ -92,19 +92,18 @@ class Dictionary:
         self.__getitem__(key)
 
     def pop(self, key: Hashable, default: Any = None) -> Union[None, Any]:
-        value = self.__getitem__(key)
-        self.__delitem__(key)
-
-        if default is not None:
-            return default
-
-        if value is not None:
+        """
+        D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+        If the key is not found, return the default if given; otherwise, raise a KeyError.
+        """
+        try:
+            value = self.__getitem__(key)
+            self.__delitem__(key)
             return value
-
-        if default is not None:
-            return default
-
-        raise KeyError
+        except KeyError:
+            if default is not None:
+                return default
+            raise
 
     def update(self, other_dict: "Dictionary") -> None:
         for bucket in other_dict.hash_table:
@@ -126,3 +125,18 @@ class Dictionary:
         return "{" + ", ".join([str(bucket[0]) + " : " + str(bucket[1])
                                 for bucket in self.hash_table
                                 if len(bucket)]) + "}"
+
+
+d = Dictionary()
+print(d)
+
+d.__setitem__("1", 1)
+d.__setitem__("2", 2)
+print(d)
+print(d.pop("S", "DEF"))
+print(d)
+# guidodict = {}
+# print(guidodict)
+# print(guidodict.pop(2, 3))
+# print(guidodict.pop(2, None))
+# print(guidodict)
