@@ -40,15 +40,17 @@ class Dictionary:
 
         """Reassign value"""
         if self.hash_table[index][0] == key:
-            self.hash_table[index][1] = value
-            return
+            if self.hash_table[index][2] == hash(key):
+                self.hash_table[index][1] = value
+                return
 
         """Check old collisions"""
         for collision in self.collisions:
             if collision[0] == key:
-                collision_item_index = collision[1]
-                self.hash_table[collision_item_index][1] = value
-                return
+                if hash(collision[0]) == hash(key):
+                    collision_item_index = collision[1]
+                    self.hash_table[collision_item_index][1] = value
+                    return
 
         """New collision"""
         collision_item_index = self.hash_table.index([])
@@ -84,8 +86,9 @@ class Dictionary:
 
         for collision in self.collisions:
             if collision[0] == key:
-                self.hash_table[collision[1]].clear()
-                return
+                if hash(collision[0]) == hash(key):
+                    self.hash_table[collision[1]].clear()
+                    return
         raise KeyError(key)
 
     def get(self, key: Hashable, default: Any = None) -> Any:
@@ -108,7 +111,7 @@ class Dictionary:
     def update(self, other_dict: "Dictionary") -> None:
         for bucket in other_dict.hash_table:
             if len(bucket):
-                self.__setitem__(bucket[0], bucket[1])
+                self[bucket[0]] = bucket[1]
 
     def __iter__(self) -> Iterator:
         return iter(bucket[0] for bucket in self.hash_table if len(bucket))
@@ -125,3 +128,4 @@ class Dictionary:
         return "{" + ", ".join([str(bucket[0]) + " : " + str(bucket[1])
                                 for bucket in self.hash_table
                                 if len(bucket)]) + "}"
+
