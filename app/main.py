@@ -23,7 +23,7 @@ class Dictionary:
 
         for bucket in self.old_hash_table:
             if len(bucket):
-                self.__setitem__(key=bucket[0], value=bucket[1])
+                self[bucket[0]] = bucket[1]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if not isinstance(key, Hashable):
@@ -125,18 +125,3 @@ class Dictionary:
         return "{" + ", ".join([str(bucket[0]) + " : " + str(bucket[1])
                                 for bucket in self.hash_table
                                 if len(bucket)]) + "}"
-
-
-d = Dictionary()
-print(d)
-
-d.__setitem__("1", 1)
-d.__setitem__("2", 2)
-print(d)
-print(d.pop("S", "DEF"))
-print(d)
-# guidodict = {}
-# print(guidodict)
-# print(guidodict.pop(2, 3))
-# print(guidodict.pop(2, None))
-# print(guidodict)
