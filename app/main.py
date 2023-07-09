@@ -123,6 +123,3 @@ class Dictionary:
         if kwargs:
             for key in kwargs:
                 self[key] = kwargs[key]
-
-    def keys(self) -> set:
-        return {key for key in self}
