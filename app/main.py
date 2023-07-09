@@ -117,7 +117,7 @@ class Dictionary:
             other: Optional[Dict, Dictionary],
             **kwargs: Dict[str, Any]
     ) -> None:
-        if other and getattr(other, "keys"):
+        if other and isinstance(other, [Dict, Dictionary]):
             for key in other:
                 self[key] = other[key]
         if kwargs:
