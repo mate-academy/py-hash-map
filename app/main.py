@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Hashable, List, Optional
+from typing import Any, Dict, Hashable, List, Optional, Union, Iterator
 
 
 class Node:
@@ -16,10 +16,15 @@ class Dictionary:
     LOAD_FACTOR: float = 0.66
     INITIAL_CAPACITY: int = 8
 
-    def __init__(self) -> None:
+    def __init__(
+            self,
+            sequence: Optional[Union[Dict, Dictionary]] = None,
+            **kwargs: Dict[str, Any]
+    ) -> None:
         self.capacity: int = self.INITIAL_CAPACITY
         self.hash_table: List[Optional[Node]] = [None] * self.capacity
         self.size: int = 0
+        self.update(sequence, **kwargs)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         node = Node(key, value)
@@ -45,7 +50,7 @@ class Dictionary:
 
         raise KeyError(key)
 
-    def __iter__(self) -> Hashable:
+    def __iter__(self) -> Iterator[Hashable]:
         for node in self.hash_table:
             if node:
                 yield node.key
@@ -57,11 +62,12 @@ class Dictionary:
         hash_key = hash(key)
         place = self._place(hash_key)
         self.hash_table[place] = None
+        self.size -= 1
 
     def __contains__(self, key: Hashable) -> bool:
         hash_key = hash(key)
         place = self._place(hash_key)
-        return self.hash_table[place] is not None
+        return place in self.hash_table[place]
 
     def _place(self, key: Hashable) -> int:
         return hash(key) % self.capacity
@@ -104,14 +110,14 @@ class Dictionary:
         except KeyError as error:
             if default:
                 return default
-            raise error(f"{key}")
+            raise error(key)
 
     def update(
             self,
             other: Optional[Dict, Dictionary],
             **kwargs: Dict[str, Any]
     ) -> None:
-        if getattr(other, "keys"):
+        if other and getattr(other, "keys"):
             for key in other:
                 self[key] = other[key]
         if kwargs:
