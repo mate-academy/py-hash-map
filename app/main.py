@@ -88,18 +88,10 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.size = 0
 
-    def get(
-            self,
-            key: Hashable,
-            default: Any = None
-    ) -> Any:
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
         return self[key] if key in self else default
 
-    def pop(
-            self,
-            key: Hashable,
-            default: Any = None
-    ) -> Any:
+    def pop(self, key: Hashable, default: Optional[Any] = None) -> Any:
         try:
             hash_key = hash(key)
             place = self._place(hash_key)
