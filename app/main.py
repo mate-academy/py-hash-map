@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Hashable, List, Optional, Union, Iterator
+from typing import Any, Dict, Hashable, Iterator, List, Optional, Union
 
 
 class Node:
