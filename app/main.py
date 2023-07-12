@@ -5,38 +5,44 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.hash_table: list[None | tuple[Hashable, hash, Any]] = [None] * 8
+        self.load_factor = 2 / 3
+        self.capacity = 2
+
+    @staticmethod
+    def add_item_to_table(
+            table: list[None | tuple[Hashable, hash, Any]],
+            key: Hashable,
+            value: Any
+    ) -> None:
+        hash_ = hash(key)
+        index = hash_ % (len(table) - 1)
+
+        while True:
+            if not table[index] or table[index][0] == key:
+                table[index] = key, hash_, value
+                break
+
+            index += 1
+
+            if index == len(table):
+                index = 0
+
+    def rehash(self) -> None:
+        new_hash_table = [None] * len(self.hash_table) * self.capacity
+
+        for item in self:
+            self.add_item_to_table(new_hash_table, item, self.__getitem__(item))
+
+        self.hash_table = new_hash_table
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        def add_item_to_table(
-                table: list[None | tuple[Hashable, hash, Any]],
-                key: Hashable,
-                value: Any
-        ) -> None:
-            hash_ = hash(key)
-            index = hash_ % (len(table) - 1)
-
-            while True:
-                if not table[index] or table[index][0] == key:
-                    table[index] = key, hash_, value
-                    break
-
-                index += 1
-
-                if index == len(table):
-                    index = 0
-
-        if len(self) > 2 / 3 * len(self.hash_table):
-            new_hash_table = [None] * len(self.hash_table) * 2
-
-            for item in self:
-                add_item_to_table(new_hash_table, item, self.__getitem__(item))
-
-            self.hash_table = new_hash_table
+        if len(self) > self.load_factor * len(self.hash_table):
+            self.rehash()
 
         if key not in self:
             self.length += 1
 
-        add_item_to_table(self.hash_table, key, value)
+        self.add_item_to_table(self.hash_table, key, value)
 
     def __getitem__(self, item: Hashable) -> Any:
         if item not in self:
