@@ -31,7 +31,11 @@ class Dictionary:
         new_hash_table = [None] * len(self.hash_table) * self.capacity
 
         for item in self:
-            self.add_item_to_table(new_hash_table, item, self.__getitem__(item))
+            self.add_item_to_table(
+                new_hash_table,
+                item,
+                self.__getitem__(item)
+            )
 
         self.hash_table = new_hash_table
 
