@@ -1,4 +1,3 @@
-from app.point import Point
 from typing import Hashable, Any
 
 
@@ -19,8 +18,8 @@ class Dictionary:
         else:
             found = False
             for i in range(len(self._table[index])):
-                if self._table[index][i][0] == key and \
-                        self._table[index][i][1] == hash_key:
+                if (self._table[index][i][0] == key) and \
+                        (self._table[index][i][1] == hash_key):
 
                     self._table[index][i] = node
                     found = True
@@ -38,7 +37,7 @@ class Dictionary:
             raise KeyError(key)
         else:
             for node in self._table[index]:
-                if node[0] == key and node[1] == hash_key:
+                if node[1] == hash_key and node[0] == key:
                     return node[2]
             raise KeyError(key)
 
@@ -47,19 +46,10 @@ class Dictionary:
 
     def _resize(self) -> None:
         new_capacity = self._capacity * 2
-        new_table = [None] * new_capacity
+        new_table = Dictionary(new_capacity)
         for index in range(self._capacity):
             if self._table[index] is not None:
                 for node in self._table[index]:
-                    new_index = node[1] % new_capacity
-                    if new_table[new_index] is None:
-                        new_table[new_index] = [node]
-                    else:
-                        new_table[new_index].append(node)
+                    new_table.__setitem__(node[0], node[2])
         self._capacity = new_capacity
-        self._table = new_table
-
-
-b = Dictionary()
-c = Point(3, 4)
-print(b.__setitem__(c, 70))
+        self._table = new_table._table
