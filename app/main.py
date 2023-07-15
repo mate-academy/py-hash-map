@@ -18,9 +18,8 @@ class Dictionary:
         else:
             found = False
             for i in range(len(self._table[index])):
-                if (self._table[index][i][0] == key) and \
-                        (self._table[index][i][1] == hash_key):
-
+                if (self._table[index][i][0] == key
+                        and self._table[index][i][1] == hash_key):
                     self._table[index][i] = node
                     found = True
                     break
