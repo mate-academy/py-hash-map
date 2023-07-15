@@ -60,4 +60,6 @@ class Dictionary:
         self._table = new_table
 
 
-
+b = Dictionary()
+c = Point(3, 4)
+print(b.__setitem__(c, 70))
