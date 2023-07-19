@@ -95,17 +95,17 @@ class Dictionary:
             other: [
                 "Dictionary",
                 dict,
-                list[tuple],
-                list[set],
-                list[list]
+                tuple,
+                set,
+                list
             ] = None
     ) -> None:
         if not other:
             return
         if isinstance(other, dict):
             other = other.items()
-        for key, value in other:
-            self[key] = value
+        key, value = other
+        self[key] = value
 
     def __iter__(self) -> Hashable:
         for node in self.table:
