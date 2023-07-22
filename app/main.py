@@ -9,25 +9,43 @@ class Dictionary:
         self._table = [None] * capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        hash_key, index = self._get_hash_and_index(key)
+        node = key, hash_key, value
+        i = self._find_node_index(index, key, hash_key)
+        if i is None:
+            self._append_node(index, node)
+        else:
+            self._replace_node(index, i, node)
+        if self._size / self._capacity > self._load_factor:
+            self._resize()
+
+    def _get_hash_and_index(self, key: Hashable) -> Any:
         hash_key = hash(key)
         index = hash_key % self._capacity
-        node = key, hash_key, value
+        return hash_key, index
+
+    def _find_node_index(self,
+                         index: int,
+                         key: Hashable,
+                         hash_key: int) -> Any:
         if self._table[index] is None:
-            self._table[index] = [node]
-            self._size += 1
+            return None
         else:
-            found = False
             for i in range(len(self._table[index])):
                 if (self._table[index][i][0] == key
                         and self._table[index][i][1] == hash_key):
-                    self._table[index][i] = node
-                    found = True
-                    break
-            if not found:
-                self._table[index].append(node)
-                self._size += 1
-        if self._size / self._capacity > self._load_factor:
-            self._resize()
+                    return i
+            return None
+
+    def _append_node(self, index: int, node: Any) -> None:
+        if self._table[index] is None:
+            self._table[index] = [node]
+        else:
+            self._table[index].append(node)
+        self._size += 1
+
+    def _replace_node(self, index: int, i: int, node: Any) -> None:
+        self._table[index][i] = node
 
     def __getitem__(self, key: Hashable) -> None:
         hash_key = hash(key)
