@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -7,7 +7,7 @@ class Dictionary:
         self.hash_table: list = [None] * 8
         self.load_factor = round(2 / 3, 2)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > len(self.hash_table) * self.load_factor:
             self.resize()
         hash_index = hash(key) % len(self.hash_table)
@@ -26,7 +26,7 @@ class Dictionary:
                 break
             hash_index = (hash_index + 1) % len(self.hash_table)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_index = hash(key) % len(self.hash_table)
         while True:
             if self.hash_table[hash_index] is None:
@@ -50,7 +50,7 @@ class Dictionary:
         self.hash_table = [None] * 8
         self.length = 0
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_index = hash(key) % len(self.hash_table)
         while True:
             if self.hash_table[hash_index][0] == key:
@@ -59,13 +59,13 @@ class Dictionary:
                 break
             hash_index = (hash_index + 1) % len(self.hash_table)
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable = None) -> Any:
         for item in self.hash_table:
             if item is not None and item[0] == key:
                 return item[2]
-        return None
+        return key
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         for index, item in enumerate(self.hash_table):
             if item is not None and item[0] == key:
                 current_item = item
