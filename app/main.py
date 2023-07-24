@@ -47,7 +47,10 @@ class Dictionary:
 
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: (int, float, str, tuple, bool)) -> Any:
+    def __getitem__(
+            self,
+            key: (int, float, str, tuple, bool)
+    ) -> Any:
         init_hash = hash(key)
         index = init_hash % self.capacity
         while self.hash_table[index]:
@@ -63,23 +66,3 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
-
-
-if __name__ == "__main__":
-    init = [
-        ("вісім", 8),
-        ("сім", 7),
-        ("шість", 6),
-        ("п'ять", 5),
-        ("чотири", 4),
-        ("три", 3),
-        ("два", 2),
-        ("один", 1)
-    ]
-
-    dict_ = Dictionary()
-    for k, v in init:
-        dict_[k] = v
-
-    for k, v in init:
-        print(k, dict_[k])
