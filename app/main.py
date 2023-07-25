@@ -3,11 +3,12 @@ from typing import Hashable, Any
 
 
 class Node:
-    def __init__(self,
-                 index: int,
-                 key: Hashable,
-                 value: Any
-                 ) -> None:
+    def __init__(
+            self,
+            index: int,
+            key: Hashable,
+            value: Any
+    ) -> None:
         self.key = key
         self.index = index
         self.value = value
