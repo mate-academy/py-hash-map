@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
-    def __init__(self, key: Any, value: Any, hash_code: int) -> None:
+    def __init__(self, key: Hashable, value: Any, hash_code: int) -> None:
         self.key = key
         self.value = value
         self.hash_code = hash_code
@@ -10,16 +10,14 @@ class Node:
 
 
 class Dictionary:
-    def __init__(
-            self, initial_capacity: int = 16,
-            load_factor: float = 0.75
-    ) -> None:
-        self.capacity = initial_capacity
-        self.load_factor = load_factor
+    def __init__(self) -> None:
+        self.__initial_capacity = 16
+        self.__load_factor = 0.75
+        self.capacity = self.__initial_capacity
         self.size = 0
         self.table = [None] * self.capacity
 
-    def _hash(self, key: Any) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) & 0x7FFFFFFF
 
     def _resize(self, new_capacity: int) -> None:
@@ -34,9 +32,9 @@ class Dictionary:
                 node = node.next
 
     def _should_resize(self) -> bool:
-        return self.size >= self.capacity * self.load_factor
+        return self.size >= self.capacity * self.__load_factor
 
-    def _get_node(self, key: Any, hash_code: int) -> Node:
+    def _get_node(self, key: Hashable, hash_code: int) -> Node:
         index = hash_code % self.capacity
         node = self.table[index]
 
@@ -47,7 +45,7 @@ class Dictionary:
 
         return None
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_code = self._hash(key)
         index = hash_code % self.capacity
 
@@ -63,7 +61,7 @@ class Dictionary:
         if self._should_resize():
             self._resize(self.capacity * 2)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_code = self._hash(key)
         node = self._get_node(key, hash_code)
 
@@ -71,7 +69,7 @@ class Dictionary:
             return node.value
         raise KeyError(key)
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_code = self._hash(key)
         index = hash_code % self.capacity
         node = self.table[index]
@@ -100,7 +98,7 @@ class Dictionary:
                 yield node.key
                 node = node.next
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
@@ -111,7 +109,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * self.capacity
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self[key]
             del self[key]
