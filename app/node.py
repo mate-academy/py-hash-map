@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
     def __init__(
             self,
-            key: Any,
+            key: Hashable,
             hash_custom: int,
             value: Any
     ) -> None:

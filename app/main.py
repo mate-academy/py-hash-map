@@ -1,5 +1,5 @@
 from app.node import Node
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -7,42 +7,45 @@ class Dictionary:
         self.hash_table = [None] * 8
         self.length = 0
 
+    def resize(self) -> None:
+        new_table = [None] * len(self.hash_table) * 2
+
+        for element in self.hash_table:
+            if element is None:
+                continue
+
+            element_number = element.hash % len(new_table)
+
+            if new_table[element_number] is None:
+                new_table[element_number] = element
+                continue
+
+            if new_table[element_number].key == element.key:
+                new_table[element_number].value = element.value
+                continue
+
+            start_index = element_number - len(new_table) + 1
+            end_index = len(new_table) + start_index - 2
+            for element_index in range(start_index, end_index):
+                if new_table[element_index] is None:
+                    new_table[element_index] = element
+                    break
+
+                if new_table[element_index].key == element.key:
+                    new_table[element_index].value = element.value
+                    break
+
+        self.hash_table = new_table
+
     def __setitem__(
             self,
-            key: Any,
+            key: Hashable,
             value: Any
     ) -> None:
         self.length += 1
 
         if self.length > (2 / 3 * len(self.hash_table)):
-            new_table = [None] * len(self.hash_table) * 2
-
-            for element in self.hash_table:
-                if element is None:
-                    continue
-
-                element_number = element.hash % len(new_table)
-
-                if new_table[element_number] is None:
-                    new_table[element_number] = element
-                    continue
-
-                if new_table[element_number].key == element.key:
-                    new_table[element_number].value = element.value
-                    continue
-
-                start_index = element_number - len(new_table) + 1
-                end_index = len(new_table) + start_index - 2
-                for element_index in range(start_index, end_index):
-                    if new_table[element_index] is None:
-                        new_table[element_index] = element
-                        break
-
-                    if new_table[element_index].key == element.key:
-                        new_table[element_index].value = element.value
-                        break
-
-            self.hash_table = new_table
+            self.resize()
 
         element = Node(
             key,
@@ -73,7 +76,7 @@ class Dictionary:
                 self.length -= 1
                 return
 
-    def __getitem__(self, item: Any) -> Any:
+    def __getitem__(self, item: Hashable) -> Any:
         element_number = hash(item) % len(self.hash_table)
 
         if self.hash_table[element_number] is None:
