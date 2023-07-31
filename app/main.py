@@ -1,50 +1,75 @@
 from copy import copy
 from typing import Union, Any
 
+from app.point import Point
+
 
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
         self.load_factor = round(self.capacity * 2 / 3)
-        self.table = [[] for i in range(self.length)]  # [[key, hash, value]]
+        self.table = [[] for i in range(self.capacity)]  # [[key, hash, value]]
 
-    def _resize(self):
+    def _resize(self) -> None:
         temp = copy(self.table)
         self.capacity *= 2
         self.length = 0
+        self.load_factor = round(self.capacity * 2 / 3)
         self.table = [[] for i in range(self.capacity)]
 
         for node in temp:
             if node:
-                self.__setitem__(node[0], node[1])
+                self.__setitem__(node[0], node[2])
 
     def __setitem__(
             self,
-            key: Union[int, float, str, bool, tuple],
+            key: Union[int, float, str, bool, tuple, Point],
             value: Any
-    ):
-        if self.length == self.capacity:
+    ) -> None:
+        if self.length > self.load_factor:
             self._resize()
 
         index = hash(key) % self.capacity
-        for _ in range(self.capacity):
-            node = self.table[index]
-            if node and node[0] != key:
-                index = (index + 1) % 8
-            elif node and node[0] == key:
-                node[2] = value
-            else:
-                node.append([key, hash(key), value])
-                self.length += 1
+        key_index = self.get_index(key)
 
-    def __getitem__(self, key: Union[int, float, str, bool, tuple]):
+        if key_index is not None:
+            self.table[key_index] = [key, hash(key), value]
+            return
+
+        for i in range(self.capacity):
+            node = self.table[index]
+
+            if node:
+                index = (index + 1) % self.capacity
+            if not node:
+                self.table[index] = [key, hash(key), value]
+                self.length += 1
+                break
+
+    def get_index(
+            self,
+            key: Union[int, float, str, bool, tuple, Point]
+    ) -> Union[int, None]:
         index = hash(key) % self.capacity
+
         for _ in range(self.capacity):
             node = self.table[index]
-            if node[0] == key:
-                return node[2]
+
+            if node and node[0] == key:
+                return index
+
             index = (index + 1) % self.capacity
+
+        return None
+
+    def __getitem__(
+            self,
+            key: Union[int, float, str, bool, tuple, Point]
+    ) -> Any:
+        index = self.get_index(key)
+        if index is not None:
+            return self.table[index][2]
 
         raise KeyError
 
@@ -57,4 +82,50 @@ class Dictionary:
         self.load_factor = round(self.capacity * 2 / 3)
         self.table = [[] for i in range(self.length)]
 
-    def __delitem__(self, key):
+    def __delitem__(
+            self,
+            key: Union[int, float, str, bool, tuple, Point]
+    ) -> list | None:
+        index = self.get_index(key)
+        if index is not None:
+            self.table[index] = []
+            self.length -= 1
+            return
+        raise KeyError
+
+    def pop(
+            self,
+            key: Union[int, float, str, bool, tuple, Point]
+    ) -> list | None:
+        index = self.get_index(key)
+        if index is not None:
+            node = self.table[index]
+            self.__delitem__(key)
+            return node[2]
+        return None
+
+    def update(
+            self,
+            key: Union[int, float, str, bool, tuple, Point], value: Any
+    ) -> None:
+        index = self.get_index(key)
+
+        if index is not None:
+            node = self.table[index]
+            node[2] = value
+            return
+
+        raise KeyError
+
+    def __repr__(self) -> str:
+        result = ["Dictionary:"]
+
+        if not self.length:
+            return "Dictionary: ()"
+
+        for i in range(self.capacity):
+            node = self.table[i]
+            if node:
+                key, _, value = node
+                result.append(f"(Point({key.x, key.y}): {value})")
+        return " ".join(result)
