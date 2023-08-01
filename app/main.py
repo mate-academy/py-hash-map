@@ -1,7 +1,5 @@
 from copy import copy
-from typing import Union, Any
-
-from app.point import Point
+from typing import Union, Any, Hashable
 
 
 class Dictionary:
@@ -22,11 +20,7 @@ class Dictionary:
             if node:
                 self.__setitem__(node[0], node[2])
 
-    def __setitem__(
-            self,
-            key: Union[int, float, str, bool, tuple, Point],
-            value: Any
-    ) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.load_factor:
             self._resize()
 
@@ -42,31 +36,25 @@ class Dictionary:
 
             if node:
                 index = (index + 1) % self.capacity
-            if not node:
+            else:
                 self.table[index] = [key, hash(key), value]
                 self.length += 1
                 break
 
-    def get_index(
-            self,
-            key: Union[int, float, str, bool, tuple, Point]
-    ) -> Union[int, None]:
+    def get_index(self, key: Hashable) -> Union[int, None]:
         index = hash(key) % self.capacity
 
         for _ in range(self.capacity):
             node = self.table[index]
 
-            if node and node[0] == key:
+            if node and node[1] == hash(key) and node[0] == key:
                 return index
 
             index = (index + 1) % self.capacity
 
         return None
 
-    def __getitem__(
-            self,
-            key: Union[int, float, str, bool, tuple, Point]
-    ) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
         if index is not None:
             return self.table[index][2]
@@ -82,10 +70,7 @@ class Dictionary:
         self.load_factor = round(self.capacity * 2 / 3)
         self.table = [[] for i in range(self.length)]
 
-    def __delitem__(
-            self,
-            key: Union[int, float, str, bool, tuple, Point]
-    ) -> list | None:
+    def __delitem__(self, key: Hashable) -> list | None:
         index = self.get_index(key)
         if index is not None:
             self.table[index] = []
@@ -93,10 +78,7 @@ class Dictionary:
             return
         raise KeyError
 
-    def pop(
-            self,
-            key: Union[int, float, str, bool, tuple, Point]
-    ) -> list | None:
+    def pop(self, key: Hashable) -> list | None:
         index = self.get_index(key)
         if index is not None:
             node = self.table[index]
@@ -104,10 +86,7 @@ class Dictionary:
             return node[2]
         return None
 
-    def update(
-            self,
-            key: Union[int, float, str, bool, tuple, Point], value: Any
-    ) -> None:
+    def update(self, key: Hashable, value: Any) -> None:
         index = self.get_index(key)
 
         if index is not None:
