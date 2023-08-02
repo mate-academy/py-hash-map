@@ -18,6 +18,7 @@ class Dictionary:
             self.hash_table = hash_table
 
         def __iter__(self) -> Dictionary.DictionaryIterator:
+            self.counter = 0
             return self
 
         def __next__(self) -> Any:
@@ -60,10 +61,10 @@ class Dictionary:
         key_index = self._get_index_hash_table(
             key, key_hash
         )
-        try:
-            return self.hash_table[key_index][2]
-        except TypeError:
+        if self.hash_table[key_index] is None:
             raise KeyError(key)
+
+        return self.hash_table[key_index][2]
 
     def __len__(self) -> int:
         return self.length
@@ -158,7 +159,4 @@ class Dictionary:
         if not isinstance(custom_dict, self.__class__):
             raise ValueError(f"custom_dict must be instance {self.__class__}")
         for key in custom_dict:
-            self.__setitem__(
-                key,
-                custom_dict[key]
-            )
+            self[key] = custom_dict[key]
