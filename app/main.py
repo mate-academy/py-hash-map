@@ -17,6 +17,9 @@ class Dictionary:
             self.counter = 0
             self.hash_table = hash_table
 
+        def __iter__(self) -> Dictionary.DictionaryIterator:
+            return self
+
         def __next__(self) -> Any:
 
             try:
@@ -32,12 +35,10 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.threshold = 5
+        self.threshold = self.capacity * self.LOAD_FACTOR
         self.hash_table: list = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.length == self.threshold:
-            self._resize()
 
         key_hash = hash(key)
         key_index = self._get_index_hash_table(
@@ -48,10 +49,11 @@ class Dictionary:
             self.length += 1
 
         self.hash_table[key_index] = (
-            key,
-            key_hash,
-            value
+            key, key_hash, value
         )
+
+        if self.length >= self.threshold:
+            self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         key_hash = hash(key)
@@ -77,9 +79,7 @@ class Dictionary:
             raise KeyError(key)
 
         self.hash_table[key_index] = (
-            self.DUMMY_VALUE(key),
-            None,
-            None,
+            self.DUMMY_VALUE(key), None, None
         )
 
     def __iter__(self) -> DictionaryIterator:
@@ -108,8 +108,8 @@ class Dictionary:
                     break
 
             if all(
-                    [hash_table[key_index][0] == key,
-                     isinstance(hash_table[key_index][0], type(key))]
+                    [hash_table_key == key,
+                     isinstance(hash_table_key, type(key))]
             ):
                 break
             key_index = (key_index + 1) % capacity
@@ -141,7 +141,7 @@ class Dictionary:
     def clear(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.threshold = 5
+        self.threshold = self.capacity * self.LOAD_FACTOR
         self.hash_table: list = [None] * self.capacity
 
     def get(
