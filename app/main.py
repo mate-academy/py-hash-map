@@ -18,13 +18,19 @@ class Dictionary:
             self.hash_table[index] = (key, hash(key), value)
             self.length += 1
             self.keys.append(key)
-        elif self.hash_table[index][0] == key:
+        elif (
+                self.hash_table[index][0] == key
+                and hash(key) == self.hash_table[index][1]
+        ):
             self.hash_table[index] = (key, hash(key), value)
         elif key in self.keys:
             for cell_number in range(index + 1, len(self.hash_table) + index):
                 if cell_number >= len(self.hash_table):
                     cell_number % len(self.hash_table)
-                if self.hash_table[cell_number][0] == key:
+                if (
+                        self.hash_table[cell_number][0] == key
+                        and self.hash_table[cell_number][1] == hash(key)
+                ):
                     self.hash_table[cell_number] = (key, hash(key), value)
                     break
         else:
@@ -40,13 +46,19 @@ class Dictionary:
         capacity = len(self.hash_table)
         index = hash(key) % capacity
         if self.hash_table[index]:
-            if key == self.hash_table[index][0]:
+            if (
+                    key == self.hash_table[index][0]
+                    and self.hash_table[index][1] == hash(key)
+            ):
                 return self.hash_table[index][2]
         for cell in range(index, capacity + index):
             if cell >= capacity:
                 cell = cell % capacity
             if self.hash_table[index]:
-                if key == self.hash_table[cell][0]:
+                if (
+                        key == self.hash_table[cell][0]
+                        and self.hash_table[cell][1] == hash(key)
+                ):
                     return self.hash_table[cell][2]
         raise KeyError
 
@@ -56,14 +68,20 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         if key in self.keys:
             index = hash(key) % len(self.hash_table)
-            if self.hash_table[index] == key:
+            if (
+                    self.hash_table[index] == key
+                    and self.hash_table[index][1] == hash(key)
+            ):
                 self.hash_table[index] = None
             else:
                 for cell in range(index + 1, len(self.hash_table) + index):
                     if cell >= len(self.hash_table):
                         cell %= len(self.hash_table)
                     if self.hash_table[cell]:
-                        if self.hash_table[cell][0] == key:
+                        if (
+                                self.hash_table[cell][0] == key
+                                and self.hash_table[cell][1] == hash(key)
+                        ):
                             self.hash_table[cell] = None
             self.keys.remove(key)
             self.length -= 1
