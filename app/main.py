@@ -74,3 +74,6 @@ class Dictionary:
                     and self.table[new_index][1] == hash(key)):
                 return self.table[new_index][2]
         raise KeyError("There is no such key in dictionary!")
+
+    def clear(self) -> None:
+        self.table = [None] * self.capacity
