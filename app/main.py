@@ -45,21 +45,21 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any | None:
         capacity = len(self.hash_table)
         index = hash(key) % capacity
-        if self.hash_table[index]:
-            if (
-                    key == self.hash_table[index][0]
-                    and self.hash_table[index][1] == hash(key)
-            ):
-                return self.hash_table[index][2]
+        if (
+                self.hash_table[index]
+                and key == self.hash_table[index][0]
+                and self.hash_table[index][1] == hash(key)
+        ):
+            return self.hash_table[index][2]
         for cell in range(index, capacity + index):
             if cell >= capacity:
                 cell = cell % capacity
-            if self.hash_table[index]:
-                if (
-                        key == self.hash_table[cell][0]
-                        and self.hash_table[cell][1] == hash(key)
-                ):
-                    return self.hash_table[cell][2]
+            if (
+                self.hash_table[index]
+                and key == self.hash_table[cell][0]
+                and self.hash_table[cell][1] == hash(key)
+            ):
+                return self.hash_table[cell][2]
         raise KeyError
 
     def clear(self) -> None:
@@ -77,16 +77,14 @@ class Dictionary:
                 for cell in range(index + 1, len(self.hash_table) + index):
                     if cell >= len(self.hash_table):
                         cell %= len(self.hash_table)
-                    if self.hash_table[cell]:
-                        if (
-                                self.hash_table[cell][0] == key
-                                and self.hash_table[cell][1] == hash(key)
-                        ):
-                            self.hash_table[cell] = None
+                    if (
+                        self.hash_table[cell]
+                        and self.hash_table[cell][0] == key
+                        and self.hash_table[cell][1] == hash(key)
+                    ):
+                        self.hash_table[cell] = None
             self.keys.remove(key)
             self.length -= 1
-        else:
-            return
 
     def find_empty_place(self, current_index: int) -> int:
         capacity = len(self.hash_table)
