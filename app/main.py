@@ -1,35 +1,34 @@
-from typing import Any, Optional, List, Tuple
+from typing import Any
 
 
 class Node:
     def __init__(self, key: Any, value: Any) -> Any:
         self.key = key
         self.value = value
-        self.next: Optional[Node] = None
+        self.next = None
 
 
 class Dictionary:
-    def __init__(
-            self,
-            initial_capacity: int = 10,
-            load_factor: float = 0.75
-    ) -> None:
-        self._capacity: int = initial_capacity
-        self._load_factor: float = load_factor
-        self._size: int = 0
-        self._table: List[Optional[Node]] = [None] * self._capacity
+    def __init__(self,
+                 initial_capacity: int = 8,
+                 load_factor: float = 2 / 3
+                 ) -> None:
+        self._capacity = initial_capacity
+        self._load_factor = round(self._capacity * load_factor)
+        self._size = 0
+        self._table = [None] * self._capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        hash_code: int = self._get_hash_code(key)
-        index: int = hash_code % self._capacity
+        hash_code = self._get_hash_code(key)
+        index = hash_code % self._capacity
 
-        new_node: Node = Node(key, value)
+        new_node = Node(key, value)
 
         if self._table[index] is None:
             self._table[index] = new_node
         else:
-            current: Node = self._table[index]
-            prev: Optional[Node] = None
+            current = self._table[index]
+            prev = None
             while current is not None:
                 if current.key == key:
                     current.value = value
@@ -43,10 +42,10 @@ class Dictionary:
             self._resize_table()
 
     def __getitem__(self, key: Any) -> Any:
-        hash_code: int = self._get_hash_code(key)
-        index: int = hash_code % self._capacity
+        hash_code = self._get_hash_code(key)
+        index = hash_code % self._capacity
 
-        current: Optional[Node] = self._table[index]
+        current = self._table[index]
         while current is not None:
             if current.key == key:
                 return current.value
@@ -58,11 +57,11 @@ class Dictionary:
         return self._size
 
     def __delitem__(self, key: Any) -> None:
-        hash_code: int = self._get_hash_code(key)
-        index: int = hash_code % self._capacity
+        hash_code = self._get_hash_code(key)
+        index = hash_code % self._capacity
 
-        prev: Optional[Node] = None
-        current: Optional[Node] = self._table[index]
+        prev = None
+        current = self._table[index]
         while current is not None:
             if current.key == key:
                 if prev is None:
@@ -80,14 +79,14 @@ class Dictionary:
         return hash(key)
 
     def _resize_table(self) -> None:
-        new_capacity: int = self._capacity * 2
-        new_table: List[Optional[Node]] = [None] * new_capacity
+        new_capacity = self._capacity * 2
+        new_table = [None] * new_capacity
 
         for i in range(self._capacity):
-            current: Optional[Node] = self._table[i]
+            current = self._table[i]
             while current is not None:
-                new_index: int = current.key.__hash__() % new_capacity
-                new_node: Node = Node(current.key, current.value)
+                new_index = current.key.__hash__() % new_capacity
+                new_node = Node(current.key, current.value)
 
                 if new_table[new_index] is None:
                     new_table[new_index] = new_node
@@ -103,9 +102,9 @@ class Dictionary:
         self._capacity = new_capacity
 
     def __repr__(self) -> str:
-        items: List[Tuple[Any, Any]] = []
+        items = []
         for i in range(self._capacity):
-            current: Optional[Node] = self._table[i]
+            current = self._table[i]
             while current is not None:
                 items.append((current.key, current.value))
                 current = current.next
