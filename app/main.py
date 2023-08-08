@@ -20,44 +20,73 @@ class Dictionary:
     def resize(self) -> None:
         self.initial_capacity *= 2
         self.threshold = round(self.load_factor * self.initial_capacity)
-        self.current_len_of_dict = self.current_len_of_dict
+        self.current_len_of_dict = 0
         prev_hash_table = self.hash_table.copy()
         self.hash_table = [[] for i in range(self.initial_capacity)]
-        for cell in prev_hash_table:
-            if cell is not None:
-                for key, value, hash_k in cell:
-                    hash_key = hash(key)
-                    new_index = hash_key % self.initial_capacity
-                    self.hash_table[new_index] = [(key, value, hash_key)]
 
-    # 6. Метод додавання пари ключ-значення до хеш-таблиці.
+        for cell in prev_hash_table:
+            if cell:
+                for key, value, hash_k in cell:
+                    # Обчислюю хеш введеного ключа
+                    hash_key = hash(key)
+                    # Обчислюю індекс комірки словника в яку записуватиму ключ-значення-хеш
+                    index = hash_key % self.initial_capacity
+                    self.hash_table[index].append((key, value, hash_key))
+                    self.current_len_of_dict += 1
+
+    # 6. Метод додавання пари ключ-значення-хеш до хеш-таблиці.
     def __setitem__(
             self,
             input_key: Union[int, float, str, object],
             input_value: Any
     ) -> None:
         """ x.__getitem__(y) <==> x[y] """
-        # 7. Якщо поточний розмір словника менший чи рівний порогу заповнення.
-        if self.current_len_of_dict <= self.threshold:
+        # 7. Якщо поточний розмір словника менший порогу заповнення.
+        if self.current_len_of_dict < self.threshold:
+            # Обчислюю хеш введеного ключа
             hash_input_key = hash(input_key)
+            # Обчислюю індекс комірки словника в яку записуватиму ключ-значення-хеш
             index = hash_input_key % self.initial_capacity
+            # Якщо ж комірка словника не порожня
+            if len(self.hash_table[index]) != 0:
+                # для всіх відерець у комірці словника
+                for i in range(len(self.hash_table[index])):
+                    # якщо перше значення (нульове) у кортежі відерця (ключ) рівне введеному ключу
+                    if list(self.hash_table[index][i])[0] == input_key:
+                        # то значення відерця рівне введеному ключу, введеному значенню, хешу введеного ключа
+                        self.hash_table[index][i] = input_key, input_value, hash_input_key
+                        # Якщо знайшла у якомусь із відерець комірки з номером index ключ рівний введеному ключу, то припиняю пошук і виходжу з циклу
+                        break
+                #Якщо всі ключі у відерцях не рівні введеному ключу
+                else:
+                    # то просто додаю до порожньої комірки
+                    self.hash_table[index].append(
+                        # кортеж ключ-значення-хеш
+                        (input_key, input_value, hash_input_key)
+                    )
+                    # далі збільшую довжину словника на одиницю
+                    self.current_len_of_dict += 1
+            # Якщо ж комірка словника порожня
+            if len(self.hash_table[index]) == 0:
+                # то просто додаю до порожньої комірки
+                self.hash_table[index].append(
+                    # кортеж ключ-значення-хеш
+                    (input_key, input_value, hash_input_key)
+                )
+                # далі збільшую довжину словника на одиницю
+                self.current_len_of_dict += 1
 
-            for key, value, hash_key in self.hash_table[index]:
-                if key == input_key:
-                    self.hash_table[index] = [(key, input_value, hash_key)]
-                    return
-            self.hash_table[index].append(
-                (input_key, input_value, hash_input_key)
-            )
-            self.current_len_of_dict += 1
-
-            if self.current_len_of_dict > self.threshold:
-                self.resize()
+        # Якщо поточний розмір словника менший чи рівний порогу заповнення.
+        else:
+            # змінюю розмір словника(хеш-таблиці)
+            self.resize()
 
     def __getitem__(self, input_key: Union[int, float, str, object]) -> Any:
         """ Set self[key] to value. """
-        hash_key = hash(input_key)
-        index = hash_key % self.initial_capacity
+        # Обчислюю хеш введеного ключа
+        hash_input_key = hash(input_key)
+        # Обчислюю індекс комірки словника в яку записуватиму ключ-значення-хеш
+        index = hash_input_key % self.initial_capacity
         for key, value, hash_k in self.hash_table[index]:
             if key == input_key:
                 return value
@@ -68,11 +97,15 @@ class Dictionary:
 
     def __delitem__(self, input_key: Union[int, float, str, object]) -> None:
         """ Delete self[key]. """
-        hash_key = hash(input_key)
-        index = hash_key % self.initial_capacity
-        for key, value, hash_k in self.hash_table[index]:
-            if key == input_key:
-                self.hash_table[index] = []
+        # Обчислюю хеш введеного ключа
+        hash_input_key = hash(input_key)
+        # Обчислюю індекс комірки словника в яку записуватиму ключ-значення-хеш
+        index = hash_input_key % self.initial_capacity
+        for i in range(len(self.hash_table[index])):
+            if list(self.hash_table[index][i])[0] == input_key:
+                del self.hash_table[index][i]
+                self.current_len_of_dict -= 1
+                break
 
     def clear(self) -> None:
         # 1. Поточний розмір словника рівний нулю.
@@ -93,98 +126,32 @@ if __name__ == "__main__":
     print(dictionary.__len__())
     print(len(dictionary.hash_table))
 
-    dictionary.__setitem__("1", 23)
+    dictionary.__setitem__(16, 16)
     print(dictionary.hash_table)
     print(dictionary.__len__())
     print(len(dictionary.hash_table))
 
-    dictionary.__setitem__("1", 45)
+    dictionary.__setitem__(32, 32)
     print(dictionary.hash_table)
     print(dictionary.__len__())
     print(len(dictionary.hash_table))
-#
+
+    dictionary.__setitem__(64, 64)
+    print(dictionary.hash_table)
+    print(dictionary.__len__())
+    print(len(dictionary.hash_table))
+
+    dictionary.__delitem__(16)
+    print(dictionary.hash_table)
+    print(dictionary.__len__())
+    print(len(dictionary.hash_table))
+
     dictionary.__setitem__(2, 55)
     print(dictionary.hash_table)
     print(dictionary.__len__())
     print(len(dictionary.hash_table))
 
-    dictionary.__delitem__(2)
+    dictionary.__delitem__(64)
     print(dictionary.hash_table)
     print(dictionary.__len__())
     print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(4.0, "four")
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(5.0, "five")
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    # dictionary.__delitem__("1")
-    # print(dictionary.hash_table)
-    # print(dictionary.__len__())
-    # print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(6, "six")
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(6.0, 7)
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__delitem__(6)
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(8, "eight")
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(9, "nine")
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__delitem__(9)
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(10.0, "ten")
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-    #
-    dictionary.__setitem__(11, 11)
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(12, 21)
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-
-    dictionary.__setitem__(13, 55)
-    print(dictionary.hash_table)
-    print(dictionary.__len__())
-    print(len(dictionary.hash_table))
-    # dictionary.__delitem__("1")
-    # print(dictionary.hash_table)
-    # print(dictionary.__len__())
-    # print(len(dictionary.hash_table))
-    #
-    # print(dictionary.__getitem__("11"))
-
-    # dictionary.clear()
-    # print(dictionary.hash_table)
-    # print(dictionary.__len__())
-    # print(len(dictionary.hash_table))
