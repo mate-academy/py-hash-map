@@ -33,7 +33,7 @@ class Dictionary:
         self.capacity *= 2
 
         for element in elements:
-            self.__setitem__(element[0], element[2])
+            self[element[0]] = element[2]
 
     def __setitem__(self, key: Any, value: Any) -> None:
         key_index = hash(key) % self.capacity
