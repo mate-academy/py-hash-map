@@ -34,7 +34,7 @@ class Dictionary:
             input_key: Union[int, float, str, object],
             input_value: Any
     ) -> None:
-        """ x.__getitem__(y) <==> x[y] """
+        """ Set self[key] to value. """
 
         if self.current_len_of_dict >= self.threshold:
 
@@ -72,7 +72,7 @@ class Dictionary:
                 self.current_len_of_dict += 1
 
     def __getitem__(self, input_key: Union[int, float, str, object]) -> Any:
-        """ Set self[key] to value. """
+        """ x.__getitem__(y) <==> x[y] """
 
         hash_input_key = hash(input_key)
         index = hash_input_key % self.initial_capacity
@@ -82,6 +82,7 @@ class Dictionary:
         raise KeyError("Dictionary missing key")
 
     def __len__(self) -> int:
+        """ Return len(self). """
         return self.current_len_of_dict
 
     def __delitem__(self, input_key: Union[int, float, str, object]) -> None:
@@ -96,7 +97,7 @@ class Dictionary:
                 break
 
     def clear(self) -> None:
-
+        """ D.clear() -> None.  Remove all items from D. """
         self.current_len_of_dict = 0
         self.initial_capacity = 8
         self.hash_table = [[] for i in range(self.initial_capacity)]
