@@ -62,11 +62,11 @@ class Dictionary:
         return self._size
 
     def _resize(self) -> None:
-        new_capacity = self._capacity * 2
-        new_table = Dictionary(new_capacity)
-        for index in range(self._capacity):
-            if self._table[index] is not None:
-                for node in self._table[index]:
-                    new_table.__setitem__(node[0], node[2])
-        self._capacity = new_capacity
-        self._table = new_table._table
+        old_table = self._table
+        self._capacity *= 2
+        self._table = [None] * self._capacity
+        self._size = 0
+        for cell in old_table:
+            if cell is not None:
+                for node in cell:
+                    self.__setitem__(node[0], node[2])
