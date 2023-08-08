@@ -8,7 +8,7 @@ class Dictionary:
 
     def __init__(self) -> None:
         self.capacity = self.INITIAL_CAPACITY
-        self.size = 0
+        self._size = 0
         self.table = [None] * self.capacity
 
     @property
