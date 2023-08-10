@@ -1,14 +1,13 @@
 import dataclasses
 
-from typing import Any, Hashable, Optional, List
+from typing import Any, Hashable, Optional
 
 
 @dataclasses.dataclass
 class Dictionary:
     capacity: int = 8
     load_factor: float = 0.75
-    hash_table_:  Optional[list[list[str]]] = None
-
+    hash_table_: Optional[list[list[str]]] = None
     size: int = 0
 
     def hash_table(self) -> None:
