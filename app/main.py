@@ -7,7 +7,7 @@ from typing import Any, Hashable, Optional, List
 class Dictionary:
     capacity: int = 8
     load_factor: float = 0.75
-    hash_table_:  Optional[List[List[str]]] = None
+    hash_table_:  Optional[list[list[str]]] = None
 
     size: int = 0
 
