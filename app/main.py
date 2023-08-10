@@ -1,13 +1,14 @@
 import dataclasses
 
-from typing import Any, Hashable
+from typing import Any, Hashable, Optional, List
 
 
 @dataclasses.dataclass
 class Dictionary:
     capacity: int = 8
     load_factor: float = 0.75
-    hash_table_: list = None
+    hash_table_:  Optional[List[List[str]]] = None
+
     size: int = 0
 
     def hash_table(self) -> None:
@@ -68,3 +69,34 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table()
         self.size = 0
+
+
+movies = Dictionary()
+
+movies[1] = "Oppenheimer"
+movies[2] = "Inception"
+movies[3] = "Interstellar"
+movies[4] = "Tenet"
+movies[5] = "The Prestige"
+print(f"Size: {movies.size}, Capacity: {movies.capacity}")
+movies[6] = "The Dark Knight"
+print(f"Size: {movies.size}, Capacity: {movies.capacity}")
+print(movies.hash_table_)
+movies[7] = "Gladiator"
+print(movies.hash_table_)
+movies[8] = "Shutter Island"
+print(movies.hash_table_)
+movies[9] = "Blade Runner 2049"
+movies[10] = "Matrix"
+print(f"Size: {movies.size}, Capacity: {movies.capacity}")
+
+movies.clear()
+print(len(movies))
+
+movies.__setitem__(2, "Memento")
+print(len(movies))
+
+print(movies.__getitem__(2))
+movies.__setitem__(3, "Tenet")
+print(movies.__getitem__(3))
+print(len(movies))
