@@ -7,7 +7,7 @@ from typing import Any, Hashable, Optional
 class Dictionary:
     capacity: int = 8
     load_factor: float = 0.75
-    hash_table_: Optional[list[list[str]]] = None
+    hash_table_: Optional[list[tuple[Any, Hashable, Any]]] = None
     size: int = 0
 
     def hash_table(self) -> None:
@@ -68,6 +68,8 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table()
         self.size = 0
+
+
 
 
 movies = Dictionary()
