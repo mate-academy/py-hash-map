@@ -42,7 +42,7 @@ class Dictionary:
         if self.length > len(self.hash_table) * 2 / 3:
             self.resize()
 
-    def __getitem__(self, key: Hashable) -> Any | None:
+    def __getitem__(self, key: Hashable) -> Any:
         capacity = len(self.hash_table)
         index = hash(key) % capacity
         if (
@@ -86,7 +86,7 @@ class Dictionary:
             self.keys.remove(key)
             self.length -= 1
 
-    def find_empty_place(self, current_index: int) -> int:
+    def find_empty_place(self, current_index: int) -> int | None:
         capacity = len(self.hash_table)
         for index in range(current_index + 1, capacity + current_index):
             if index >= capacity:
