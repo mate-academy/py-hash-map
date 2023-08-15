@@ -1,15 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from math import floor
 from typing import Any, Hashable
-
-
-@dataclass
-class Node:
-    key: Hashable
-    value: Any
-    hash: int
 
 
 class Dictionary:
@@ -24,7 +16,7 @@ class Dictionary:
 
     @property
     def current_max_size(self) -> int:
-         return floor(self.load_factor * self.capacity)
+        return floor(self.load_factor * self.capacity)
 
     def __len__(self) -> int:
         return self.size
@@ -55,7 +47,7 @@ class Dictionary:
         self.size = 0
 
     def get(self,
-            key:Hashable,
+            key: Hashable,
             value: Any = None
             ) -> Any:
         for index in range(len(self.hash_table)):
