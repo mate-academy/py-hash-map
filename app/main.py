@@ -19,7 +19,7 @@ class Dictionary:
         for hash_key_value in old_hash_list:
             if hash_key_value:
                 hash_, key, value = hash_key_value
-                self.__setitem__(key, value)
+                self[key] = value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
 
@@ -55,7 +55,7 @@ class Dictionary:
                 return self.hash_list[index][2]
 
             index = (index + 1) % self.capacity
-        raise KeyError()
+        raise KeyError(key)
 
     def __len__(self) -> any:
         return self.length
