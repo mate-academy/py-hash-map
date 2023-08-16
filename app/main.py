@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -29,8 +29,8 @@ class Dictionary:
         else:
             current = self.table[index]
             while current:
-                if current.key == key:
-                    current.value = value
+                if current.key == key and hash(current.key) == hash(key):
+                    current.value = value  # Replace existing value
                     return
                 current = current.next
             new_node.next = self.table[index]
@@ -56,7 +56,7 @@ class Dictionary:
         current = self.table[index]
         prev = None
         while current:
-            if current.key == key:
+            if current.key == key and hash(current.key) == hash(key):
                 if prev is None:
                     self.table[index] = current.next
                 else:
@@ -83,6 +83,8 @@ class Dictionary:
             del self[key]
             return value
         except KeyError:
+            if default is None:
+                raise
             return default
 
     def update(self, other_dict: dict) -> None:
@@ -97,7 +99,7 @@ class Dictionary:
 
 
 class Node:
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.next = None
