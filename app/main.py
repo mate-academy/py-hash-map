@@ -8,7 +8,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * capacity
 
-    def _hash(self, key: Any) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def _resize(self, new_capacity: int) -> None:
@@ -21,7 +21,7 @@ class Dictionary:
                 self[node.key] = node.value
                 node = node.next
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._hash(key)
         new_node = Node(key, value)
         if self.table[index] is None:
