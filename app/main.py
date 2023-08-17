@@ -1,6 +1,11 @@
 from typing import Any, Hashable
 
 
+class Default:
+    def __init__(self, value: Any) -> None:
+        self.value = value
+
+
 class Dictionary:
     def __init__(self, capacity: int = 16, load_factor: float = 0.75) -> None:
         self.capacity = capacity
@@ -43,7 +48,7 @@ class Dictionary:
         index = self._hash(key)
         current = self.table[index]
         while current:
-            if current.key == key:
+            if current.key == key and hash(current.key) == hash(key):
                 return current.value
             current = current.next
         raise KeyError(key)
@@ -77,15 +82,15 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Any, default: Any = Default) -> Any:
         try:
             value = self[key]
             del self[key]
             return value
         except KeyError:
-            if default is None:
+            if default is Default:
                 raise
-            return default
+            return default.value
 
     def update(self, other_dict: dict) -> None:
         for key, value in other_dict.items():
