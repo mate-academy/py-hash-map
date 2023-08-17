@@ -21,7 +21,7 @@ class Dictionary:
                 break
             empty_slot = (empty_slot + 1) % self.capacity
         if self.length > self.threshold:
-            self.resize()
+            self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         empty_slot = hash(key) % self.capacity
