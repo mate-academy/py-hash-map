@@ -35,12 +35,12 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def resize(self) -> None:
-        bucket1 = self.bucket
+    def _resize(self) -> None:
+        bucket_old = self.bucket
         self.threshold *= 2
         self.capacity *= 2
         self.length = 0
         self.bucket = [[]] * self.capacity
-        for slot in bucket1:
+        for slot in bucket_old:
             if slot:
                 self.__setitem__(slot[0], slot[2])
