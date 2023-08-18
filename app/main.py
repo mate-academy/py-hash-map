@@ -2,12 +2,11 @@ from typing import Any, Hashable
 
 
 class Default:
-    def __init__(self, value: Any) -> None:
-        self.value = value
+    pass
 
 
 class Dictionary:
-    def __init__(self, capacity: int = 16, load_factor: float = 0.75) -> None:
+    def __init__(self, capacity: int = 8, load_factor: float = 0.75) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
@@ -90,7 +89,7 @@ class Dictionary:
         except KeyError:
             if default is Default:
                 raise
-            return default.value
+            return default
 
     def update(self, other_dict: dict) -> None:
         for key, value in other_dict.items():
