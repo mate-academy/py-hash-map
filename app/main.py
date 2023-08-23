@@ -15,23 +15,21 @@ class Dictionary:
         if self._load_factor > 2 / 3:
             new_size = self.initial_capacity * 2
             new_buckets = [{} for _ in range(new_size)]
-
             for bucket in self.buckets:
-
                 for key, value in bucket.items():
                     new_hash_key = hash(key) % new_size
                     new_buckets[new_hash_key][key] = value
             self.initial_capacity = new_size
             self.buckets = new_buckets
+        else:
+            self.initial_capacity = self.initial_capacity
+            self.buckets = self.buckets
 
     def __setitem__(self, key: int, value: str) -> None:
         self._resize()
         hash_key = self._hash_function(key)
         bucket = self.buckets[hash_key]
-        if key in bucket:
-            bucket[key] = value
-        else:
-            bucket[key] = value
+        bucket[key] = value
 
     def __getitem__(self, key: Any) -> Any:
         hash_key = self._hash_function(key)
@@ -56,27 +54,24 @@ class Dictionary:
     def pop(self, object_: dict, default_value: Any = None) -> Any:
         bucket_index = self._get_bucket_index(object_)
         bucket = self.buckets[bucket_index]
-
         for i, (stored_key, value) in enumerate(bucket):
             if stored_key == object_:
                 del bucket[i]
                 return value
-
         if default_value is not None:
             return default_value
-
         raise KeyError(object_)
 
     def update(self, object_: dict = None, **dict_) -> None:
         if object_ is not None:
             if hasattr(object_, "keys"):
-                for key_ in object_.keys():
-                    self[key_] = object_[key_]
+                for key_, value_ in object_.items():
+                    self[key_] = value_
             else:
-                for key_, vale_ in object_:
-                    self[key_] = vale_
-        for key_ in dict_:
-            self[key_] = dict_[key_]
+                for key_, value_ in object_:
+                    self[key_] = value_
+        for key_, value_ in dict_.items():
+            self[key_] = value_
 
     def get(self, key: Any, default: Any = None) -> Any:
         try:
