@@ -9,6 +9,7 @@ from typing import Any, Hashable, Optional, List, Iterator
 class Node:
     key: Hashable
     value: Any
+    hash_of_node: int
 
 
 class Dictionary:
@@ -29,7 +30,8 @@ class Dictionary:
         index = hash(key) % self.capacity
         while True:
             if (self.hash_table[index] is None
-                    or self.hash_table[index].key == key):
+                    or (self.hash_table[index].key == key
+                        and self.hash_table[index].hash_of_node == hash(key))):
                 return index
             index = (index + 1) % self.capacity
 
@@ -47,7 +49,7 @@ class Dictionary:
         if self.hash_table[index]:
             self.hash_table[index].value = value
         else:
-            self.hash_table[index] = Node(key, value)
+            self.hash_table[index] = Node(key, value, hash(key))
             self.size += 1
 
     def __getitem__(self, key: Hashable) -> Any:
@@ -64,13 +66,13 @@ class Dictionary:
     def get(self, key: Hashable, default: Any = None) -> Any:
         if self[key]:
             return self[key]
-        return default
+        raise KeyError
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
-        if self[key]:
-            value = self[key]
+        index = self._index_for_key(key)
+        if self.hash_table[index]:
+            default = self[key]
             self.__delitem__(key)
-            return value
         return default
 
     def update(self, other_dictionary: Dictionary) -> None:
