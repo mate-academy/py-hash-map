@@ -1,15 +1,13 @@
-from typing import Any, Hashable, List, Tuple
-
-from app.point import Point
+from typing import Any, Hashable
 
 
 class Dictionary:
-    __items: List[Tuple | None]
+    __items: list[tuple | None]
     __current_len: int = 0
 
     def __init__(
         self,
-        args: List[Tuple[Any, Any] | List[Any, Any]] | None = None
+        args: list[tuple[Any, Any] | list[Any, Any]] | None = None
     ) -> None:
         self.__items = []
         for _ in range(8):
@@ -53,7 +51,7 @@ class Dictionary:
         load_factor = round(length * (2 / 3) + 1)
         return self.__current_len == load_factor
 
-    def items(self) -> List:
+    def items(self) -> list:
         return [item for item in self.__items if item is not None]
 
     def __setitem(self, key: Hashable, value: Any) -> None:
@@ -73,7 +71,7 @@ class Dictionary:
                     current_index = 0
 
     def __repr__(self) -> str:
-        dict_str_list: List[str] = []
+        dict_str_list: list[str] = []
         for key, value in self.items():
             if isinstance(value, str):
                 dict_str_list.append(f"{key}: '{value}'")
