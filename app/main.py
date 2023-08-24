@@ -26,7 +26,7 @@ class Dictionary:
             self.initial_capacity = self.initial_capacity
             self.buckets = self.buckets
 
-    def __setitem__(self, key: int, value: str) -> None:
+    def __setitem__(self, key: Hashable, value: str) -> None:
         self._resize()
         hash_key = self._hash_function(key)
         bucket = self.buckets[hash_key]
@@ -74,13 +74,13 @@ class Dictionary:
         for key_, value_ in dict_.items():
             self[key_] = value_
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         for bucket in self.buckets:
             for (bucket_index,
                  (existing_key, existing_value)) in enumerate(bucket):
@@ -92,6 +92,6 @@ class Dictionary:
     def __iter__(self) -> Iterator:
         return iter(self.keys)
 
-    def _hash_function(self, key: Any) -> int:
+    def _hash_function(self, key: Hashable) -> int:
         hash_key_ = hash(key)
         return hash_key_ % self.initial_capacity
