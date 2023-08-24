@@ -1,4 +1,5 @@
 from typing import Any
+from typing import Hashable
 from typing import Iterator
 
 
@@ -31,7 +32,7 @@ class Dictionary:
         bucket = self.buckets[hash_key]
         bucket[key] = value
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = self._hash_function(key)
         if key in self.buckets[hash_key]:
             return self.buckets[hash_key][key]
@@ -54,9 +55,9 @@ class Dictionary:
     def pop(self, object_: dict, default_value: Any = None) -> Any:
         bucket_index = self._get_bucket_index(object_)
         bucket = self.buckets[bucket_index]
-        for i, (stored_key, value) in enumerate(bucket):
+        for bucket_index, (stored_key, value) in enumerate(bucket):
             if stored_key == object_:
-                del bucket[i]
+                del bucket[bucket_index]
                 return value
         if default_value is not None:
             return default_value
@@ -81,9 +82,10 @@ class Dictionary:
 
     def __delitem__(self, key: Any) -> None:
         for bucket in self.buckets:
-            for i, (existing_key, existing_value) in enumerate(bucket):
+            for (bucket_index,
+                 (existing_key, existing_value)) in enumerate(bucket):
                 if existing_key == key:
-                    del bucket[i]
+                    del bucket[bucket_index]
                     return
         raise KeyError(key)
 
