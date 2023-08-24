@@ -12,27 +12,20 @@ class Node:
 
 
 class Dictionary:
-    def __init__(self,
-                 capacity: int = 8,
-                 load_factor: float = 2 / 3
-                 ) -> None:
+    def __init__(self, capacity: int = 8, load_factor: float = 2 / 3) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
         self.hash_table: Optional[List[Node]] = [None] * self.capacity
 
-    def __len__(self
-                ) -> int:
+    def __len__(self) -> int:
         return self.size
 
-    def clear(self
-              ) -> None:
+    def clear(self) -> None:
         self.size = 0
         self.hash_table = [None] * self.capacity
 
-    def _index_for_key(self,
-                       key: Hashable
-                       ) -> int:
+    def _index_for_key(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
         while True:
             if (self.hash_table[index] is None
@@ -40,20 +33,14 @@ class Dictionary:
                 return index
             index = (index + 1) % self.capacity
 
-    def _resize(self
-                ) -> None:
+    def _resize(self) -> None:
         old_table = [node for node in self.hash_table if node]
         self.capacity *= 2
         self.clear()
         for node in old_table:
-            index = self._index_for_key(node.key)
-            self.hash_table[index] = node
-            self.size += 1
+            self[node.key] = node.value
 
-    def __setitem__(self,
-                    key: Hashable,
-                    value: Any
-                    ) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size >= floor(self.capacity * self.load_factor):
             self._resize()
         index = self._index_for_key(key)
@@ -63,45 +50,32 @@ class Dictionary:
             self.hash_table[index] = Node(key, value)
             self.size += 1
 
-    def __getitem__(self,
-                    key: Hashable
-                    ) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._index_for_key(key)
         if self.hash_table[index]:
             return self.hash_table[index].value
         raise KeyError
 
-    def __delitem__(self,
-                    key: Hashable
-                    ) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._index_for_key(key)
         self.hash_table[index] = None
         self.size -= 1
 
-    def get(self,
-            key: Hashable
-            ) -> Any:
-        index = self._index_for_key(key)
-        return self.hash_table[index]
+    def get(self, key: Hashable) -> Any:
+        return self[key]
 
-    def pop(self,
-            key: Hashable,
-            value: Any = None
-            ) -> Any:
+    def pop(self, key: Hashable, value: Any = None) -> Any:
         index = self._index_for_key(key)
         if self.hash_table[index]:
             value = self.hash_table[index].value
         self.__delitem__(key)
         return value
 
-    def update(self,
-               other_dictionary: Dictionary
-               ) -> None:
+    def update(self, other_dictionary: Dictionary) -> None:
         for node in other_dictionary.hash_table:
             if node:
-                self.__setitem__(node.key, node.value)
+                self[node.key] = node.value
 
-    def __iter__(self
-                 ) -> Iterator:
+    def __iter__(self) -> Iterator:
         hash_table_without_none = [node for node in self.hash_table if node]
         return iter(hash_table_without_none)
