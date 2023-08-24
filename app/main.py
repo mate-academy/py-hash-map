@@ -1,15 +1,15 @@
-from typing import Any, List
+from typing import Any, Hashable, List, Tuple
 
 from app.point import Point
 
 
 class Dictionary:
-    __items: List[tuple | None]
+    __items: List[Tuple | None]
     __current_len: int = 0
 
     def __init__(
         self,
-        args: List[tuple[Any, Any] | list[Any, Any]] | None = None
+        args: List[Tuple[Any, Any] | List[Any, Any]] | None = None
     ) -> None:
         self.__items = []
         for _ in range(8):
@@ -21,16 +21,16 @@ class Dictionary:
                     self.__setitem__(arg[0], arg[1])
                 else:
                     raise ValueError(
-                        f"dictionary update sequence element #0 has "
+                        f"Dictionary update sequence element #0 has "
                         f"length {len(arg)}; 2 is required"
                     )
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.__check_load_factor():
             self.__resize()
         self.__setitem(key, value)
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         current_index = self.__find_item_index_by_key(key)
         return self.__items[current_index][1]
 
@@ -53,10 +53,10 @@ class Dictionary:
         load_factor = round(length * (2 / 3) + 1)
         return self.__current_len == load_factor
 
-    def items(self) -> list:
+    def items(self) -> List:
         return [item for item in self.__items if item is not None]
 
-    def __setitem(self, key: Any, value: Any) -> None:
+    def __setitem(self, key: Hashable, value: Any) -> None:
         current_index = self.__get_index_from_hash(key)
 
         while True:
@@ -87,7 +87,7 @@ class Dictionary:
         self.__items = []
         self.__current_len = 0
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         current_index = self.__find_item_index_by_key(key)
         self.__del_item_by_index(current_index)
 
@@ -95,12 +95,12 @@ class Dictionary:
         self.__current_len -= 1
         self.__items[current_index] = None
 
-    def __get_index_from_hash(self, key: Any) -> int:
+    def __get_index_from_hash(self, key: Hashable) -> int:
         key_hash = hash(key)
         length = len(self.__items)
         return key_hash % length
 
-    def __find_item_index_by_key(self, key: any) -> int:
+    def __find_item_index_by_key(self, key: Hashable) -> int:
         current_index = self.__get_index_from_hash(key)
         begin_index = None
         while True:
@@ -120,10 +120,10 @@ class Dictionary:
                 if current_index == len(self.__items):
                     current_index = 0
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable) -> Any:
         return self.__getitem__(key)
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         current_index = self.__find_item_index_by_key(key)
         item_value = self.__items[current_index][1]
         self.__del_item_by_index(current_index)
@@ -131,38 +131,7 @@ class Dictionary:
 
     def update(self, other_dict: Any) -> None:
         if isinstance(other_dict, Dictionary):
-            other_dict_items = other_dict.items()
-        else:
-            other_dict_items = other_dict
+            other_dict = other_dict.items()
 
-        for key, value in other_dict_items:
+        for key, value in other_dict:
             self.__setitem__(key, value)
-
-
-items = [
-    (8, "8"),
-    (16, "16"),
-    (32, "32"),
-    (64, "64"),
-    (128, "128"),
-    ("one", 2),
-    ("two", 2),
-    (Point(1, 1), "a"),
-    ("one", 1),
-    ("one", 11),
-    ("one", 111),
-    ("one", 1111),
-    (145, 146),
-    (145, 145),
-    (145, -1),
-    ("two", 22),
-    ("two", 222),
-    ("two", 2222),
-    ("two", 22222),
-    (Point(1, 1), "A"),
-]
-dictionary = Dictionary()
-for key, value in items:
-    dictionary[key] = value
-
-print(len(dictionary), dictionary)
