@@ -29,10 +29,7 @@ class Dictionary:
         self._resize()
         hash_key = self._hash_function(key)
         bucket = self.buckets[hash_key]
-        if key in bucket:
-            bucket[key] = value
-        else:
-            bucket[key] = value
+        bucket[key] = value
 
     def __getitem__(self, key: Any) -> Any:
         hash_key = self._hash_function(key)
