@@ -61,15 +61,17 @@ class Dictionary:
         self.hash_table[index] = None
         self.size -= 1
 
-    def get(self, key: Hashable) -> Any:
-        return self[key]
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        if self[key]:
+            return self[key]
+        return default
 
-    def pop(self, key: Hashable, value: Any = None) -> Any:
-        index = self._index_for_key(key)
-        if self.hash_table[index]:
-            value = self.hash_table[index].value
-        self.__delitem__(key)
-        return value
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        if self[key]:
+            value = self[key]
+            self.__delitem__(key)
+            return value
+        return default
 
     def update(self, other_dictionary: Dictionary) -> None:
         for node in other_dictionary.hash_table:
