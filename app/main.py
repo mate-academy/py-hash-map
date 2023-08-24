@@ -15,9 +15,7 @@ class Dictionary:
         if self._load_factor > 2 / 3:
             new_size = self.initial_capacity * 2
             new_buckets = [{} for _ in range(new_size)]
-
             for bucket in self.buckets:
-
                 for key, value in bucket.items():
                     new_hash_key = hash(key) % new_size
                     new_buckets[new_hash_key][key] = value
@@ -59,15 +57,12 @@ class Dictionary:
     def pop(self, object_: dict, default_value: Any = None) -> Any:
         bucket_index = self._get_bucket_index(object_)
         bucket = self.buckets[bucket_index]
-
         for i, (stored_key, value) in enumerate(bucket):
             if stored_key == object_:
                 del bucket[i]
                 return value
-
         if default_value is not None:
             return default_value
-
         raise KeyError(object_)
 
     def update(self, object_: dict = None, **dict_) -> None:
