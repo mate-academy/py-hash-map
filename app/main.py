@@ -17,7 +17,7 @@ class Dictionary:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
-        self.hash_table: Optional[List[Node]] = [None] * self.capacity
+        self.hash_table: List[Optional[Node]] = [None] * self.capacity
 
     def __len__(self) -> int:
         return self.size
@@ -64,16 +64,18 @@ class Dictionary:
         self.size -= 1
 
     def get(self, key: Hashable, default: Any = None) -> Any:
-        if self[key]:
+        try:
             return self[key]
-        raise KeyError
+        except KeyError:
+            return default
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
-        index = self._index_for_key(key)
-        if self.hash_table[index]:
-            default = self[key]
+        try:
+            value = self[key]
             self.__delitem__(key)
-        return default
+            return value
+        except KeyError:
+            return default
 
     def update(self, other_dictionary: Dictionary) -> None:
         for node in other_dictionary.hash_table:
