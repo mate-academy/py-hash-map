@@ -70,11 +70,11 @@ class Dictionary:
             return default
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
-        try:
+        if key in self:
             value = self[key]
             self.__delitem__(key)
             return value
-        except KeyError:
+        else:
             return default
 
     def update(self, other_dictionary: Dictionary) -> None:
