@@ -28,12 +28,11 @@ class Dictionary:
 
     def _index_for_key(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
-        while True:
-            if (self.hash_table[index] is None
-                    or (self.hash_table[index].key == key
-                        and self.hash_table[index].hash_of_node == hash(key))):
-                return index
+        while not (self.hash_table[index] is None
+                   or (self.hash_table[index].key == key
+                       and self.hash_table[index].hash_of_node == hash(key))):
             index = (index + 1) % self.capacity
+        return index
 
     def _resize(self) -> None:
         old_table = [node for node in self.hash_table if node]
@@ -69,12 +68,14 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Hashable, default: Any = None) -> Any:
-        if key in self:
+    def pop(self, key: Hashable, default: Any = "No argument") -> Any:
+        try:
             value = self[key]
             self.__delitem__(key)
             return value
-        else:
+        except KeyError:
+            if default == "No argument":
+                raise KeyError
             return default
 
     def update(self, other_dictionary: Dictionary) -> None:
