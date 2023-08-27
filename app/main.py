@@ -17,7 +17,6 @@ class Dictionary:
 
     def __init__(self) -> None:
         self.length: int = 0
-        self.INITIAL_LENGTH: int = 8
         self.hash_table_length: int = self.INITIAL_LENGTH
         self.hash_table: list[Union[Node, None]] = [None] * self.INITIAL_LENGTH
 
