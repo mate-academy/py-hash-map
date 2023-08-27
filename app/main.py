@@ -12,12 +12,14 @@ class Node:
 
 
 class Dictionary:
+    LOAD_FACTOR = 0.75
+    INITIAL_LENGTH = 8
+
     def __init__(self) -> None:
-        self.load_factor: float = 0.75
         self.length: int = 0
-        self.initial_length: int = 8
-        self.hash_table_length: int = self.initial_length
-        self.hash_table: list[Union[Node, None]] = [None] * self.initial_length
+        self.INITIAL_LENGTH: int = 8
+        self.hash_table_length: int = self.INITIAL_LENGTH
+        self.hash_table: list[Union[Node, None]] = [None] * self.INITIAL_LENGTH
 
     def __len__(self) -> int:
         return self.length
@@ -51,14 +53,14 @@ class Dictionary:
                 self.set_node(node.key, node.value)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.length + 1 >= len(self.hash_table) * self.load_factor:
+        if self.length + 1 >= len(self.hash_table) * self.LOAD_FACTOR:
             self.extend_hash_table()
         self.set_node(key, value)
 
     def __getitem__(self, key: Hashable, return_index: bool = False) -> Any:
         index = self.hash_index(key)
         count = 0
-        for i in range(len(self.hash_table)):
+        for _ in range(len(self.hash_table)):
             if self.hash_table[index] and self.hash_table[index].key == key:
                 if return_index:
                     return index
@@ -71,7 +73,7 @@ class Dictionary:
         self.hash_table[self.__getitem__(key, return_index=True)] = None
 
     def clear(self) -> None:
-        self.hash_table = [None] * self.initial_length
+        self.hash_table = [None] * self.INITIAL_LENGTH
 
     def get(self, key: Hashable, default_value: Any = None) -> Any:
         try:
