@@ -108,11 +108,16 @@ class Dictionary:
         return self
 
     def __next__(self) -> Tuple[Hashable, Any]:
+        while (
+            self.__curr_position < self.__CAPACITY
+            and not self.__items[self.__curr_position]
+        ):
+            self.__curr_position += 1
+
         if self.__curr_position >= self.__CAPACITY:
             raise StopIteration
 
-        while not (curr_item := self.__items[self.__curr_position]):
-            self.__curr_position += 1
-
+        curr_item = self.__items[self.__curr_position]
         self.__curr_position += 1
+
         return curr_item.key, curr_item.value
