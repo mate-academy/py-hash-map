@@ -26,8 +26,8 @@ class Dictionary:
 
                 if self.length > self.capacity * self.load_factor:
                     self._resize(key, value)
-
-                self.hash_table[index] = Node(key, hash_key, value)
+                else:
+                    self.hash_table[index] = Node(key, hash_key, value)
                 return
 
             if self.hash_table[index].key == key:
