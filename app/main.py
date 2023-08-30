@@ -60,12 +60,9 @@ class Dictionary:
             return -1
 
     def update(self, second_dict: "Dictionary") -> None:
-        nodes = [
-            node
-            for node in second_dict.__dict__["_Dictionary__hashtable"]
-            if node is not None
-        ]
-        for node in nodes:
+        for node in second_dict.__dict__["_Dictionary__hashtable"]:
+            if node:
+                self.__setitem__(node.key, node.value)
             self.__setitem__(node.key, node.value)
 
     def __iter__(self) -> list:
@@ -95,7 +92,7 @@ class Dictionary:
         be multiplied automatically
         """
         length = len(self.__hashtable)
-        if length - self.__hashtable.count(None) > length * self.__load_factor:
+        if self.__len__() > length * self.__load_factor:
             self.__multiply_hashtable()
 
     def __multiply_hashtable(self) -> None:
@@ -110,18 +107,14 @@ class Dictionary:
     def __choose_cell(self, node: "Node") -> None:
         """
         Do not use this function, it chose where to mark data
-        according to it's hash
+        according to its hash. We use len + cell to go to the 0
+        if we are in top border
         """
         length = len(self.__hashtable)
         preferred_cell = node.key_hash % length
-        for i in range(preferred_cell, length):
-            if self.__hashtable[i] and self.__hashtable[i].key == node.key:
-                self.__hashtable[i] = node
-                return
-            if self.__hashtable[i] is None:
-                self.__hashtable[i] = node
-                return
-        for i in range(0, preferred_cell):
+        for i in range(preferred_cell, length + preferred_cell):
+            if i >= len(self.__hashtable):
+                i -= length
             if self.__hashtable[i] and self.__hashtable[i].key == node.key:
                 self.__hashtable[i] = node
                 return
