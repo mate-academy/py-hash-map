@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Hashable
 
 
 class DictSettings:
@@ -31,7 +31,7 @@ class DictSettings:
 
 @dataclass
 class Node:
-    key: Any
+    key: Hashable
     value: Any
     hash_value: int
 

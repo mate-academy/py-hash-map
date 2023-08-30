@@ -1,6 +1,6 @@
 from app.dict_settings import DictSettings
 from app.dict_settings import Node
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary(DictSettings):
@@ -10,7 +10,7 @@ class Dictionary(DictSettings):
         self._length = 0
         self._hash_table: list = [None] * self._capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         item_index = self._get_index(key)
         if self._hash_table[item_index]:
             self._hash_table[item_index].value = value
@@ -25,13 +25,13 @@ class Dictionary(DictSettings):
         if self._length >= self._capacity * self._load_factor:
             self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         item_index = self._get_index(key)
         if self._hash_table[item_index]:
             return self._hash_table[item_index].value
         raise KeyError
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         item_index = self._get_index(key)
         self._hash_table[item_index] = None
         self._length -= 1
@@ -39,7 +39,7 @@ class Dictionary(DictSettings):
     def __len__(self) -> int:
         return self._length
 
-    def _get_index(self, key: Any) -> int:
+    def _get_index(self, key: Hashable) -> int:
         item_index = hash(key) % self.capacity
         while not (
                 self._hash_table[item_index] is None
