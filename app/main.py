@@ -83,6 +83,7 @@ class Dictionary:
 
         if self.__items[hash_key] and self.__items[hash_key].key == key:
             self.__items[hash_key] = None
+            self.__size -= 1
             return
 
         raise KeyError(f"Key {key} not exists")
