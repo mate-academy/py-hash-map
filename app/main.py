@@ -30,8 +30,21 @@ class Dictionary:
         else:
             raise KeyError(key)
 
+    def __delitem__(self, key: Any) -> None:
+        for idx in range(self.capacity):
+            if self.storage[idx] is not None and self.storage[idx][0] == key:
+                self.storage[idx] = None
+                break
+        else:
+            raise KeyError(key)
+
     def __len__(self) -> int:
         return self.size
+
+    def __iter__(self) -> None:
+        for item in self.storage:
+            if item is not None:
+                yield item[2]
 
     def resize(self) -> None:
         old_storage = self.storage
@@ -45,14 +58,6 @@ class Dictionary:
     def clear(self) -> None:
         self.storage = [None] * self.capacity
 
-    def __delitem__(self, key: Any) -> None:
-        for idx in range(self.capacity):
-            if self.storage[idx] is not None and self.storage[idx][0] == key:
-                self.storage[idx] = None
-                break
-        else:
-            raise KeyError(key)
-
     def get(self, key: Any, default: Any = None) -> None:
         try:
             return self.__getitem__(key)
@@ -65,8 +70,3 @@ class Dictionary:
             self.__delitem__(key)
         except KeyError:
             raise KeyError(key)
-
-    def __iter__(self) -> None:
-        for item in self.storage:
-            if item is not None:
-                yield item[2]
