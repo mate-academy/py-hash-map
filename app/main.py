@@ -46,10 +46,8 @@ class Dictionary:
                     raise KeyError(key)
                 if self.hash_table[index].key == key:
                     return self.hash_table[index].value
-                if (index + 1) >= self.capacity:
-                    index = 0
-                else:
-                    index += 1
+
+                index = (index + 1) % self.capacity
 
     def __len__(self) -> int:
         return self.length
