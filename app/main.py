@@ -53,7 +53,7 @@ class Dictionary:
         else:
             raise KeyError(key)
 
-    def get(self, key, default=None):
+    def get(self, key: Any, default: Any = None) -> None:
         try:
             return self.__getitem__(key)
         except KeyError:
@@ -66,7 +66,7 @@ class Dictionary:
         except KeyError:
             raise KeyError(key)
 
-    def __iter__(self):
+    def __iter__(self) -> None:
         for item in self.storage:
             if item is not None:
                 yield item[2]
