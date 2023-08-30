@@ -11,7 +11,7 @@ Make sure that you provide message when exception raises.
 **O(n)** i the worst (because of collision handling).
 
 The exceptions:
-- `__init__` and `clear` methods alvays have O(n) time complexity
+- `__init__` and `clear` methods always have O(n) time complexity
 - resizing the dictionary works with
 **O(n)** time complexity in the best variant and 
 **O(n^2)** i the worst (because of collision handling).
