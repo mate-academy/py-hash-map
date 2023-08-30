@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.next = None
@@ -18,7 +18,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * self.capacity
 
-    def _hash_function(self, key: Any) -> float:
+    def _hash_function(self, key: Hashable) -> float:
         return hash(key) % self.capacity
 
     def _resize(self, new_capacity: Any) -> None:
@@ -32,7 +32,7 @@ class Dictionary:
                 self[node.key] = node.value
                 node = node.next
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = self._hash_function(key)
         if hash_value < 0 or hash_value >= self.capacity:
             raise ValueError("Invalid hash value")
@@ -58,7 +58,7 @@ class Dictionary:
         if self.size / self.capacity >= self.load_factor:
             self._resize(self.capacity * 2)
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         hash_value = self._hash_function(key)
         if hash_value < 0 or hash_value >= self.capacity:
             raise ValueError("Invalid hash value")
