@@ -35,7 +35,8 @@ class Dictionary:
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_value = self._hash_function(key)
         if hash_value < 0 or hash_value >= self.capacity:
-            raise ValueError("Invalid hash value")  # Перевірка коректності хешу
+            raise ValueError("Invalid hash value")
+            # Перевірка коректності хешу
 
         new_node = Node(key, value)
 
@@ -60,7 +61,8 @@ class Dictionary:
     def __getitem__(self, key: Any) -> None:
         hash_value = self._hash_function(key)
         if hash_value < 0 or hash_value >= self.capacity:
-            raise ValueError("Invalid hash value")  # Перевірка коректності хешу
+            raise ValueError("Invalid hash value")
+            # Перевірка коректності хешу
 
         current_node = self.table[hash_value]
 
