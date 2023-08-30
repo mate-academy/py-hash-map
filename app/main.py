@@ -1,11 +1,11 @@
 import dataclasses
-from app.point import Point
+from typing import Hashable
 
 
 @dataclasses.dataclass
 class Node:
     key: object
-    hash: int
+    key_hash: int
     value: object
 
 
@@ -15,13 +15,13 @@ class Dictionary:
     def __init__(self) -> None:
         self.__hashtable = [None] * 8
 
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: Hashable, value: object) -> None:
         hashed_key = hash(key)
         node = Node(key, hashed_key, value)
         self.__choose_cell(node)
         self.__check_overload()
 
-    def __getitem__(self, key) -> object:
+    def __getitem__(self, key: Hashable) -> object:
         hashed_key = hash(key)
         length = len(self.__hashtable)
         preferred_cell = hashed_key % length
@@ -39,7 +39,7 @@ class Dictionary:
     def clear(self) -> None:
         self.__hashtable = [None] * 8
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hashed_key = hash(key)
         length = len(self.__hashtable)
         preferred_cell = hashed_key % length
@@ -53,7 +53,7 @@ class Dictionary:
                 return
         raise KeyError("Key not found")
 
-    def get(self, key) -> object:
+    def get(self, key: object) -> object:
         try:
             return self.__getitem__(key)
         except KeyError:
@@ -84,7 +84,7 @@ class Dictionary:
         except IndexError:
             raise StopIteration
 
-    def pop(self, key) -> object:
+    def pop(self, key: Hashable) -> object:
         item = self.__getitem__(key)
         self.__delitem__(key)
         return item
@@ -113,7 +113,7 @@ class Dictionary:
         according to it's hash
         """
         length = len(self.__hashtable)
-        preferred_cell = node.hash % length
+        preferred_cell = node.key_hash % length
         for i in range(preferred_cell, length):
             if self.__hashtable[i] and self.__hashtable[i].key == node.key:
                 self.__hashtable[i] = node
