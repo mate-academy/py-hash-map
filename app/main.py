@@ -53,6 +53,20 @@ class Dictionary:
         else:
             raise KeyError(key)
 
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
+
     def pop(self, key: Any) -> None:
-        print(self.__getitem__(key))
-        self.__delitem__(key)
+        try:
+            print(self.__getitem__(key))
+            self.__delitem__(key)
+        except KeyError:
+            raise KeyError(key)
+
+    def __iter__(self):
+        for item in self.storage:
+            if item is not None:
+                yield item[2]
