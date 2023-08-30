@@ -17,12 +17,12 @@ class Node:
 
 class Dictionary:
     __items: List[Optional[Node]]
-    __CAPACITY: int = 8
-    __load_factor: float = 3 / 2
-    __THRESHOLD: int = round(__CAPACITY / __load_factor)
+    __LOAD_FACTOR: float = 3 / 2
+    __capacity: int = 8
+    __threshold: int = round(__capacity / __LOAD_FACTOR)
 
     def __init__(self) -> None:
-        self.__items = [None] * self.__CAPACITY
+        self.__items = [None] * self.__capacity
         self.__size = 0
 
     def __get_hash_index(self, key: Hashable) -> int:
@@ -31,10 +31,10 @@ class Dictionary:
         except TypeError:
             raise KeyError(f"Unhashable key type: {type(key)}")
 
-        hash_index = hash_key % self.__CAPACITY
+        hash_index = hash_key % self.__capacity
 
         while self.__items[hash_index] and self.__items[hash_index].key != key:
-            hash_index = (hash_index + 1) % self.__CAPACITY
+            hash_index = (hash_index + 1) % self.__capacity
 
         return hash_index
 
@@ -47,8 +47,8 @@ class Dictionary:
             self.__items[hash_index] = Node(key, hash(key), value)
             self.__size += 1
 
-        if self.__size >= self.__THRESHOLD:
-            self.__resize(self.__CAPACITY * 2)
+        if self.__size >= self.__threshold:
+            self.__resize(self.__capacity * 2)
 
     def __getitem__(self, key: Any) -> Optional[Any]:
         hash_index = self.__get_hash_index(key)
@@ -62,21 +62,21 @@ class Dictionary:
         return self.__size
 
     def __resize(self, new_size: int) -> None:
-        self.__CAPACITY = new_size
-        self.__THRESHOLD = round(self.__CAPACITY / self.__load_factor)
+        self.__capacity = new_size
+        self.__threshold = round(self.__capacity / self.__LOAD_FACTOR)
         self.__size = 0
 
         old_item_list = [item for item in self.__items if item]
-        self.__items = [None] * self.__CAPACITY
+        self.__items = [None] * self.__capacity
 
         for item in old_item_list:
             self[item.key] = item.value
 
     def clear(self) -> None:
-        self.__CAPACITY = 8
-        self.__THRESHOLD = round(self.__CAPACITY / self.__load_factor)
+        self.__capacity = 8
+        self.__threshold = round(self.__capacity / self.__LOAD_FACTOR)
         self.__size = 0
-        self.__items = [None] * self.__CAPACITY
+        self.__items = [None] * self.__capacity
 
     def __delitem__(self, key: Hashable) -> None:
         hash_key = self.__get_hash_index(key)
@@ -109,12 +109,12 @@ class Dictionary:
 
     def __next__(self) -> Tuple[Hashable, Any]:
         while (
-            self.__curr_position < self.__CAPACITY
+            self.__curr_position < self.__capacity
             and not self.__items[self.__curr_position]
         ):
             self.__curr_position += 1
 
-        if self.__curr_position >= self.__CAPACITY:
+        if self.__curr_position >= self.__capacity:
             raise StopIteration
 
         curr_item = self.__items[self.__curr_position]
