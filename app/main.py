@@ -23,12 +23,7 @@ class Dictionary:
         return self._table[index][1]
 
     def _get_index(self, key: Hashable) -> int:
-        try:
-            hash_key = hash(key)
-        except TypeError:
-            raise KeyError(f"Unhashable key type: {type(key)}")
-
-        index = hash_key % self._capacity
+        index = hash(key) % self._capacity
 
         while self._table[index] and self._table[index][0] != key:
             index = (index + 1) % self._capacity
