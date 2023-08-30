@@ -7,6 +7,12 @@ class Node:
         self.hash = _hash
         self.value = value
 
+    def __str__(self) -> str:
+        return f"{self.key}: {self.value}"
+
+    def __repr__(self) -> str:
+        return f"{self.key}: {self.value}"
+
 
 class Dictionary:
     def __init__(
@@ -94,6 +100,14 @@ class Dictionary:
                 self.__setitem__(key, value)
         for key, value in kwargs.items():
             self.__setitem__(key, value)
+
+    def __str__(self) -> str:
+        key_values = [
+            key_value
+            for key_value in self._hash_table
+            if key_value is not None
+        ]
+        return str(key_values)
 
     def __len__(self) -> int:
         return self._length
