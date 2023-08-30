@@ -34,6 +34,9 @@ class Dictionary:
 
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_value = self._hash_function(key)
+        if hash_value < 0 or hash_value >= self.capacity:
+            raise ValueError("Invalid hash value")  # Перевірка коректності хешу
+
         new_node = Node(key, value)
 
         if self.table[hash_value] is None:
@@ -42,12 +45,13 @@ class Dictionary:
             current_node = self.table[hash_value]
             while current_node:
                 if current_node.key == key:
-                    current_node.value = value  # Update the value
+                    current_node.value = value  # Оновити значення
                     return
-                if current_node.next is None:
-                    current_node.next = new_node
-                    break
                 current_node = current_node.next
+
+            # Ключа немає в поточному слоті, додати новий вузол
+            new_node.next = self.table[hash_value]
+            self.table[hash_value] = new_node
 
         self.size += 1
         if self.size / self.capacity >= self.load_factor:
@@ -55,6 +59,9 @@ class Dictionary:
 
     def __getitem__(self, key: Any) -> None:
         hash_value = self._hash_function(key)
+        if hash_value < 0 or hash_value >= self.capacity:
+            raise ValueError("Invalid hash value")  # Перевірка коректності хешу
+
         current_node = self.table[hash_value]
 
         while current_node:
