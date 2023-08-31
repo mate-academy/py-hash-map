@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class Node:
     key: str
-    _hash: int
+    hash_: int
     value: Any
 
     def __str__(self) -> str:
@@ -32,8 +32,8 @@ class Dictionary:
         _hash = hash(key)
         index = _hash % self._capacity
         while self._hash_table[index] is not None and (
-                self._hash_table[index]._hash != _hash
-                or self._hash_table[index].key != key
+            self._hash_table[index].hash_ != _hash
+            or self._hash_table[index].key != key
         ):
             index = (index + 1) % self._capacity
         return index
@@ -75,23 +75,28 @@ class Dictionary:
         return self.__getitem__(key)
 
     def pop(self) -> str | None:
-        if self._length == 0:
-            return None
-        index = self._capacity - 1
-        while self._hash_table[index] is None:
-            index -= 1
-        self._length -= 1
-        node = self._hash_table[index]
-        self._hash_table[index] = None
-        return node.value
+        if self._length != 0:
+            index = self._capacity - 1
+            while self._hash_table[index] is None:
+                index -= 1
+            self._length -= 1
+            node = self._hash_table[index]
+            self._hash_table[index] = None
+            return node.value
+        return None
 
     def __iter__(self) -> iter:
         for node in self._hash_table:
             if node is not None:
                 yield node.key
 
-    def update(self, other: dict = None, **kwargs: str) -> None:
-        if other is not None:
+    def items(self) -> list[tuple]:
+        return [(key, self.__getitem__(key=key)) for key in self]
+
+    def update(self, other: "Dictionary" = None, **kwargs: str) -> None:
+        if other is None:
+            pass
+        else:
             items = other.items() if hasattr(other, "items") else other
             for key, value in items:
                 self.__setitem__(key, value)
