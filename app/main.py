@@ -1,12 +1,13 @@
 from __future__ import annotations
+from dataclasses import dataclass
 from typing import Hashable, Any
 
 
+@dataclass
 class Node:
-    def __init__(self, key: Hashable, hash_key: int, value: Any) -> None:
-        self.key = key
-        self.hash = hash_key
-        self.value = value
+    key: Hashable
+    hash_key: int
+    value: Any
 
 
 class Dictionary:
