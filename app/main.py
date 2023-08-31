@@ -14,6 +14,7 @@ class Dictionary:
 
     def __init__(self) -> None:
         self.__hashtable = [None] * 8
+        self.length = 0
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hashed_key = hash(key)
@@ -34,30 +35,29 @@ class Dictionary:
         raise KeyError("Key not found")
 
     def __len__(self) -> int:
-        return len([node for node in self.__hashtable if node is not None])
+        return self.length
 
     def clear(self) -> None:
         self.__hashtable = [None] * 8
+        self.length = 0
 
     def __delitem__(self, key: Hashable) -> None:
         hashed_key = hash(key)
         length = len(self.__hashtable)
         preferred_cell = hashed_key % length
-        for i in range(preferred_cell, length):
+        for i in range(preferred_cell, length + preferred_cell):
+            i = i % length
             if self.__hashtable[i] and self.__hashtable[i].key == key:
                 self.__hashtable[i] = None
-                return
-        for i in range(0, preferred_cell):
-            if self.__hashtable[i] and self.__hashtable[i].key == key:
-                self.__hashtable[i] = None
+                self.length -= 1
                 return
         raise KeyError("Key not found")
 
-    def get(self, key: object) -> object:
+    def get(self, key: object, default: Any = -1) -> object:
         try:
             return self.__getitem__(key)
         except KeyError:
-            return -1
+            return default
 
     def update(self, second_dict: "Dictionary") -> None:
         for node in second_dict.__dict__["_Dictionary__hashtable"]:
@@ -103,6 +103,7 @@ class Dictionary:
         """
         items = [node for node in self.__hashtable if node is not None]
         self.__hashtable = [None] * (len(self.__hashtable) * 2)
+        self.length = 0
         for item in items:
             self.__choose_cell(item)
 
@@ -122,4 +123,5 @@ class Dictionary:
                 return
             if self.__hashtable[i] is None:
                 self.__hashtable[i] = node
+                self.length += 1
                 return
