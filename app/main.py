@@ -69,15 +69,12 @@ class Dictionary:
         self.index = 0
         return self.__hashtable
 
-    def __next__(self) -> tuple:
+    def __next__(self) -> Hashable:
         try:
             self.index += 1
             while self.__hashtable[self.index] is None:
                 self.index += 1
-            return (
-                self.__hashtable[self.index].key,
-                self.__hashtable[self.index].value,
-            )
+            return self.__hashtable[self.index].key
         except IndexError:
             raise StopIteration
 
