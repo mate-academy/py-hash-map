@@ -31,8 +31,8 @@ class Dictionary:
         _hash = hash(key)
         index = _hash % self._capacity
         while self._hash_table[index] is not None and (
-            self._hash_table[index].hash != _hash,
-            self._hash_table[index].key != key,
+            self._hash_table[index].hash != _hash
+            or self._hash_table[index].key != key
         ):
             index = (index + 1) % self._capacity
         return index
