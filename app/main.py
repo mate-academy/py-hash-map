@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class Node:
     key: str
-    hash: int
+    _hash: int
     value: Any
 
     def __str__(self) -> str:
@@ -32,8 +32,8 @@ class Dictionary:
         _hash = hash(key)
         index = _hash % self._capacity
         while self._hash_table[index] is not None and (
-            self._hash_table[index].hash != _hash
-            or self._hash_table[index].key != key
+                self._hash_table[index]._hash != _hash
+                or self._hash_table[index].key != key
         ):
             index = (index + 1) % self._capacity
         return index
