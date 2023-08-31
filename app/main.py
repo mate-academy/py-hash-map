@@ -42,17 +42,21 @@ class Dictionary:
         if self._hash_table[index] is not None:
             return self._delete_items(index)
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return None
+            return default
 
     def clear(self) -> None:
         self._hash_table = [None] * self._capacity
         self._length = 0
 
-    def update(self, dictionary: Dictionary) -> None:
+    def update(self, expand: Any) -> None:
+        dictionary = expand if isinstance(
+            expand, Dictionary
+        ) else self._convert_to_dict(expand)
+
         for element in dictionary._hash_table:
             if element is not None:
                 self[element.key] = element.value
@@ -110,3 +114,10 @@ class Dictionary:
         self._hash_table[index] = None
         self._length -= 1
         return value
+
+    @staticmethod
+    def _convert_to_dict(obj: Any) -> Dictionary:
+        dictionary = Dictionary()
+        for pairs in obj:
+            dictionary[pairs[0]] = pairs[1]
+        return dictionary
