@@ -1,11 +1,12 @@
 from typing import Any, List
+from dataclasses import dataclass
 
 
+@dataclass
 class Node:
-    def __init__(self, key: str, _hash: int, value: str) -> None:
-        self.key = key
-        self.hash = _hash
-        self.value = value
+    key: str
+    hash: int
+    value: Any
 
     def __str__(self) -> str:
         return f"{self.key}: {self.value}"
