@@ -16,13 +16,12 @@ class Node:
 
 
 class Dictionary:
-    __items: List[Optional[Node]]
     __LOAD_FACTOR: float = 3 / 2
     __capacity: int = 8
     __threshold: int = round(__capacity / __LOAD_FACTOR)
 
     def __init__(self) -> None:
-        self.__items = [None] * self.__capacity
+        self.__items: List[Optional[Node]] = [None] * self.__capacity
         self.__size = 0
 
     def __get_hash_index(self, key: Hashable) -> int:
