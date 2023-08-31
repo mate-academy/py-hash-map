@@ -93,8 +93,10 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         value = self.get(key)
+        if not value:
+            return default
         self.__delitem__(key)
         return value
 
