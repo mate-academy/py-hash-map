@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 
 class Node:
@@ -21,17 +21,18 @@ class Dictionary:
         self._length = 0
         self._capacity = initial_capacity
         self._load_factor = load_factor
-        self._hash_table = [None] * self._capacity
+        self._hash_table: List[Node | None] = [None] * self._capacity
 
     def clear(self) -> None:
         self._hash_table = [None] * self._capacity
         self._length = 0
 
     def _find_index(self, key: str) -> int:
-        index = hash(key) % self._capacity
-        while (
-            self._hash_table[index] is not None
-            and self._hash_table[index].key != key
+        _hash = hash(key)
+        index = _hash % self._capacity
+        while self._hash_table[index] is not None and (
+            self._hash_table[index].hash != _hash,
+            self._hash_table[index].key != key,
         ):
             index = (index + 1) % self._capacity
         return index
