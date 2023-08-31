@@ -5,10 +5,7 @@ class Node:
     def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
-
-    def __repr__(self) -> None:
-        print(f"{self.key}: {self.value}")
-
+        self.hash = hash(key)
 
 class Dictionary:
     def __init__(
@@ -36,6 +33,11 @@ class Dictionary:
             raise KeyError(key)
         return self.table[index].value
 
+    def __delitem__(self, key) -> None:
+        index = self.get_table_index(key)
+        self.table[index] = None
+        self.length -= 1
+
     def resize(self) -> None:
         old_table = self.table
         self.capacity *= 2
@@ -53,3 +55,8 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
+
+    def clear(self):
+        self.capacity = 8
+        self.table = [None] * self.capacity
+        self.length = 0
