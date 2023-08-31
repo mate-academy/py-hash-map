@@ -1,12 +1,12 @@
 import dataclasses
-from typing import Hashable
+from typing import Hashable, Any
 
 
 @dataclasses.dataclass
 class Node:
-    key: object
+    key: Hashable
     key_hash: int
-    value: object
+    value: Any
 
 
 class Dictionary:
@@ -15,7 +15,7 @@ class Dictionary:
     def __init__(self) -> None:
         self.__hashtable = [None] * 8
 
-    def __setitem__(self, key: Hashable, value: object) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hashed_key = hash(key)
         node = Node(key, hashed_key, value)
         self.__choose_cell(node)
@@ -81,10 +81,15 @@ class Dictionary:
         except IndexError:
             raise StopIteration
 
-    def pop(self, key: Hashable) -> object:
-        item = self.__getitem__(key)
-        self.__delitem__(key)
-        return item
+    def pop(self, key: Hashable, default_value: Any) -> object:
+        try:
+            item = self.__getitem__(key)
+            self.__delitem__(key)
+            return item
+        except KeyError:
+            if default_value is not None:
+                return default_value
+            raise
 
     def __check_overload(self) -> None:
         """
