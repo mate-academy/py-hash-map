@@ -71,10 +71,13 @@ class Dictionary:
             self._hash_table[index] = None
             self._length -= 1
 
-    def get(self, key: str) -> str:
-        return self.__getitem__(key)
+    def get(self, key: str, default: Any = None) -> Any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
-    def pop(self) -> str | None:
+    def pop(self, default: Any = None) -> Any:
         if self._length != 0:
             index = self._capacity - 1
             while self._hash_table[index] is None:
@@ -83,7 +86,7 @@ class Dictionary:
             node = self._hash_table[index]
             self._hash_table[index] = None
             return node.value
-        return None
+        return default
 
     def __iter__(self) -> iter:
         for node in self._hash_table:
@@ -93,13 +96,17 @@ class Dictionary:
     def items(self) -> list[tuple]:
         return [(key, self.__getitem__(key=key)) for key in self]
 
-    def update(self, other: "Dictionary" = None, **kwargs: str) -> None:
+    def update(
+        self, other: "Dictionary" = None, *args: list, **kwargs: dict
+    ) -> None:
         if other is None:
             pass
         else:
             items = other.items() if hasattr(other, "items") else other
             for key, value in items:
                 self.__setitem__(key, value)
+        for key, value in args:
+            self.__setitem__(key, value)
         for key, value in kwargs.items():
             self.__setitem__(key, value)
 
