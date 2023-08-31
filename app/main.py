@@ -9,7 +9,7 @@ class Dictionary:
     def __init__(self) -> None:
         self._capacity: int = 8
         self._length: int = 0
-        self._Item = namedtuple("_Item", ["key", "value"])
+        self._Item = namedtuple("_Item", ["key", "hash", "value"])
 
         self._items: list = [None] * self._capacity
 
@@ -24,9 +24,9 @@ class Dictionary:
 
     def _find_index(self, key: Hashable) -> int:
         element_index: int = hash(key) % self._capacity
-        while (
-            self._items[element_index] is not None
-            and self._items[element_index].key != key
+        while self._items[element_index] is not None and (
+            self._items[element_index].hash != hash(key)
+            or self._items[element_index].key != key
         ):
             element_index = (element_index + 1) % self._capacity
         return element_index
@@ -36,7 +36,7 @@ class Dictionary:
             self._resize_table()
 
         element_index = self._find_index(key)
-        new_item = self._Item(key, value)
+        new_item = self._Item(key, hash(key), value)
         if self._items[element_index] is None:
             self._items[element_index] = new_item
             self._length += 1
