@@ -2,9 +2,14 @@ from typing import Any, Hashable
 
 
 class Node:
-    def __init__(self, key: Hashable, value: Any) -> None:
+    def __init__(
+            self, key: Hashable,
+            value: Any,
+            hash_value: float
+    ) -> None:
         self.key = key
         self.value = value
+        self.hash = hash_value
         self.next = None
 
 
@@ -35,22 +40,21 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = self._hash_function(key)
         if hash_value < 0 or hash_value >= self.capacity:
-            raise ValueError("Invalid hash value")
-            # Перевірка коректності хешу
+            raise ValueError("Некоректне значення хешу")
 
-        new_node = Node(key, value)
+        new_node = Node(key, value, hash_value)
+        # Зберегти значення хешу в об'єкті Node
 
         if self.table[hash_value] is None:
             self.table[hash_value] = new_node
         else:
             current_node = self.table[hash_value]
             while current_node:
-                if current_node.key == key:
-                    current_node.value = value  # Оновити значення
+                if current_node.hash == hash_value and current_node.key == key:
+                    current_node.value = value
                     return
                 current_node = current_node.next
 
-            # Ключа немає в поточному слоті, додати новий вузол
             new_node.next = self.table[hash_value]
             self.table[hash_value] = new_node
 
@@ -58,16 +62,15 @@ class Dictionary:
         if self.size / self.capacity >= self.load_factor:
             self._resize(self.capacity * 2)
 
-    def __getitem__(self, key: Hashable) -> None:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_value = self._hash_function(key)
         if hash_value < 0 or hash_value >= self.capacity:
-            raise ValueError("Invalid hash value")
-            # Перевірка коректності хешу
+            raise ValueError("Некоректне значення хешу")
 
         current_node = self.table[hash_value]
 
         while current_node:
-            if current_node.key == key:
+            if current_node.hash == hash_value and current_node.key == key:
                 return current_node.value
             current_node = current_node.next
 
