@@ -17,9 +17,9 @@ class Dictionary:
         old_items: list = self._items
         self._capacity *= 2
         self._items = [None] * self._capacity
+        self._length = 0
         for item in old_items:
             if item is not None:
-                self._length -= 1
                 self.__setitem__(item.key, item.value)
 
     def _find_index(self, key: Hashable) -> int:
