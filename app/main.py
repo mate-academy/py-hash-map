@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Hashable, Any, Union
+from typing import Hashable, Any
 
 
 @dataclasses.dataclass
