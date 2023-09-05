@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Hashable, Any
+from typing import Hashable, Any, Union
 
 
 @dataclasses.dataclass
@@ -53,17 +53,11 @@ class Dictionary:
                 return
         raise KeyError("Key not found")
 
-    def get(self, key: object, default: Any = -1) -> object:
+    def get(self, key: object, default: Any = None) -> object:
         try:
             return self.__getitem__(key)
         except KeyError:
             return default
-
-    def update(self, second_dict: "Dictionary") -> None:
-        for node in second_dict.__dict__["_Dictionary__hashtable"]:
-            if node:
-                self.__setitem__(node.key, node.value)
-            self.__setitem__(node.key, node.value)
 
     def __iter__(self) -> list:
         self.index = 0
