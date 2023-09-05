@@ -42,11 +42,6 @@ class Dictionary:
             index += 1
             index %= self.capacity
         return index
-        # for k, h, v in self.table[index]:
-        #     if h == hash and k == key:
-        #         return v
-        #
-        # return None
 
     def __len__(self) -> int:
         return self.size
