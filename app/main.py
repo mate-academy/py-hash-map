@@ -65,24 +65,18 @@ class Dictionary:
         self.size = 0
         self._hash_list = [None] * self.capacity
 
-    def __delitem__(self, key: Hashable, default_value: int = None) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self.find_slot(key)
-        if self._hash_list[index] is not None:
+        if self._hash_list[index]:
             self._hash_list[index] = None
             self.size -= 1
-        elif default_value is not None:
-            self._hash_list[index] = default_value
-            self.size += 1
-        else:
-            raise KeyError(key)
 
-    def pop(self, key: Any, default_value: int = None) -> None:
-        if key is None:
-            self._hash_list[-1] = None
+    def pop(self, key: Hashable, default_value: Any) -> object:
         try:
-            print(self.__getitem__(key))
+            item = self.__getitem__(key)
             self.__delitem__(key)
+            return item
         except KeyError:
             if default_value is not None:
                 return default_value
-            raise KeyError(key)
+            raise KeyError
