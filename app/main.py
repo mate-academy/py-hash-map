@@ -37,10 +37,14 @@ class Dictionary:
         if self._hash_table[index] is not None:
             self._delete_items(index)
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, *args) -> Any:
+        if len(args) > 1:
+            raise TypeError
         index = self._find_index(key)
         if self._hash_table[index] is not None:
             return self._delete_items(index)
+        elif len(args) == 1:
+            return args[0]
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
