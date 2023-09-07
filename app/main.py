@@ -6,43 +6,43 @@ class Dictionary:
         self._capacity = 8
         self._load_factor = 2 / 3
         self._size = 0
-        self._storage = [None] * self._capacity
+        self.storage = [None] * self._capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        idx = hash(key) % self._capacity
+        idx, hash_ = self.get_idx(key)
         while True:
-            if self._storage[idx] is None:
-                self._storage[idx] = [key, hash(key), value]
+            if self.storage[idx] is None:
+                self.storage[idx] = (key, hash_, value)
                 self._size += 1
                 break
             if (
-                key == self._storage[idx][0]
-                and hash(key) == self._storage[idx][1]
+                key == self.storage[idx][0]
+                and hash_ == self.storage[idx][1]
             ):
-                self._storage[idx][2] = value
+                self.storage[idx] = (key, hash_, value)
                 break
             idx = (idx + 1) % self._capacity
         if self._size >= self._capacity * self._load_factor:
             self.resize()
 
     def __getitem__(self, key: Any) -> None:
-        idx = hash(key) % self._capacity
+        idx, hash_ = self.get_idx(key)
         end_idx = idx - 1
         while True:
             if (
-                self._storage[idx] is not None
-                and key == self._storage[idx][0]
-                and hash(key) == self._storage[idx][1]
+                self.storage[idx] is not None
+                and key == self.storage[idx][0]
+                and hash_ == self.storage[idx][1]
             ):
-                return self._storage[idx][2]
+                return self.storage[idx][2]
             if idx == end_idx:
                 raise KeyError
             idx = (idx + 1) % self._capacity
 
     def __delitem__(self, key: Any) -> None:
         for idx in range(self._capacity):
-            if self._storage[idx] is not None and self._storage[idx][0] == key:
-                self._storage[idx] = None
+            if self.storage[idx] is not None and self.storage[idx][0] == key:
+                self.storage[idx] = None
                 break
         else:
             raise KeyError(key)
@@ -51,12 +51,16 @@ class Dictionary:
         return self._size
 
     def __iter__(self) -> None:
-        for item in self._storage:
+        for item in self.storage:
             if item is not None:
-                yield item[2]
+                yield item[0]
+
+    def get_idx(self, key: Any) -> tuple:
+        hash_ = hash(key)
+        return hash_ % self._capacity, hash_
 
     def resize(self) -> None:
-        old_storage = self._storage
+        old_storage = self.storage
         self._capacity *= 2
         self._size = 0
         self.clear()
@@ -65,7 +69,7 @@ class Dictionary:
                 self.__setitem__(item[0], item[2])
 
     def clear(self) -> None:
-        self._storage = [None] * self._capacity
+        self.storage = [None] * self._capacity
 
     def get(self, key: Any, default: Any = None) -> None:
         try:
@@ -73,7 +77,13 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Any) -> None:
+    def pop(self, key: Any, *default) -> tuple:
+        if default:
+            try:
+                print(self.__getitem__(key))
+                self.__delitem__(key)
+            except KeyError:
+                return default
         try:
             print(self.__getitem__(key))
             self.__delitem__(key)
