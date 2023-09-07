@@ -9,7 +9,7 @@ class Dictionary:
         self.storage = [None] * self._capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        idx, hash_ = self.get_idx(key)
+        idx, hash_ = self.get_index_and_hash(key)
         while True:
             if self.storage[idx] is None:
                 self.storage[idx] = (key, hash_, value)
@@ -25,8 +25,8 @@ class Dictionary:
         if self._size >= self._capacity * self._load_factor:
             self.resize()
 
-    def __getitem__(self, key: Any) -> None:
-        idx, hash_ = self.get_idx(key)
+    def __getitem__(self, key: Any) -> int:
+        idx, hash_ = self.get_index_and_hash(key)
         end_idx = idx - 1
         while True:
             if (
@@ -55,7 +55,7 @@ class Dictionary:
             if item is not None:
                 yield item[0]
 
-    def get_idx(self, key: Any) -> tuple:
+    def get_index_and_hash(self, key: Any) -> tuple:
         hash_ = hash(key)
         return hash_ % self._capacity, hash_
 
@@ -77,15 +77,13 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Any, *default) -> tuple:
-        if default:
-            try:
-                print(self.__getitem__(key))
-                self.__delitem__(key)
-            except KeyError:
-                return default
+    def pop(self, key: Any, *default) -> Any:
         try:
-            print(self.__getitem__(key))
+            result = self.__getitem__(key)
             self.__delitem__(key)
         except KeyError:
-            raise KeyError(key)
+            if default:
+                return default
+            raise KeyError
+        else:
+            return result
