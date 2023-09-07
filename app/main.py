@@ -45,6 +45,7 @@ class Dictionary:
             return self._delete_items(index)
         elif len(args) == 1:
             return args[0]
+        raise KeyError(f"key {key} is not found")
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
