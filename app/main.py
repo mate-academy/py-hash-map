@@ -1,5 +1,5 @@
 class Node:
-    def __init__(self, key: int or float, value: int or float) -> None:
+    def __init__(self, key: int | float, value: int | float) -> None:
         self.key = key
         self.value = value
         self.next = None
@@ -11,19 +11,16 @@ class Dictionary:
             initial_capacity: int = 16,
             load_factor: float = 0.75
     ) -> None:
-        # Initialized capacity and load factor to be initialized
         self.initial_capacity = initial_capacity
         self.load_factor = load_factor
-        self.size = 0  # Current dictionary size
+        self.size = 0
         self.capacity = initial_capacity
-        self.table = [None] * initial_capacity  # Hash table
+        self.table = [None] * initial_capacity
 
-    def __hash_func(self, key: int or float) -> int:
-        # Hash function to calculate the index in the hash table
+    def __hash_func(self, key: int | float) -> int:
         return hash(key) % self.capacity
 
     def __resize(self) -> None:
-        # Dictionary resizing on overflow
         self.capacity *= 2
         new_table = [None] * self.capacity
         for node in self.table:
@@ -37,40 +34,36 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: int or float or None,
-            value: int or float or None
+            key: int | float | None,
+            value: int | float | None
     ) -> int or None:
-        # Adding an element to the dictionary
         index = self.__hash_func(key)
         new_node = Node(key, value)
         if self.table[index] is None:
             self.table[index] = new_node
         else:
-            current = self.table[index]
-            while current:
-                if current.key == key:
-                    current.value = value  # If the key already exists
+            current_node = self.table[index]
+            while current_node:
+                if current_node.key == key:
+                    current_node.value = value
                     return
-                if current.next is None:
+                if current_node.next is None:
                     break
-                current = current.next
-            current.next = new_node
+                current_node = current_node.next
+            current_node.next = new_node
         self.size += 1
 
-        # Load factor check and resize
         if self.size > self.capacity * self.load_factor:
             self.__resize()
 
-    def __getitem__(self, key: int or float) -> int or float:
-        # Get value by key
+    def __getitem__(self, key: int | float) -> int | float:
         index = self.__hash_func(key)
-        current = self.table[index]
-        while current:
-            if current.key == key:
-                return current.value
-            current = current.next
+        current_node = self.table[index]
+        while current_node:
+            if current_node.key == key:
+                return current_node.value
+            current_node = current_node.next
         raise KeyError(key)
 
     def __len__(self) -> int:
-        # Get current dictionary size
         return self.size
