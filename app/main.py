@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,7 +9,7 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.breakpoint = int(self.hash_table_size * self.load_factor)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         flag = self.is_new_key(key)
 
         if flag:
@@ -34,7 +34,7 @@ class Dictionary:
                 if elem[0] == key:
                     self.hash_table[index] = (elem[0], elem[1], value)
 
-    def __getitem__(self, item: Any) -> Any:
+    def __getitem__(self, item: Hashable) -> Any:
         for node in self.hash_table:
             if isinstance(node, tuple) and node[0] == item:
                 return node[2]
@@ -73,7 +73,7 @@ class Dictionary:
                 hash_table_temp[place_after_resizing] = nod
         self.hash_table = hash_table_temp
 
-    def is_new_key(self, value: Any) -> tuple | bool:
+    def is_new_key(self, value: Hashable) -> bool:
         for nod in self.hash_table:
             if isinstance(nod, tuple) and nod[0] == value:
                 return False
