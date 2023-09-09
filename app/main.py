@@ -16,15 +16,13 @@ class Dictionary:
         index = self.get_index_for_key(key)
 
         if self.hash_table[index] is not None:
-            self.hash_table[index] = (key, hash(key), value)
-        elif int(self.capacity * self.load_factor) > self.length:
-            self.length += 1
-            self.hash_table[index] = (key, hash(key), value)
+            for i, (existing_key, _, existing_value) \
+                    in enumerate(self.hash_table[index]):
+                if existing_key == key:
+                    self.hash_table[index][i] = (key, hash(key), value)
+                    break
         else:
-            self.resize()
-            self.length += 1
-            index = self.get_index_for_key(key)
-            self.hash_table[index] = (key, hash(key), value)
+            self.hash_table[index] = [(key, hash(key), value)]
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index_for_key(key)
@@ -46,10 +44,10 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         for element in last_table:
             if element is not None:
-                key, hash_key, value = element
+                key, _, value = element
                 index = self.get_index_for_key(key)
                 self.length += 1
-                self.hash_table[index] = (key, hash_key, value)
+                self.hash_table[index] = element
 
     def clear(self) -> None:
         self.hash_table = [None] * self.capacity
