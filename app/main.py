@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,7 +8,7 @@ class Dictionary:
         self.hash_table: list = [None] * self.capacity
         self.load_factor = 2 / 3
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length >= self.capacity * self.load_factor:
             self.resize()
         key_index = self.get_index(key)
