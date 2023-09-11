@@ -40,10 +40,12 @@ class Dictionary:
             idx = (idx + 1) % self._capacity
 
     def __delitem__(self, key: Any) -> None:
-        for idx in range(self._capacity):
-            if self.storage[idx] is not None and self.storage[idx][0] == key:
+        idx = 0
+        for item in self.storage:
+            if item is not None and item[0] == key:
                 self.storage[idx] = None
                 break
+            idx += 1
         else:
             raise KeyError(key)
 
