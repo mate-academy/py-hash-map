@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Hashable, Any, Optional, Dict, Generator
+from typing import Hashable, Any, Optional, Generator
 
 
 @dataclass
@@ -58,9 +58,11 @@ class Dictionary:
             del self[key]
             return value
         except KeyError:
+            if default is None:
+                raise
             return default
 
-    def update(self, other_dict: Dict[Hashable, Any]) -> None:
+    def update(self, other_dict: Any) -> None:
         for key, value in other_dict.items():
             self[key] = value
 
