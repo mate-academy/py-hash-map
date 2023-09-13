@@ -17,7 +17,7 @@ class Node:
 class Dictionary:
     def __init__(
             self,
-            initial_capacity: int = 8,
+            initial_capacity: int = 16,
             load_factor: float = 0.67
     ) -> None:
         self.capacity = initial_capacity
@@ -36,7 +36,7 @@ class Dictionary:
         prev = None
 
         while current:
-            if current.key == key:
+            if current.key == key and current.hash_value == hash_value:
                 current.value = value
                 return
             prev, current = current, current.next
@@ -55,7 +55,7 @@ class Dictionary:
         current = self.table[index]
 
         while current:
-            if current.key == key:
+            if current.key == key and current.hash_value == hash_value:
                 return current.value
             current = current.next
 
