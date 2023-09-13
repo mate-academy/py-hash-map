@@ -47,10 +47,11 @@ class Dictionary:
         for entry_list in self.table:
             if entry_list is not None:
                 for entry in entry_list:
-                    new_index = entry[1] % new_capacity
+                    key, _, value = entry
+                    new_index = self._hash(key) % new_capacity
                     if new_table[new_index] is None:
                         new_table[new_index] = []
-                    new_table[new_index].append(entry)
+                    new_table[new_index].append([key, self._hash(key), value])
 
         self.table = new_table
         self.capacity = new_capacity
