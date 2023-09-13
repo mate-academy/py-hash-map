@@ -59,7 +59,7 @@ class Dictionary:
                 return current.value
             current = current.next
 
-        raise KeyError
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.size
