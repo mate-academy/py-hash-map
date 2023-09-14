@@ -4,7 +4,7 @@ from typing import Hashable, Any
 
 @dataclass
 class Node:
-    hash: int
+    hash_: int
     key: Hashable
     value: Any
 
@@ -35,7 +35,7 @@ class Dictionary:
         index = hash_ % self._capacity
 
         while (self._hash_table[index] is not None
-               and (self._hash_table[index].hash != hash_
+               and (self._hash_table[index].hash_ != hash_
                     or self._hash_table[index].key != key)):
             index += 1
             index %= self._capacity
