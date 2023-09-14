@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Hashable, Any, Optional, Generator
+from typing import Hashable, Any, Optional, Generator, Tuple
 
 
 @dataclass
@@ -62,8 +62,19 @@ class Dictionary:
                 raise
             return default
 
-    def update(self, other_dict: Any) -> None:
-        for key, value in other_dict.items():
+    @staticmethod
+    def _generate_key_value_pairs(
+            data: Any
+    ) -> Generator[Tuple[Hashable, Any], None, None]:
+        if isinstance(data, dict):
+            for key, value in data.items():
+                yield key, value
+        elif isinstance(data, (list, set, tuple)):
+            for index, item in enumerate(data):
+                yield index, item
+
+    def update(self, other: Any) -> None:
+        for key, value in self._generate_key_value_pairs(other):
             self[key] = value
 
     def __iter__(self) -> Generator[Hashable, None, None]:
