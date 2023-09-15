@@ -45,7 +45,7 @@ class Dictionary:
         index = self.hash(key)
         cur_node = self.buckets[index]
         while cur_node:
-            if cur_node.key == key:
+            if cur_node.key == key and cur_node.hash == hash(key):
                 return cur_node.value
             cur_node = cur_node.next
         raise KeyError("Key not found")
@@ -75,13 +75,12 @@ class Dictionary:
 
         self.capacity *= 2
         self.buckets = [None] * self.capacity
+        self.size = 0
 
         for i in range(old_capacity):
             node = old_buckets[i]
             while node is not None:
                 next_node = node.next
                 if node.key is not None:
-                    index = self.hash(node.key)
-                    node.next = self.buckets[index]
-                    self.buckets[index] = node
+                    self.__setitem__(node.key, node.value)
                 node = next_node
