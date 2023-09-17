@@ -11,6 +11,9 @@ class Dictionary:
         return hash(key) % self.capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        if self.size >= self.capacity * 2 / 3:
+            self.resize()
+
         hash_index = self.get_hash(key)
         slot = self.table[hash_index]
 
@@ -21,9 +24,6 @@ class Dictionary:
         else:
             slot.append((key, value))
             self.size += 1
-
-        if self.size >= self.capacity * 2:
-            self.resize()
 
     def __getitem__(self, key: Any) -> Any:
         hash_index = self.get_hash(key)
