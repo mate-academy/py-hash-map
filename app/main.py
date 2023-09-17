@@ -71,12 +71,10 @@ class Dictionary:
             self._hash_list[index] = None
             self.size -= 1
 
-    def pop(self, key: Hashable, default_value: Any) -> object:
+    def pop(self, key: Hashable, default_value: Any = None) -> object:
         try:
-            item = self.__getitem__(key)
+            value = self.__getitem__(key)
             self.__delitem__(key)
-            return item
+            return value
         except KeyError:
-            if default_value is not None:
-                return default_value
-            raise KeyError
+            return default_value
