@@ -8,6 +8,21 @@ class Dictionary:
         self.hash_table: list = [None] * 8
         self.load_factor = 2 / 3
 
+    def find_index(self, key: Hashable) -> int | None:
+        index_element = hash(key) % len(self.hash_table)
+        count = 0
+
+        while count < len(self.hash_table):
+            if isinstance(self.hash_table[index_element], tuple) \
+                    and self.hash_table[index_element][0] == key:
+                return index_element
+
+            index_element += 1
+            index_element %= len(self.hash_table)
+            count += 1
+
+        return None
+
     def resize_hash_table(self) -> bool:
         if self.length >= int(len(self.hash_table) * self.load_factor):
             self.hash_table += [None] * len(self.hash_table)
@@ -54,18 +69,10 @@ class Dictionary:
             self.reindex_element_after_resize_table()
 
     def __getitem__(self, item: Any) -> Any | Exception:
-        index_element = hash(item) % len(self.hash_table)
-        count = 0
+        index_element = self.find_index(key=item)
 
-        while count < len(self.hash_table):
-            if isinstance(self.hash_table[index_element], tuple) \
-                    and self.hash_table[index_element][0] == item:
-                return self.hash_table[index_element][1]
-
-            index_element += 1
-            index_element %= len(self.hash_table)
-            count += 1
-
+        if index_element is not None:
+            return self.hash_table[index_element][1]
         else:
             raise KeyError
 
@@ -73,8 +80,8 @@ class Dictionary:
         return self.length
 
     def __delitem__(self, key: Hashable) -> None:
-        index_element = hash(key) % len(self.hash_table)
+        index_element = self.find_index(key=key)
 
-        if self.hash_table[index_element] is not None:
+        if index_element is not None:
             self.hash_table[index_element] = None
             self.length -= 1
