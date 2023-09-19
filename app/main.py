@@ -7,7 +7,7 @@ class Dictionary:
         self.length = 0
         if elements is not None:
             for key, value in elements:
-                self.__setitem__(key, value)
+                self[key] = value
 
     @staticmethod
     def _get_next_index(index: int, iterable: list[Any]) -> int:
