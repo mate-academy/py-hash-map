@@ -17,23 +17,32 @@ class Dictionary:
         hash_index = self.get_hash(key)
         slot = self.table[hash_index]
 
-        for index, (existing_key, existing_value) in enumerate(slot):
-            if existing_key == key:
-                slot[index] = (key, value)
+        key_found = False
+        index = 0
+        while index < len(slot):
+            existing_hash, existing_key, existing_value = slot[index]
+            if existing_hash == hash_index and existing_key == key:
+                slot[index] = (hash_index, key, value)
+                key_found = True
                 break
-        else:
-            slot.append((key, value))
+            index += 1
+
+        if not key_found:
+            slot.append((hash_index, key, value))
             self.size += 1
 
     def __getitem__(self, key: Any) -> Any:
         hash_index = self.get_hash(key)
         slot = self.table[hash_index]
 
-        for existing_key, existing_value in slot:
-            if existing_key == key:
+        index = 0
+        while index < len(slot):
+            existing_hash, existing_key, existing_value = slot[index]
+            if existing_hash == hash_index and existing_key == key:
                 return existing_value
+            index += 1
 
-        raise KeyError(f"Ключ '{key}' не найден")
+        raise KeyError(f"Key '{key}' not found")
 
     def __len__(self) -> int:
         return self.size
@@ -43,8 +52,8 @@ class Dictionary:
         new_table = [[] for _ in range(self.capacity)]
 
         for bucket in self.table:
-            for key, value in bucket:
-                hash_index = hash(key) % self.capacity
-                new_table[hash_index].append((key, value))
+            for hash_index, key, value in bucket:
+                new_hash_index = hash(key) % self.capacity
+                new_table[new_hash_index].append((new_hash_index, key, value))
 
         self.table = new_table
