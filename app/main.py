@@ -33,7 +33,7 @@ class Dictionary:
             if existing_key == key:
                 return existing_value
 
-        raise KeyError(f"Key '{key}' not found")
+        raise KeyError(f"Ключ '{key}' не найден")
 
     def __len__(self) -> int:
         return self.size
