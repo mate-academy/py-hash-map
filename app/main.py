@@ -1,14 +1,15 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.hash_table: list = [None] * 8
+        self.load_factor = 2 / 3
 
     def resize_hash_table(self) -> bool:
-        if self.length >= int(len(self.hash_table) * 2 / 3):
+        if self.length >= int(len(self.hash_table) * self.load_factor):
             self.hash_table += [None] * len(self.hash_table)
 
             return True
@@ -25,7 +26,7 @@ class Dictionary:
         for key, value in elements_before_resize:
             self.insert_element_in_hash_table(key=key, value=value)
 
-    def insert_element_in_hash_table(self, key: Any, value: Any) -> None:
+    def insert_element_in_hash_table(self, key: Hashable, value: Any) -> None:
         index_key = hash(key) % len(self.hash_table)
 
         while True:
@@ -38,7 +39,7 @@ class Dictionary:
             else:
                 index_key += 1
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         for element in self.hash_table:
             if isinstance(element, tuple) and (element[0] == key):
                 index_el = self.hash_table.index(element)
@@ -53,20 +54,27 @@ class Dictionary:
             self.reindex_element_after_resize_table()
 
     def __getitem__(self, item: Any) -> Any | Exception:
-        for element in self.hash_table:
-            if isinstance(element, tuple):
-                if element[0] == item:
-                    return element[1]
+        index_element = hash(item) % len(self.hash_table)
+        count = 0
+
+        while count < len(self.hash_table):
+            if isinstance(self.hash_table[index_element], tuple) \
+                    and self.hash_table[index_element][0] == item:
+                return self.hash_table[index_element][1]
+
+            index_element += 1
+            index_element %= len(self.hash_table)
+            count += 1
+
         else:
             raise KeyError
 
     def __len__(self) -> int:
         return self.length
 
-    def __delitem__(self, key: Any) -> None:
-        for element in self.hash_table:
-            if isinstance(element, tuple):
-                if element[0] == key:
-                    index_element = self.hash_table.index(element)
-                    self.hash_table[index_element] = None
-                    self.length -= 1
+    def __delitem__(self, key: Hashable) -> None:
+        index_element = hash(key) % len(self.hash_table)
+
+        if self.hash_table[index_element] is not None:
+            self.hash_table[index_element] = None
+            self.length -= 1
