@@ -4,15 +4,15 @@ from typing import Any
 class Dictionary:
     def __init__(self, capacity: int = 8) -> None:
         self.capacity = capacity
-        self.size = 0
+        self._size = 0
         self.table = [[] for _ in range(self.capacity)]
 
     def get_hash(self, key: Any) -> int:
         return hash(key) % self.capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if self.size >= self.capacity * 2 / 3:
-            self.resize()
+        if self._size >= self.capacity * 2 / 3:
+            self._resize()
 
         hash_index = self.get_hash(key)
         slot = self.table[hash_index]
@@ -29,7 +29,7 @@ class Dictionary:
 
         if not key_found:
             slot.append((hash_index, key, value))
-            self.size += 1
+            self._size += 1
 
     def __getitem__(self, key: Any) -> Any:
         hash_index = self.get_hash(key)
@@ -45,9 +45,9 @@ class Dictionary:
         raise KeyError(f"Key '{key}' not found")
 
     def __len__(self) -> int:
-        return self.size
+        return self._size
 
-    def resize(self) -> None:
+    def _resize(self) -> None:
         self.capacity *= 2
         new_table = [[] for _ in range(self.capacity)]
 
