@@ -24,7 +24,7 @@ class Dictionary:
         self.capacity = new_capacity
         self.table = new_table
 
-    def __setitem__(self, key: Any, value: Hashable) -> Any:
+    def __setitem__(self, key: Hashable, value: Hashable) -> Any:
         hash_value = self._hash(key)
         index = hash_value % self.capacity
 
@@ -39,7 +39,7 @@ class Dictionary:
         if self.size > self.capacity * self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_value = self._hash(key)
         index = hash_value % self.capacity
 
