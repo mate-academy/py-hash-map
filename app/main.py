@@ -24,7 +24,7 @@ class Dictionary:
         self.capacity = new_capacity
         self.table = new_table
 
-    def __setitem__(self, key: Any, value: Any) -> Any:
+    def __setitem__(self, key: Any, value: Hashable) -> Any:
         hash_value = self._hash(key)
         index = hash_value % self.capacity
 
