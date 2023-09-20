@@ -10,7 +10,7 @@ class Dictionary:
     def get_hash(self, key: Any) -> int:
         return hash(key) % self.capacity
 
-    def __setitem__(self, key: Any, value: Hashable) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._size >= self.capacity * 2 / 3:
             self._resize()
 
