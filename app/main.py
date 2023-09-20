@@ -13,23 +13,20 @@ class Dictionary:
         if self.size >= self.capacity * self.load_factor:
             self.resize()
 
-        index = self._hash(key) % self.capacity
+        if self.table[self._get_index(key)] is None:
+            self.table[self._get_index(key)] = []
 
-        if self.table[index] is None:
-            self.table[index] = []
-
-        for entry in self.table[index]:
+        for entry in self.table[self._get_index(key)]:
             if entry[0] == key:
                 entry[2] = value
                 return
 
-        self.table[index].append([key, self._hash(key), value])
+        self.table[self._get_index(key)].append([key, self._hash(key), value])
         self.size += 1
 
     def __getitem__(self, key: int) -> None:
-        index = self._hash(key) % self.capacity
-        if self.table[index] is not None:
-            for entry in self.table[index]:
+        if self.table[self._get_index(key)] is not None:
+            for entry in self.table[self._get_index(key)]:
                 if entry[0] == key:
                     return entry[2]
         raise KeyError(key)
@@ -39,6 +36,9 @@ class Dictionary:
 
     def _hash(self, key: int) -> int:
         return hash(key)
+
+    def _get_index(self, key: int) -> int:
+        return self._hash(key) % self.capacity
 
     def resize(self) -> None:
         new_capacity = self.capacity * 2
