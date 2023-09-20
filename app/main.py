@@ -21,8 +21,6 @@ class Dictionary:
             index_element %= len(self.hash_table)
             count += 1
 
-        return None
-
     def resize_hash_table(self) -> bool:
         if self.length >= int(len(self.hash_table) * self.load_factor):
             self.hash_table += [None] * len(self.hash_table)
@@ -76,12 +74,12 @@ class Dictionary:
         else:
             raise KeyError
 
-    def __len__(self) -> int:
-        return self.length
-
     def __delitem__(self, key: Hashable) -> None:
         index_element = self.find_index(key=key)
 
         if index_element is not None:
             self.hash_table[index_element] = None
             self.length -= 1
+
+    def __len__(self) -> int:
+        return self.length
