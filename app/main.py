@@ -3,7 +3,7 @@ from typing import Any
 
 class Dictionary:
     def __init__(self, elements: list[tuple[Any, Any]] = None) -> None:
-        self.entries = [-1 for _ in range(8)]
+        self.entries = [None for _ in range(8)]
         self.length = 0
         if elements is not None:
             for key, value in elements:
@@ -27,12 +27,12 @@ class Dictionary:
         return input_key == entries_key and entries_hash == input_hash
 
     def _resize_entries(self) -> None:
-        new_entries = [-1 for _ in range(len(self.entries) * 2)]
+        new_entries = [None for _ in range(len(self.entries) * 2)]
 
         for entry in self.entries:
-            if entry != -1:
+            if entry is not None:
                 index = self._get_index(entry[1], new_entries)
-                while new_entries[index] != -1:
+                while new_entries[index] is not None:
                     index = self._get_next_index(index, new_entries)
                 new_entries[index] = entry
 
@@ -48,7 +48,7 @@ class Dictionary:
         input_hash = hash(input_key)
         index = self._get_index(input_key, self.entries)
 
-        while self.entries[index] != -1:
+        while self.entries[index] is not None:
 
             entries_hash, entries_key, entries_value = \
                 self.entries[index]
@@ -71,7 +71,7 @@ class Dictionary:
         input_hash = hash(input_key)
         index = self._get_index(input_key, self.entries)
 
-        while self.entries[index] != -1:
+        while self.entries[index] is not None:
             entries_hash, entries_key, entries_value = \
                 self.entries[index]
 
