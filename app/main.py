@@ -1,4 +1,4 @@
-from typing import Hashable
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -7,10 +7,10 @@ class Dictionary:
         self._size = 0
         self.table = [[] for _ in range(self.capacity)]
 
-    def get_hash(self, key: Hashable) -> int:
+    def get_hash(self, key: Any) -> int:
         return hash(key) % self.capacity
 
-    def __setitem__(self, key: Hashable, value: Hashable) -> None:
+    def __setitem__(self, key: Any, value: Hashable) -> None:
         if self._size >= self.capacity * 2 / 3:
             self._resize()
 
@@ -31,7 +31,7 @@ class Dictionary:
             slot.append((hash_index, key, value))
             self._size += 1
 
-    def __getitem__(self, key: Hashable) -> Hashable:
+    def __getitem__(self, key: Any) -> Hashable:
         hash_index = self.get_hash(key)
         slot = self.table[hash_index]
 
