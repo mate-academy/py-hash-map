@@ -8,7 +8,7 @@ class Dictionary:
         self.size = 0
         self.table = [[] for _ in range(self.capacity)]
 
-    def _hash(self, key: Any) -> Any:
+    def _hash(self, key: Any) -> int:
         return hash(key)
 
     def _resize(self) -> None:
