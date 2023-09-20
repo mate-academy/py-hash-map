@@ -26,9 +26,8 @@ class Dictionary:
         if self.length == self.threshold:
             self.resize()
 
-        hash_ = hash(key)
-        index = hash_ % self.capacity
-        node = Node(key, hash_, value)
+        index = self.get_index(key)
+        node = Node(key, hash(key), value)
 
         while self.hash_table[index] is not None:
             if self.hash_table[index].key == key:
@@ -40,12 +39,15 @@ class Dictionary:
         self.length += 1
 
     def __getitem__(self, key: Any) -> Any:
-        index = hash(key) % self.capacity
+        index = self.get_index(key)
         while self.hash_table[index] is not None:
             if self.hash_table[index].key == key:
                 return self.hash_table[index].value
             index = (index + 1) % self.capacity
         raise KeyError
+
+    def get_index(self, key: Hashable) -> int:
+        return hash(key) % self.capacity
 
     def resize(self) -> None:
         old_hash_table = [item for item in self.hash_table if item is not None]
@@ -57,15 +59,16 @@ class Dictionary:
         self.__init__()
 
     def __delitem__(self, key: Hashable) -> None:
-        index = hash(key) % self.capacity
+        index = self.get_index(key)
         while self.hash_table[index] is not None:
             if self.hash_table[index].key == key:
                 self.hash_table[index] = None
                 self.length -= 1
                 return
+            index = (index + 1) % self.capacity
 
     def get(self, key: Hashable, value: Any = None) -> Any:
-        index = hash(key) % self.capacity
+        index = self.get_index(key)
         while self.hash_table[index] is not None:
             if self.hash_table[index].key == key:
                 return self.hash_table[index].value
