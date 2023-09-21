@@ -16,7 +16,9 @@ class Dictionary:
             self,
             initial_capacity: int = 8,
             load_factor: float = 2 / 3
+
     ) -> None:
+
         self.capacity: int = initial_capacity
         self.load_factor = load_factor
         self.size = 0
@@ -68,8 +70,10 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self.find_slot(key)
         if self._hash_list[index]:
-            self._hash_list[index] = None
+            self._hash_list[index].value = None
             self.size -= 1
+        else:
+            raise KeyError(f"Key for deleting is not found: {key}")
 
     def pop(self, key: Hashable, default_value: Any = None) -> object:
         try:
@@ -77,4 +81,6 @@ class Dictionary:
             self.__delitem__(key)
             return value
         except KeyError:
-            return default_value
+            if default_value:
+                return default_value
+            raise
