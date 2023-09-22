@@ -2,6 +2,13 @@ from typing import Any, Dict, Optional
 from collections.abc import Hashable
 
 
+class Node:
+    def __init__(self, key: Hashable, hash_value: int, value: Any) -> None:
+        self.key = key
+        self.hash_value = hash_value
+        self.value = value
+
+
 class Dictionary:
     def __init__(self,
                  initial_capacity: int = 8,
@@ -14,10 +21,10 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = hash(key) % self.initial_capacity
         for entry in self.table[hash_value]:
-            if entry[0] == key:
-                entry[1] = value
+            if entry.key == key:
+                entry.value = value
                 return
-        self.table[hash_value].append([key, value])
+        self.table[hash_value].append(Node(key, hash_value, value))
         self.size += 1
         if self.size > self.initial_capacity * self.load_factor:
             self.resize()
@@ -25,8 +32,8 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         hash_value = hash(key) % self.initial_capacity
         for entry in self.table[hash_value]:
-            if entry[0] == key:
-                return entry[1]
+            if entry.key == key:
+                return entry.value
         raise KeyError
 
     def __len__(self) -> int:
@@ -37,21 +44,21 @@ class Dictionary:
         new_table = [[] for _ in range(new_size)]
         for cell in self.table:
             for entry in cell:
-                new_hash_value = hash(entry[0]) % new_size
+                new_hash_value = hash(entry.key) % new_size
                 new_table[new_hash_value].append(entry)
-            self.table = new_table
-            self.initial_capacity = new_size
+        self.table = new_table
+        self.initial_capacity = new_size
 
     def clear(self) -> None:
         self.initial_capacity = 8
         self.size = 0
-        self.table = [[] for _ in range(self.size)]
+        self.table = [[] for _ in range(self.initial_capacity)]
 
     def __delitem__(self, key: Hashable) -> None:
-        hash_value = hash(key) % self.size
-        for i, entry in enumerate(self.table[hash_value]):
-            if entry[0] == key:
-                del self.table[hash_value][i]
+        hash_value = hash(key) % self.initial_capacity
+        for index, entry in enumerate(self.table[hash_value]):
+            if entry.key == key:
+                del self.table[hash_value][index]
                 self.size -= 1
                 return
 
@@ -76,4 +83,4 @@ class Dictionary:
     def __iter__(self) -> None:
         for bucket in self.table:
             for entry in bucket:
-                yield entry[0]
+                yield entry.key, entry.value
