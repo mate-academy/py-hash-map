@@ -8,9 +8,6 @@ class Dictionary:
         self.size = 0
         self.table = [[] for _ in range(self.capacity)]
 
-    def _hash(self, key: Hashable) -> int:
-        return hash(key)
-
     def _resize(self) -> None:
 
         new_capacity = self.capacity * 2
@@ -18,14 +15,14 @@ class Dictionary:
 
         for sells in self.table:
             for key, value in sells:
-                new_index = self._hash(key) % new_capacity
+                new_index = hash(key) % new_capacity
                 new_table[new_index].append((key, value))
 
         self.capacity = new_capacity
         self.table = new_table
 
     def __setitem__(self, key: Hashable, value: Hashable) -> Any:
-        hash_value = self._hash(key)
+        hash_value = hash(key)
         index = hash_value % self.capacity
 
         for i, (existing_key, _) in enumerate(self.table[index]):
@@ -40,7 +37,7 @@ class Dictionary:
             self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_value = self._hash(key)
+        hash_value = hash(key)
         index = hash_value % self.capacity
 
         for existing_key, value in self.table[index]:
