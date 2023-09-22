@@ -1,4 +1,5 @@
 from typing import Any, Dict, Optional
+from collections.abc import Hashable
 
 
 class Dictionary:
@@ -10,7 +11,7 @@ class Dictionary:
         self.size = 0
         self.table = [[] for _ in range(self.initial_capacity)]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = hash(key) % self.initial_capacity
         for entry in self.table[hash_value]:
             if entry[0] == key:
@@ -21,7 +22,7 @@ class Dictionary:
         if self.size > self.initial_capacity * self.load_factor:
             self.resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_value = hash(key) % self.initial_capacity
         for entry in self.table[hash_value]:
             if entry[0] == key:
@@ -46,7 +47,7 @@ class Dictionary:
         self.size = 0
         self.table = [[] for _ in range(self.size)]
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_value = hash(key) % self.size
         for i, entry in enumerate(self.table[hash_value]):
             if entry[0] == key:
@@ -54,13 +55,13 @@ class Dictionary:
                 self.size -= 1
                 return
 
-    def get(self, key: Any, default: Optional[Any] = None) -> Any:
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Optional[Any] = None) -> Any:
+    def pop(self, key: Hashable, default: Optional[Any] = None) -> Any:
         try:
             value = self[key]
             del self[key]
