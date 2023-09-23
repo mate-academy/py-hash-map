@@ -21,7 +21,7 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = hash(key) % self.initial_capacity
         for entry in self.table[hash_value]:
-            if entry.key == key:
+            if entry.key == key and entry.hash_value == hash_value:
                 entry.value = value
                 return
         self.table[hash_value].append(Node(key, hash_value, value))
@@ -57,7 +57,7 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         hash_value = hash(key) % self.initial_capacity
         for index, entry in enumerate(self.table[hash_value]):
-            if entry.key == key:
+            if entry.key == key and entry.hash_value == hash_value:
                 del self.table[hash_value][index]
                 self.size -= 1
                 return
@@ -74,6 +74,8 @@ class Dictionary:
             del self[key]
             return value
         except KeyError:
+            if default is None:
+                raise
             return default
 
     def update(self, other_dict: Dict[Any, Any]) -> None:
