@@ -50,18 +50,3 @@ class Dictionary:
                         new_table[new_index] = []
                     new_table[new_index].append(node)
         self.table = new_table
-
-
-if __name__ == "__main__":
-    class Point:
-        def __init__(self, x: int, y: int) -> None:
-            self.x: int = x
-            self.y: int = y
-
-        def __eq__(self, other: Any) -> bool:
-            if not isinstance(other, Point):
-                return False
-            return self.x == other.x and self.y == other.y
-
-        def __hash__(self) -> int:
-            return hash((self.x, self.y))
