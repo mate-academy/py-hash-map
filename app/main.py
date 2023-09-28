@@ -44,6 +44,8 @@ class Dictionary:
                 if item.key == key and item.hash_key == hash(key):
                     return item.value
 
+        raise KeyError(f"Invalid key: {key}")
+
     def __len__(self) -> int:
         return self.size
 
