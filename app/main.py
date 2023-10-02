@@ -1,14 +1,16 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self, capacity: int = 8, load_factor: float = 0.66) -> None:
+    def __init__(self, capacity: int = 8, load_factor: float = 2 / 3) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
         self.table = [None] * capacity
 
-    def __setitem__(self, key: Any, value: Any) -> Any:
+    def __setitem__(self, key: Hashable, value: Any) -> Any:
+        if self.size > self.capacity * self.load_factor:
+            self._resize()
         index = self._hash(key)
         if self.table[index] is None:
             self.table[index] = []
@@ -18,10 +20,8 @@ class Dictionary:
                 return
         self.table[index].append([key, value])
         self.size += 1
-        if self.size > self.capacity * self.load_factor:
-            self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._hash(key)
         if self.table[index] is not None:
             for entry in self.table[index]:
@@ -32,7 +32,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def _hash(self, key: Any) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def _resize(self) -> None:
