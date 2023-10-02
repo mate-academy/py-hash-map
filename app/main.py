@@ -23,7 +23,7 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._hash(key)
-        if self.table[index] is not None:
+        if self.table[index]:
             for entry in self.table[index]:
                 if entry[0] == key:
                     return entry[1]
