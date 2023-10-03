@@ -2,7 +2,7 @@ from typing import Any, Union
 
 import copy
 
-ImmutableSequence = Union[int, float, str, tuple]
+HashableSequence = Union[int, float, str, object, tuple]
 
 
 class Dictionary:
@@ -19,7 +19,7 @@ class Dictionary:
                     self.__setitem__(item[0], item[2])
                     self.length -= 1
 
-    def __getitem__(self, key: ImmutableSequence) -> Any:
+    def __getitem__(self, key: HashableSequence) -> Any:
         index = int(self.__hash__(key) % len(self.hash_table))
         for i in range(len(self.hash_table)):
             if self.hash_table[index] and self.hash_table[index][0] == key:
@@ -29,7 +29,7 @@ class Dictionary:
                 index = 0
         raise KeyError
 
-    def __setitem__(self, key: ImmutableSequence, value: Any) -> None:
+    def __setitem__(self, key: HashableSequence, value: Any) -> None:
         self.resize()
         hashed_key = self.__hash__(key)
         index = hashed_key % len(self.hash_table)
@@ -52,7 +52,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __hash__(self, key: ImmutableSequence) -> int:
+    def __hash__(self, key: HashableSequence) -> int:
         if isinstance(key, str):
             return sum(ord(char) for char in key)
         return hash(key)
@@ -61,14 +61,14 @@ class Dictionary:
         self.length = 0
         self.hash_table = [None] * 8
 
-    def __delitem__(self, key: ImmutableSequence) -> None:
+    def __delitem__(self, key: HashableSequence) -> None:
         self.hash_table[self.__hash__(key) % len(self.hash_table)] = None
         self.length -= 1
 
-    def get(self, key: ImmutableSequence) -> Any:
+    def get(self, key: HashableSequence) -> Any:
         return self.__getitem__(key)
 
-    def pop(self, key: ImmutableSequence) -> tuple:
+    def pop(self, key: HashableSequence) -> tuple:
         item = self.hash_table[self.__hash__(key) % len(self.hash_table)]
         self.hash_table[self.__hash__(key) % len(self.hash_table)] = None
         self.length -= 1
