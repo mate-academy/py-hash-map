@@ -9,11 +9,11 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.total_count = 0
 
-    def hash_data(self, key: Any) -> int:
+    def __hash_data(self, key: Any) -> int:
         return hash(key) % self.data
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        key_hash = self.hash_data(key)
+        key_hash = self.__hash_data(key)
         for i, (k, v) in enumerate(self.buckets[key_hash]):
             if k == key:
                 self.buckets[key_hash][i] = (key, value)
@@ -22,7 +22,7 @@ class Dictionary:
         self.total_count += 1
 
     def __getitem__(self, key: Any) -> Any:
-        key_hash = self.hash_data(key)
+        key_hash = self.__hash_data(key)
         for k, v in self.buckets[key_hash]:
             if k == key:
                 return v
@@ -34,29 +34,14 @@ class Dictionary:
             total_count += len(bucket)
         return total_count
 
-    def __check_load_factor__(self) -> None:
-        if self.total_count > self.load_factor * self.data:
-            self.__resize__()
-
-    def __resize__(self) -> None:
+    def __resize(self) -> None:
         new_size = 2 * self.data
         new_bucket: List[List[Tuple[Any, Any]]] = [[] for _ in range(new_size)]
 
         for bucket in self.buckets:
             for k, v in bucket:
-                new_key_hash = self.hash_data(k)
+                new_key_hash = self.__hash_data(k)
                 new_bucket[new_key_hash].append((k, v))
 
         self.data = new_size
         self.buckets = new_bucket
-
-
-if __name__ == "__main__":
-    items = [(f"Elements {i}", i) for i in range(8)]
-    dictionary = Dictionary()
-    for key, value in items:
-        dictionary[key] = value
-
-    for key, value in items:
-        print(dictionary[key] == value)
-    print(len(dictionary) == len(items))
