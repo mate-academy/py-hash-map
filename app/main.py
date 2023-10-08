@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
     def __init__(
-            self, key: Any,
+            self,
+            key: Hashable,
             value: Any
     ) -> None:
         self.key = key
@@ -13,15 +14,18 @@ class Node:
 
 class Dictionary:
     def __init__(
-            self, initial_capacity: int = 10,
-            load_factor: float = 0.7
+            self,
+            initial_capacity: int = 10,
+            load_factor: float = 2 / 3
     ) -> None:
         self.capacity = initial_capacity
         self.load_factor = load_factor
         self.size = 0
         self.table = [[] for _ in range(self.capacity)]
 
-    def _resize(self) -> None:
+    def _resize(
+            self
+    ) -> None:
         new_capacity = self.capacity * 2
         new_table = [[] for _ in range(new_capacity)]
         for chain in self.table:
@@ -32,37 +36,50 @@ class Dictionary:
                     self.table = new_table
                     self.capacity = new_capacity
 
+    def _get_index(
+            self,
+            key: Hashable
+    ) -> int:
+        hash_value = hash(key)
+        index = hash_value % self.capacity
+        return index
+
     def __setitem__(
-            self, key: Any,
+            self,
+            key: Hashable,
             value: Any
     ) -> None:
         if self.size >= self.capacity * self.load_factor:
             self._resize()
-        index = hash(key) % self.capacity
-        if not self.table[index]:
-            self.table[index] = []
-        for node in self.table[index]:
+        index_to_insert = self._get_index(key)
+        if not self.table[index_to_insert]:
+            self.table[index_to_insert] = []
+        for node in self.table[index_to_insert]:
             if node.key == key:
                 node.value = value
                 return
-        self.table[index].append(Node(key, value))
+        self.table[index_to_insert].append(Node(key, value))
         self.size += 1
 
     def __getitem__(
-            self, key: Any
+            self,
+            key: Hashable
     ) -> Any:
-        index = hash(key) % self.capacity
-        if self.table[index]:
-            for node in self.table[index]:
+        index_to_search = self._get_index(key)
+        if self.table[index_to_search]:
+            for node in self.table[index_to_search]:
                 if node.key == key:
                     return node.value
-        raise KeyError
+        raise KeyError(f"Key {key} not found in the dictionary")
 
-    def __len__(self) -> int:
+    def __len__(
+            self
+    ) -> int:
         return self.size
 
     def __delitem__(
-            self, key: Any
+            self,
+            key: Hashable
     ) -> None:
         index = hash(key) % self.capacity
         if self.table[index]:
@@ -73,21 +90,15 @@ class Dictionary:
                     return
                 raise KeyError(key)
 
-    def clear(self) -> None:
+    def clear(
+            self
+    ) -> None:
         self.table = [None] * self.capacity
         self.size = 0
 
-    def get(
-            self, key: Any,
-            default: Any = None
-    ) -> Any:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
-
     def pop(
-            self, key: Any,
+            self,
+            key: Hashable,
             default: Any = None
     ) -> Any:
         try:
@@ -98,12 +109,15 @@ class Dictionary:
             return default
 
     def update(
-            self, other_dict: dict
+            self,
+            other_dict: dict
     ) -> None:
         for key, value in other_dict.items():
             self[key] = value
 
-    def __iter__(self) -> Any:
+    def __iter__(
+            self
+    ) -> Any:
         for index in range(self.capacity):
             if self.table[index]:
                 for node in self.table[index]:
