@@ -12,6 +12,10 @@ class Point:
         return self.x == other.x and self.y == other.y
 
     def __hash__(self) -> int:
+        # For example, you can return self.x + self.y as a hash
+        # which is NOT a best practice, but you will be able to predict
+        # a hash value by coordinates of the point and its index
+        # in the hashtable as well
         return hash((self.x, self.y))
 
     @property

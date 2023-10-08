@@ -83,30 +83,18 @@ class Dictionary:
     ) -> None:
         index = hash(key) % self.capacity
         if self.table[index]:
-            for i, node in enumerate(self.table[index]):
+            for index_to_delete, node in enumerate(self.table[index]):
                 if node.key == key:
-                    del self.table[index][i]
+                    del self.table[index][index_to_delete]
                     self.size -= 1
                     return
-                raise KeyError(key)
+                raise KeyError(f"Key {key} not found in the dictionary")
 
     def clear(
             self
     ) -> None:
         self.table = [None] * self.capacity
         self.size = 0
-
-    def pop(
-            self,
-            key: Hashable,
-            default: Any = None
-    ) -> Any:
-        try:
-            value = self.__getitem__(key)
-            del self[key]
-            return value
-        except KeyError:
-            return default
 
     def update(
             self,
