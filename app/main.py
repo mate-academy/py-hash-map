@@ -24,13 +24,12 @@ class Dictionary:
     def __getitem__(self, key: int) -> int:
         hash_key = hash(key)
         dicts_index = hash_key % self.capacity
-
-        for _ in range(self.capacity):
+        while True:
             if self.hash_table[dicts_index] is None:
                 raise KeyError(f"{key} not found")
-            if self.hash_table[dicts_index][0] == key:
+            elif self.hash_table[dicts_index][0] == key and (
+                    self.hash_table[dicts_index][1] == hash_key):
                 return self.hash_table[dicts_index][2]
-            dicts_index = (dicts_index + 1) % self.capacity
 
     def __len__(self) -> int:
         return self.lens
