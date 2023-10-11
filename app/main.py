@@ -33,8 +33,6 @@ class Dictionary:
         if self.size >= self.capacity * self.LOAD_FACTOR:
             self.resize()
         index = self.get_index(key)
-        while self.capacity <= index:
-            self.resize()
         if self.table[index]:
             self.table[index].value = value
         else:
