@@ -9,6 +9,10 @@ class Node:
         self.value = value
 
 
+def _is_matching_key(node: Node, key: Hashable) -> bool:
+    return node.key == key and node.hash_val == hash(key)
+
+
 class Dictionary:
     LOAD_FACTOR = 2 / 3
 
@@ -19,7 +23,9 @@ class Dictionary:
 
     def get_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
-        while self.table[index] and self.table[index].key != key:
+        while (
+                self.table[index] and not
+                _is_matching_key(self.table[index], key)):
             index = (index + 1) % self.capacity
         return index
 
@@ -33,39 +39,34 @@ class Dictionary:
             self.table[index].value = value
         else:
             self.size += 1
-            node = Node(key, hash(key), value)
-            self.table[index] = node
+            self.table[index] = Node(key, hash(key), value)
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
-        if len(self.table) > index:
-            if self.table[index]:
-                if self.table[index].key == key:
-                    return self.table[index].value
-            raise KeyError(key)
-        else:
-            raise IndexError
+        if self.table[index] and _is_matching_key(self.table[index], key):
+            return self.table[index].value
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.size
 
     def resize(self) -> None:
-        olf_table = self.table
+        old_table = self.table
         self.capacity *= 2
         self.table = [None] * self.capacity
         self.size = 0
-        for element in olf_table:
+        for element in old_table:
             if element:
-                self.__setitem__(element.key, element.value)
+                self[element.key] = element.value
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
-        if self.table[index]:
+        if self.table[index] and _is_matching_key(self.table[index], key):
             self.table[index] = None
             self.size -= 1
 
-    def get(self, item: Hashable) -> None:
-        self.__getitem__(item)
+    def get(self, item: Hashable) -> Any:
+        return self[item]
 
-    def clear(self) -> Dictionary:
-        return self.__init__()
+    def clear(self) -> None:
+        self.__init__()
