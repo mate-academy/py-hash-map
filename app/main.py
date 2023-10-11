@@ -65,8 +65,5 @@ class Dictionary:
             self.table[index] = None
             self.size -= 1
 
-    def get(self, item: Hashable) -> Any:
-        return self[item]
-
     def clear(self) -> None:
         self.__init__()
