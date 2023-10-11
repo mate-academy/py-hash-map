@@ -3,11 +3,12 @@ class Dictionary:
         self.capacity = 8
         self.hash_table = [None] * self.capacity
         self.lens = 0
+        self.load_factor = 2.3
 
     def __setitem__(self, key: int, value: int) -> None:
         hash_key = hash(key)
         dicts_index = hash_key % self.capacity
-        if self.lens >= self.capacity // 1.2:
+        if self.lens >= self.capacity // self.load_factor:
             self.resize()
             dicts_index = hash_key % self.capacity
 
@@ -30,14 +31,16 @@ class Dictionary:
             elif self.hash_table[dicts_index][0] == key and (
                     self.hash_table[dicts_index][1] == hash_key):
                 return self.hash_table[dicts_index][2]
+            dicts_index = (dicts_index + 1) % self.capacity
 
     def __len__(self) -> int:
         return self.lens
 
     def resize(self) -> None:
-        self.capacity = self.capacity * 2
+        new_capacity = self.capacity * 2
         old_table = self.hash_table
-        self.hash_table = [None] * self.capacity
+        self.hash_table = [None] * new_capacity
+        self.capacity = new_capacity
         self.lens = 0
         for item in old_table:
             if item:
