@@ -59,7 +59,7 @@ class Dictionary(Generic[K, V]):
     def __len__(self) -> int:
         return self.size
 
-    def resize(self) -> None:
+    def _resize(self) -> None:
         new_table = [None] * (len(self.table) * 2)
 
         for node in self.table:
