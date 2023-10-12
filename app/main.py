@@ -42,7 +42,7 @@ class Dictionary(Generic[K, V]):
         self.size += 1
 
         if self.size / len(self.table) > self.load_factor:
-            self.resize()
+            self._resize()
 
     def __getitem__(self, key: K) -> V:
         hash_code = hash(key)
