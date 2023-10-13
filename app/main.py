@@ -27,8 +27,7 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_key = hash(key)
         index_key = self.hash_func(key)
-        if self.size >= self.overload:
-            self.resize(key, value)
+
         while True:
             if self.table[index_key]:
                 if self.table[index_key][0] == key:
@@ -40,17 +39,17 @@ class Dictionary:
             else:
                 self.table[index_key] = [key, value, hash_key]
                 self.size += 1
+        if self.size >= self.overload:
+            self.resize()
 
     # прописуємо розширення таблиці при заповненні на 2/3
-    def resize(self, key: Hashable, value: Any) -> None:
+    def resize(self) -> None:
         self.capasity *= 2
-        new_table = [[] for _ in range(self.capasity)]
-
-        for item in self.table:
+        new_table = self.table
+        self.table = [] * self.capasity
+        for item in new_table:
             if item:
-                self.__setitem__(key, value)
-
-        self.table = new_table
+                self.__setitem__(item[0], item[1])
 
     # повернення значення при запиті по ключу, якщо такого ключа немає, викидає помилку
     def __getitem__(self, key: Hashable) -> list:
@@ -59,7 +58,7 @@ class Dictionary:
         while True:
             if not self.table[index_key]:
                 raise KeyError(f"Key '{key}' not found in the dictionary")
-            elif self.table[index_key][0] == key:
+            elif self.table[index_key][0] == key and self.table[index_key][2] == hash_key:
                 return self.table[index_key][1]
             index_key = (index_key + 1) % self.capasity
 
@@ -79,3 +78,26 @@ class Dictionary:
         self.capasity = 8
         self.table = []
         self.size = 0
+
+
+if __name__ == "__main__":
+    dictionary = Dictionary()
+
+    print(dictionary.table)
+    print(dictionary.__len__())
+    print(len(dictionary.table))
+
+    dictionary.__setitem__(3, 2)
+    print(dictionary.table)
+    # print(dictionary.__len__())
+    # print(len(dictionary.table))
+
+    dictionary.__setitem__(11, 5)
+    print(dictionary.table)
+    # print(dictionary.__len__())
+    print(dictionary.__getitem__(11))
+
+    dictionary.__setitem__(11, 6)
+    print(dictionary.table)
+    # print(dictionary.__len__())
+    # print(len(dictionary.table))
