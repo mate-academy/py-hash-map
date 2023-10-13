@@ -45,7 +45,7 @@ class Dictionary:
         for bucket in self.table:
             if bucket:
                 for node in bucket:
-                    index = node[1] % self.capacity
+                    index = self._hash(node[0])
                     if not new_table[index]:
                         new_table[index] = []
                     new_table[index].append(node)
