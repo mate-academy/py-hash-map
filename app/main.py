@@ -38,11 +38,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def __setitem__(
-            self,
-            key: Hashable,
-            value: Any
-    ) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size > self.capacity * self.load_factor:
             self._resize()
         hash_value = self._get_hash(key)
