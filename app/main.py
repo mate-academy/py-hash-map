@@ -1,4 +1,5 @@
 from typing import Any, Union, Hashable
+from app.point import Point
 
 
 class Dictionary:
@@ -29,30 +30,33 @@ class Dictionary:
         index_key = self.hash_func(key)
 
         while True:
-            if self.table[index_key]:
+            if not self.table[index_key]:
+                self.table[index_key] = [key, value, hash_key]
+                self.size += 1
+            else:
                 if self.table[index_key][0] == key:
                     self.table[index_key][1] = value
                     break
                 index_key = (index_key + 1) % self.capasity
                 self.table[index_key] = [key, value, hash_key]
                 self.size += 1
-            else:
-                self.table[index_key] = [key, value, hash_key]
-                self.size += 1
+
         if self.size >= self.overload:
             self.resize()
 
     # прописуємо розширення таблиці при заповненні на 2/3
     def resize(self) -> None:
         self.capasity *= 2
-        new_table = self.table
-        self.table = [] * self.capasity
+        new_table = [] * self.capasity
+        self.size = 0
         for item in new_table:
-            if item:
+            if item and item is not None:
                 self.__setitem__(item[0], item[1])
 
+        self.table = new_table
+
     # повернення значення при запиті по ключу, якщо такого ключа немає, викидає помилку
-    def __getitem__(self, key: Hashable) -> list:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         index_key = self.hash_func(key)
         while True:
@@ -99,5 +103,15 @@ if __name__ == "__main__":
 
     dictionary.__setitem__(11, 6)
     print(dictionary.table)
-    # print(dictionary.__len__())
-    # print(len(dictionary.table))
+
+    dictionary.__setitem__(567, [1, 5, 7])
+    print(dictionary.table)
+
+    dictionary.__setitem__(15, "dfsfs")
+    print(dictionary.table)
+
+    dictionary.__setitem__(148, Point(3, 5))
+    print(dictionary.table)
+
+    dictionary.__setitem__(155, 10)
+    print(dictionary.table)
