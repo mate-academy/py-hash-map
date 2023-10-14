@@ -1,6 +1,6 @@
 from typing import Any, Hashable
 
-LOAD_FACTOR = 0.67
+LOAD_FACTOR = 2/3
 
 
 class Node:
@@ -43,6 +43,8 @@ class Dictionary:
             key: Hashable,
             value: Any
     ) -> None:
+        if self.size > self.capacity * self.load_factor:
+            self._resize()
         hash_value = self._get_hash(key)
         for bucket in self.hash_table[hash_value]:
             if bucket.key == key and bucket.hash_value == hash_value:
@@ -50,8 +52,7 @@ class Dictionary:
                 return
         self.hash_table[hash_value].append(Node(key, hash_value, value))
         self.size += 1
-        if self.size > self.capacity * self.load_factor:
-            self._resize()
+
 
     def _get_hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
