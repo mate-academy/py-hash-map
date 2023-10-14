@@ -1,6 +1,6 @@
 from typing import Any, Hashable
 
-LOAD_FACTOR = 2/3
+LOAD_FACTOR = 2 / 3
 
 
 class Node:
@@ -52,7 +52,6 @@ class Dictionary:
                 return
         self.hash_table[hash_value].append(Node(key, hash_value, value))
         self.size += 1
-
 
     def _get_hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
