@@ -1,10 +1,11 @@
 from typing import Any
+from collections.abc import Hashable
 
 
 class Dictionary:
     def __init__(
             self,
-            initial_capacity: int = 16,
+            initial_capacity: int = 8,
             load_factor: float = 2 / 3
     ) -> None:
         self.capacity = initial_capacity
@@ -24,7 +25,7 @@ class Dictionary:
                     new_table[index].append(node)
         self.table = new_table
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._hash(key)
         if not self.table[index]:
             self.table[index] = []
@@ -37,7 +38,7 @@ class Dictionary:
         if self.size > self.capacity * self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._hash(key)
         if self.table[index]:
             for node in self.table[index]:
@@ -48,5 +49,5 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def _hash(self, key: str) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
