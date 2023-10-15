@@ -48,8 +48,7 @@ class Dictionary:
                             (self.table[index] == [None]):
                         self.table[index] = [key_value[0], key_value[1]]
                         break
-                    else:
-                        index = (index + 1) % self.capacity
+                    index = (index + 1) % self.capacity
 
     def clear(self) -> None:
         self.__init__()
@@ -62,8 +61,7 @@ class Dictionary:
                 self.table[index] = [None]
                 self.size -= 1
                 break
-            else:
-                index = (index + 1) % self.capacity
+            index = (index + 1) % self.capacity
 
     def get(self, key: Hashable, default_value: Any = None) -> Any:
         try:
