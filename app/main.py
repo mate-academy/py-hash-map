@@ -25,6 +25,19 @@ class Dictionary:
                     new_table[index].append(node)
         self.table = new_table
 
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        index = self._hash(key)
+        if not self.table[index]:
+            self.table[index] = []
+        for node in self.table[index]:
+            if node[0] == key:
+                node[2] = value
+                return
+        self.table[index].append([key, self._hash(key), value])
+        self.size += 1
+        if self.size > self.capacity * self.load_factor:
+            self._resize()
+
     def __getitem__(self, key: Hashable) -> Any:
         index = self._hash(key)
         if self.table[index]:
@@ -38,14 +51,3 @@ class Dictionary:
 
     def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
-
-    def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = self._hash(key)
-        if not self.table[index]:
-            self.table[index] = []
-        for node in self.table[index]:
-            if node[0] == key:
-                node[2] = value
-                return
-        self.table[index].append([key, self._hash(key), value])
-        self.size += 1
