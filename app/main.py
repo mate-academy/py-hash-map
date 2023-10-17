@@ -26,6 +26,8 @@ class Dictionary:
         self.table = new_table
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.size > self.capacity * self.load_factor:
+            self._resize()
         index = self._hash(key)
         if not self.table[index]:
             self.table[index] = []
@@ -35,8 +37,6 @@ class Dictionary:
                 return
         self.table[index].append([key, self._hash(key), value])
         self.size += 1
-        if self.size > self.capacity * self.load_factor:
-            self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._hash(key)
