@@ -35,8 +35,9 @@ class Dictionary:
 
     def find_index(self, key: Hashable) -> int:
         index_key = self.hash_func(key)
-        while self.table[index_key] is not None and \
-                self.table[index_key][0] != key:
+        while (self.table[index_key] is not None
+               and self.table[index_key][0] != key):
+
             index_key += 1
             index_key %= self.capasity
         return index_key
@@ -65,7 +66,7 @@ class Dictionary:
         return self.size
 
     # видалення елемента по ключу
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index_key = self.hash_func(key)
         if self.table[index_key][0] == key:
             del self.table[index_key]
