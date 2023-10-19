@@ -1,21 +1,24 @@
+from typing import Any, Dict, Optional, List
+
+
 class Node:
-    def __init__(self, key, value):
+    def __init__(self, key: Any, value: Any) -> None:
         self.key = key
         self.value = value
         self.next = None
 
 
 class Dictionary:
-    def __init__(self, capacity=8, load_factor=0.7):
+    def __init__(self, capacity: int = 8, load_factor: float = 0.7) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
-        self.table = [None] * self.capacity
+        self.table: List[Optional[Node]] = [None] * self.capacity
 
-    def hash_function(self, key):
+    def hash_function(self, key: Any) -> int:
         return hash(key) % self.capacity
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Any, value: Any) -> None:
         index = self.hash_function(key)
         new_node = Node(key, value)
 
@@ -35,7 +38,7 @@ class Dictionary:
         if self.size >= self.load_factor * self.capacity:
             self.resize()
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any) -> Any:
         index = self.hash_function(key)
         current = self.table[index]
         while current:
@@ -44,10 +47,10 @@ class Dictionary:
             current = current.next
         raise KeyError(f"Key '{key}' not found")
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Any) -> None:
         index = self.hash_function(key)
         current = self.table[index]
         prev = None
@@ -63,18 +66,18 @@ class Dictionary:
             current = current.next
         raise KeyError(f"Key '{key}' not found")
 
-    def clear(self):
+    def clear(self) -> None:
         self.capacity = 8
         self.size = 0
         self.table = [None] * self.capacity
 
-    def get(self, key, default=None):
+    def get(self, key: Any, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key, default=None):
+    def pop(self, key: Any, default: Any = None) -> Any:
         try:
             value = self[key]
             del self[key]
@@ -82,20 +85,20 @@ class Dictionary:
         except KeyError:
             return default
 
-    def update(self, other_dict):
+    def update(self, other_dict: Dict[Any, Any]) -> None:
         for key, value in other_dict.items():
             self[key] = value
 
-    def __iter__(self):
+    def __iter__(self) -> Any:
         for index in range(self.capacity):
             current = self.table[index]
             while current:
                 yield current.key
                 current = current.next
 
-    def resize(self):
+    def resize(self) -> None:
         new_capacity = self.capacity * 2
-        new_table = [None] * new_capacity
+        new_table: List[Optional[Node]] = [None] * new_capacity
 
         for i in range(self.capacity):
             current = self.table[i]
