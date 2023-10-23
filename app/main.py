@@ -13,7 +13,8 @@ class Dictionary:
 
     def __setitem__(self, key: Any, value: Any) -> None:
         key_hash = self.hash_data(key)
-        for index, (exist_key, exist_value) in enumerate(self.buckets[key_hash]):
+        for index, (exist_key, exist_value) \
+                in enumerate(self.buckets[key_hash]):
             if exist_key == key:
                 self.buckets[key_hash][index] = (key, value)
                 return
