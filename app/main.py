@@ -2,8 +2,8 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self, size: int = 8) -> None:
-        self.data = size
+    def __init__(self, capacity: int = 8) -> None:
+        self.data = capacity
         self.buckets = [[] for _ in range(self.data)]
         self.load_factor = 2 / 3
         self.total_count = 0
@@ -11,7 +11,7 @@ class Dictionary:
     def hash_data(self, key: Hashable) -> int:
         return hash(key) % self.data
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         key_hash = self.hash_data(key)
         for index, (exist_key, exist_value) \
                 in enumerate(self.buckets[key_hash]):
@@ -21,7 +21,7 @@ class Dictionary:
         self.buckets[key_hash].append((key, value))
         self.total_count += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         key_hash = self.hash_data(key)
         for exist_key, exist_value in self.buckets[key_hash]:
             if exist_key == key:
