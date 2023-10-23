@@ -12,6 +12,8 @@ class Dictionary:
         return hash(key) % self.data
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.total_count >= self.data * self.load_factor:
+            self.__resize__(2 * self.data)
         key_hash = self.hash_data(key)
         for index, (exist_key, exist_value) \
                 in enumerate(self.buckets[key_hash]):
