@@ -1,3 +1,6 @@
+import random
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
@@ -6,6 +9,11 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
+
+    @staticmethod
+    def hash(value: str) -> int:
+        random.seed(42)
+        return sum(ord(char) + random.randint(0, 100) for char in value)
 
     def resize(self):
 
