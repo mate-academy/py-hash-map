@@ -13,8 +13,8 @@ class Dictionary:
 
     def __setitem__(self, key: Any, value: Any) -> None:
         key_hash = self.hash_data(key)
-        for index, (k, v) in enumerate(self.buckets[key_hash]):
-            if k == key:
+        for index, (exist_key, exist_value) in enumerate(self.buckets[key_hash]):
+            if exist_key == key:
                 self.buckets[key_hash][index] = (key, value)
                 return
         self.buckets[key_hash].append((key, value))
@@ -22,9 +22,9 @@ class Dictionary:
 
     def __getitem__(self, key: Any) -> Any:
         key_hash = self.hash_data(key)
-        for k, v in self.buckets[key_hash]:
-            if k == key:
-                return v
+        for exist_key, exist_value in self.buckets[key_hash]:
+            if exist_key == key:
+                return exist_value
         raise KeyError(f"Key not found: {key}")
 
     def __len__(self) -> int:
