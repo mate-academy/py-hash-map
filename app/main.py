@@ -1,116 +1,76 @@
-from typing import Any, Dict, Optional, List
+from typing import Any
 
 
 class Node:
     def __init__(self, key: Any, value: Any) -> None:
         self.key = key
         self.value = value
-        self.next = None
+        self.next = None  # Initialize the next attribute to handle chaining
 
 
 class Dictionary:
-    def __init__(self, capacity: int = 8, load_factor: float = 0.7) -> None:
-        self.capacity = capacity
+    def __init__(self, initial_capacity: int = 8,
+                 load_factor: float = 0.7) -> None:
+        self.capacity = initial_capacity
         self.load_factor = load_factor
         self.size = 0
-        self.table: List[Optional[Node]] = [None] * self.capacity
-
-    def hash_function(self, key: Any) -> int:
-        return hash(key) % self.capacity
+        self.table = [None] * self.capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        index = self.hash_function(key)
-        new_node = Node(key, value)
+        index = self._get_index(key)
+        node = self.table[index]
 
-        if self.table[index] is None:
-            self.table[index] = new_node
+        if node is None:
+            self.table[index] = Node(key, value)
+            self.size += 1
         else:
-            current = self.table[index]
-            while current:
-                if current.key == key:
-                    current.value = value
+            # Handle collision by chaining
+            while node:
+                if node.key == key:
+                    node.value = value
                     return
-                current = current.next
-            new_node.next = self.table[index]
-            self.table[index] = new_node
+                if not node.next:
+                    break
+                node = node.next
+            node.next = Node(key, value)
+            self.size += 1
 
-        self.size += 1
-        if self.size >= self.load_factor * self.capacity:
-            self.resize()
+        if self.size > self.capacity * self.load_factor:
+            self._resize()
 
     def __getitem__(self, key: Any) -> Any:
-        index = self.hash_function(key)
-        current = self.table[index]
-        while current:
-            if current.key == key:
-                return current.value
-            current = current.next
-        raise KeyError(f"Key '{key}' not found")
+        index = self._get_index(key)
+        node = self.table[index]
+
+        while node:
+            if node.key == key:
+                return node.value
+            node = node.next
+
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key: Any) -> None:
-        index = self.hash_function(key)
-        current = self.table[index]
-        prev = None
-        while current:
-            if current.key == key:
-                if prev:
-                    prev.next = current.next
-                else:
-                    self.table[index] = current.next
-                self.size -= 1
-                return
-            prev = current
-            current = current.next
-        raise KeyError(f"Key '{key}' not found")
+    def _get_index(self, key: Any) -> int:
+        hash_value = hash(key)
+        return hash_value % self.capacity
 
-    def clear(self) -> None:
-        self.capacity = 8
-        self.size = 0
-        self.table = [None] * self.capacity
-
-    def get(self, key: Any, default: Any = None) -> Any:
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
-    def pop(self, key: Any, default: Any = None) -> Any:
-        try:
-            value = self[key]
-            del self[key]
-            return value
-        except KeyError:
-            return default
-
-    def update(self, other_dict: Dict[Any, Any]) -> None:
-        for key, value in other_dict.items():
-            self[key] = value
-
-    def __iter__(self) -> Any:
-        for index in range(self.capacity):
-            current = self.table[index]
-            while current:
-                yield current.key
-                current = current.next
-
-    def resize(self) -> None:
+    def _resize(self) -> None:
         new_capacity = self.capacity * 2
-        new_table: List[Optional[Node]] = [None] * new_capacity
+        new_table = [None] * new_capacity
 
-        for i in range(self.capacity):
-            current = self.table[i]
-            while current:
-                new_index = self.hash_function(current.key)
-                new_node = Node(current.key, current.value)
-                if new_table[new_index] is None:
-                    new_table[new_index] = new_node
+        for node in self.table:
+            while node:
+                index = hash(node.key) % new_capacity
+                if new_table[index] is None:
+                    new_table[index] = Node(node.key, node.value)
                 else:
-                    new_node.next = new_table[new_index]
-                    new_table[new_index] = new_node
-                current = current.next
+                    current = new_table[index]
+                    while current.next:
+                        current = current.next
+                    current.next = Node(node.key, node.value)
+                node = node.next
 
         self.capacity = new_capacity
         self.table = new_table
