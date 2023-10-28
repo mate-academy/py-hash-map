@@ -12,7 +12,7 @@ class Dictionary:
     def __init__(
             self,
             capacity: int = 8,
-            resize_threshold: float = 2/3,
+            resize_threshold: float = 2 / 3,
             capacity_multiplier: int = 2
     ) -> None:
 
@@ -29,10 +29,7 @@ class Dictionary:
     def _calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
 
-        while (
-            self.hash_table[index] is not None and
-            self.hash_table[index].key != key
-        ):
+        while self.hash_table[index] and self.hash_table[index].key != key:
             index = (index + 1) % self.capacity
 
         return index
