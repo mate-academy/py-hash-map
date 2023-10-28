@@ -23,7 +23,7 @@ class Dictionary:
         if self.length == int(self.capacity * (2 / 3)):
             self._resize()
         cell_number = hash(key) % self.capacity
-        while True: # while loop > for loop
+        while True:
             if not self.hash_table[cell_number]:
                 self.hash_table[cell_number] = [key, hash(key), value]
                 self.length += 1
