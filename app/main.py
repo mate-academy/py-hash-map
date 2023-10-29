@@ -32,20 +32,18 @@ class Dictionary:
                     and self.hash_table[cell_number][1] == hash(key)):
                 self.hash_table[cell_number][2] = value
                 break
-            else:
-                cell_number = (cell_number + 1) % self.capacity
+            cell_number = (cell_number + 1) % self.capacity
 
     def __getitem__(self, item: Any) -> None:
         cell_number = hash(item) % self.capacity
-        for _ in range(self.capacity):
+        while True:
             if self.hash_table[cell_number] is None:
                 break
             if (self.hash_table[cell_number][0] == item
                     and self.hash_table[cell_number][1] == hash(item)):
                 return self.hash_table[cell_number][2]
-            else:
-                cell_number = (cell_number + 1) % self.capacity
-        raise KeyError
+            cell_number = (cell_number + 1) % self.capacity
+        raise KeyError(item)
 
     def __len__(self) -> int:
         return self.length
