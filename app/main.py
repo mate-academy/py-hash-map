@@ -1,5 +1,4 @@
-from typing import Any
-from hashtable from HashTable
+from typing import Any, Hashable
 
 
 class Node:
