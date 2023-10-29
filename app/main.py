@@ -2,7 +2,7 @@ from typing import Any
 
 
 class Node:
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.next = None  # Initialize the next attribute to handle chaining
@@ -16,7 +16,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._get_index(key)
         node = self.table[index]
 
@@ -38,7 +38,7 @@ class Dictionary:
         if self.size > self.capacity * self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._get_index(key)
         node = self.table[index]
 
@@ -52,7 +52,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def _get_index(self, key: Any) -> int:
+    def _get_index(self, key: Hashable) -> int:
         hash_value = hash(key)
         return hash_value % self.capacity
 
