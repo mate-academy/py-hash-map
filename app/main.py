@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -19,7 +19,7 @@ class Dictionary:
             if cell:
                 self[cell[0]] = cell[2]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length == int(self.capacity * (2 / 3)):
             self._resize()
         cell_number = hash(key) % self.capacity
@@ -34,7 +34,7 @@ class Dictionary:
                 break
             cell_number = (cell_number + 1) % self.capacity
 
-    def __getitem__(self, item: Any) -> None:
+    def __getitem__(self, item: Hashable) -> Any | None:
         cell_number = hash(item) % self.capacity
         while True:
             if self.hash_table[cell_number] is None:
