@@ -39,7 +39,7 @@ class Dictionary:
         return self.length
 
     def resize(self) -> None:
-        threshold = self.capacity * self.LOAD_FACTOR
+        threshold = self.capacity * Dictionary.LOAD_FACTOR
 
         if self.length <= threshold:
             return
@@ -50,10 +50,9 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.length = 0
 
-        for element in old_dictionary:
-            if element:
-                key, _, value = element
-                self.__setitem__(key, value)
+        [self.__setitem__(element[0], element[2])
+         for element in old_dictionary
+         if element]
 
     def count_index(self, new_key: Hashable) -> int:
         return hash(new_key) % self.capacity
