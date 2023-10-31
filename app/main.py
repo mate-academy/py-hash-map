@@ -52,7 +52,7 @@ class Dictionary:
         else:
             raise KeyError(key)
 
-    def __iter__(self):
+    def __iter__(self) -> Hashable:
         for entry in self.hash_table:
             if entry:
                 yield entry[0]
