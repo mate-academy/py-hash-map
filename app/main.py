@@ -1,11 +1,14 @@
+from typing import Hashable
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.load_factor = self.capacity * 0.67
+        self.load_factor = self.capacity * 2 / 3
         self.table = [None] * self.capacity
 
-    def __setitem__(self, key: int, value: int) -> None:
+    def __setitem__(self, key: Hashable, value: int) -> None:
         if self.size > self.load_factor:
             self.resize()
 
@@ -24,7 +27,7 @@ class Dictionary:
                 index = 0
             index += 1
 
-    def __getitem__(self, key: int) -> int:
+    def __getitem__(self, key: Hashable) -> int:
         for item in self.table:
             if item:
                 if item[0] == key and item[1] == hash(key):
@@ -33,13 +36,13 @@ class Dictionary:
 
     def resize(self) -> None:
         self.capacity *= 2
-        self.load_factor = self.capacity * 0.67
+        self.load_factor = self.capacity * 2 / 3
         current_table = self.table
         self.table = [None] * self.capacity
         self.size = 0
         for item in current_table:
             if item:
-                self.__setitem__(item[0], item[2])
+                self[item[0]] = item[2]
 
     def __len__(self) -> int:
         return self.size
