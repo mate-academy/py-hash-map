@@ -13,40 +13,49 @@ class Dictionary:
         self.hash_table = [None] * initial_capacity
 
     def hash(self, key: Hashable) -> int:
-        return hash(key) % self.initial_capacity
+        index = hash(key) % self.initial_capacity
+        while (self.hash_table[index]
+               and self.hash_table[index][0] != key):
+            index = (index + 1) % self.initial_capacity
+        return index
 
     def resize(self) -> None:
         self.initial_capacity *= 2
-        new_table = [None] * self.initial_capacity
-        for item in self.hash_table:
-            if item is not None:
-                for key, value in item:
-                    index = hash(key) % self.initial_capacity
-                    if new_table[index] is None:
-                        new_table[index] = []
-                    new_table[index].append([key, value])
-        self.hash_table = new_table
+        old_table = self.hash_table
+        self.hash_table = [None] * self.initial_capacity
+        self.size = 0
+        for node in old_table:
+            if node:
+                self.__setitem__(node[0], node[2])
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = self.hash(key)
-        if self.hash_table[index] is None:
-            self.hash_table[index] = []
-        for entry in self.hash_table[index]:
-            if entry[0] == key:
-                entry[1] = value
-                return
-        self.hash_table[index].append([key, value])
-        self.size += 1
         if self.size >= self.load_factor * self.initial_capacity:
             self.resize()
+        index = self.hash(key)
+        if not self.hash_table[index]:
+            self.size += 1
+            self.hash_table[index] = [key, hash(key), value]
+        if self.hash_table[index][0] == key:
+            self.hash_table[index][2] = value
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.hash(key)
-        if self.hash_table[index] is not None:
-            for entry in self.hash_table[index]:
-                if entry[0] == key:
-                    return entry[1]
-        raise KeyError(key)
+        if not self.hash_table[index]:
+            raise KeyError(key)
+        return self.hash_table[index][2]
+
+    def __delitem__(self, key: Hashable) -> None:
+        index = self.hash(key)
+        if self.hash_table[index] and self.hash_table[index][0] == key:
+            self.hash_table[index] = None
+            self.size -= 1
+        else:
+            raise KeyError(key)
+
+    def __iter__(self):
+        for entry in self.hash_table:
+            if entry:
+                yield entry[0]
 
     def __len__(self) -> int:
         return self.size
