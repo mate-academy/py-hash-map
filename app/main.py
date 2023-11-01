@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -10,7 +10,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self._length
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._length == int((2 / 3) * self._capacity) + 1:
             self.resize()
 
@@ -36,7 +36,7 @@ class Dictionary:
                     break
                 index += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         index = hash_key % self._capacity
 
@@ -61,6 +61,7 @@ class Dictionary:
         self._hashtable = [None] * (self._capacity * 2)
         self._capacity *= 2
         self._length = 0
+        
         for row in range(self._capacity // 2):
             if table[row]:
-                self.__setitem__(table[row][0], table[row][1])
+                self.__setitem__(*table[row])
