@@ -61,7 +61,5 @@ class Dictionary:
         self._hashtable = [None] * (self._capacity * 2)
         self._capacity *= 2
         self._length = 0
-
-        for row in range(self._capacity // 2):
-            if table[row]:
-                self.__setitem__(*table[row])
+        [self.__setitem__(table[row][0], table[row][1])
+         for row in range(self._capacity // 2) if table[row]]
