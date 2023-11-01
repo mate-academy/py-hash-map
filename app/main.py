@@ -38,10 +38,7 @@ class Dictionary:
         old_hash_table = self.hash_table
 
         self.__init__(self.capacity * 2)
-        for item in old_hash_table:
-            if item is not None:
-                key, value = item
-                self.__setitem__(key, value)
+        [self.__setitem__(item[0], item[1]) for item in old_hash_table if item]
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._calculate_index(key)
