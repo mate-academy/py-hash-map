@@ -5,7 +5,7 @@ class Dictionary:
     def __init__(
             self,
             capacity: int = 8,
-            load_factor: float = 0.75,
+            load_factor: float = 2 / 3,
             size: int = 0
     ) -> None:
 
