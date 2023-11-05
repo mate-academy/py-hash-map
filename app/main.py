@@ -56,4 +56,4 @@ class Dictionary:
 
     def count_index(self, new_key: Hashable) -> tuple:
         new_key_hash = hash(new_key)
-        return  new_key_hash, new_key_hash % self.capacity
+        return new_key_hash, new_key_hash % self.capacity
