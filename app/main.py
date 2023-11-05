@@ -11,12 +11,12 @@ class Dictionary:
         self.capacity = len(self.hash_table)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = self.count_index(key)
+        new_key_hash, index = self.count_index(key)
 
         while self.hash_table[index]:
             table_key, _, _ = self.hash_table[index]
             if table_key == key:
-                self.hash_table[index] = (key, hash(key), value)
+                self.hash_table[index] = (key, new_key_hash, value)
                 return
             index = (index + 1) % self.capacity
 
@@ -25,7 +25,7 @@ class Dictionary:
         self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self.count_index(key)
+        _, index = self.count_index(key)
 
         while self.hash_table[index]:
             table_key, _, value = self.hash_table[index]
@@ -54,5 +54,6 @@ class Dictionary:
          for element in old_dictionary
          if element]
 
-    def count_index(self, new_key: Hashable) -> int:
-        return hash(new_key) % self.capacity
+    def count_index(self, new_key: Hashable) -> tuple:
+        new_key_hash = hash(new_key)
+        return  new_key_hash, new_key_hash % self.capacity
