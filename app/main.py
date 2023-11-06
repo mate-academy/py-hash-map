@@ -44,10 +44,3 @@ class Dictionary:
     def __len__(self) -> int:
         return self.count_value_in_dict
 
-
-ne_dict = Dictionary()
-
-for i in range(50):
-    ne_dict[str(i)] = str(i) + "!"
-
-print(ne_dict["49"])
