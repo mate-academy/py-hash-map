@@ -35,7 +35,7 @@ class Dictionary:
             index %= self._capacity
         return index
 
-    def __getitem__(self, key: Hashable) -> Any | KeyError:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._find_index(key)
         if not self._hash_table[index]:
             raise KeyError(f"Key {key} is not in dictionary")
@@ -61,7 +61,7 @@ class Dictionary:
             self,
             key: Hashable,
             default_value: Optional[Any]
-    ) -> Any | KeyError:
+    ) -> Any:
 
         index = self._find_index(key)
         if self._hash_table[index][0] != key and not default_value:
