@@ -43,4 +43,3 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.count_value_in_dict
-
