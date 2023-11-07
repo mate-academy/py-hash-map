@@ -20,9 +20,9 @@ class Dictionary:
             self.dict[hash_key].append([key, value])
             self.count_value_in_dict += 1
             if self.count_value_in_dict >= round(self.capacity * 2 / 3):
-                self.overwrite()
+                self.resize()
 
-    def overwrite(self) -> None:
+    def resize(self) -> None:
         self.capacity *= 2
         new_dict = [[] for _ in range(self.capacity)]
         for value in self.dict:
