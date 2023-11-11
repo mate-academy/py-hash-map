@@ -47,7 +47,7 @@ class Dictionary:
         self.size = 0
         for element in temp_table:
             if element:
-                self.__setitem__(element[1], element[2])
+                self[element[1]] = element[2]
 
     def clear_(self) -> None:
         self.load_factor = 2 / 3
