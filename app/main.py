@@ -1,8 +1,13 @@
-from typing import Optional, Any
+from typing import Optional, Any, Hashable
 
 
 class Node:
-    def __init__(self, key: Any, hash_value: int, value: Any) -> None:
+    def __init__(
+            self,
+            key: Any,
+            hash_value: int,
+            value: Any
+    ) -> None:
         self.key = key
         self.hash_value = hash_value
         self.value = value
@@ -22,7 +27,7 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: Any,
+            key: Hashable,
             value: Any
     ) -> None:
         hash_value: int = hash(key)
