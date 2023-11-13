@@ -12,8 +12,8 @@ class Dictionary:
         self.data.append([key, value])
         self.create_hash_table(key, value)
         self.capacity += 1
-        LOAD_FACTOR = 2 / 3
-        if self.capacity >= math.floor(len(self.hash_table) * LOAD_FACTOR):
+        load_factor = 2 / 3
+        if self.capacity >= math.floor(len(self.hash_table) * load_factor):
             self._resize()
 
     def __getitem__(self, item: Hashable) -> Any:
