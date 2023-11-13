@@ -1,5 +1,5 @@
 import math
-from typing import Any, Hashable, Final
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -12,8 +12,8 @@ class Dictionary:
         self.data.append([key, value])
         self.create_hash_table(key, value)
         self.capacity += 1
-        const: Final[float] = 2 / 3
-        if self.capacity >= math.floor(len(self.hash_table) * const):
+        LOAD_FACTOR = 2 / 3
+        if self.capacity >= math.floor(len(self.hash_table) * LOAD_FACTOR):
             self._resize()
 
     def __getitem__(self, item: Hashable) -> Any:
@@ -47,20 +47,10 @@ class Dictionary:
 
     def _resize(self) -> None:
         copy_hash_table = self.hash_table.copy()
-        two_times_len = len(self.hash_table) * 2
-        self._initialize_hash_table(two_times_len)
+        size_table = len(self.hash_table) * 2
+        self._initialize_hash_table(size_table)
         for stored_node in copy_hash_table:
             if stored_node[1] is not None:
                 key = stored_node[1][0]
                 value = stored_node[1][2]
                 self.create_hash_table(key, value)
-
-
-my_dict = Dictionary()
-
-my_dict[30] = 100
-my_dict[50] = 200
-my_dict[60] = 300
-my_dict[25] = 400
-my_dict[40] = 500
-my_dict[30] = 900
