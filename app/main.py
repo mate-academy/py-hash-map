@@ -10,7 +10,7 @@ class Dictionary:
             load_factor: float = 0.7
     ) -> None:
         self._initial_size = initial_size
-        self.expansion_factor = expansion_factor
+        self._expansion_factor = expansion_factor
         self._load_factor = load_factor
         self._array_buckets = [[] for _ in range(initial_size)]
 
@@ -19,7 +19,7 @@ class Dictionary:
 
     def _resize_array(self) -> None:
         old_array = self._array_buckets
-        new_size_array = len(old_array) * self.expansion_factor
+        new_size_array = len(old_array) * self._expansion_factor
         self._array_buckets = [
             [] for _ in range(new_size_array)
         ]
