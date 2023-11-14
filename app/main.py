@@ -1,12 +1,12 @@
-from typing import Optional, Any, Hashable
+from typing import Optional, Hashable
 
 
 class Node:
     def __init__(
             self,
-            key: Any,
+            key: Hashable,
             hash_value: int,
-            value: Any
+            value: Hashable
     ) -> None:
         self.key = key
         self.hash_value = hash_value
@@ -28,7 +28,7 @@ class Dictionary:
     def __setitem__(
             self,
             key: Hashable,
-            value: Any
+            value: Hashable
     ) -> None:
         hash_value: int = hash(key)
         index: int = hash_value % self.capacity
@@ -52,7 +52,7 @@ class Dictionary:
         if self.size > self.capacity * self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Hashable:
         index: int = hash(key) % self.capacity
         current: Optional[Node] = self.table[index]
 
