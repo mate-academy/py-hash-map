@@ -1,8 +1,11 @@
 import math
 from typing import Any, Hashable
 
+LOAD_FACTOR = 2 / 3
+
 
 class Dictionary:
+
     def __init__(self) -> None:
         self._initialize_hash_table(8)
         self.data = []
@@ -12,15 +15,14 @@ class Dictionary:
         self.data.append([key, value])
         self.create_hash_table(key, value)
         self.capacity += 1
-        load_factor = 2 / 3
-        if self.capacity >= math.floor(len(self.hash_table) * load_factor):
+        if self.capacity >= math.floor(len(self.hash_table) * LOAD_FACTOR):
             self._resize()
 
-    def __getitem__(self, item: Hashable) -> Any:
+    def __getitem__(self, key_: Hashable) -> Any:
         for key, value in self.data:
-            if key == item:
+            if key == key_:
                 return value
-        raise KeyError(f"Key '{item}' not found in the dictionary")
+        raise KeyError(f"Key '{key_}' not found in the dictionary")
 
     def __len__(self) -> int:
         return len(self.data)
