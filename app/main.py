@@ -2,7 +2,6 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    # noinspection PyCompatibility
     def __init__(self) -> None:
         self.capacity = 8
         self.load_factor = 2 / 3
@@ -12,14 +11,18 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size >= self.capacity * self.load_factor:
             self.resize()
-        if self.hash_table[self.count_index(key)] is None:
+
+        index = self.count_index(key)
+        if not self.hash_table[index]:
             self.size += 1
+
         self.hash_table[self.count_index(key)] = [key, value, hash(key)]
 
     def __getitem__(self, key: Hashable) -> Any:
-        if self.hash_table[self.count_index(key)] is None:
+        index = self.count_index(key)
+        if not self.hash_table[index]:
             raise KeyError(key)
-        return self.hash_table[self.count_index(key)][1]
+        return self.hash_table[index][1]
 
     def __len__(self) -> int:
         return self.size
