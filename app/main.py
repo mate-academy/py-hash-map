@@ -4,7 +4,7 @@ from typing import Any, Hashable
 class Node:
     def __init__(
             self,
-            key: Any,
+            key: Hashable,
             value: Any,
             hash_value: int
     ) -> None:
@@ -50,7 +50,7 @@ class Dictionary:
 
         current = self.table[index]
         while current:
-            if current.key == key:
+            if current.hash == hash_value and current.key == key:
                 return current.value
             current = current.next
 
