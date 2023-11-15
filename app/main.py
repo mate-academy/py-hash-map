@@ -117,12 +117,12 @@ class Dictionary:
         except KeyError:
             return None
 
-    def pop(self, key: Hashable) -> None:
+    def pop(self, key: Hashable, default: Any = None) -> None:
         try:
             self.__delitem__(key)
             return self.__getitem__(key)
         except KeyError:
-            return None
+            return default
 
     def update(self, other_dict: dict) -> None:
         for key, value in other_dict.items():
