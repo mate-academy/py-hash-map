@@ -1,4 +1,4 @@
-from typing import Any, Hashable
+from typing import Any
 
 
 class Node:
