@@ -8,31 +8,27 @@ class Dictionary:
     def __setitem__(self, key: any, value: any) -> None:
         if self.length == round(self.capacity * self.load_factor):
             self.resize_table()
-        index = hash(key) % self.capacity
-        for i in range(self.capacity):
-            if index > self.capacity - 1:
-                index -= self.capacity
-            if self.hash_table[index] and self.hash_table[index][0] == key:
-                self.hash_table[index] = (key, value)
-                break
-            elif not self.hash_table[index]:
-                self.hash_table[index] = (key, value)
-                self.length += 1
-                break
-            else:
-                index += 1
+
+        index = self.get_index(key)
+
+        if self.hash_table[index] is None:
+            self.hash_table[index] = (key, value)
+            self.length += 1
+        elif self.hash_table[index] is not None:
+            self.hash_table[index] = (key, value)
 
     def __getitem__(self, key: any) -> None:
-        index = hash(key) % self.capacity
-        for i in range(self.capacity):
-            if index > self.capacity - 1:
-                index -= self.capacity
+        index = self.get_index(key)
+        if self.hash_table[index] is None:
+            raise KeyError
+        return self.hash_table[index][1]
 
-            if self.hash_table[index] and self.hash_table[index][0] == key:
-                return self.hash_table[index][1]
-            else:
-                index += 1
-        raise KeyError
+    def get_index(self, key: any) -> int:
+        index = hash(key) % self.capacity
+        while (self.hash_table[index] is not None
+               and self.hash_table[index][0] != key):
+            index = (index + 1) % self.capacity
+        return index
 
     def __len__(self) -> int:
         return self.length
