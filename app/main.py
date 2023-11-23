@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -7,7 +7,7 @@ class Dictionary:
         self.storage = [[] for _ in range(self.capacity)]
         self.size = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self.resize()
         hash_key = hash(key) % self.capacity
         while True:
@@ -30,7 +30,7 @@ class Dictionary:
                 if element != []:
                     self.__setitem__(element[2], element[1])
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key) % self.capacity
         if not self.storage[hash_key]:
             raise KeyError
