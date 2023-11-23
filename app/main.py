@@ -28,8 +28,7 @@ class Dictionary:
             self.size = 0
             for element in old_elements:
                 if element != []:
-                     self.__setitem__(element[2], element[1])
-
+                    self.__setitem__(element[2], element[1])
 
     def __getitem__(self, key: Any) -> Any:
         hash_key = hash(key) % self.capacity
