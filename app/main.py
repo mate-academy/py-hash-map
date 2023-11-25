@@ -7,13 +7,16 @@ class Node:
     key: Hashable
     value: Any
 
-    def __hash__(self) -> int:
-        return hash((hash(self.key) * 2) ** 0.5)
-
 
 class Dictionary:
+
+    """sets the initial size of the dictionary."""
     INITIAL_CAPACITY = 8
+
+    """value for increase size of dictionary."""
     RESIZE_THRESHOLD = 2 / 3
+
+    """the size by which the dictionary capacity grows"""
     CAPACITY_MULTIPLIER = 2
 
     def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
@@ -72,27 +75,34 @@ class Dictionary:
         self.hash_table[index] = None
         self.size -= 1
 
-    def get(self, key: Hashable, default: Optional[Any] = None) -> None:
+    def get(
+            self,
+            key: Hashable,
+            default: Optional[Any] = None
+    ) -> Optional[Any]:
         try:
-            return self[key]
+            return self.__getitem__(key)
         except KeyError:
             return default
 
     def pop(self, key: Hashable, default: Optional[Any] = None) -> Any:
         try:
-            value = self[key]
-            del self[key]
+            value = self.get(key)
+            self.__delitem__(key)
             return value
         except KeyError:
-            return default
+            if default:
+                return default
+            else:
+                raise
 
     def update(self, other_dict: dict) -> None:
         if isinstance(other_dict, dict):
             for key, value in other_dict.items():
-                self[key] = value
+                self.__setitem__(key, value)
         else:
             for key, value in other_dict:
-                self[key] = value
+                self.__setitem__(key, value)
 
     def __iter__(self) -> None:
         for node in self.hash_table:
