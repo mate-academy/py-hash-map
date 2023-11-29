@@ -1,4 +1,4 @@
-from typing import Hashable
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -20,7 +20,7 @@ class Dictionary:
             index = (index + 1) % self.capacity
         return index
 
-    def __setitem__(self, key: Hashable, value: Hashable) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.__get_index(key)
         if self.hash_table[index] is None:
             self.size += 1
@@ -30,7 +30,7 @@ class Dictionary:
         if self.size >= self.capacity * 2 / 3:
             self.__resize()
 
-    def __getitem__(self, key: Hashable) -> Hashable:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.__get_index(key)
         if self.hash_table[index] is None:
             raise KeyError
