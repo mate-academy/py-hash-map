@@ -2,9 +2,9 @@ from typing import Any, List
 
 
 class Node:
-    def __init__(self, key: Any, hash: int, value: Any) -> None:
+    def __init__(self, key: Any, hash_: int, value: Any) -> None:
         self.key = key
-        self.hash = hash
+        self.hash = hash_
         self.value = value
 
 
