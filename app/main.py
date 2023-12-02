@@ -61,9 +61,12 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = self._hash(key)
-        while self.hash_table[index].key != key:
-            if (self.hash_table[index].hash == hash(key)
-                    and self.hash_table[index].key == key):
+
+        while self.hash_table[index] is not None:
+            if (self.hash_table[index].key == key
+                    and self.hash_table[index].hash == hash(key)):
                 self.hash_table[index] = None
+                break
             index = (index + 1) % self.capacity
+
         self.size -= 1
