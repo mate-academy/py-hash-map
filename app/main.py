@@ -66,7 +66,6 @@ class Dictionary:
             if (self.hash_table[index].key == key
                     and self.hash_table[index].hash == hash(key)):
                 self.hash_table[index] = None
-                break
+                self.size -= 1
+                return
             index = (index + 1) % self.capacity
-
-        self.size -= 1
