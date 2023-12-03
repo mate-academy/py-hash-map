@@ -19,16 +19,13 @@ class Dictionary:
             self._resize()
 
     def _resize(self) -> None:
+        old_table = self.table
         self.capacity *= 2
-        new_table = [None] * self.capacity
-        for item in self.table:
-            if item is not None:
-                key, value = item
-                index = hash(key) % self.capacity
-                while new_table[index] is not None:
-                    index = (index + 1) % self.capacity
-                new_table[index] = (key, value)
-        self.table = new_table
+        self.size = 0
+        self.table = [None] * self.capacity
+        for items in old_table:
+            if items is not None:
+                self[items[0]] = items[1]
 
     def __getitem__(self, key: Hashable) -> None:
         index = hash(key) % self.capacity
