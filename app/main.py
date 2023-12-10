@@ -5,7 +5,6 @@ from typing import Any
 class Dictionary:
     def __init__(self) -> None:
         self.pairs = [[] for i in range(8)]
-        self.next_index = 0
 
     def __setitem__(
             self,
@@ -13,17 +12,16 @@ class Dictionary:
             value: Any
     ) -> None:
         cell_index = hash(key) % len(self.pairs)
-        if not self.pairs[cell_index] or self.pairs[cell_index][0] == key:
-            self.pairs[cell_index] = [key, value]
-        else:
-            step = 0
-            for pair in self.pairs[cell_index + 1:] + self.pairs[:cell_index]:
-                step += 1
-                if len(pair) == 0 or pair[0] == key:
-                    break
-            self.pairs[(cell_index + step) % len(self.pairs)] = [key, value]
+        step = 0
+        for pair in self.pairs[cell_index:] + self.pairs[:cell_index]:
+            if len(pair) == 0 or pair[0] == key:
+                break
+            step += 1
+        self.pairs[(cell_index + step) % len(self.pairs)] = [key, value]
+        self.resize()
 
-        if self.__len__() > len(self.pairs) / 3 * 2:
+    def resize(self) -> None:
+        if len(self) > len(self.pairs) / 3 * 2:
             _items_present = {
                 pair[0] : pair[1] for pair in self.pairs if len(pair) == 2
             }
@@ -36,21 +34,13 @@ class Dictionary:
             key: int | float | str | type | bool | tuple | frozenset
     ) -> Any:
         cell_index = hash(key) % len(self.pairs)
-        if (len(self.pairs[cell_index]) == 2
-                and self.pairs[cell_index][0] == key):
-            return self.pairs[cell_index][1]
-        else:
-            for pair in self.pairs[cell_index + 1:] + self.pairs[:cell_index]:
-                if len(pair) == 2 and pair[0] == key:
-                    return pair[1]
+        for pair in self.pairs[cell_index:] + self.pairs[:cell_index]:
+            if len(pair) == 2 and pair[0] == key:
+                return pair[1]
         raise KeyError
 
     def __len__(self) -> int:
-        _len = 0
-        for pair in self.pairs:
-            if len(pair) == 2:
-                _len += 1
-        return _len
+        return sum(len(pair) == 2 for pair in self.pairs)
 
     def clear(self) -> None:
         self.pairs = [[] for i in range(8)]
@@ -96,9 +86,12 @@ class Dictionary:
                 self.__setitem__(pair[0], pair[1])
 
     def __iter__(self) -> Dictionary:
+        self.next_index = 0
         return self
 
     def __next__(self) -> list:
+        if self.next_index == len(self.pairs):
+            raise StopIteration
         pair = self.pairs[self.next_index]
-        self.next_index = (self.next_index + 1) % len(self.pairs)
+        self.next_index = (self.next_index + 1)
         return pair
