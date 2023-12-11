@@ -5,6 +5,7 @@ from typing import Any
 class Dictionary:
     def __init__(self) -> None:
         self.pairs = [[] for i in range(8)]
+        self.next_index = 0
 
     def __setitem__(
             self,
