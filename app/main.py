@@ -9,10 +9,13 @@ class Node:
 
 
 class Dictionary:
+    DeletedMarker = None
+
     def __init__(self) -> None:
         self._capacity = 8
         self._size_dict = 0
         self.hash_cell = [None] * self._capacity
+        self.load_memory = 0.667
 
     def clear(self) -> None:
         self.hash_cell = [None] * self._capacity
@@ -34,17 +37,18 @@ class Dictionary:
             self.hash_cell[hash_key] = Node(hash_key, key, value)
         else:
             self.hash_cell[hash_key].value = value
-        if self._size_dict > self._capacity * (2 / 3):
-            self.management_hash_cell()
+        if self._size_dict > self._capacity * self.load_memory:
+            self._resize()
 
     def update(self, new_dict: dict) -> None:
         for key, value in new_dict.items():
             self.__setitem__(key, value)
 
     def __delitem__(self, key: Any) -> None:
-        hash_key = self.get_hash(key)
-        self.hash_cell[hash_key] = None
-        self._size_dict -= 1
+        key_hash = self.get_hash(key)
+        if (self.hash_cell[key_hash] and self.hash_cell[key_hash].key == key):
+            self.hash_cell[key_hash].key = self.DeletedMarker
+            self._size_dict -= 1
 
     def __getitem__(self, key: Any) -> Any:
         hash_key = self.get_hash(key)
@@ -53,12 +57,15 @@ class Dictionary:
         else:
             return self.hash_cell[hash_key].value
 
-    def pop(self, key: Any) -> Any:
-        value = self.__getitem__(key)
-        self.__delitem__(key)
-        return value
+    def pop(self, key: Any, default: Any = None) -> Any:
+        try:
+            value = self.__getitem__(key)
+            self.__delitem__(key)
+            return value
+        except KeyError:
+            return default
 
-    def management_hash_cell(self) -> None:
+    def _resize(self) -> None:
         temporaries = self.hash_cell
         self._capacity *= 2
         self.clear()
@@ -68,3 +75,8 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self._size_dict
+
+    def __repr__(self) -> str:
+        all_dict = ", ".join(f"{node.key}: {node.value}"
+                             for node in self.hash_cell if node)
+        return f"{{{all_dict}}}"
