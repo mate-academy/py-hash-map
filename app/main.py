@@ -3,22 +3,78 @@ from abc import ABC
 from app.point import Point
 
 
+class DictionaryMember:
+    def __init__(
+            self,
+            key: int | str | tuple | float,
+            value: any
+    ) -> None:
+        self.key = key
+        self.value = value
+        # self.next = None
+
+
 class Dictionary:
 
-    def __init__(self) -> None:
-        self.data = {}
+    def __init__(
+            self,
+            capacity: int = 10,
+            load_factor: float = 0.75
+    ) -> None:
 
-    def __setitem__(self, key, value) -> None:
+        self.size = 0
+        self.capacity = capacity
+        self.load_factor = load_factor
+        self.table = [None] * self.capacity
 
-        if key not in self.data:
-            self.data.__setitem__(key, value)
-            print(f"Set ({key}) as a key with value ({value}) to dictionary")
+    def _index(
+            self,
+            key: int | str | tuple | float
+    ) -> int:
+        return hash(key) % self.capacity
 
-        if key in self.data:
-            self.data.__setitem__(key, value)
-            print(f"Value of key ({key}) was rewritten to ({value})")
+    def __len__(self):
+        return self.size
 
-    def __getitem__(self, item) -> any:
+    def _resize(self):
+        pass
+
+    def __setitem__(
+            self,
+            key: int | str | tuple | float,
+            value: any
+    ) -> None:
+
+        key_index = self._index(key)
+
+        if self.table[key_index] is None:
+            self.table[key_index] = DictionaryMember(key=key, value=value)
+            self.size += 1
+
+        else:
+            current = self.table[key_index]
+
+            if current.key == key:
+                current.value = value
+
+            if current.key != key:
+
+                while (
+                        self.table[key_index] is not None
+                        and self.table[key_index].key != key
+                ):
+                    key_index += 1
+
+                self.table[key_index] = DictionaryMember(key=key, value=value)
+                self.size += 1
+
+        if self.size / self.capacity > self.load_factor:
+            self._resize()
+
+    def __getitem__(
+            self,
+            key: int | str | tuple | float
+    ) -> any:
 
         try:
             self.data.__getitem__(item)
@@ -27,19 +83,14 @@ class Dictionary:
             print("There is no such key in this dictionary")
             raise KeyError(f"Key ({item}) not found in the dictionary")
 
-    def __len__(self) -> int:
-        print("Len of this dict:")
-        return len(self.data)
-
-    def clear(self) -> None:
-        self.data.clear()
+    def _clear(self) -> None:
+        self.table = [None] * self.capacity
         print("All data in this dict was deleted")
 
-    def __delitem__(self, key: any) -> None:
-        self.data.__delitem__(key)
-        print(f"Item with key {key} was destroyed")
+    # def __delitem__(self, key: any) -> None:
+    #     self.data.__delitem__(key)
+    #     print(f"Item with key {key} was destroyed")
 
-    def pop(self, key: any) -> any:
-        poped = self.data.pop(key)
-        return poped
-
+    # def pop(self, key: any) -> any:
+    #     poped = self.data.pop(key)
+    #     return poped
