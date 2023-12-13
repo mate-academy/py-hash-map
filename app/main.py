@@ -31,7 +31,7 @@ class Dictionary:
             hash_key = (hash_key + 1) % self._capacity
         return hash_key
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_key = self.get_hash(key)
         if self.hash_cell[hash_key] is None:
             self._size_dict += 1
@@ -43,7 +43,7 @@ class Dictionary:
 
     def update(self, new_dict: dict) -> None:
         for key, value in new_dict.items():
-            self.__setitem__(key, value)
+            self[key] = value
 
     def __delitem__(self, key: Any) -> None:
         key_hash = self.get_hash(key)
@@ -55,8 +55,7 @@ class Dictionary:
         hash_key = self.get_hash(key)
         if self.hash_cell[hash_key] is None:
             raise KeyError("key does not exist")
-        else:
-            return self.hash_cell[hash_key].value
+        return self.hash_cell[hash_key].value
 
     def pop(self, key: Any, default: Any = None) -> Any:
         try:
@@ -72,7 +71,7 @@ class Dictionary:
         self.clear()
         for node in temporaries:
             if node and node.key not in [None, DeletedMarker]:
-                self.__setitem__(node.key, node.value)
+                self[node.key] = node.value
 
     def __len__(self) -> int:
         return self._size_dict
