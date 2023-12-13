@@ -1,3 +1,4 @@
+import copy
 from abc import ABC
 
 from app.point import Point
@@ -38,7 +39,14 @@ class Dictionary:
         return self.size
 
     def _resize(self):
-        pass
+        old_table = copy.deepcopy(self.table)
+        self.capacity *= 2
+        self.table = [None] * self.capacity
+
+        for member in old_table:
+            self.__setitem__(
+                            key=member.key,
+                            value=member.value)
 
     def __setitem__(
             self,
@@ -126,7 +134,6 @@ class Dictionary:
             element = self.__getitem__(key)
         except AttributeError:
             print("This key not exist in this dictionary")
-            raise
         else:
             element_index = self.table.index(element)
             self.table[element_index] = None
