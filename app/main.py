@@ -44,6 +44,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.pairs = [[] for i in range(8)]
+        self.length = 0
 
     def __delitem__(self, key: Hashable,) -> None:
         is_key_exist = False
