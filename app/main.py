@@ -70,13 +70,19 @@ class Dictionary:
         self._hash_table = [None] * self._current_capacity
         self._length = 0
 
-    def get(self, key: Hashable) -> Any:
-        return self.__getitem__(key)
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
-    def pop(self, key: Hashable) -> Any:
-        return_value = self[key]
-        self.__delitem__(key)
-        return return_value
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            return_value = self[key]
+            self.__delitem__(key)
+            return return_value
+        except KeyError:
+            return default
 
     def __repr__(self) -> str:
         temporary_list = []
