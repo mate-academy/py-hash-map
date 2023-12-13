@@ -7,11 +7,12 @@ class DictionaryMember:
     def __init__(
             self,
             key: int | str | tuple | float,
-            value: any
+            value: any,
+            index: int = None
     ) -> None:
         self.key = key
         self.value = value
-        # self.next = None
+        self.index = index
 
 
 class Dictionary:
@@ -48,7 +49,11 @@ class Dictionary:
         key_index = self._index(key)
 
         if self.table[key_index] is None:
-            self.table[key_index] = DictionaryMember(key=key, value=value)
+            self.table[key_index] = DictionaryMember(
+                                                    key=key,
+                                                    value=value,
+                                                    index=key_index)
+
             self.size += 1
             print("Data wrote")
 
@@ -68,7 +73,11 @@ class Dictionary:
                     key_index += 1
 
                 if current is None:
-                    self.table[key_index] = DictionaryMember(key=key, value=value)
+                    self.table[key_index] = DictionaryMember(
+                                                            key=key,
+                                                            value=value,
+                                                            index=key_index)
+
                     self.size += 1
                     print("Data wrote")
 
@@ -102,15 +111,23 @@ class Dictionary:
 
         except AttributeError:
             print("There no such element")
+            raise
 
     def _clear(self) -> None:
         self.table = [None] * self.capacity
         print("All data in this dict was deleted")
 
-    # def __delitem__(self, key: any) -> None:
-    #     self.data.__delitem__(key)
-    #     print(f"Item with key {key} was destroyed")
+    def __delitem__(
+            self,
+            key: int | str | tuple | float
+    ) -> None:
 
-    # def pop(self, key: any) -> any:
-    #     poped = self.data.pop(key)
-    #     return poped
+        try:
+            element = self.__getitem__(key)
+        except AttributeError:
+            print("This key not exist in this dictionary")
+            raise
+        else:
+            element_index = self.table.index(element)
+            self.table[element_index] = None
+            print(f"Item with key {key} was destroyed")
