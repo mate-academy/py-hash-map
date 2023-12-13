@@ -8,8 +8,11 @@ class Node:
         self.value = value
 
 
+class DeletedMarker:
+    pass
+
+
 class Dictionary:
-    DeletedMarker = None
 
     def __init__(self) -> None:
         self._capacity = 8
@@ -23,18 +26,16 @@ class Dictionary:
 
     def get_hash(self, key: Hashable) -> int:
         hash_key = hash(key) % self._capacity
-        i = 1
-        while (self.hash_cell[hash_key] is not None
+        while (self.hash_cell[hash_key] not in [None, DeletedMarker]
                and self.hash_cell[hash_key].key != key):
-            hash_key = (hash_key + i) % self._capacity
-            i += 1
+            hash_key = (hash_key + 1) % self._capacity
         return hash_key
 
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_key = self.get_hash(key)
         if self.hash_cell[hash_key] is None:
             self._size_dict += 1
-            self.hash_cell[hash_key] = Node(hash_key, key, value)
+            self.hash_cell[hash_key] = Node(hash(key), key, value)
         else:
             self.hash_cell[hash_key].value = value
         if self._size_dict > self._capacity * self.load_memory:
@@ -47,7 +48,7 @@ class Dictionary:
     def __delitem__(self, key: Any) -> None:
         key_hash = self.get_hash(key)
         if (self.hash_cell[key_hash] and self.hash_cell[key_hash].key == key):
-            self.hash_cell[key_hash].key = self.DeletedMarker
+            self.hash_cell[key_hash] = Node(None, DeletedMarker, None)
             self._size_dict -= 1
 
     def __getitem__(self, key: Any) -> Any:
@@ -70,7 +71,7 @@ class Dictionary:
         self._capacity *= 2
         self.clear()
         for node in temporaries:
-            if node:
+            if node and node.key not in [None, DeletedMarker]:
                 self.__setitem__(node.key, node.value)
 
     def __len__(self) -> int:
