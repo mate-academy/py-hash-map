@@ -50,12 +50,14 @@ class Dictionary:
         if self.table[key_index] is None:
             self.table[key_index] = DictionaryMember(key=key, value=value)
             self.size += 1
+            print("Data wrote")
 
         else:
             current = self.table[key_index]
 
             if current.key == key:
                 current.value = value
+                print("Data rewrote")
 
             if current.key != key:
 
@@ -65,8 +67,14 @@ class Dictionary:
                 ):
                     key_index += 1
 
-                self.table[key_index] = DictionaryMember(key=key, value=value)
-                self.size += 1
+                if current is None:
+                    self.table[key_index] = DictionaryMember(key=key, value=value)
+                    self.size += 1
+                    print("Data wrote")
+
+                if self.table[key_index].key == key:
+                    self.table[key_index].value = value
+                    print("Data rewrote")
 
         if self.size / self.capacity > self.load_factor:
             self._resize()
