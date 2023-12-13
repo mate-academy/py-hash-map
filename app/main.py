@@ -16,22 +16,21 @@ class Dictionary:
         self._load_factor = 2 / 3
         self._current_capacity = 8
 
+    def get_index(self, key: Hashable) -> int:
+        return hash(key) % self._current_capacity
+
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if not hasattr(key, "__hash__") and hasattr(key, "__eq__"):
-            raise TypeError(f"Object {key} cannot be a key")
-        key_hash = hash(key)
-        position = key_hash % self._current_capacity
+        index = self.get_index(key)
         while True:
-            cell = self._hash_table[position]
-            if (
-                    self._hash_table[position] is None
-                    or cell.key_hash == key_hash
-                    and cell.key == key
-            ):
-                self._hash_table[position] = Cell(key, value)
+            cell = self._hash_table[index]
+            if self._hash_table[index] is None:
+                self._hash_table[index] = Cell(key, value)
+                self._length += 1
                 break
-            position = (position + 1) % self._current_capacity
-        self._length = sum(1 for cell in self._hash_table if cell)
+            if cell.key_hash == hash(key) and cell.key == key:
+                self._hash_table[index] = Cell(key, value)
+                break
+            index = (index + 1) % self._current_capacity
         if self._length > self._current_capacity * self._load_factor:
             self._resize()
 
@@ -63,6 +62,7 @@ class Dictionary:
         for index, cell in enumerate(self._hash_table):
             if cell and cell.key == key:
                 self._hash_table[index] = None
+                self._length -= 1
                 return
         raise KeyError(f"No such key {key} was found in the dictionary")
 
@@ -71,11 +71,11 @@ class Dictionary:
         self._length = 0
 
     def get(self, key: Hashable) -> Any:
-        return self[key]
+        return self.__getitem__(key)
 
     def pop(self, key: Hashable) -> Any:
         return_value = self[key]
-        del self[key]
+        self.__delitem__(key)
         return return_value
 
     def __repr__(self) -> str:
@@ -95,5 +95,6 @@ class Dictionary:
 
     def update(self, other_custom_dict: Dictionary) -> None:
         new_list = [cell for cell in other_custom_dict._hash_table if cell]
+        self._length += len(new_list)
         for cell in new_list:
-            self._hash_table[cell.key] = cell.value
+            self.__setitem__(key=cell.key, value=cell.value)
