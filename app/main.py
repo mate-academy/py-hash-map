@@ -45,13 +45,13 @@ class Dictionary:
         for key, value in new_dict.items():
             self[key] = value
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         key_hash = self.get_hash(key)
         if (self.hash_cell[key_hash] and self.hash_cell[key_hash].key == key):
             self.hash_cell[key_hash] = Node(None, DeletedMarker, None)
             self._size_dict -= 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = self.get_hash(key)
         if self.hash_cell[hash_key] is None:
             raise KeyError("key does not exist")
