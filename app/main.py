@@ -84,12 +84,24 @@ class Dictionary:
             key: int | str | tuple | float
     ) -> any:
 
-        try:
-            self.data.__getitem__(item)
+        index = self._index(key)
+        current = self.table[index]
 
-        except KeyError:
-            print("There is no such key in this dictionary")
-            raise KeyError(f"Key ({item}) not found in the dictionary")
+        try:
+            if current.key == key:
+                return current
+
+            else:
+                try:
+                    while self.table[index].key != key:
+                        index += 1
+                    return self.table[index]
+
+                except AttributeError:
+                    raise
+
+        except AttributeError:
+            print("There no such element")
 
     def _clear(self) -> None:
         self.table = [None] * self.capacity
