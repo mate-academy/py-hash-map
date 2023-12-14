@@ -21,7 +21,7 @@ class Dictionary:
     def __init__(
             self,
             capacity: int = 10,
-            load_factor: float = 0.65
+            load_factor: float = 0.7
     ) -> None:
 
         self.size = 0
@@ -43,26 +43,41 @@ class Dictionary:
             return index
 
         else:
-            while (
+            try:
+                while (
                     self.table[index] is not None
                     and self.table[index].key != key
             ):
-                index += 1
-
+                    index += 1
+                    if index > len(self.table):
+                        index = 0
+                return index
+            except IndexError:
+                index = 0
+                while (
+                        self.table[index] is not None
+                        and self.table[index].key != key
+                ):
+                    index += 1
+                    if index > len(self.table):
+                        index = 0
             return index
 
     def __len__(self):
         return self.size
 
     def _resize(self):
-        old_table = copy.deepcopy(self.table)  # list comprehention
+        old_table = copy.deepcopy(self.table)
         self.capacity *= 2
         self.table = [None] * self.capacity
 
         for member in old_table:
-            self.__setitem__(
-                key=member.key,
-                value=member.value)
+            try:
+                self.__setitem__(
+                    key=member.key,
+                    value=member.value)
+            except AttributeError:
+                pass
 
     def __setitem__(
             self,
@@ -73,13 +88,13 @@ class Dictionary:
         key_index = self._index(key)
 
         if self.table[key_index] is None:
+            self.table[key_index] = DictionaryMember(key=key,
+                                                     value=value)
+            self.size += 1
             print("Data wrote")
         else:
+            self.table[key_index].value = value
             print("Data rewrote")
-
-        self.table[key_index] = DictionaryMember(key=key,
-                                                 value=value)
-        self.size += 1
 
         if self.size / self.capacity > self.load_factor:
             self._resize()
@@ -92,24 +107,11 @@ class Dictionary:
         index = self._index(key)
         current = self.table[index]
 
-        try:
-            if current.key == key:
-                return current.value
+        if current is None:
+            raise KeyError
 
-            else:
-                try:
-                    while self.table[index].key != key:
-                        index += 1
-                    return self.table[index].value
-
-                except AttributeError:
-                    raise
-                except IndexError:
-                    print("There is no such element")
-
-        except AttributeError:
-            print("There no such element")
-            # raise
+        else:
+            return current.value
 
     def _clear(self) -> None:
         self.table = [None] * self.capacity
