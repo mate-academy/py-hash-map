@@ -21,7 +21,7 @@ class Dictionary:
     def __init__(
             self,
             capacity: int = 10,
-            load_factor: float = 0.75
+            load_factor: float = 0.65
     ) -> None:
 
         self.size = 0
@@ -33,20 +33,36 @@ class Dictionary:
             self,
             key: int | str | tuple | float
     ) -> int:
-        return hash(key) % self.capacity
+
+        index = hash(key) % self.capacity
+
+        if (
+                self.table[index] is None
+                or self.table[index].key == key
+        ):
+            return index
+
+        else:
+            while (
+                    self.table[index] is not None
+                    and self.table[index].key != key
+            ):
+                index += 1
+
+            return index
 
     def __len__(self):
         return self.size
 
     def _resize(self):
-        old_table = copy.deepcopy(self.table)
+        old_table = copy.deepcopy(self.table)  # list comprehention
         self.capacity *= 2
         self.table = [None] * self.capacity
 
         for member in old_table:
             self.__setitem__(
-                            key=member.key,
-                            value=member.value)
+                key=member.key,
+                value=member.value)
 
     def __setitem__(
             self,
@@ -57,41 +73,13 @@ class Dictionary:
         key_index = self._index(key)
 
         if self.table[key_index] is None:
-            self.table[key_index] = DictionaryMember(
-                                                    key=key,
-                                                    value=value,
-                                                    index=key_index)
-
-            self.size += 1
             print("Data wrote")
-
         else:
-            current = self.table[key_index]
+            print("Data rewrote")
 
-            if current.key == key:
-                current.value = value
-                print("Data rewrote")
-
-            if current.key != key:
-
-                while (
-                        self.table[key_index] is not None
-                        and self.table[key_index].key != key
-                ):
-                    key_index += 1
-
-                if current is None:
-                    self.table[key_index] = DictionaryMember(
-                                                            key=key,
-                                                            value=value,
-                                                            index=key_index)
-
-                    self.size += 1
-                    print("Data wrote")
-
-                if self.table[key_index].key == key:
-                    self.table[key_index].value = value
-                    print("Data rewrote")
+        self.table[key_index] = DictionaryMember(key=key,
+                                                 value=value)
+        self.size += 1
 
         if self.size / self.capacity > self.load_factor:
             self._resize()
@@ -106,20 +94,22 @@ class Dictionary:
 
         try:
             if current.key == key:
-                return current
+                return current.value
 
             else:
                 try:
                     while self.table[index].key != key:
                         index += 1
-                    return self.table[index]
+                    return self.table[index].value
 
                 except AttributeError:
                     raise
+                except IndexError:
+                    print("There is no such element")
 
         except AttributeError:
             print("There no such element")
-            raise
+            # raise
 
     def _clear(self) -> None:
         self.table = [None] * self.capacity
