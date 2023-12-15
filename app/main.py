@@ -42,12 +42,10 @@ class Dictionary:
             self.resize()
 
     def resize(self) -> None:
-        items_present = {
-            items[0] : items[1] for items in self.cells if items
-        }
+        items_present = (items for items in self.cells if items)
         self.cells = [[] for i in range(len(self.cells) * 2)]
         self.length = 0
-        for key, value in items_present.items():
+        for key, value in items_present:
             self.__setitem__(key, value)
 
     def __getitem__(self, key: Hashable) -> Any:
