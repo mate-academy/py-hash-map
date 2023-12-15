@@ -37,7 +37,8 @@ class Dictionary:
 
         if (
                 self.table[index] is None
-                or self.table[index].key == key
+                or (self.table[index].key == key and 
+                    hash(self.table[index].key) == hash(key))
         ):
             return index
 
