@@ -7,14 +7,11 @@ class Node:
         self.value = value
         self.hash = _hash
 
-    def __repr__(self):
-        return f"{self.key}: {self.value}"
-
 
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.capacity = 8
-        self.load_factor = 2/3
+        self.load_factor = 2 / 3
         self.node_qty = 0
         self.hash_cell = [None] * self.capacity
 
@@ -22,7 +19,10 @@ class Dictionary:
         if self.node_qty > self.capacity * self.load_factor:
             self._resize()
         hash_index = self._get_index(key)
-        while self.hash_cell[hash_index] and self.hash_cell[hash_index].key != key:
+        while (
+                self.hash_cell[hash_index]
+                and self.hash_cell[hash_index].key != key
+        ):
             hash_index += 1
             hash_index %= self.capacity
 
@@ -35,7 +35,10 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         hash_index = self._get_index(key)
-        while self.hash_cell[hash_index] and self.hash_cell[hash_index].key != key:
+        while (
+                self.hash_cell[hash_index]
+                and self.hash_cell[hash_index].key != key
+        ):
             hash_index += 1
             hash_index %= self.capacity
 
@@ -62,7 +65,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.capacity = 8
-        self.load_factor = 2/3
+        self.load_factor = 2 / 3
         self.node_qty = 0
         self.hash_cell = [None] * self.capacity
 
