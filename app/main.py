@@ -1,2 +1,81 @@
+from typing import Any, Hashable
+
+
+class Node:
+    def __init__(self, key: Hashable, value: Any, _hash: int) -> None:
+        self.key = key
+        self.value = value
+        self.hash = _hash
+
+    def __repr__(self):
+        return f"{self.key}: {self.value}"
+
+
 class Dictionary:
-    pass
+    def __init__(self):
+        self.capacity = 8
+        self.load_factor = 2/3
+        self.node_qty = 0
+        self.hash_cell = [None] * self.capacity
+
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.node_qty > self.capacity * self.load_factor:
+            self._resize()
+        hash_index = self._get_index(key)
+        while self.hash_cell[hash_index] and self.hash_cell[hash_index].key != key:
+            hash_index += 1
+            hash_index %= self.capacity
+
+        if self.hash_cell[hash_index] is None:
+            self.hash_cell[hash_index] = Node(key, value, hash(key))
+            self.node_qty += 1
+
+        else:
+            self.hash_cell[hash_index].value = value
+
+    def __getitem__(self, key: Hashable) -> Any:
+        hash_index = self._get_index(key)
+        while self.hash_cell[hash_index] and self.hash_cell[hash_index].key != key:
+            hash_index += 1
+            hash_index %= self.capacity
+
+        if self.hash_cell[hash_index] is None:
+            raise KeyError
+
+        return self.hash_cell[hash_index].value
+
+    def __len__(self) -> int:
+        return self.node_qty
+
+    def _get_index(self, key: Hashable) -> int:
+        return hash(key) % self.capacity
+
+    def _resize(self) -> None:
+        self.capacity *= 2
+        old_bucket = self.hash_cell
+        self.hash_cell = self.capacity * [None]
+        self.node_qty = 0
+
+        for node in old_bucket:
+            if node:
+                self[node.key] = node.value
+
+    def clear(self) -> None:
+        self.capacity = 8
+        self.load_factor = 2/3
+        self.node_qty = 0
+        self.hash_cell = [None] * self.capacity
+
+    def __delitem__(self, key: Hashable) -> None:
+        hash_index = self._get_index(key)
+        if self.hash_cell[hash_index]:
+            self.hash_cell[hash_index] = None
+            self.node_qty -= 1
+        raise KeyError(key)
+
+    def get(self, key: Hashable) -> Any:
+        return self[key] if key in self else None
+
+    def update(self, new_dict: dict) -> None:
+        for key, value in new_dict.items():
+            self.__setitem__(key, value)
