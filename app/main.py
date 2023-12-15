@@ -46,8 +46,7 @@ class Dictionary:
             # try:
             while (
                     self.table[index] is not None
-                    and (self.table[index].key != key
-                         and hash(self.table[index].key) != hash(key))
+                    and self.table[index].key != key
             ):
                 index += 1
                 if index > len(self.table):
