@@ -49,7 +49,7 @@ class Dictionary:
                     and self.table[index].key != key
             ):
                 index += 1
-                if index > len(self.table):
+                if index > (len(self.table) - 1):
                     index = 0
             return index
         # except IndexError:
