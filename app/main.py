@@ -43,25 +43,25 @@ class Dictionary:
             return index
 
         else:
-            try:
-                while (
-                        self.table[index] is not None
-                        and self.table[index].key != key
-                ):
-                    index += 1
-                    if index > len(self.table):
-                        index = 0
-                return index
-            except IndexError:
-                index = 0
-                while (
-                        self.table[index] is not None
-                        and self.table[index].key != key
-                ):
-                    index += 1
-                    if index > len(self.table):
-                        index = 0
+            # try:
+            while (
+                    self.table[index] is not None
+                    and self.table[index].key != key
+            ):
+                index += 1
+                if index > len(self.table):
+                    index = 0
             return index
+        # except IndexError:
+        #     index = 0
+        #     while (
+        #             self.table[index] is not None
+        #             and self.table[index].key != key
+        #     ):
+        #         index += 1
+        #         if index > len(self.table):
+        #             index = 0
+        # return index
 
     def __len__(self) -> int:
         return self.size
