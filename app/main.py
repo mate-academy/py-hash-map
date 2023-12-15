@@ -4,7 +4,7 @@ import copy
 class DictionaryMember:
     def __init__(
             self,
-            key: int | str | tuple | float,
+            key: Hashable,
             value: any,
             index: int = None
     ) -> None:
@@ -28,7 +28,7 @@ class Dictionary:
 
     def _index(
             self,
-            key: int | str | tuple | float
+            key: Hashable
     ) -> int:
 
         index = hash(key) % self.capacity
