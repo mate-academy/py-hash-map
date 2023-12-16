@@ -5,20 +5,19 @@ from typing import Any, Iterator, Tuple, Optional
 
 class Dictionary:
     def __init__(self) -> None:
-        self.__capacity = 7
+        self.__capacity = 8
         self.__create_hash_table()
         self.__len = 0
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        if self.__is_need_resize():
+            self.__resize_hash_table()
+
         hashed_value = hash(key)
         index = hashed_value % self.__capacity
 
         while True:
             if self.__is_cell_empty(index):
-                if self.__is_need_resize():
-                    self.__resize_hash_table()
-                    index = hashed_value % self.__capacity
-                    continue
                 self.__insert_new_item(index, (key, hashed_value, value))
                 break
             saved_key, saved_hash, saved_value = self.hash_table[index]
@@ -54,18 +53,18 @@ class Dictionary:
         return self.__len
 
     def __get_threshold(self) -> int:
-        return int(self.__capacity * 0.75)
+        return int(self.__capacity * (2 / 3))
 
     def __create_hash_table(self) -> None:
-        self.hash_table = [None for _ in range(self.__capacity + 1)]
+        self.hash_table = [None for _ in range(self.__capacity)]
         self.__len = 0
 
     def __resize_hash_table(self) -> None:
         old_capacity = self.__capacity
-        self.__capacity = (self.__capacity + 1) * 2 - 1
+        self.__capacity = (self.__capacity) * 2
         old_hash_table = self.hash_table
         self.__create_hash_table()
-        for index in range(old_capacity + 1):
+        for index in range(old_capacity):
             if old_hash_table[index] is not None:
                 key, hash, value = old_hash_table[index]
                 self.__setitem__(key, value)
@@ -104,13 +103,13 @@ class Dictionary:
 
     def update(self, other_dict: Dictionary) -> None:
         for key, value in other_dict:
-            self.__setitem__(key, value)
+            self[key] = value
 
-    def __iter__(self) -> Iterator[Tuple[Optional[Any], Optional[Any]]]:
+    def __iter__(self) -> Iterator[Tuple[Optional[Any]]]:
         for index in range(self.__capacity):
             if self.hash_table[index] is not None:
                 key, hash, value = self.hash_table[index]
-                yield key, value
+                yield key
 
     def __repr__(self) -> str:
         result = "{"
@@ -118,5 +117,5 @@ class Dictionary:
             if self.hash_table[index] is not None:
                 key, hash, value = self.hash_table[index]
                 result += f"{key}: {value}, "
-        result += "}"
+        result = result.strip().strip(",") + "}"
         return result
