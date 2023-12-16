@@ -36,7 +36,6 @@ class Dictionary:
         self.__hash_table[index] = item_value
         self.__len += 1
 
-
     def __getitem__(self, key: Any) -> Any:
         hashed_value = hash(key)
         index = hashed_value % self.__capacity
@@ -90,12 +89,12 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Any, default=None) -> Any:
+    def pop(self, key: Any, default: Any = None) -> Any:
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
             return value
-        except KeyError as e:
+        except KeyError:
             return default
 
     def update(self, other_dict: Dictionary) -> None:
@@ -116,20 +115,3 @@ class Dictionary:
                 result += f"{key}: {value}, "
         result = result.strip().strip(",") + "}"
         return result
-
-
-if __name__ == "__main__":
-
-    items = [(f"Element {i}", i) for i in range(1000)]
-    dictionary = Dictionary()
-    for key, value in items:
-        dictionary[key] = value
-        print(key, " - ", dictionary[key], dictionary.__len__())
-
-    print("---------------")
-
-    for i in range(1000):
-        print(i, dictionary[f"Element {i}"])
-
-    print(dictionary)
-    print(dictionary.__len__())
