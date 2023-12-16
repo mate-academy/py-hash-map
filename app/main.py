@@ -13,38 +13,37 @@ class Dictionary:
         if self.__is_need_resize():
             self.__resize_hash_table()
 
-        hashed_value = hash(key)
-        index = hashed_value % self.__capacity
+        hashed_key = hash(key)
+        index = hashed_key % self.__capacity
 
         while True:
             if self.__is_cell_empty(index):
-                self.__insert_new_item(index, (key, hashed_value, value))
+                self.__insert_new_item(index, (key, hashed_key, value))
                 break
-            saved_key, saved_hash, saved_value = self.hash_table[index]
-            if key == saved_key and hashed_value == saved_hash:
-                self.hash_table[index] = (key, hashed_value, value)
+            saved_key, saved_hash, saved_value = self.__hash_table[index]
+            if key == saved_key and hashed_key == saved_hash:
+                self.__hash_table[index] = (key, hashed_key, value)
                 break
             index = (index + 1) % self.__capacity
 
     def __is_cell_empty(self, index: int) -> bool:
-        return self.hash_table[index] is None
+        return self.__hash_table[index] is None
 
     def __is_need_resize(self) -> bool:
         return self.__len + 1 > self.__get_threshold()
 
     def __insert_new_item(self, index: int, item_value: tuple) -> None:
-        self.hash_table[index] = item_value
+        self.__hash_table[index] = item_value
         self.__len += 1
-        if self.__is_need_resize():
-            self.__resize_hash_table()
+
 
     def __getitem__(self, key: Any) -> Any:
         hashed_value = hash(key)
         index = hashed_value % self.__capacity
-        if self.hash_table[index] is None:
+        if self.__hash_table[index] is None:
             raise KeyError(f"'{key}' not found")
         while True:
-            saved_key, saved_hash, saved_value = self.hash_table[index]
+            saved_key, saved_hash, saved_value = self.__hash_table[index]
             if key == saved_key and hashed_value == saved_hash:
                 return saved_value
             index = (index + 1) % self.__capacity
@@ -56,18 +55,18 @@ class Dictionary:
         return int(self.__capacity * (2 / 3))
 
     def __create_hash_table(self) -> None:
-        self.hash_table = [None for _ in range(self.__capacity)]
+        self.__hash_table = [None for _ in range(self.__capacity)]
         self.__len = 0
 
     def __resize_hash_table(self) -> None:
         old_capacity = self.__capacity
-        self.__capacity = (self.__capacity) * 2
-        old_hash_table = self.hash_table
+        self.__capacity = self.__capacity * 2
+        old_hash_table = self.__hash_table
         self.__create_hash_table()
         for index in range(old_capacity):
             if old_hash_table[index] is not None:
                 key, hash, value = old_hash_table[index]
-                self.__setitem__(key, value)
+                self[key] = value
 
     def clear(self) -> None:
         self.__create_hash_table()
@@ -75,12 +74,12 @@ class Dictionary:
     def __delitem__(self, key: Any) -> None:
         hashed_value = hash(key)
         index = hashed_value % self.__capacity
-        if self.hash_table[index] is None:
+        if self.__hash_table[index] is None:
             raise KeyError(f"'{key}' not found")
         while True:
-            saved_key, saved_hash, saved_value = self.hash_table[index]
+            saved_key, saved_hash, saved_value = self.__hash_table[index]
             if key == saved_key and hashed_value == saved_hash:
-                self.hash_table[index] = None
+                self.__hash_table[index] = None
                 self.__len -= 1
                 break
             index = (index + 1) % self.__capacity
@@ -91,15 +90,13 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Any, **kwargs) -> Any:
+    def pop(self, key: Any, default=None) -> Any:
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
             return value
         except KeyError as e:
-            if "default" in kwargs:
-                return kwargs["default"]
-            raise KeyError(e)
+            return default
 
     def update(self, other_dict: Dictionary) -> None:
         for key, value in other_dict:
@@ -107,15 +104,32 @@ class Dictionary:
 
     def __iter__(self) -> Iterator[Tuple[Optional[Any]]]:
         for index in range(self.__capacity):
-            if self.hash_table[index] is not None:
-                key, hash, value = self.hash_table[index]
+            if self.__hash_table[index] is not None:
+                key, hash, value = self.__hash_table[index]
                 yield key
 
     def __repr__(self) -> str:
         result = "{"
         for index in range(self.__capacity):
-            if self.hash_table[index] is not None:
-                key, hash, value = self.hash_table[index]
+            if self.__hash_table[index] is not None:
+                key, hash, value = self.__hash_table[index]
                 result += f"{key}: {value}, "
         result = result.strip().strip(",") + "}"
         return result
+
+
+if __name__ == "__main__":
+
+    items = [(f"Element {i}", i) for i in range(1000)]
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
+        print(key, " - ", dictionary[key], dictionary.__len__())
+
+    print("---------------")
+
+    for i in range(1000):
+        print(i, dictionary[f"Element {i}"])
+
+    print(dictionary)
+    print(dictionary.__len__())
