@@ -13,39 +13,39 @@ class Dictionary:
         self.capacity = 8
         self.load_factor = 2 / 3
         self.node_qty = 0
-        self.hash_cell = [None] * self.capacity
+        self.table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.node_qty > self.capacity * self.load_factor:
             self._resize()
         hash_index = self._get_index(key)
         while (
-                self.hash_cell[hash_index]
-                and self.hash_cell[hash_index].key != key
+                self.table[hash_index]
+                and self.table[hash_index].key != key
         ):
             hash_index += 1
             hash_index %= self.capacity
 
-        if self.hash_cell[hash_index] is None:
-            self.hash_cell[hash_index] = Node(key, value, hash(key))
+        if self.table[hash_index] is None:
+            self.table[hash_index] = Node(key, value, hash(key))
             self.node_qty += 1
 
         else:
-            self.hash_cell[hash_index].value = value
+            self.table[hash_index].value = value
 
     def __getitem__(self, key: Hashable) -> Any:
         hash_index = self._get_index(key)
         while (
-                self.hash_cell[hash_index]
-                and self.hash_cell[hash_index].key != key
+                self.table[hash_index]
+                and self.table[hash_index].key != key
         ):
             hash_index += 1
             hash_index %= self.capacity
 
-        if self.hash_cell[hash_index] is None:
+        if self.table[hash_index] is None:
             raise KeyError
 
-        return self.hash_cell[hash_index].value
+        return self.table[hash_index].value
 
     def __len__(self) -> int:
         return self.node_qty
@@ -55,8 +55,8 @@ class Dictionary:
 
     def _resize(self) -> None:
         self.capacity *= 2
-        old_bucket = self.hash_cell
-        self.hash_cell = self.capacity * [None]
+        old_bucket = self.table
+        self.table = self.capacity * [None]
         self.node_qty = 0
 
         for node in old_bucket:
@@ -67,12 +67,12 @@ class Dictionary:
         self.capacity = 8
         self.load_factor = 2 / 3
         self.node_qty = 0
-        self.hash_cell = [None] * self.capacity
+        self.table = [None] * self.capacity
 
     def __delitem__(self, key: Hashable) -> None:
         hash_index = self._get_index(key)
-        if self.hash_cell[hash_index]:
-            self.hash_cell[hash_index] = None
+        if self.table[hash_index]:
+            self.table[hash_index] = None
             self.node_qty -= 1
         raise KeyError(key)
 
