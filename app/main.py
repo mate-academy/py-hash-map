@@ -23,7 +23,7 @@ class Dictionary:
         index = self._find_hash(item)
         current = self.storage[index]
         while current:
-            if current.key == item:
+            if current.key == item and current.hash == hash(item):
                 return current.value
             current = current.next
 
