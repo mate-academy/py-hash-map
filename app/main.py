@@ -51,7 +51,6 @@ class Dictionary:
             current.next = new_node
         self.length += 1
 
-
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
         new_table = [None] * new_capacity
@@ -114,13 +113,3 @@ class Dictionary:
                 yield f"key = {current.key}, value = {current.value}"
 
                 current = current.next
-
-dicts = Dictionary()
-dicts[124124] = "asf"
-dicts[4124] = "asfd"
-dicts[12414] = "asasdf"
-dicts[24124] = "assagf"
-dicts[12424] = "abxcsf"
-print(dicts.storage)
-dicts[12412] = "axcbsf"
-print(dicts.storage)
