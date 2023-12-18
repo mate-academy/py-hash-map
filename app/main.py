@@ -30,6 +30,9 @@ class Dictionary:
         raise KeyError(item)
 
     def __setitem__(self, key: any, value: any) -> None:
+        if self.length >= self.capacity * self.load_factor:
+            self._resize()
+
         index = self._find_hash(key)
         new_node = Node(key, hash(key), value)
 
@@ -38,7 +41,7 @@ class Dictionary:
         else:
             current = self.storage[index]
             while current:
-                if current.key == key:
+                if current.key == key and current.hash == hash(key):
                     current.value = value
                     return
                 if current.next is None:
@@ -48,8 +51,6 @@ class Dictionary:
             current.next = new_node
         self.length += 1
 
-        if self.length >= self.capacity * self.load_factor:
-            self._resize()
 
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
@@ -73,17 +74,16 @@ class Dictionary:
         prev = None
 
         while current:
-            if current.key == key:
+            if current.key == key and current.hash == hash(key):
                 if prev:
                     prev.next = current.next
                 else:
                     self.storage[index] = current.next
                 self.length -= 1
-                return  # Выходим после успешного удаления
+                return
             prev = current
             current = current.next
 
-        # Если ключ не найден, поднимаем исключение
         raise KeyError(key)
 
     def clear(self) -> None:
@@ -114,3 +114,13 @@ class Dictionary:
                 yield f"key = {current.key}, value = {current.value}"
 
                 current = current.next
+
+dicts = Dictionary()
+dicts[124124] = "asf"
+dicts[4124] = "asfd"
+dicts[12414] = "asasdf"
+dicts[24124] = "assagf"
+dicts[12424] = "abxcsf"
+print(dicts.storage)
+dicts[12412] = "axcbsf"
+print(dicts.storage)
