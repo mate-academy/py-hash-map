@@ -1,64 +1,77 @@
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.load_factor = self.capacity * 2 / 3
-        self.hash_table = [None] * 8
+        self.load_factor = self.capacity * (2 / 3)
+        self.hash_table = [None] * self.capacity
 
-    def resize_hash_table(self):
-        self.capacity += 8
+    def resize_hash_table(self) -> None:
+        self.capacity *= 2
         self.size = 0
-        self.load_factor = self.capacity * 2 / 3
+        self.load_factor = self.capacity * (2 / 3)
 
         old_hash_table = self.hash_table
+        self.hash_table = [None] * self.capacity
 
-        new_resized_hash_table = [None] * self.capacity
+        for item in old_hash_table:
+            if item is not None:
+                key, value = item
+                index = hash(key) % self.capacity
 
-        for entry in old_hash_table:
-            if entry is not None:
-                index = hash(entry[0]) % self.capacity
+                while self.hash_table[index] is not None:
+                    index = (index + 1) % len(self.hash_table)
 
-                if isinstance(new_resized_hash_table[index], list):
-                    for _ in range(len(new_resized_hash_table)):
-                        index = (index + 1) % len(new_resized_hash_table)
-                        if new_resized_hash_table[index] is None:
-                            new_resized_hash_table[index] = entry
-                            self.size += 1
-                            break
-                new_resized_hash_table[index] = entry
+                self.hash_table[index] = [key, value]
                 self.size += 1
 
-        self.hash_table = new_resized_hash_table
+    def find_index(self, key: str | int) -> int:
+        for i, hash_table in enumerate(self.hash_table):
+            if hash_table is not None and key == hash_table[0]:
+                return i
+        return -1
 
-
-
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str | int, value: str | int) -> None:
         index = hash(key) % self.capacity
-        hash_table = self.hash_table
+
+        find_index = self.find_index(key)
+
+        if find_index != -1:
+            self.hash_table[find_index] = [key, value]
+
+        elif self.size < self.load_factor and self.hash_table[index] is None:
+            self.hash_table[index] = [key, value]
+            self.size += 1
+
+        elif isinstance(
+                self.hash_table[index], list
+        ) and self.hash_table[index][0] == key:
+
+            self.hash_table[index] = [key, value]
+
+        elif (
+                self.hash_table[index] is not None
+                and self.hash_table[index][0] != key
+        ):
+
+            for i in range(len(self.hash_table)):
+                index = (index + 1) % len(self.hash_table)
+
+                if isinstance(self.hash_table[index], list):
+                    continue
+
+                self.hash_table[index] = [key, value]
+                self.size += 1
+
+                break
 
         if self.size > self.load_factor:
             self.resize_hash_table()
-            hash_table = self.hash_table
 
-        if self.size < self.load_factor and hash_table[index] is None:
+    def __getitem__(self, key: str | int) -> str:
+        for item in self.hash_table:
+            if item is not None and item[0] == key:
+                return item[1]
+        raise KeyError(f"Key not found: {key}")
 
-            hash_table[index] = [key, value]
-            self.size += 1
-
-        elif hash_table[index] == "key":
-            del hash_table[index]
-            hash_table[index] = [key, value]
-
-        elif isinstance(hash_table[index], list):
-            for _ in range(len(hash_table)):
-                index = (index + 1) % len(hash_table)
-                if hash_table[index] is None:
-                    hash_table[index] = [key, value]
-                    self.size += 1
-                    break
-
-    def __getitem__(self, key):
-        return key
-
-    def __len__(self):
+    def __len__(self) -> int:
         return self.size
