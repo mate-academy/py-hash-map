@@ -1,3 +1,6 @@
+from typing import Hashable
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
@@ -7,7 +10,7 @@ class Dictionary:
 
     def resize_hash_table(self) -> None:
         self.capacity *= 2
-        self.size = 0
+
         self.load_factor = self.capacity * (2 / 3)
 
         old_hash_table = self.hash_table
@@ -24,13 +27,13 @@ class Dictionary:
                 self.hash_table[index] = [key, value]
                 self.size += 1
 
-    def find_index(self, key: str | int) -> int:
-        for i, hash_table in enumerate(self.hash_table):
-            if hash_table is not None and key == hash_table[0]:
-                return i
+    def find_index(self, key: Hashable) -> int:
+        for index, hash_table in enumerate(self.hash_table):
+            if hash_table and key == hash_table[0]:
+                return index
         return -1
 
-    def __setitem__(self, key: str | int, value: str | int) -> None:
+    def __setitem__(self, key: Hashable, value: str | int) -> None:
         index = hash(key) % self.capacity
 
         find_index = self.find_index(key)
@@ -38,7 +41,7 @@ class Dictionary:
         if find_index != -1:
             self.hash_table[find_index] = [key, value]
 
-        elif self.size < self.load_factor and self.hash_table[index] is None:
+        elif self.hash_table[index] is None:
             self.hash_table[index] = [key, value]
             self.size += 1
 
@@ -65,9 +68,10 @@ class Dictionary:
                 break
 
         if self.size > self.load_factor:
+            self.size = 0
             self.resize_hash_table()
 
-    def __getitem__(self, key: str | int) -> str:
+    def __getitem__(self, key: Hashable) -> str:
         for item in self.hash_table:
             if item is not None and item[0] == key:
                 return item[1]
