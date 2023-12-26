@@ -25,7 +25,7 @@ class Dictionary:
                     index = (index + 1) % len(self.hash_table)
 
                 self.hash_table[index] = [key, value]
-                self.size += 1
+
 
     def find_index(self, key: Hashable) -> int:
         for index, hash_table in enumerate(self.hash_table):
@@ -68,8 +68,11 @@ class Dictionary:
                 break
 
         if self.size > self.load_factor:
-            self.size = 0
+
             self.resize_hash_table()
+
+        print(self.hash_table)
+        print(self.size)
 
     def __getitem__(self, key: Hashable) -> str:
         for item in self.hash_table:
@@ -79,3 +82,29 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.size
+
+
+items = [
+    (8, "8"),
+    (16, "16"),
+    (32, "32"),
+    (64, "64"),
+    (128, "128"),
+    ("one", 2),
+    ("two", 2),
+    ("one", 1),
+    ("one", 11),
+    ("one", 111),
+    ("one", 1111),
+    (145, 146),
+    (145, 145),
+    (145, -1),
+    ("two", 22),
+    ("two", 222),
+    ("two", 2222),
+    ("two", 22222)]
+dictionary = Dictionary()
+for key, value in items:
+    dictionary[key] = value
+
+
