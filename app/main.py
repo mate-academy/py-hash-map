@@ -1,4 +1,4 @@
-from typing import Hashable
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -33,7 +33,7 @@ class Dictionary:
                 return index
         return -1
 
-    def __setitem__(self, key: Hashable, value: str | int) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self.capacity
 
         find_index = self.find_index(key)
@@ -56,7 +56,7 @@ class Dictionary:
                 and self.hash_table[index][0] != key
         ):
 
-            for i in range(len(self.hash_table)):
+            for _ in range(len(self.hash_table)):
                 index = (index + 1) % len(self.hash_table)
 
                 if isinstance(self.hash_table[index], list):
