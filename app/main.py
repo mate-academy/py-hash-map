@@ -15,8 +15,7 @@ class Dictionary:
         self.capacity: int = 8
         self.load_factor: float = 0.666
         self.size: int = 0
-        self.table: list[Node | None] = [
-            None, None, None, None, None, None, None, None]
+        self.table: list[Node | None] = [None] * 8
 
     def __repr__(self) -> str:
         items = ", ".join(f"{node.key}: {node.value}"
@@ -45,11 +44,14 @@ class Dictionary:
         self._check_resize()
 
     def __getitem__(self, key: any) -> any:
-        current: Node | None = self.table[hash(key) % self.capacity]
+        hash_value = hash(key)
+        current: Node | None = self.table[hash_value % self.capacity]
+
         while current:
-            if current.key == key:
+            if current.key == key and current.hash_code == hash_value:
                 return current.value
             current = current.next
+
         raise KeyError(key)
 
     def __len__(self) -> int:
