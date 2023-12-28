@@ -19,8 +19,10 @@ class Dictionary:
             None, None, None, None, None, None, None, None]
 
     def __repr__(self) -> str:
-        items = (f"{node.key}: {node.value}" for node in self.table if node)
-        return f"{{{", ".join(items)}}}"
+        items = ", ".join(f"{node.key}: {node.value}"
+                          for node in self.table
+                          if node)
+        return "{" + items + "}"
 
     def __setitem__(self,
                     key: any,
