@@ -125,7 +125,7 @@ class Dictionary:
                 raise StopIteration
             self.current_element += 1
 
-        result = (f'\t"{self.hash_table[self.current_element].key}": '
-                  f'{self.hash_table[self.current_element].value}\n')
+        result = (f"\t'{self.hash_table[self.current_element].key}': "
+                  f"{self.hash_table[self.current_element].value}\n")
         self.current_element += 1
         return result
