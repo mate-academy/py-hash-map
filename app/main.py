@@ -10,7 +10,7 @@ class Node:
     def __init__(self, key: Any, value: Any) -> None:
         self._key = key
         self._value = value
-        self.hash = hash(key)
+        self.hash = hash(self)
 
     def get_key(self) -> Any:
         return self._key
@@ -32,10 +32,12 @@ class Node:
             return True
         return False
 
-    # def __hash__(self) -> int:
-    #     if isinstance(self._key, (int, bool, float)):
-    #         return self._key * 1452574 * ord(str(self._key)[-1]) + 5
-    #     return 4869781 * ord(self._key[0]) * ord(self._key[-1]) * len(self._key) * (ord(self._key[0]) + 2) * 3 + 5
+    def __hash__(self) -> int:
+        if isinstance(self._key, (int, bool, float)):
+            return int(self._key * 1452574 * ord(str(self._key)[-1]) + 5)
+        if isinstance(self._key, str):
+            return 4869781 * ord(self._key[0]) * ord(self._key[-1]) * len(self._key) * (ord(self._key[0]) + 2) * 3 + 5
+        return hash(self._key)
 
     def __repr__(self):
         return str(self._value)
@@ -105,17 +107,18 @@ class Dictionary:
 
         else:
             index = node.hash % self.capacity
-
-            if self.hash_table[index].get_key() == key:
-                self.hash_table[index].set_value(value)
-                return
+            if self.hash_table[index]:
+                if self.hash_table[index].get_key() == key:
+                    self.hash_table[index].set_value(value)
+                    return
 
             random.seed(611)
             for _ in range(self.capacity * 2):
                 index = random.randint(0, self.capacity - 1)
-                if self.hash_table[index].get_key() == key:
-                    self.hash_table[index].set_value(value)
-                    return
+                if self.hash_table[index]:
+                    if self.hash_table[index].get_key() == key:
+                        self.hash_table[index].set_value(value)
+                        return
 
             random.seed(611)
             for _ in range(self.capacity * 2):
@@ -130,9 +133,9 @@ class Dictionary:
 
         node = Node(key, None)
         index = node.hash % self.capacity
-
-        if self.hash_table[index].get_key() == key:
-            return self.hash_table[index].get_value()
+        if self.hash_table[index]:
+            if self.hash_table[index].get_key() == key:
+                return self.hash_table[index].get_value()
 
 
         random.seed(611)
@@ -153,6 +156,7 @@ class Dictionary:
         self.hash_table = self.make_hash_table(self.capacity * 2)
         self.capacity *= 2
         self.keys = []
+        self.lentgh = 0
 
         for node in temp_hash_table:
             if node:
@@ -173,20 +177,25 @@ class Dictionary:
 #     print(dictionar.hash_table)
 #     print(dictionar[11])
 
-# if __name__ == '__main__':
-#     items = [('one', 1), (2, [1, 2, 3]), (13.3, 66), (Point(0, 0), 'origin')]
-#     pairs_after_adding = [('one', 1), (2, [1, 2, 3]), (13.3, 66), (Point(0, 0), 'origin')]
-#
-#     dictionary = Dictionary()
-#     for key, value in items:
-#         dictionary[key] = value
-#
-#     for key, value in pairs_after_adding:
-#       print(dictionary[key] == value)
-#     assert len(dictionary) == len(pairs_after_adding)
-
 if __name__ == '__main__':
-    dic = Dictionary()
-    print(dic)
-    dic["one"] = 1
-    print(dic)
+    items = [('one', 1), (2, [1, 2, 3]), (13.3, 66), (Point(0, 0), 'origin')]
+    pairs_after_adding = [('one', 1), (2, [1, 2, 3]), (13.3, 66), (Point(0, 0), 'origin')]
+
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
+    print(dictionary)
+    print(pairs_after_adding)
+    print()
+    for key, value in pairs_after_adding:
+      print(dictionary[key] == value)
+    print()
+    print(len(dictionary) == len(pairs_after_adding))
+
+# if __name__ == '__main__':
+#     dic = Dictionary()
+#     print(dic)
+#     dic[1.1] = "one"
+#     print(dic)
+#     dic[1.1] = "oness"
+#     print(dic)
