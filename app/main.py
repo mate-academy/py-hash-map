@@ -6,7 +6,7 @@ from typing import Any
 class Node:
     def __init__(
             self,
-            key: Any,
+            key: int | float | str | bool | tuple,
             value: Any,
             hash_key: int,
     ) -> None:
@@ -51,62 +51,49 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: Any,
+            key: int | float | str | bool | tuple,
             value: Any
     ) -> None:
-        hash_table_index = hash(key) % len(self.hash_table)
-        while self.hash_table[hash_table_index]:
-            if self.hash_table[hash_table_index].key == key:
-                self.hash_table[hash_table_index].value = value
-                return
-            if hash_table_index == len(self.hash_table) - 1:
-                hash_table_index = 0
-            else:
-                hash_table_index += 1
-        self.hash_table[hash_table_index] = Node(key, value, hash(key))
-        self.length += 1
+        try:
+            self.hash_table[self.calculate_hash_table_index(key)].value = value
+            return
+        except KeyError:
+            hash_table_index = hash(key) % len(self.hash_table)
+            while self.hash_table[hash_table_index]:
+                if hash_table_index == len(self.hash_table) - 1:
+                    hash_table_index = 0
+                else:
+                    hash_table_index += 1
+            self.hash_table[hash_table_index] = Node(key, value, hash(key))
+            self.length += 1
+
         if self.length > len(self.hash_table) * 2 / 3:
             self.hash_table = self.resize_hash_table()
 
-    def get(self, key: Any) -> Any:
+    def get(
+            self,
+            key: int | float | str | bool | tuple
+    ) -> Any:
         return self.__getitem__(key)
 
-    def __getitem__(self, key: Any) -> Any:
-        hash_table_index = hash(key) % len(self.hash_table)
-        while (self.hash_table[hash_table_index]
-               and self.hash_table[hash_table_index].key != key):
-            if hash_table_index == len(self.hash_table) - 1:
-                hash_table_index = 0
-            else:
-                hash_table_index += 1
-        try:
-            return self.hash_table[hash_table_index].value
-        except AttributeError:
-            raise KeyError(f"No such key {key} in dictionary")
+    def __getitem__(
+            self,
+            key: int | float | str | bool | tuple
+    ) -> Any:
+        return self.hash_table[self.calculate_hash_table_index(key)].value
 
-    def __delitem__(self, key: Any) -> None:
-        hash_table_index = hash(key) % len(self.hash_table)
-        while (self.hash_table[hash_table_index]
-               and self.hash_table[hash_table_index].key != key):
-            if hash_table_index == len(self.hash_table) - 1:
-                hash_table_index = 0
-            else:
-                hash_table_index += 1
-        try:
-            self.hash_table[hash_table_index] = None
-        except AttributeError:
-            raise KeyError(f"No such key {key} in dictionary")
+    def __delitem__(
+            self,
+            key: int | float | str | bool | tuple
+    ) -> None:
+        self.hash_table[self.calculate_hash_table_index(key)] = None
 
-    def pop(self, key: Any) -> Any:
-        hash_table_index = hash(key) % len(self.hash_table)
-        while self.hash_table[hash_table_index].key != key:
-            if hash_table_index == len(self.hash_table) - 1:
-                hash_table_index = 0
-            else:
-                hash_table_index += 1
-        return_value = self.hash_table[hash_table_index].value
-        self.hash_table[hash_table_index] = None
-        return return_value
+    def pop(
+            self,
+            key: int | float | str | bool | tuple
+    ) -> Any:
+        self.hash_table[self.calculate_hash_table_index(key)] = None
+        return self.__getitem__(key)
 
     def clear(self) -> None:
         self.hash_table.clear()
@@ -129,3 +116,17 @@ class Dictionary:
                   f"{self.hash_table[self.current_element].value}\n")
         self.current_element += 1
         return result
+
+    def calculate_hash_table_index(
+            self,
+            key: int | float | str | bool | tuple
+    ) -> int:
+        hash_table_index = hash(key) % len(self.hash_table)
+
+        if (self.hash_table[hash_table_index]
+                and self.hash_table[hash_table_index].key == key):
+            return hash_table_index
+        for index in range(0, len(self.hash_table)):
+            if self.hash_table[index] and self.hash_table[index].key == key:
+                return index
+        raise KeyError("No such key in dictionary")
