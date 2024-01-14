@@ -2,7 +2,7 @@ from typing import Hashable, Any
 
 
 class Node:
-    def __init__(self, key: str, value: str,
+    def __init__(self, key: Hashable, value: Any,
                  next_node: "Node" = None) -> None:
         self.key = key
         self.value = value
