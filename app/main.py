@@ -31,11 +31,11 @@ class Node:
         return False
 
     def __hash__(self) -> int:
-        if isinstance(self._key, (int, bool, float)):
-            return int(self._key * 1452574 * ord(str(self._key)[-1]) + 5)
-        if isinstance(self._key, str):
-            return (4869781 * ord(self._key[0]) * ord(self._key[-1])
-                    * len(self._key) * (ord(self._key[0]) + 2) * 3 + 5)
+        # if isinstance(self._key, (int, bool, float)):
+        #     return int(self._key * 1452574 * ord(str(self._key)[-1]) + 5)
+        # if isinstance(self._key, str):
+        #     return (4869781 * ord(self._key[0]) * ord(self._key[-1])
+        #             * len(self._key) * (ord(self._key[0]) + 2) * 3 + 5)
         return hash(self._key)
 
     def __repr__(self) -> str:
@@ -65,7 +65,7 @@ class Dictionary:
             else:
                 str_dict += f"{key}: {value}, "
 
-        return "{ " + str_dict[:-2] + " }"
+        return "{" + str_dict[:-2] + "}"
 
     def __len__(self) -> int:
         return self.lentgh
