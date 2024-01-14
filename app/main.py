@@ -71,6 +71,38 @@ class Dictionary:
             hash_table.append(None)
         return hash_table
 
+    def find_index_for_new(self, node: Node, key: Any, index: int) -> None:
+
+        if self.lentgh == int(self.capacity * 2 / 3):
+            self.resize(node)
+            return
+
+        if not self.hash_table[index]:
+            self.hash_table[index] = node
+            self.keys.append(key)
+            self.lentgh += 1
+            return
+
+        for index in range(self.capacity):
+            if not self.hash_table[index]:
+                self.hash_table[index] = node
+                self.keys.append(key)
+                self.lentgh += 1
+                return
+
+    def find_index_for_old(self, key: Any, value: Any, index: int) -> None:
+
+        if self.hash_table[index]:
+            if self.hash_table[index].get_key() == key:
+                self.hash_table[index].set_value(value)
+                return
+
+        for index in range(self.capacity):
+            if self.hash_table[index]:
+                if self.hash_table[index].get_key() == key:
+                    self.hash_table[index].set_value(value)
+                    return
+
     def __setitem__(self, key: Any, value: Any) -> None:
         if isinstance(key, (dict, list)):
             raise ValueError(f"Не можна задавати такий ключ - "
@@ -80,40 +112,8 @@ class Dictionary:
         index = node.hash % self.capacity
 
         if key not in self.keys:
-            if self.lentgh == int(self.capacity * 2 / 3):
-                self.resize(node)
-                return
-
-            if not self.hash_table[index]:
-                self.hash_table[index] = node
-                self.keys.append(key)
-                self.lentgh += 1
-                return
-
-            for index in range(self.capacity):
-                if not self.hash_table[index]:
-                    self.hash_table[index] = node
-                    self.keys.append(key)
-                    self.lentgh += 1
-                    return
-
-        else:
-            index = node.hash % self.capacity
-            if self.hash_table[index]:
-                if self.hash_table[index].get_key() == key:
-                    self.hash_table[index].set_value(value)
-                    return
-
-            for index in range(self.capacity):
-                if self.hash_table[index]:
-                    if self.hash_table[index].get_key() == key:
-                        self.hash_table[index].set_value(value)
-                        return
-
-            for index in range(self.capacity):
-                if not self.hash_table[index]:
-                    self.hash_table[index] = node
-                    return
+            return self.find_index_for_new(node, key, index)
+        return self.find_index_for_old(key, value, index)
 
     def __getitem__(self, key: Any) -> Any:
         if key not in self.keys:
