@@ -1,5 +1,4 @@
 from __future__ import annotations
-import random
 from typing import Any
 
 
@@ -31,11 +30,6 @@ class Node:
         return False
 
     def __hash__(self) -> int:
-        # if isinstance(self._key, (int, bool, float)):
-        #     return int(self._key * 1452574 * ord(str(self._key)[-1]) + 5)
-        # if isinstance(self._key, str):
-        #     return (4869781 * ord(self._key[0]) * ord(self._key[-1])
-        #             * len(self._key) * (ord(self._key[0]) + 2) * 3 + 5)
         return hash(self._key)
 
     def __repr__(self) -> str:
@@ -43,12 +37,12 @@ class Node:
 
 
 class Dictionary:
-    keys = []
 
     def __init__(self) -> None:
         self.lentgh = 0
         self.capacity = 8
         self.hash_table = self.make_hash_table()
+        self.keys = []
 
     def items(self) -> list[tuple[Any, Any]]:
         items = []
@@ -96,9 +90,7 @@ class Dictionary:
                 self.lentgh += 1
                 return
 
-            random.seed(611)
-            for _ in range(self.capacity * 2):
-                index = random.randint(0, self.capacity - 1)
+            for index in range(self.capacity):
                 if not self.hash_table[index]:
                     self.hash_table[index] = node
                     self.keys.append(key)
@@ -112,17 +104,13 @@ class Dictionary:
                     self.hash_table[index].set_value(value)
                     return
 
-            random.seed(611)
-            for _ in range(self.capacity * 2):
-                index = random.randint(0, self.capacity - 1)
+            for index in range(self.capacity):
                 if self.hash_table[index]:
                     if self.hash_table[index].get_key() == key:
                         self.hash_table[index].set_value(value)
                         return
 
-            random.seed(611)
-            for _ in range(self.capacity * 2):
-                index = random.randint(0, self.capacity - 1)
+            for index in range(self.capacity):
                 if not self.hash_table[index]:
                     self.hash_table[index] = node
                     return
@@ -137,15 +125,11 @@ class Dictionary:
             if self.hash_table[index].get_key() == key:
                 return self.hash_table[index].get_value()
 
-        random.seed(611)
-        for _ in range(self.capacity * 2):
-            index = random.randint(0, self.capacity - 1)
+        for index in range(self.capacity):
             if self.hash_table[index].get_key() == key:
                 return self.hash_table[index].get_value()
 
-        random.seed(611)
-        for _ in range(self.capacity * 2):
-            index = random.randint(0, self.capacity - 1)
+        for index in range(self.capacity):
             if not self.hash_table[index]:
                 return self.hash_table[index].get_value()
 
