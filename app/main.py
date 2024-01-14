@@ -2,8 +2,6 @@ from __future__ import annotations
 import random
 from typing import Any
 
-from app.point import Point
-
 
 class Node:
 
@@ -18,7 +16,7 @@ class Node:
     def get_value(self) -> Any:
         return self._value
 
-    def set_value(self, value: Any):
+    def set_value(self, value: Any) -> None:
         self._value = value
 
     def remove(self) -> None:
@@ -36,10 +34,11 @@ class Node:
         if isinstance(self._key, (int, bool, float)):
             return int(self._key * 1452574 * ord(str(self._key)[-1]) + 5)
         if isinstance(self._key, str):
-            return 4869781 * ord(self._key[0]) * ord(self._key[-1]) * len(self._key) * (ord(self._key[0]) + 2) * 3 + 5
+            return (4869781 * ord(self._key[0]) * ord(self._key[-1])
+                    * len(self._key) * (ord(self._key[0]) + 2) * 3 + 5)
         return hash(self._key)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self._value)
 
 
@@ -51,14 +50,14 @@ class Dictionary:
         self.capacity = 8
         self.hash_table = self.make_hash_table()
 
-    def items(self):
+    def items(self) -> list[tuple[Any, Any]]:
         items = []
         for node in self.hash_table:
             if node:
                 items.append((node.get_key(), node.get_value()))
         return items
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         str_dict = ""
         for key, value in self.items():
             if isinstance(key, str):
@@ -68,7 +67,7 @@ class Dictionary:
 
         return "{ " + str_dict[:-2] + " }"
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.lentgh
 
     @classmethod
@@ -80,7 +79,8 @@ class Dictionary:
 
     def __setitem__(self, key: Any, value: Any) -> None:
         if isinstance(key, (dict, list)):
-            raise ValueError(f"Не можна задавати такий ключ - [{type(key)}] для словника")
+            raise ValueError(f"Не можна задавати такий ключ - "
+                             f"[{type(key)}] для словника")
 
         node = Node(key, value)
         index = node.hash % self.capacity
@@ -128,7 +128,7 @@ class Dictionary:
                     return
 
     def __getitem__(self, key: Any) -> Any:
-        if not key in self.keys:
+        if key not in self.keys:
             raise KeyError(f"Немає такого ключа - [{key}] в словнику")
 
         node = Node(key, None)
@@ -136,7 +136,6 @@ class Dictionary:
         if self.hash_table[index]:
             if self.hash_table[index].get_key() == key:
                 return self.hash_table[index].get_value()
-
 
         random.seed(611)
         for _ in range(self.capacity * 2):
@@ -150,7 +149,7 @@ class Dictionary:
             if not self.hash_table[index]:
                 return self.hash_table[index].get_value()
 
-    def resize(self, new_node: Node):
+    def resize(self, new_node: Node) -> None:
         temp_hash_table = self.hash_table.copy()
 
         self.hash_table = self.make_hash_table(self.capacity * 2)
@@ -162,40 +161,3 @@ class Dictionary:
             if node:
                 self.__setitem__(node.get_key(), node.get_value())
         self.__setitem__(new_node.get_key(), new_node.get_value())
-
-#
-# if __name__ == '__main__':
-#     dictionar = Dictionary()
-#     dictionar[5] = 2
-#     dictionar[2] = 2
-#     dictionar["ss"] = 113
-#     dictionar["aass"] = 113
-#     dictionar["dwsa"] = 113
-#     dictionar["dwwwsa"] = 1113
-#     print(dictionar.hash_table)
-#     dictionar[11] = 100
-#     print(dictionar.hash_table)
-#     print(dictionar[11])
-
-if __name__ == '__main__':
-    items = [('one', 1), (2, [1, 2, 3]), (13.3, 66), (Point(0, 0), 'origin')]
-    pairs_after_adding = [('one', 1), (2, [1, 2, 3]), (13.3, 66), (Point(0, 0), 'origin')]
-
-    dictionary = Dictionary()
-    for key, value in items:
-        dictionary[key] = value
-    print(dictionary)
-    print(pairs_after_adding)
-    print()
-    for key, value in pairs_after_adding:
-      print(dictionary[key] == value)
-    print()
-    print(len(dictionary) == len(pairs_after_adding))
-
-# if __name__ == '__main__':
-#     dic = Dictionary()
-#     print(dic)
-#     dic[1.1] = "one"
-#     print(dic)
-#     dic[1.1] = "oness"
-#     print(dic)
