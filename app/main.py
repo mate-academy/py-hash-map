@@ -13,7 +13,8 @@ class Dictionary:
         index = key_hash % self.capacity
         while True:
             try:
-                if self.hash_table[index][1] == key:
+                if self.hash_table[index][1] == key and\
+                        self.hash_table[index][0] == key_hash:
                     return self.hash_table[index][2]
             except IndexError:
                 raise KeyError
@@ -36,7 +37,8 @@ class Dictionary:
                 self.hash_table[index] = [key_hash, key, value]
                 self.storage += 1
                 break
-            if self.hash_table[index][1] == key:
+            if self.hash_table[index][1] == key and \
+                    self.hash_table[index][0] == key_hash:
                 self.hash_table[index][2] = value
                 break
             index = (index + 1) % self.capacity
@@ -46,7 +48,8 @@ class Dictionary:
         index = key_hash % self.capacity
         while True:
             try:
-                if self.hash_table[index][1] == key:
+                if self.hash_table[index][1] == key and \
+                        self.hash_table[index][0] == key_hash:
                     self.hash_table[index] = []
                     self.storage -= 1
                     return
@@ -69,7 +72,8 @@ class Dictionary:
         index = key_hash % self.capacity
         while True:
             try:
-                if self.hash_table[index][1] == key:
+                if self.hash_table[index][1] == key and\
+                        self.hash_table[index][0] == key_hash:
                     value = self.hash_table[index][2]
                     self.hash_table[index] = []
                     self.storage -= 1
