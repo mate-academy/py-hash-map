@@ -13,7 +13,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * self.capacity
 
-    def __setitem__(self, key: str, value: str) -> None:
+    def __setitem__(self, key: None, value: None) -> None:
         index = self._hash(key)
         if self.table[index] is None:
             self.table[index] = Node(key, value)
@@ -30,7 +30,7 @@ class Dictionary:
         self.size += 1
         self._check_resize()
 
-    def __getitem__(self, key: str) -> str:
+    def __getitem__(self, key: None) -> None:
         index = self._hash(key)
         current = self.table[index]
         while current is not None:
