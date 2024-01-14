@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
     def __init__(
             self,
-            key: int | float | str | bool | tuple,
+            key: Hashable,
             value: Any,
             hash_key: int,
     ) -> None:
@@ -51,19 +51,17 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: int | float | str | bool | tuple,
+            key: Hashable,
             value: Any
     ) -> None:
         try:
             self.hash_table[self.calculate_hash_table_index(key)].value = value
-            return
         except KeyError:
             hash_table_index = hash(key) % len(self.hash_table)
             while self.hash_table[hash_table_index]:
-                if hash_table_index == len(self.hash_table) - 1:
-                    hash_table_index = 0
-                else:
-                    hash_table_index += 1
+                hash_table_index = ((hash_table_index + 1)
+                                    % len(self.hash_table))
+
             self.hash_table[hash_table_index] = Node(key, value, hash(key))
             self.length += 1
 
@@ -72,28 +70,41 @@ class Dictionary:
 
     def get(
             self,
-            key: int | float | str | bool | tuple
+            key: Hashable,
+            default_value: Any = None
     ) -> Any:
-        return self.__getitem__(key)
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default_value
 
     def __getitem__(
             self,
-            key: int | float | str | bool | tuple
+            key: Hashable
     ) -> Any:
         return self.hash_table[self.calculate_hash_table_index(key)].value
 
     def __delitem__(
             self,
-            key: int | float | str | bool | tuple
+            key: Hashable
     ) -> None:
         self.hash_table[self.calculate_hash_table_index(key)] = None
+        self.length -= 1
 
     def pop(
             self,
-            key: int | float | str | bool | tuple
+            key: Hashable,
+            default_value: Any = None
     ) -> Any:
-        self.hash_table[self.calculate_hash_table_index(key)] = None
-        return self.__getitem__(key)
+
+        try:
+            pop_value = self.__getitem__(key)
+        except KeyError:
+            return default_value
+        else:
+            self.hash_table[self.calculate_hash_table_index(key)] = None
+            self.length -= 1
+            return pop_value
 
     def clear(self) -> None:
         self.hash_table.clear()
@@ -119,14 +130,19 @@ class Dictionary:
 
     def calculate_hash_table_index(
             self,
-            key: int | float | str | bool | tuple
+            key: Hashable
     ) -> int:
         hash_table_index = hash(key) % len(self.hash_table)
 
         if (self.hash_table[hash_table_index]
-                and self.hash_table[hash_table_index].key == key):
+                and self.hash_table[hash_table_index].key == key
+                and self.hash_table[hash_table_index].hash_key == hash(key)):
             return hash_table_index
-        for index in range(0, len(self.hash_table)):
-            if self.hash_table[index] and self.hash_table[index].key == key:
+        index = 0
+        while index < len(self.hash_table):
+            if (self.hash_table[index]
+                    and self.hash_table[index].key == key
+                    and self.hash_table[index].hash_key == hash(key)):
                 return index
-        raise KeyError("No such key in dictionary")
+            index += 1
+        raise KeyError(f"No such key {key} in dictionary")
