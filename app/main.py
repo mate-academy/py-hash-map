@@ -18,16 +18,11 @@ class Node:
     def set_value(self, value: Any) -> None:
         self._value = value
 
-    def remove(self) -> None:
-        del self
-
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Node):
             if self._key == other.get_key():
                 return True
-        if self.hash == (hash(other)):
-            return True
-        return False
+        return self.hash == (hash(other))
 
     def __hash__(self) -> int:
         return hash(self._key)
@@ -64,8 +59,8 @@ class Dictionary:
     def __len__(self) -> int:
         return self.lentgh
 
-    @classmethod
-    def make_hash_table(cls, lentgh: int = 8) -> list[None]:
+    @staticmethod
+    def make_hash_table(lentgh: int = 8) -> list[None]:
         hash_table = []
         for i in range(lentgh):
             hash_table.append(None)
@@ -102,16 +97,13 @@ class Dictionary:
             index: int
     ) -> None:
 
-        if self.hash_table[index]:
-            if self.hash_table[index].get_key() == key:
-                self.hash_table[index].set_value(value)
-                return
+        if self.hash_table[index] and self.hash_table[index].get_key() == key:
+            return self.hash_table[index].set_value(value)
 
         for index in range(self.capacity):
-            if self.hash_table[index]:
-                if self.hash_table[index].get_key() == key:
-                    self.hash_table[index].set_value(value)
-                    return
+            element = self.hash_table[index]
+            if element and element.get_key() == key:
+                self.hash_table[index].set_value(value)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if isinstance(key, (dict, list)):
@@ -123,7 +115,7 @@ class Dictionary:
 
         if key not in self.keys:
             return self.find_index_for_new(node, key, index)
-        return self.find_index_for_old(key, value, index)
+        self.find_index_for_old(key, value, index)
 
     def __getitem__(self, key: Hashable) -> Any:
         if key not in self.keys:
@@ -131,16 +123,11 @@ class Dictionary:
 
         node = Node(key, None)
         index = node.hash % self.capacity
-        if self.hash_table[index]:
-            if self.hash_table[index].get_key() == key:
-                return self.hash_table[index].get_value()
+        if self.hash_table[index] and self.hash_table[index].get_key() == key:
+            return self.hash_table[index].get_value()
 
         for index in range(self.capacity):
             if self.hash_table[index].get_key() == key:
-                return self.hash_table[index].get_value()
-
-        for index in range(self.capacity):
-            if not self.hash_table[index]:
                 return self.hash_table[index].get_value()
 
     def resize(self, new_node: Node) -> None:
@@ -153,5 +140,5 @@ class Dictionary:
 
         for node in temp_hash_table:
             if node:
-                self.__setitem__(node.get_key(), node.get_value())
-        self.__setitem__(new_node.get_key(), new_node.get_value())
+                self[node.get_key()] = node.get_value()
+        self[new_node.get_key()] = new_node.get_value()
