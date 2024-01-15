@@ -1,15 +1,15 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
 
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self._key = key
         self._value = value
         self.hash = hash(self)
 
-    def get_key(self) -> Any:
+    def get_key(self) -> Hashable:
         return self._key
 
     def get_value(self) -> Any:
@@ -44,7 +44,7 @@ class Dictionary:
         self.hash_table = self.make_hash_table()
         self.keys = []
 
-    def items(self) -> list[tuple[Any, Any]]:
+    def items(self) -> list[tuple[Hashable, Any]]:
         items = []
         for node in self.hash_table:
             if node:
@@ -71,7 +71,7 @@ class Dictionary:
             hash_table.append(None)
         return hash_table
 
-    def find_index_for_new(self, node: Node, key: Any, index: int) -> None:
+    def find_index_for_new(self, node: Node, key: Hashable, index: int) -> None:
 
         if self.lentgh == int(self.capacity * 2 / 3):
             self.resize(node)
@@ -90,7 +90,7 @@ class Dictionary:
                 self.lentgh += 1
                 return
 
-    def find_index_for_old(self, key: Any, value: Any, index: int) -> None:
+    def find_index_for_old(self, key: Hashable, value: Any, index: int) -> None:
 
         if self.hash_table[index]:
             if self.hash_table[index].get_key() == key:
@@ -103,7 +103,7 @@ class Dictionary:
                     self.hash_table[index].set_value(value)
                     return
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if isinstance(key, (dict, list)):
             raise ValueError(f"Не можна задавати такий ключ - "
                              f"[{type(key)}] для словника")
@@ -115,7 +115,7 @@ class Dictionary:
             return self.find_index_for_new(node, key, index)
         return self.find_index_for_old(key, value, index)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         if key not in self.keys:
             raise KeyError(f"Немає такого ключа - [{key}] в словнику")
 
