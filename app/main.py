@@ -29,7 +29,10 @@ class Dictionary:
         index = item.hash % self.capacity
 
         while self.hash_table[index]:
-            if self.hash_table[index].key == item.key:
+            if (
+                    self.hash_table[index].key == item.key
+                    and hash(self.hash_table[index].key) == item.hash
+            ):
                 self.hash_table[index].value = item.value
                 return
 
@@ -39,6 +42,18 @@ class Dictionary:
         self.hash_table[index] = item
         self.size_of_dict += 1
 
+    def resize_hash_table(self, item: Node) -> None:
+        self.capacity *= 2
+        self.resize = int(self.capacity * self.load_factor)
+        elements_to_shift = [
+            element for element in self.hash_table if element is not None
+        ]
+        self.hash_table = [None for _ in range(self.capacity)]
+        self.size_of_dict = 0
+        for element in elements_to_shift:
+            self.set_element(element)
+        self.set_element(item)
+
     def __setitem__(
             self,
             key: int | float | bool | str | tuple | Hashable,
@@ -47,16 +62,7 @@ class Dictionary:
         item = Node(key=key, value=value)
 
         if self.size_of_dict >= self.resize:
-            self.capacity *= 2
-            self.resize = int(self.capacity * self.load_factor)
-            elements_to_shift = [
-                element for element in self.hash_table if element is not None
-            ]
-            self.hash_table = [None for _ in range(self.capacity)]
-            self.size_of_dict = 0
-            for element in elements_to_shift:
-                self.set_element(element)
-            self.set_element(item)
+            self.resize_hash_table(item)
         else:
             self.set_element(item)
 
@@ -64,13 +70,16 @@ class Dictionary:
             self,
             index: int,
             item: int | float | bool | str | tuple | Hashable
-    ) -> int:
-
-        while self.hash_table[index]:
-            if self.hash_table[index].key == item:
+    ) -> int | None:
+        for _ in range(self.capacity):
+            if not self.hash_table[index]:
+                index += 1
+                index %= self.capacity
+            elif self.hash_table[index].key == item:
                 return index
-            index += 1
-            index %= self.capacity
+            else:
+                index += 1
+                index %= self.capacity
 
     def __getitem__(
             self,
@@ -78,10 +87,10 @@ class Dictionary:
     ) -> Any:
         item_hash = hash(item)
         index = item_hash % self.capacity
-        if self.hash_table[index]:
-            index = self.find_index_of_item(index=index, item=item)
-            print(index)
-            return self.hash_table[index].value
+
+        result = self.find_index_of_item(index=index, item=item)
+        if result is not None:
+            return self.hash_table[result].value
         raise KeyError(f"No such key:'{item}' in dictionary")
 
     def __len__(self) -> int:
@@ -98,10 +107,14 @@ class Dictionary:
     ) -> None:
         key_hash = hash(key)
         index = key_hash % self.capacity
-        if self.hash_table[index]:
-            index = self.find_index_of_item(index=index, item=key)
-            self.hash_table[index] = None
+        result = self.find_index_of_item(index=index, item=key)
+        if result is not None:
+            self.hash_table[result] = None
             self.size_of_dict -= 1
+        else:
+            raise KeyError(
+                f"Can't be deleted! No such key:'{key}' in dictionary"
+            )
 
     def get(
             self,
@@ -110,9 +123,9 @@ class Dictionary:
     ) -> Any:
         key_hash = hash(key)
         index = key_hash % self.capacity
-        if self.hash_table[index]:
-            index = self.find_index_of_item(index=index, item=key)
-            return self.hash_table[index].value
+        result = self.find_index_of_item(index=index, item=key)
+        if result is not None:
+            return self.hash_table[result].value
         return value
 
     def pop(
@@ -121,9 +134,10 @@ class Dictionary:
     ) -> Any:
         key_hash = hash(keyname)
         index = key_hash % self.capacity
-        if self.hash_table[index]:
-            index = self.find_index_of_item(index=index, item=keyname)
-            return_value = self.hash_table[index].value
-            self.hash_table[index] = None
+        result = self.find_index_of_item(index=index, item=keyname)
+        if result is not None:
+            return_value = self.hash_table[result].value
+            self.hash_table[result] = None
             self.size_of_dict -= 1
             return return_value
+        raise KeyError(f"No such key:'{keyname}' in dictionary")
