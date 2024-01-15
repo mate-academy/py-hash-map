@@ -71,7 +71,12 @@ class Dictionary:
             hash_table.append(None)
         return hash_table
 
-    def find_index_for_new(self, node: Node, key: Hashable, index: int) -> None:
+    def find_index_for_new(
+            self,
+            node: Node,
+            key: Hashable,
+            index: int
+    ) -> None:
 
         if self.lentgh == int(self.capacity * 2 / 3):
             self.resize(node)
@@ -90,7 +95,12 @@ class Dictionary:
                 self.lentgh += 1
                 return
 
-    def find_index_for_old(self, key: Hashable, value: Any, index: int) -> None:
+    def find_index_for_old(
+            self,
+            key: Hashable,
+            value: Any,
+            index: int
+    ) -> None:
 
         if self.hash_table[index]:
             if self.hash_table[index].get_key() == key:
