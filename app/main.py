@@ -74,7 +74,8 @@ class Dictionary:
     ) -> None:
 
         if self.lentgh == int(self.capacity * 2 / 3):
-            self.resize(node)
+            self.resize()
+            self[key] = node.get_value()
             return
 
         if not self.hash_table[index]:
@@ -130,7 +131,7 @@ class Dictionary:
             if self.hash_table[index].get_key() == key:
                 return self.hash_table[index].get_value()
 
-    def resize(self, new_node: Node) -> None:
+    def resize(self) -> None:
         temp_hash_table = self.hash_table.copy()
 
         self.hash_table = self.make_hash_table(self.capacity * 2)
@@ -141,4 +142,3 @@ class Dictionary:
         for node in temp_hash_table:
             if node:
                 self[node.get_key()] = node.get_value()
-        self[new_node.get_key()] = new_node.get_value()
