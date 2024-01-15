@@ -131,7 +131,7 @@ class Dictionary:
     def pop(
             self,
             keyname: int | float | bool | str | tuple | Hashable,
-            defaultvalue: Any = None
+            defaultvalue: Any
     ) -> Any:
         key_hash = hash(keyname)
         index = key_hash % self.capacity
@@ -141,4 +141,6 @@ class Dictionary:
             self.hash_table[result] = None
             self.size_of_dict -= 1
             return return_value
-        return defaultvalue
+        if defaultvalue:
+            return defaultvalue
+        raise KeyError
