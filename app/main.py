@@ -17,7 +17,7 @@ class Dictionary:
     size = 0
     hash_table: list[list[Node]] = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.hash_table = [None] * self.initial_capacity
 
     def line_stop(self) -> int:
@@ -75,8 +75,8 @@ if __name__ == "__main__":
     point1 = Point(1.0, 2.0)
     point2 = Point(3.0, 4.0)
 
-    my_dict[point1] = 'value1'
-    my_dict[point2] = 'value2'
+    my_dict[point1] = "value1"
+    my_dict[point2] = "value2"
 
     print(my_dict[point1])
     print(my_dict[point2])
