@@ -36,7 +36,7 @@ class Dictionary:
                     return self.hash_table[index][2]
             index = index + 1 if index < self.capacity - 1 else 0
             if step == self.capacity:
-                raise KeyError(f"Key \"{key}\" does not exist")
+                raise KeyError(f'Key "{key}" does not exist')
 
     def __len__(self) -> int:
         return self.length
