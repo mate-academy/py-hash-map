@@ -1,11 +1,10 @@
 from dataclasses import dataclass, field
-from typing import Any
-from app.point import Point
+from typing import Any, Hashable
 
 
 @dataclass
 class Node:
-    key: Any
+    key: Hashable
     hash_val: int
     value: Any
 
@@ -26,7 +25,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_val = hash(key)
         index = hash_val % self.initial_capacity
         if self.hash_table[index] is None:
@@ -43,7 +42,7 @@ class Dictionary:
         if self.size >= self.line_stop():
             self.resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_val = hash(key)
         index = hash_val % self.initial_capacity
         if self.hash_table[index] is not None:
@@ -56,9 +55,9 @@ class Dictionary:
         new_capacity = self.initial_capacity * 2  # new_capacity = 16
         new_hash_table = [None] * new_capacity
 
-        for i in range(self.initial_capacity):
-            if self.hash_table[i]:
-                for node in self.hash_table[i]:
+        for bucket in range(self.initial_capacity):
+            if self.hash_table[bucket]:
+                for node in self.hash_table[bucket]:
                     if node is not None:
                         new_index = node.hash_val % new_capacity
                         if new_hash_table[new_index] is None:
@@ -68,15 +67,3 @@ class Dictionary:
 
         self.hash_table = new_hash_table
         self.initial_capacity = new_capacity
-
-
-if __name__ == "__main__":
-    my_dict = Dictionary()
-    point1 = Point(1.0, 2.0)
-    point2 = Point(3.0, 4.0)
-
-    my_dict[point1] = "value1"
-    my_dict[point2] = "value2"
-
-    print(my_dict[point1])
-    print(my_dict[point2])
