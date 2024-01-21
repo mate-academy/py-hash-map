@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import Optional, Hashable
 
 
 class Node:
     def __init__(
             self,
-            key: any,
+            key: Hashable,
             hash_value: int,
             value: str,
             next_node: Optional["Node"] = None
@@ -22,15 +22,20 @@ class Dictionary:
         self.load_factor: float = 0.75
         self.hash_table: list[Optional[Node]] = [None] * self.capacity
 
-    def _hash_function(self, key: any) -> int:
+    def _hash_function(self, key: Hashable) -> int:
         return hash(key)
 
-    def _get_index(self, key: any) -> int:
+    def _get_index(self, key: Hashable) -> int:
         hash_value: int = self._hash_function(key)
         return hash_value % self.capacity
 
-    def __setitem__(self, key: any, value: str) -> None:
+    def __setitem__(self, key: Hashable, value: str) -> None:
         index: int = self._get_index(key)
+
+        if index >= self.capacity:
+            self._resize()
+            index = self._get_index(key)
+
         node: Optional[Node] = self.hash_table[index]
 
         while node:
@@ -48,9 +53,9 @@ class Dictionary:
         self.hash_table[index] = new_node
         self.length += 1
 
-    def __getitem__(self, key: any) -> str:
-        index: int = self._get_index(key)
-        node: Optional[Node] = self.hash_table[index]
+    def __getitem__(self, key: Hashable) -> str:
+        index = self._get_index(key)
+        node = self.hash_table[index]
 
         while node:
             if node.key == key:
@@ -68,7 +73,6 @@ class Dictionary:
 
         for node in self.hash_table:
             while node:
-                # Use the _get_index method for calculating the new index
                 new_index = self._get_index(node.key)
                 new_node = Node(
                     node.key,
