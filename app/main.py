@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
 from typing import Any, Hashable
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -22,48 +22,54 @@ class Dictionary:
     def line_stop(self) -> int:
         return int(self.initial_capacity * self.load_factor)
 
+    def get_index(self, key: Hashable) -> int:
+        return hash(key) % self.initial_capacity
+
+    @staticmethod
+    def get_hash(key: Hashable) -> int:
+        return hash(key)
+
     def __len__(self) -> int:
         return self.size
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        hash_val = hash(key)
-        index = hash_val % self.initial_capacity
+        if self.size >= self.line_stop():
+            self.resize()
+        hash_val = self.get_hash(key)
+        index = self.get_index(key)
         if self.hash_table[index] is None:
-            self.hash_table[index] = [Node(key, hash_val, value)]
+            self.hash_table[index] = Node(key, hash_val, value)
+            self.size += 1
 
-        else:
-            for node in self.hash_table[index]:
-                if node.hash_val == hash_val and node.key == key:
-                    node.value = value
-                    return
-        self.hash_table[index].append(Node(key, hash_val, value))
+        while self.hash_table[index] is not None:
+            if self.hash_table[index].key == key:
+                self.hash_table[index].value = value
+                return
+            index = (index + 1) % self.initial_capacity
+            if self.hash_table[index] is None:
+                self.hash_table[index] = Node(key, hash_val, value)
+                self.size += 1
+                return
+
         self.size += 1
-
         if self.size >= self.line_stop():
             self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_val = hash(key)
-        index = hash_val % self.initial_capacity
-        if self.hash_table[index] is not None:
-            for node in self.hash_table[index]:
-                if node.hash_val == hash_val and node.key == key:
+
+        for node in self.hash_table:
+            if node:
+                if node.key == key:
                     return node.value
         raise KeyError(f"Key not found: {key}")
 
     def resize(self) -> None:
-        new_capacity = self.initial_capacity * 2  # new_capacity = 16
-        new_hash_table = [None] * new_capacity
+        self.initial_capacity *= 2
+        self.size = 0
 
-        for bucket in range(self.initial_capacity):
-            if self.hash_table[bucket]:
-                for node in self.hash_table[bucket]:
-                    if node is not None:
-                        new_index = node.hash_val % new_capacity
-                        if new_hash_table[new_index] is None:
-                            new_hash_table[new_index] = [node]
-                        else:
-                            new_hash_table[new_index].append(node)
+        old_table = self.hash_table.copy()
+        self.hash_table = [None] * self.initial_capacity
 
-        self.hash_table = new_hash_table
-        self.initial_capacity = new_capacity
+        for node in old_table:
+            if node:
+                self[node.key] = node.value
