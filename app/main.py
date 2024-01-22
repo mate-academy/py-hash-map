@@ -26,17 +26,17 @@ class Dictionary:
         return hash(key)
 
     def _get_index(self, key: Hashable) -> int:
-        hash_value: int = self._hash_function(key)
+        hash_value = self._hash_function(key)
         return hash_value % self.capacity
 
     def __setitem__(self, key: Hashable, value: str) -> None:
-        index: int = self._get_index(key)
+        index = self._get_index(key)
 
         if index >= self.capacity:
             self._resize()
             index = self._get_index(key)
 
-        node: Optional[Node] = self.hash_table[index]
+        node = self.hash_table[index]
 
         while node:
             if node.key == key:
