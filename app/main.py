@@ -23,7 +23,7 @@ class Dictionary:
             if self.hash_table[index][0] == key:
                 self.hash_table[index] = (key, hash_key, value)
                 return
-            index = index + 1 if index < self.capacity - 1 else 0
+            index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Any) -> Any:
         hash_key = hash(key)
@@ -31,10 +31,9 @@ class Dictionary:
         step = 0
         while True:
             step += 1
-            if self.hash_table[index]:
-                if self.hash_table[index][0] == key:
-                    return self.hash_table[index][2]
-            index = index + 1 if index < self.capacity - 1 else 0
+            if self.hash_table[index] and self.hash_table[index][0] == key:
+                return self.hash_table[index][2]
+            index = (index + 1) % self.capacity
             if step == self.capacity:
                 raise KeyError(f'Key "{key}" does not exist')
 
@@ -52,5 +51,5 @@ class Dictionary:
                     if new_hash_table[index] is None:
                         new_hash_table[index] = (items[0], hash_key, items[2])
                         break
-                    index = index + 1 if index < self.capacity - 1 else 0
+                    index = (index + 1) % self.capacity
         self.hash_table = new_hash_table
