@@ -3,7 +3,7 @@ from typing import Any, Hashable
 
 class Node:
     def __init__(self, key: Hashable, value: Any,
-                 next_node: "Node" = None) -> None:
+                 next_node: ("Node", None) = None) -> None:
         self.key = key
         self.value = value
         self.next_node = next_node
@@ -25,7 +25,7 @@ class Dictionary:
         else:
             current = self.table[index]
             while current is not None:
-                if current.key == key:
+                if current.key == key and hash(current.key) == hash(key):
                     current.value = value
                     return
                 if current.next_node is None:
@@ -41,7 +41,7 @@ class Dictionary:
         index = self._hash(key)
         current = self.table[index]
         while current is not None:
-            if current.key == key:
+            if current.key == key and hash(current.key) == hash(key):
                 return current.value
             current = current.next_node
 
