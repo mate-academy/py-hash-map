@@ -35,13 +35,15 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size >= self.line_stop():
             self.resize()
+
         hash_val = self.get_hash(key)
         index = self.get_index(key)
+
         if self.hash_table[index] is None:
             self.hash_table[index] = Node(key, hash_val, value)
             self.size += 1
-
-        while self.hash_table[index] is not None:
+            return
+        while self.hash_table[index]:
             if self.hash_table[index].key == key:
                 self.hash_table[index].value = value
                 return
@@ -50,10 +52,6 @@ class Dictionary:
                 self.hash_table[index] = Node(key, hash_val, value)
                 self.size += 1
                 return
-
-        self.size += 1
-        if self.size >= self.line_stop():
-            self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
 
