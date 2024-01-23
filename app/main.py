@@ -30,11 +30,13 @@ class Dictionary:
         return hash_value % self.capacity
 
     def __setitem__(self, key: Hashable, value: str) -> None:
-        index = self._get_index(key)
+        index: int = self._get_index(key)
 
         if index >= self.capacity:
-            self._resize()
-            index = self._get_index(key)
+            load_factor = self.length / self.capacity
+            if load_factor > 0.75:
+                self._resize()
+                index = self._get_index(key)
 
         node = self.hash_table[index]
 
@@ -84,4 +86,5 @@ class Dictionary:
                 node = node.next_node
 
         self.capacity = new_capacity
+        self.load_factor = 0.75
         self.hash_table = new_hash_table
