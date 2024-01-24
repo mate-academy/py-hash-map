@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,7 +8,7 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.hash_table: list = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if isinstance(key, (list, set, dict)):
             raise TypeError(f"unhashable type of key: {type(key)}")
         if self.length == int(self.capacity * self.load_factor):
@@ -25,7 +25,7 @@ class Dictionary:
                 return
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_key = hash(key)
         index = hash_key % self.capacity
         step = 0
