@@ -64,13 +64,31 @@ class Dictionary:
         self.table[index] = None
         self.size -= 1
 
-    def get(self, key: Hashable) -> Any:
-        return self.__getitem__(key)
+    def get(self, key: Hashable, value: Any = None) -> Any:
+        index = hash(key) % self.capacity
+        current = self.table[index]
+
+        while current:
+            if current[0] == key and current[1] == hash(key):
+                return current[2]
+            index = (index + 1) % self.capacity
+            current = self.table[index]
+
+        return value
 
     def pop(self, key: Hashable) -> Any:
-        value = self.get(key)
-        self.__delitem__(key)
-        return value
+        index = hash(key) % self.capacity
+        current = self.table[index]
+
+        while current:
+            if current[0] == key and current[1] == hash(key):
+                value = current[2]
+                self.__delitem__(key)
+                return value
+            index = (index + 1) % self.capacity
+            current = self.table[index]
+
+        raise KeyError(f"Key not found: {key}")
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
