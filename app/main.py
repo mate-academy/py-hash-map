@@ -1,5 +1,5 @@
 from typing import Any
-from point import Point
+from app.point import Point
 
 
 class Node:
@@ -22,13 +22,14 @@ class Dictionary:
 
         if self.table[index] is None:
             self.table[index] = [node]
-
         else:
-            for i, existing_node in enumerate(self.table[index]):
+            for existing_node in self.table[index]:
                 if existing_node.key == key:
+                    # Reassign value for the existing key
                     existing_node.value = value
                     break
             else:
+                # Add new key
                 self.table[index].append(node)
 
         self.size += 1
@@ -44,7 +45,8 @@ class Dictionary:
         raise KeyError(key)
 
     def __len__(self) -> int:
-        return self.size
+        count = sum(len(chain) for chain in self.table if chain is not None)
+        return count
 
     def _get_index(self, key: str) -> int:
         return hash(key) % self.capacity
