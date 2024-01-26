@@ -25,7 +25,6 @@ class Dictionary:
         else:
             for existing_node in self.table[index]:
                 if existing_node.key == key:
-                    # Reassign value for the existing key
                     existing_node.value = value
                     break
             else:
@@ -76,6 +75,6 @@ if __name__ == "__main__":
     my_dict[point1] = "Value1"
     my_dict[point2] = "Value2"
 
-    print(my_dict[point1])  # Output: Value1
-    print(my_dict[point2])  # Output: Value2
+    print(my_dict[point1])
+    print(my_dict[point2])
     print(len(my_dict))
