@@ -72,15 +72,12 @@ class Dictionary:
         index = hash(key) % self._capacity
         item = self._hash_table[index]
 
-        while item:
-            if item[0] == key and item[1] == hash(key):
-                item = None
-                self._length -= 1
-                return
+        while item and item[0] != key:
             index = (index + 1) % self._capacity
             item = self._hash_table[index]
 
-        raise KeyError(f"Dictionary doesn't have such key: {key}")
+        self._hash_table[index] = None
+        self._length -= 1
 
     def get(self, key: Hashable, value: Any = None) -> Any:
         index = hash(key) % self._capacity
