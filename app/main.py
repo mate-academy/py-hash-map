@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Hashable
 from copy import copy
 
 
@@ -32,29 +32,29 @@ class Dictionary:
             if self.__hash_table[self.__iteration_index - 1]:
                 return self.__hash_table[self.__iteration_index - 1][0]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self.length += 1
         if self.length > (2 / 3 * self.__capacity):
             self.__resize()
 
         self.__set_item_in_hash_table(key, value, self.__hash_table)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_index = self.__get_hash_index(key)
         hash_index = self.__find_index(key, hash_index)
         return self.__hash_table[hash_index][2]
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_index = self.__get_hash_index(key)
         hash_index = self.__find_index(key, hash_index)
         self.length -= 1
         self.__hash_table[hash_index] = None
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
-            return False
+            return None
 
     def clear(self) -> None:
         self.__init__()
@@ -63,12 +63,12 @@ class Dictionary:
         for key in new_dict:
             self.__setitem__(key, new_dict.__getitem__(key))
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         element = self.__getitem__(key)
         self.__delitem__(key)
         return element
 
-    def __find_index(self, key: Any, hash_index: int) -> int:
+    def __find_index(self, key: Hashable, hash_index: int) -> int:
         key_found = False
         for _ in range(self.__capacity):
             if self.__hash_table[hash_index] is None:
@@ -84,13 +84,13 @@ class Dictionary:
 
         return hash_index
 
-    def __get_hash_index(self, key: Any) -> int:
+    def __get_hash_index(self, key: Hashable) -> int:
         hash_key = hash(key)
         hash_index = hash_key % self.__capacity
         return hash_index
 
     def __set_item_in_hash_table(
-            self, key: Any, value: Any, hash_table: list[Any]
+            self, key: Hashable, value: Any, hash_table: list[Any]
     ) -> None:
         hash_key = hash(key)
         hash_index = self.__get_hash_index(key)
