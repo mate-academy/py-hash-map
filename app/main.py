@@ -31,7 +31,7 @@ class Dictionary:
         # Check for collision
         current: Node = self.table[index]
         while current:
-            if current.key == key:
+            if current.key == key and current.hash_value == hash_value:
                 current.value = value
                 return
             current = current.next_node
@@ -46,11 +46,12 @@ class Dictionary:
             self._resize()
 
     def __getitem__(self, key: Any) -> Any:
-        index: int = hash(key) % self.capacity
+        hash_value: int = hash(key)
+        index: int = hash_value % self.capacity
         current: Node = self.table[index]
 
         while current:
-            if current.key == key:
+            if current.key == key and current.hash_value == hash_value:
                 return current.value
             current = current.next_node
 
