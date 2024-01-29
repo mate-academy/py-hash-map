@@ -66,29 +66,15 @@ class Dictionary:
         self.length -= 1
 
     def get(self, key: Hashable, value: Any = None) -> Any:
-        index = self._indexing(key)
-        current = self.hash_table[index]
-
-        while current:
-            if current.key == key and current.hashed == hash(key):
-                return current.value
-            index = (index + 1) % self.capacity
-            current = self.hash_table[index]
-        return value
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return value
 
     def pop(self, key: Hashable) -> Any:
-        index = self._indexing(key)
-        current = self.hash_table[index]
-
-        while current:
-            if current.key == key and current.hashed == hash(key):
-                value = current.value
-                self.__delitem__(key)
-                return value
-            index = (index + 1) % self.capacity
-            current = self.hash_table[index]
-
-        raise KeyError(key)
+        value = self.__getitem__(key)
+        self.__delitem__(key)
+        return value
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
