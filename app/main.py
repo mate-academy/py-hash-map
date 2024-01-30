@@ -50,22 +50,22 @@ class Dictionary:
         self.length -= 1
         self.__hash_table[hash_index] = None
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
-            return None
+            return default
 
     def clear(self) -> None:
         self.__init__()
 
     def update(self, new_dict: Dictionary) -> None:
         for key in new_dict:
-            self.__setitem__(key, new_dict.__getitem__(key))
+            self[key] = new_dict[key]
 
     def pop(self, key: Hashable) -> Any:
-        element = self.__getitem__(key)
-        self.__delitem__(key)
+        element = self[key]
+        del self[key]
         return element
 
     def __find_index(self, key: Hashable, hash_index: int) -> int:
@@ -74,7 +74,10 @@ class Dictionary:
             if self.__hash_table[hash_index] is None:
                 hash_index = (hash_index + 1) % self.__capacity
                 continue
-            if key == self.__hash_table[hash_index][0]:
+            key_hash = hash(key)
+            element_hash = hash(self.__hash_table[hash_index][0])
+            if (key == self.__hash_table[hash_index][0]
+                    and key_hash == element_hash):
                 key_found = True
                 break
             hash_index = (hash_index + 1) % self.__capacity
