@@ -1,4 +1,5 @@
 from typing import Hashable, Any
+
 from app.node import Node
 
 
@@ -11,6 +12,18 @@ class Dictionary:
 
     def _indexing(self, key: Hashable) -> int:
         return hash(key) % self.capacity
+
+    def _search_key_index(self, key: Hashable) -> int:
+        index = self._indexing(key)
+        current = self.hash_table[index]
+
+        while current:
+            if (current.key == key
+                    and current.hashed == hash(current.key)):
+                return index
+            index = (index + 1) % self.capacity
+            current = self.hash_table[index]
+        raise KeyError(key)
 
     def _resize(self) -> None:
         self.capacity *= 2
@@ -45,36 +58,30 @@ class Dictionary:
             self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self._indexing(key)
-        current = self.hash_table[index]
-
-        while current:
-            if (current.key == key
-                    and current.hashed == hash(current.key)):
-                return current.value
-            index = (index + 1) % self.capacity
-            current = self.hash_table[index]
-        raise KeyError(key)
+        index_to_get = self._search_key_index(key)
+        element = self.hash_table[index_to_get]
+        return element.value
 
     def __delitem__(self, key: Hashable) -> None:
-        index = self._indexing(key)
-
-        while self.hash_table[index] and self.hash_table[index].key != key:
-            index = (index + 1) % self.capacity
-
-        self.hash_table[index] = None
+        index_to_delete = self._search_key_index(key)
+        self.hash_table[index_to_delete] = None
         self.length -= 1
 
-    def get(self, key: Hashable, value: Any = None) -> Any:
+    def get(self, key: Hashable, default_value: Any = None) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
-            return value
+            return default_value
 
-    def pop(self, key: Hashable) -> Any:
-        value = self.__getitem__(key)
-        self.__delitem__(key)
-        return value
+    def pop(self, key: Hashable, default_value: Any = None) -> Any:
+        try:
+            value = self.__getitem__(key)
+            self.__delitem__(key)
+            return value
+        except KeyError:
+            if default_value:
+                return default_value
+            raise KeyError(key)
 
     def update(self, other: dict) -> None:
         for key, value in other.items():

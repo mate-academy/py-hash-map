@@ -6,7 +6,6 @@ class Node:
         self.hashed = hashed
         self.key = key
         self.value = value
-        self.next = None
 
     def __repr__(self) -> str:
         return f"({self.hashed}, {self.key}, {self.value})"
