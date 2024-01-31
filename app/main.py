@@ -9,6 +9,9 @@ class Dictionary:
         self.length = 0
         self.hash_table: list = [None] * 8
 
+    def get_index(self, key: Hashable) -> int:
+        return hash(key) % self.capacity
+
     def __len__(self) -> int:
         return self.length
 
@@ -30,7 +33,7 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.load_factor * self.capacity:
             self.__resize()
-        index = hash(key) % self.capacity
+        index = self.get_index(key)
 
         while True:
             if not self.hash_table[index]:
@@ -43,26 +46,27 @@ class Dictionary:
                 break
             index = (index + 1) % self.capacity
 
-    def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self.capacity
+    def find_element(self, key: Hashable) -> int:
+        index = self.get_index(key)
         element = self.hash_table[index]
 
         step = 0
-        while step < self.length:
+        while step < self.capacity:
             if element and element[0] == key:
-                return element[2]
-            index = (index + 1) % self.capacity
+                return index
+
             step += 1
+            index = (index + 1) % self.capacity
             element = self.hash_table[index]
 
         raise KeyError(key)
 
-    def __delitem__(self, key: Hashable) -> None:
-        index = hash(key) % self.capacity
+    def __getitem__(self, key: Hashable) -> Any:
+        element = self.hash_table[self.find_element(key)]
+        return element[2]
 
-        while (self.hash_table[index]
-               and self.hash_table[index][0] != key):
-            index = (index + 1) % self.capacity
+    def __delitem__(self, key: Hashable) -> None:
+        index = self.find_element(key)
 
         self.hash_table[index] = None
         self.length -= 1
@@ -78,10 +82,15 @@ class Dictionary:
         except KeyError:
             return value
 
-    def pop(self, key: Hashable) -> Any:
-        value = self.__getitem__(key)
-        self.__delitem__(key)
-        return value
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            value = self.__getitem__(key)
+            self.__delitem__(key)
+            return value
+        except KeyError:
+            if default:
+                return default
+            raise
 
     def items(self) -> list[tuple]:
         return [
