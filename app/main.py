@@ -17,18 +17,13 @@ class Dictionary:
 
     def __resize(self) -> None:
         self.capacity *= 2
-        new_hash_table: list = [None] * self.capacity
+        old_hash_table = self.hash_table
+        self.hash_table: list = [None] * self.capacity
 
-        for element in self.hash_table:
-            if not element:
-                continue
-            index = element[1] % self.capacity
-
-            while new_hash_table[index]:
-                index = (index + 1) % self.capacity
-            new_hash_table[index] = element
-
-        self.hash_table = new_hash_table
+        self.length = 0
+        for element in old_hash_table:
+            if element:
+                self.__setitem__(element[0], element[2])
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.load_factor * self.capacity:
