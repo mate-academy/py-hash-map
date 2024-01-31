@@ -9,20 +9,29 @@ class Dictionary:
         self._threshold = int(self._capacity * (2 / 3))
         self._hash_table = [None] * self._capacity
 
-    def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self._capacity
+    def _get_initial_index_by_key(self, key: Hashable) -> int:
+        return hash(key) % self._capacity
+
+    def _get_actual_index_by_key(self, key: Hashable) -> int:
+        index = self._get_initial_index_by_key(key)
         item = self._hash_table[index]
 
-        while item:
-            if item[0] == key and item[1] == hash(key):
-                return item[2]
+        while item and item[0] != key:
             index = (index + 1) % self._capacity
             item = self._hash_table[index]
+
+        return index
+
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self._get_actual_index_by_key(key)
+
+        if item := self._hash_table[index]:
+            return item[2]
 
         raise KeyError(f"Dictionary doesn't have such key: {key}")
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = hash(key) % self._capacity
+        index = self._get_initial_index_by_key(key)
         node = (key, hash(key), value)
 
         while True:
@@ -45,21 +54,13 @@ class Dictionary:
     def _resize_hash_table(self) -> None:
         self._capacity *= 2
         self._threshold = int(self._capacity * (2 / 3))
-        resized_table = [None] * self._capacity
+        self._length = 0
+        outdated_table = self._hash_table.copy()
+        self._hash_table = [None] * self._capacity
 
-        for item in self._hash_table:
+        for item in outdated_table:
             if item:
-                index = item[1] % self._capacity
-                if not resized_table[index]:
-                    resized_table[index] = item
-                else:
-                    while True:
-                        index = (index + 1) % self._capacity
-                        if not resized_table[index]:
-                            resized_table[index] = item
-                            break
-
-        self._hash_table = resized_table
+                self.__setitem__(item[0], item[2])
 
     def __len__(self) -> int:
         return self._length
@@ -69,43 +70,27 @@ class Dictionary:
         self._hash_table = [None] * self._capacity
 
     def __delitem__(self, key: Hashable) -> None:
-        index = hash(key) % self._capacity
-        item = self._hash_table[index]
+        index = self._get_actual_index_by_key(key)
 
-        while item and item[0] != key:
-            index = (index + 1) % self._capacity
-            item = self._hash_table[index]
-
-        self._hash_table[index] = None
-        self._length -= 1
+        if self._hash_table[index]:
+            self._hash_table[index] = None
+            self._length -= 1
 
     def get(self, key: Hashable, value: Any = None) -> Any:
-        index = hash(key) % self._capacity
-        item = self._hash_table[index]
-
-        while item:
-            if item[0] == key and item[1] == hash(key):
-                return item[2]
-            index = (index + 1) % self._capacity
-            item = self._hash_table[index]
-
-        return value
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return value
 
     def pop(self, key: Hashable, value: Any = None) -> Any:
-        index = hash(key) % self._capacity
-        item = self._hash_table[index]
-
-        while item:
-            if item[0] == key and item[1] == hash(key):
-                value = item[2]
+        try:
+            if existing_value := self.__getitem__(key):
                 self.__delitem__(key)
+                return existing_value
+        except KeyError:
+            if value:
                 return value
-            index = (index + 1) % self._capacity
-            item = self._hash_table[index]
-
-        if value:
-            return value
-        raise KeyError(f"Dictionary doesn't have such key: {key}")
+            raise KeyError(f"Dictionary doesn't have such key: {key}")
 
     def update(self, iterable: Iterable) -> None:
         if isinstance(iterable, dict):
