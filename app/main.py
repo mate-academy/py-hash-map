@@ -16,19 +16,20 @@ class Dictionary:
         index = self._get_initial_index_by_key(key)
         item = self._hash_table[index]
 
-        while item and item[0] != key:
+        counter_of_passed_items = 0
+        while counter_of_passed_items < self._capacity:
+            if item and item[0] == key:
+                return index
+
+            counter_of_passed_items += 1
             index = (index + 1) % self._capacity
             item = self._hash_table[index]
 
-        return index
+        raise KeyError(f"Dictionary doesn't have such key: {key}")
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_actual_index_by_key(key)
-
-        if item := self._hash_table[index]:
-            return item[2]
-
-        raise KeyError(f"Dictionary doesn't have such key: {key}")
+        return self._hash_table[index][2]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._get_initial_index_by_key(key)
@@ -71,10 +72,8 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = self._get_actual_index_by_key(key)
-
-        if self._hash_table[index]:
-            self._hash_table[index] = None
-            self._length -= 1
+        self._hash_table[index] = None
+        self._length -= 1
 
     def get(self, key: Hashable, value: Any = None) -> Any:
         try:
@@ -82,14 +81,18 @@ class Dictionary:
         except KeyError:
             return value
 
-    def pop(self, key: Hashable, value: Any = None) -> Any:
+    def pop(self, key: Hashable, *value: Any) -> Any:
+        if len(value) > 1:
+            raise TypeError(
+                f"pop expected at most 2 arguments, got {len(value) + 1}"
+            )
         try:
             if existing_value := self.__getitem__(key):
                 self.__delitem__(key)
                 return existing_value
         except KeyError:
             if value:
-                return value
+                return value[0]
             raise KeyError(f"Dictionary doesn't have such key: {key}")
 
     def update(self, iterable: Iterable) -> None:
