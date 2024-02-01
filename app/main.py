@@ -3,6 +3,8 @@ from typing import Hashable, Any
 
 
 class Dictionary:
+    DEFAULT_OBJECT = object()
+
     def __init__(self) -> None:
         self.load_factor = 2 / 3
         self.capacity = 8
@@ -77,13 +79,13 @@ class Dictionary:
         except KeyError:
             return value
 
-    def pop(self, key: Hashable, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = DEFAULT_OBJECT) -> Any:
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
             return value
         except KeyError:
-            if default:
+            if default is not self.DEFAULT_OBJECT:
                 return default
             raise
 
