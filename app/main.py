@@ -106,7 +106,3 @@ class Dictionary:
 
     def __str__(self) -> str:
         return f"{[node for node in self.hash_table if node]}"
-
-d = Dictionary()
-d["a"] = 1
-print(d.pop("b"))
