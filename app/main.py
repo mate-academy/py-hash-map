@@ -3,17 +3,14 @@ from math import floor
 
 class Dictionary:
     def __init__(self) -> None:
+        self.length = 0
         self.initial_capacity = 8
         self.load_factor = 2 / 3
         self.hash_table = [[] for _ in range(8)]
         self.resize = floor(self.load_factor * self.initial_capacity)
 
     def __len__(self) -> int:
-        dictionary_length = 0
-        for node in self.hash_table:
-            if node:
-                dictionary_length += 1
-        return dictionary_length
+        return self.length
 
     def __setitem__(self, key_set: any, value_set: any) -> None:
         key_hash = hash(key_set)
@@ -30,6 +27,7 @@ class Dictionary:
         if self.__len__() == self.resize:
             self.__resize_hash_table()
             index_in_hash_table = key_hash % self.initial_capacity
+        self.length += 1
         if self.hash_table[index_in_hash_table]:
             index_in_hash_table = self.solve_collision_problem(
                 index_in_hash_table,
