@@ -1,6 +1,6 @@
 from typing import Hashable, Any
 
-from app.node import Node
+from node import Node
 
 
 class Dictionary:
@@ -18,11 +18,14 @@ class Dictionary:
         current = self.hash_table[index]
 
         while current:
+
             if (current.key == key
                     and current.hashed == hash(current.key)):
                 return index
+
             index = (index + 1) % self.capacity
             current = self.hash_table[index]
+
         raise KeyError(key)
 
     def _resize(self) -> None:
@@ -30,8 +33,10 @@ class Dictionary:
         new_table = [None] * self.capacity
 
         for node in self.hash_table:
+
             if node:
                 index = self._indexing(node.key)
+
                 while new_table[index]:
                     index = (index + 1) % self.capacity
                 new_table[index] = node
@@ -73,15 +78,15 @@ class Dictionary:
         except KeyError:
             return default_value
 
-    def pop(self, key: Hashable, default_value: Any = None) -> Any:
+    def pop(self, key: Hashable, *default_value) -> Any:
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
             return value
         except KeyError:
             if default_value:
-                return default_value
-            raise KeyError(key)
+                return default_value[0]
+            raise
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
@@ -101,3 +106,7 @@ class Dictionary:
 
     def __str__(self) -> str:
         return f"{[node for node in self.hash_table if node]}"
+
+d = Dictionary()
+d["a"] = 1
+print(d.pop("b"))
