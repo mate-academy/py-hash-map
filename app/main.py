@@ -1,9 +1,9 @@
-import copy
 from typing import Hashable, Any
 DEFAULT_CAPACITY = 8
 
 
 class Dictionary:
+
     def __init__(self) -> None:
         self._capacity = DEFAULT_CAPACITY
         self._hash_table: list = [None] * self._capacity
@@ -20,7 +20,7 @@ class Dictionary:
             self._stored_element = 0
             self._resize_hash_table()
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._find_available_call(key)
         if self._hash_table[index] is None:
             raise KeyError(f"{key}")
@@ -33,10 +33,10 @@ class Dictionary:
             if node:
                 self.__setitem__(node[0], node[2])
 
-    def _get_index(self, key):
+    def _get_index(self, key: Hashable) -> int:
         return hash(key) % self._capacity
 
-    def _find_available_call(self, key):
+    def _find_available_call(self, key: Hashable) -> int:
         available_index = self._get_index(key)
         while (
                 self._hash_table[available_index] is not None
@@ -46,30 +46,22 @@ class Dictionary:
             available_index %= self._capacity
         return available_index
 
-    def _increment(self, index, key):
-        while (
-                self._hash_table[index] is not None
-                and key != self._hash_table[index][0]
-        ):
-            index += 1
-        return index
-
-    def clear(self):
+    def clear(self) -> None:
         self._hash_table = [None] * DEFAULT_CAPACITY
 
-    def get(self, keyname, value=None):
+    def get(self, keyname: Hashable, value: Any = None) -> Any:
         index = self._find_available_call(keyname)
         if self._hash_table[index]:
             value = self._hash_table[index][2]
         return value
 
-    def pop(self, keyname):
+    def pop(self, keyname: Hashable) -> Any:
         index = self._find_available_call(keyname)
         value = self._hash_table[index][2]
         self.__delitem__(key=keyname)
         return value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Hashable) -> None:
         index = self._find_available_call(key)
         self._hash_table[index] = None
         self._stored_element -= 1
