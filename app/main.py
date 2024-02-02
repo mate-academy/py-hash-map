@@ -1,6 +1,6 @@
 from typing import Any, Hashable
 from dataclasses import dataclass
-from app.point import Point
+
 
 @dataclass
 class Node:
