@@ -30,7 +30,7 @@ class Dictionary:
                 break
             if (
                 self.hash_table[index].key == key
-                and self.hash_table[index].is_deleted is True
+                or self.hash_table[index].is_deleted is True
             ):
                 self.hash_table[index] = node
                 break
@@ -78,16 +78,16 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index_of_cell(key)
-        while self.hash_table[index] is not None:
-            if (
-                self.hash_table[index].key == key
-                and self.hash_table[index].is_deleted is False
-            ):
+        for _ in range(self.capacity):
+            if self.hash_table[index] is None:
+                index = (index + 1) % self.capacity
+            elif self.hash_table[index].key == key:
                 self.hash_table[index] = None
                 self.length -= 1
                 return
-            index = (index + 1) % self.capacity
-        raise KeyError("Invalid key")
+            else:
+                index = (index + 1) % self.capacity
+        raise KeyError
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
