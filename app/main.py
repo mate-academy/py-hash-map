@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -7,10 +7,7 @@ class Dictionary:
         self._hash_table: list = [None] * self._capacity
         self._number_of_stored_elements = 0
 
-    def _get_hash(
-            self,
-            key: int | float | bool | tuple
-    ) -> int:
+    def _get_hash(self, key: Hashable) -> int:
         return hash(key) % self._capacity
 
     def _resize(self) -> None:
@@ -23,10 +20,7 @@ class Dictionary:
             if node is not None:
                 self.__setitem__(node[0], node[2])
 
-    def _find_available_cell(
-            self,
-            key: int | float | bool | tuple
-    ) -> int:
+    def _find_available_cell(self, key: Hashable) -> int:
         index = self._get_hash(key)
         while (
             self._hash_table[index] is not None
@@ -45,11 +39,7 @@ class Dictionary:
             raise KeyError
         return self._hash_table[index][2]
 
-    def __setitem__(
-            self,
-            key: int | float | bool | tuple,
-            value: Any
-    ) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_ = self._get_hash(key)
         index_to_insert = self._find_available_cell(key)
 
