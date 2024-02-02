@@ -60,7 +60,7 @@ class Dictionary:
 
     def __resize(self) -> None:
         self._capacity *= 2
-        self.threshold = int(self._capacity * (2 / 3))
+        self._threshold = int(self._capacity * (2 / 3))
         self._length = 0
 
         old_table = self._table
