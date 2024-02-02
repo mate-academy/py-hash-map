@@ -45,6 +45,8 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         for node in old_hash_table:
             if node:
+                if len(node) == 4:
+                    continue
                 self.__setitem__(node[0], node[2])
 
     def __len__(self) -> int:
