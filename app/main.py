@@ -1,48 +1,58 @@
 from typing import Hashable, Any
 
+DEFAULT_CAPACITY = 8
+
 
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
-        self.hash_table: list = [None] * 8
-        self.initial_capacity = 8
-        self.load_factor = self.initial_capacity * 2 // 3
+        self._capacity = DEFAULT_CAPACITY
+        self._number_of_elements = 0
+        self._hash_table: list = [None] * self._capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        self.length += 1
-        if self.length > self.load_factor:
-            self.resize()
+        hash_of_key = hash(key)
+        index_to_insert = self._get_index(key, hash_of_key)
 
-        self.hash_table[self.get_index(key)] = (key, hash(key), value)
+        if self._hash_table[index_to_insert] is None:
+            self._number_of_elements += 1
+
+            if self._number_of_elements * 3 >= self._capacity * 2:
+                self._resize()
+                self[key] = value
+                return
+
+        self._hash_table[index_to_insert] = (key, hash_of_key, value)
 
     def __getitem__(self, key: Hashable) -> Any:
-        for item in self.hash_table:
-            if item and key == item[0]:
-                return item[2]
-        raise KeyError
+        index = self._get_index(key, hash(key))
+        if self._hash_table[index]:
+            return self._hash_table[index][2]
+        raise KeyError(f"{key} is not found")
 
     def __len__(self) -> int:
-        return self.length
+        return self._number_of_elements
 
-    def resize(self) -> None:
-        new_hash_table: list = [None] * (self.initial_capacity * 2)
-        for i in range(self.initial_capacity):
-            if self.hash_table[i]:
-                new_hash_table[i] = self.hash_table[i]
+    def _get_index(self, key: Hashable, hash_of_key: int) -> int:
+        available_cell_index = self._get_index_by_hash(hash_of_key)
 
-        self.initial_capacity *= 2
-        self.load_factor = self.initial_capacity * 2 // 3
-        self.hash_table = new_hash_table
+        while (
+                self._hash_table[available_cell_index] is not None
+                and key != self._hash_table[available_cell_index][0]
+        ):
+            available_cell_index += 1
+            available_cell_index %= self._capacity
 
-    def get_index(self, key: Hashable) -> int:
-        index = hash(key) % self.initial_capacity
-        for item in self.hash_table:
-            if item and item[0] == key:
-                index = self.hash_table.index(item)
-                self.length -= 1
-        if self.hash_table[index] and (key != self.hash_table[index][0]):
-            for i in range(index, self.initial_capacity * 2):
-                if not self.hash_table[i % self.initial_capacity]:
-                    index = i % self.initial_capacity
-                    break
-        return index
+        return available_cell_index
+
+    def _get_index_by_hash(self, hash_of_key: int) -> int:
+        return hash_of_key % self._capacity
+
+    def _resize(self) -> None:
+        self._capacity *= 2
+        old_hash_table = self._hash_table
+        self._hash_table: list = [None] * self._capacity
+        self._number_of_elements = 0
+
+        for item in old_hash_table:
+            if item is not None:
+                self[item[0]] = item[2]
