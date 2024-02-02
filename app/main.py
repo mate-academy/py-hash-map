@@ -1,16 +1,24 @@
 from typing import Any, Hashable
 
 
+DEFAULT_CAPACITY = 8
+DEFAULT_LENGTH = 0
+DEFAULT_HASH_TABLE = [None] * DEFAULT_CAPACITY
+DEFAULT_RESIZE_THRESHOLD = DEFAULT_CAPACITY * (2 / 3)
+
+
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
-        self.capacity = 8
-        self.resize_threshold = self.capacity * (2 / 3)
-        self.hash_table = [None] * self.capacity
+        self.length = DEFAULT_LENGTH
+        self.capacity = DEFAULT_CAPACITY
+        self.resize_threshold = DEFAULT_RESIZE_THRESHOLD
+        self.hash_table = DEFAULT_HASH_TABLE
+
+    def get_index_of_cell(self, key: Hashable) -> int:
+        return hash(key) % self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        key_hash = hash(key)
-        index = key_hash % self.capacity
+        index = self.get_index_of_cell(key)
 
         while True:
             if self.hash_table[index] is None:
@@ -25,12 +33,15 @@ class Dictionary:
             self.resize_hash_table()
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self.capacity
+        index = self.get_index_of_cell(key)
         while self.hash_table[index] is not None:
-            if self.hash_table[index][0] == key:
+            if (
+                self.hash_table[index][0] == key
+                and len(self.hash_table[index]) < 4
+            ):
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
-        raise KeyError
+        raise KeyError("Invalid key")
 
     def resize_hash_table(self) -> None:
         self.length = 0
@@ -54,14 +65,24 @@ class Dictionary:
     def clear(self) -> None:
         self.length = 0
         self.capacity = 8
+        self.resize_threshold = self.capacity * (2 / 3)
         self.hash_table = [None] * self.capacity
 
     def __delitem__(self, key: Hashable) -> None:
-        index = hash(key) % self.capacity
-        self.hash_table[index] = None
-        self.length -= 1
+        index = self.get_index_of_cell(key)
+        while self.hash_table[index] is not None:
+            if self.hash_table[index][0] == key:
+                self.hash_table[index] = (
+                    self.hash_table[index][0],
+                    self.hash_table[index][1],
+                    self.hash_table[index][2],
+                    "Deleted"
+                )
+                return
+            index = (index + 1) % self.capacity
+        raise KeyError("Invalid key")
 
-    def pop(self, key: Hashable, default: Any) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
@@ -69,7 +90,7 @@ class Dictionary:
         except KeyError:
             if default:
                 return default
-            elif default is None:
+            if default is None:
                 return None
-            elif default is False:
+            if default is False:
                 return False
