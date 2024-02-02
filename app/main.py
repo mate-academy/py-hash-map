@@ -1,6 +1,14 @@
 from typing import Any, Hashable
 
 
+class Node:
+    def __init__(self, key, key_hash, value, is_deleted=False) -> None:
+        self.key = key
+        self.key_hash = key_hash
+        self.value = value
+        self.is_deleted = is_deleted
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
@@ -13,14 +21,18 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.get_index_of_cell(key)
+        node = Node(key, hash(key), value)
 
         while True:
             if self.hash_table[index] is None:
-                self.hash_table[index] = (key, hash(key), value)
+                self.hash_table[index] = node
                 self.length += 1
                 break
-            if self.hash_table[index][0] == key:
-                self.hash_table[index] = (key, hash(key), value)
+            if (
+                self.hash_table[index].key == key
+                and self.hash_table[index].is_deleted is True
+            ):
+                self.hash_table[index] = node
                 break
             index = (index + 1) % self.capacity
         if self.length > self.resize_threshold:
@@ -28,14 +40,14 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index_of_cell(key)
-        while self.hash_table[index] is not None:
-            if (
-                self.hash_table[index][0] == key
-                and len(self.hash_table[index]) < 4
-            ):
-                return self.hash_table[index][2]
-            index = (index + 1) % self.capacity
-        raise KeyError("Invalid key")
+        for _ in range(self.capacity):
+            if self.hash_table[index] is None:
+                index = (index + 1) % self.capacity
+            elif self.hash_table[index].key == key:
+                return self.hash_table[index].value
+            else:
+                index = (index + 1) % self.capacity
+        raise KeyError
 
     def resize_hash_table(self) -> None:
         self.length = 0
@@ -45,9 +57,9 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         for node in old_hash_table:
             if node:
-                if len(node) == 4:
+                if node.is_deleted is True:
                     continue
-                self.__setitem__(node[0], node[2])
+                self.__setitem__(node.key, node.value)
 
     def __len__(self) -> int:
         return self.length
@@ -67,13 +79,12 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index_of_cell(key)
         while self.hash_table[index] is not None:
-            if self.hash_table[index][0] == key:
-                self.hash_table[index] = (
-                    self.hash_table[index][0],
-                    self.hash_table[index][1],
-                    self.hash_table[index][2],
-                    "Deleted"
-                )
+            if (
+                self.hash_table[index].key == key
+                and self.hash_table[index].is_deleted is False
+            ):
+                self.hash_table[index] = None
+                self.length -= 1
                 return
             index = (index + 1) % self.capacity
         raise KeyError("Invalid key")
