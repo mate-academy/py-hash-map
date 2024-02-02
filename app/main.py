@@ -2,7 +2,12 @@ from typing import Any, Hashable
 
 
 class Node:
-    def __init__(self, key, key_hash, value, is_deleted=False) -> None:
+    def __init__(
+            self,
+            key: Hashable,
+            key_hash: int,
+            value: Any,
+            is_deleted: bool = False) -> None:
         self.key = key
         self.key_hash = key_hash
         self.value = value
