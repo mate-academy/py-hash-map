@@ -1,6 +1,6 @@
 from typing import Any, Hashable
 from dataclasses import dataclass
-
+from app.point import Point
 
 @dataclass
 class Node:
@@ -23,9 +23,6 @@ class Dictionary:
         index = self.get_index_of_cell(key)
         node = Node(key, hash(key), value)
 
-        if self.length >= self.resize_threshold:
-            self.resize_hash_table()
-
         while self.hash_table[index]:
             if self.hash_table[index].key == key:
                 self.hash_table[index].value = value
@@ -33,6 +30,9 @@ class Dictionary:
             index = (index + 1) % self.capacity
         self.hash_table[index] = node
         self.length += 1
+
+        if self.length > self.resize_threshold:
+            self.resize_hash_table()
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index_of_cell(key)
