@@ -1,24 +1,19 @@
 from typing import Any, Hashable
+from dataclasses import dataclass
 
 
+@dataclass
 class Node:
-    def __init__(
-            self,
-            key: Hashable,
-            key_hash: int,
-            value: Any,
-            is_deleted: bool = False) -> None:
-        self.key = key
-        self.key_hash = key_hash
-        self.value = value
-        self.is_deleted = is_deleted
+    key: Hashable
+    key_hash: int
+    value: Any
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.resize_threshold = self.capacity * (2 / 3)
+        self.resize_threshold = int(self.capacity * (2 / 3))
         self.hash_table = [None] * self.capacity
 
     def get_index_of_cell(self, key: Hashable) -> int:
@@ -28,20 +23,16 @@ class Dictionary:
         index = self.get_index_of_cell(key)
         node = Node(key, hash(key), value)
 
-        while True:
-            if self.hash_table[index] is None:
-                self.hash_table[index] = node
-                self.length += 1
-                break
-            if (
-                self.hash_table[index].key == key
-                or self.hash_table[index].is_deleted is True
-            ):
-                self.hash_table[index] = node
-                break
-            index = (index + 1) % self.capacity
-        if self.length > self.resize_threshold:
+        if self.length >= self.resize_threshold:
             self.resize_hash_table()
+
+        while self.hash_table[index]:
+            if self.hash_table[index].key == key:
+                self.hash_table[index].value = value
+                return
+            index = (index + 1) % self.capacity
+        self.hash_table[index] = node
+        self.length += 1
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index_of_cell(key)
@@ -58,12 +49,10 @@ class Dictionary:
         self.length = 0
         self.capacity *= 2
         old_hash_table = self.hash_table.copy()
-        self.resize_threshold = self.capacity * (2 / 3)
+        self.resize_threshold = int(self.capacity * (2 / 3))
         self.hash_table = [None] * self.capacity
         for node in old_hash_table:
             if node:
-                if node.is_deleted is True:
-                    continue
                 self.__setitem__(node.key, node.value)
 
     def __len__(self) -> int:
@@ -78,7 +67,7 @@ class Dictionary:
     def clear(self) -> None:
         self.length = 0
         self.capacity = 8
-        self.resize_threshold = self.capacity * (2 / 3)
+        self.resize_threshold = int(self.capacity * (2 / 3))
         self.hash_table = [None] * self.capacity
 
     def __delitem__(self, key: Hashable) -> None:
