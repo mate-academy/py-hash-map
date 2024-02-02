@@ -1,18 +1,12 @@
 from typing import Any, Hashable
 
 
-DEFAULT_CAPACITY = 8
-DEFAULT_LENGTH = 0
-DEFAULT_HASH_TABLE = [None] * DEFAULT_CAPACITY
-DEFAULT_RESIZE_THRESHOLD = DEFAULT_CAPACITY * (2 / 3)
-
-
 class Dictionary:
     def __init__(self) -> None:
-        self.length = DEFAULT_LENGTH
-        self.capacity = DEFAULT_CAPACITY
-        self.resize_threshold = DEFAULT_RESIZE_THRESHOLD
-        self.hash_table = DEFAULT_HASH_TABLE
+        self.length = 0
+        self.capacity = 8
+        self.resize_threshold = self.capacity * (2 / 3)
+        self.hash_table = [None] * self.capacity
 
     def get_index_of_cell(self, key: Hashable) -> int:
         return hash(key) % self.capacity
