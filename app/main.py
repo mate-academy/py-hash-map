@@ -1,77 +1,49 @@
-from math import floor
+from typing import Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
-        self.initial_capacity = 8
-        self.load_factor = 2 / 3
-        self.hash_table = [[] for _ in range(8)]
-        self.resize = floor(self.load_factor * self.initial_capacity)
+        self._length_of_dict = 0
+        self._capacity = 8
+        self._hash_table = [None] * self._capacity
 
     def __len__(self) -> int:
-        return self.length
+        return self._length_of_dict
 
-    def __setitem__(self, key_set: any, value_set: any) -> None:
-        key_hash = hash(key_set)
-        index_in_hash_table = key_hash % self.initial_capacity
-        if self.hash_table[index_in_hash_table]:
-            if self.hash_table[index_in_hash_table][0] == key_set:
-                self.hash_table[index_in_hash_table][2] = value_set
+    def __setitem__(self, key: Hashable, value: any) -> None:
+        key_hash = hash(key)
+        index_in_hash_table = self._find_available_cell(key, key_hash)
+        if self._hash_table[index_in_hash_table] is None:
+            self._length_of_dict += 1
+            if self._length_of_dict >= int(self._capacity * 2 / 3):
+                self._resize_hash_table()
+                self[key] = value
                 return
-            else:
-                for element in self.hash_table:
-                    if element and key_set == element[0]:
-                        element[2] = value_set
-                        return
-        if self.__len__() == self.resize:
-            self.__resize_hash_table()
-            index_in_hash_table = key_hash % self.initial_capacity
-        self.length += 1
-        if self.hash_table[index_in_hash_table]:
-            index_in_hash_table = self.solve_collision_problem(
-                index_in_hash_table,
-                self.hash_table
-            )
-        self.hash_table[index_in_hash_table] = [key_set, key_hash, value_set]
 
-    def __getitem__(self, key_get: any) -> any:
-        index_get = hash(key_get) % self.initial_capacity
-        try:
-            if self.hash_table[index_get][0] == key_get:
-                return self.hash_table[index_get][2]
-            else:
-                for element in self.hash_table:
-                    if element and key_get == element[0]:
-                        return element[2]
-        except IndexError:
+        self._hash_table[index_in_hash_table] = (key, key_hash, value)
+
+    def __getitem__(self, key: Hashable) -> any:
+        index_get = self._find_available_cell(key, hash(key))
+        if self._hash_table[index_get] is None:
             raise KeyError
+        return self._hash_table[index_get][2]
 
-    def __resize_hash_table(self) -> None:
-        self.initial_capacity *= 2
-        resized_hash_table = [[] for _ in range(self.initial_capacity)]
-        for element in self.hash_table:
-            if element:
-                key_res, hash_res, value_res = element
-                index_res_hash_table = hash_res % self.initial_capacity
-                if resized_hash_table[index_res_hash_table]:
-                    index_res_hash_table = self.solve_collision_problem(
-                        index_res_hash_table,
-                        resized_hash_table
-                    )
-                resized_hash_table[index_res_hash_table] = [
-                    key_res,
-                    hash_res,
-                    value_res
-                ]
-        self.hash_table = resized_hash_table
-        self.resize = floor(self.load_factor * self.initial_capacity)
+    def _resize_hash_table(self) -> None:
+        self._capacity *= 2
+        old_hash_table = self._hash_table
+        self._hash_table = [None] * self._capacity
+        self._length_of_dict = 0
+        for element in old_hash_table:
+            if element is not None:
+                self[element[0]] = element[2]
 
-    @staticmethod
-    def solve_collision_problem(index_collision: int,
-                                collision_hash_table: list[list]) -> int:
-        if [] in collision_hash_table[index_collision + 1:]:
-            return (collision_hash_table[index_collision + 1:].index([])
-                    + index_collision
-                    + 1)
-        return collision_hash_table[:index_collision].index([])
+    def _index_is_available(self, key: Hashable, index: int) -> bool:
+        return (self._hash_table[index] is not None
+                and key != self._hash_table[index][0])
+
+    def _find_available_cell(self, key: Hashable, hash_key: int) -> int:
+        element_index = hash_key % self._capacity
+        while self._index_is_available(key, element_index):
+            element_index += 1
+            element_index %= self._capacity
+        return element_index
