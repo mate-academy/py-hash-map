@@ -1,65 +1,85 @@
-from typing import Any
+import copy
+from typing import Hashable, Any
+DEFAULT_CAPACITY = 8
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
-        self.hash_table: list = [None] * 8
+        self._capacity = DEFAULT_CAPACITY
+        self._hash_table: list = [None] * self._capacity
+        self._stored_element = 0
 
-    def resize_hash_table(self) -> None:
-        new_table = [None] * (2 * len(self.hash_table))
-        for item in self.hash_table:
-            if item:
-                self.set_item(key=item[0], value=item[2], table=new_table)
-        self.hash_table = new_table
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        index = self._find_available_call(key)
 
-    @staticmethod
-    def set_item(key: Any, value: Any, table: list) -> bool:
-        key_hash = hash(key)
-        index = key_hash % len(table)
-        cell = table[index]
-        if cell is None:
-            table[index] = (key, key_hash, value)
-            return True
-        elif cell[0] == key:
-            table[index] = (key, key_hash, value)
-        else:
-            while True:
-                index += 1
-                if index >= len(table):
-                    index = 0
-                next_cell = table[index]
-                if next_cell is None:
-                    table[index] = (key, key_hash, value)
-                    return True
-                elif next_cell[0] == key:
-                    table[index] = (key, key_hash, value)
-                    break
-
-    def __setitem__(self, key: Any, value: Any) -> None:
-        if self.set_item(key=key, value=value, table=self.hash_table):
-            self.length += 1
-        if self.length >= int(len(self.hash_table) * (2 / 3)):
-            self.resize_hash_table()
+        if self._hash_table[index] is None:
+            self._stored_element += 1
+        self._hash_table[index] = (key, hash(key), value)
+        if self._stored_element * 3 >= self._capacity * 2:
+            self._capacity *= 2
+            self._stored_element = 0
+            self._resize_hash_table()
 
     def __getitem__(self, key: Any) -> None:
-        iteration = 1
-        key_hash = hash(key)
-        index = key_hash % len(self.hash_table)
-        cell = self.hash_table[index]
-        if cell and cell[0] == key:
-            return cell[2]
-        else:
-            while True:
-                index += 1
-                iteration += 1
-                if index >= len(self.hash_table):
-                    index = 0
-                next_cell = self.hash_table[index]
-                if next_cell and next_cell[0] == key:
-                    return next_cell[2]
-                elif iteration == len(self.hash_table):
-                    raise KeyError(key)
+        index = self._find_available_call(key)
+        if self._hash_table[index] is None:
+            raise KeyError(f"{key}")
+        return self._hash_table[index][2]
+
+    def _resize_hash_table(self) -> None:
+        last_hash_table = self._hash_table
+        self._hash_table = [None] * self._capacity
+        for node in last_hash_table:
+            if node:
+                self.__setitem__(node[0], node[2])
+
+    def _get_index(self, key):
+        return hash(key) % self._capacity
+
+    def _find_available_call(self, key):
+        available_index = self._get_index(key)
+        while (
+                self._hash_table[available_index] is not None
+                and key != self._hash_table[available_index][0]
+        ):
+            available_index += 1
+            available_index %= self._capacity
+        return available_index
+
+    def _increment(self, index, key):
+        while (
+                self._hash_table[index] is not None
+                and key != self._hash_table[index][0]
+        ):
+            index += 1
+        return index
+
+    def clear(self):
+        self._hash_table = [None] * DEFAULT_CAPACITY
+
+    def get(self, keyname, value=None):
+        index = self._find_available_call(keyname)
+        if self._hash_table[index]:
+            value = self._hash_table[index][2]
+        return value
+
+    def pop(self, keyname):
+        index = self._find_available_call(keyname)
+        value = self._hash_table[index][2]
+        self.__delitem__(key=keyname)
+        return value
+
+    def __delitem__(self, key):
+        index = self._find_available_call(key)
+        self._hash_table[index] = None
+        self._stored_element -= 1
+        if self._stored_element * 3 < self._capacity * 2:
+            self._capacity //= 2
+            self._stored_element = 0
+            self._resize_hash_table()
 
     def __len__(self) -> int:
-        return self.length
+        return self._stored_element
+
+    def __iter__(self) -> iter:
+        return iter(key[0] for key in self._hash_table if key)
