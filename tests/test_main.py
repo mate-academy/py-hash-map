@@ -16,6 +16,7 @@ from app.point import Point
 #         assert dictionary[key] == value
 #     assert len(dictionary) == len(items)
 #     for key, value in items:
+#         print("problem is here")
 #         del dictionary[key]
 #     print(len(dictionary))
 

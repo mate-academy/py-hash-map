@@ -24,39 +24,42 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_hash_index(key)
 
-        while (
-                self._table[index] is not None
-                and self._table[index].key != key
-        ):
-            index = (index + 1) % self._capacity
+        while True:
+            if self._table[index] is None:
+                raise KeyError(f"Key `{key}` is not found!")
+            if self._table[index] is not None and self._table[index].key == key:
+                return self._table[index].value
 
-        if self._table[index] is None:
-            raise KeyError(f"Key `{key}` is not found!")
-        return self._table[index].value
+            index = self._increment_index(index)
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._get_hash_index(key)
 
-        while (
-                self._table[index] is not None
-                and self._table[index].key != key
-        ):
-            index = (index + 1) % self._capacity
+        while True:
+            if self._table[index] is None:
+                self._length += 1
 
-        if self._table[index] is None:
-            self._length += 1
-            if self._length >= self._threshold:
-                self.__resize()
-                self[key] = value
-                return
+                if self._length >= self._threshold:
+                    self.__resize()
+                    self[key] = value
 
-        self._table[index] = HashedMap(key, hash(key), value)
+                self._table[index] = HashedMap(key, hash(key), value)
+                break
+
+            if self._table[index].key == key:
+                self._table[index] = HashedMap(key, hash(key), value)
+                break
+
+            index = self._increment_index(index)
 
     def __len__(self) -> int:
         return self._length
 
     def _get_hash_index(self, key: Hashable) -> int:
         return hash(key) % self._capacity
+
+    def _increment_index(self, index) -> int:
+        return (index + 1) % self._capacity
 
     def __resize(self) -> None:
         self._capacity *= 2
@@ -80,3 +83,4 @@ class Dictionary:
         self._capacity = 8
         self._table = [None] * self._capacity
         self._length = 0
+        self._threshold = int(self._capacity * (2 / 3))
