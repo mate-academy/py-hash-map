@@ -60,7 +60,10 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self._index(key)
         while self._hash_table[index]:
-            if self._hash_table[index][0] == key:
+            if (
+                isinstance(self._hash_table[index], tuple)
+                and self._hash_table[index][0] == key
+            ):
                 self._hash_table[index] = "Deleted"
                 self._len -= 1
                 return
