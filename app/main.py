@@ -27,7 +27,10 @@ class Dictionary:
         while True:
             if self._table[index] is None:
                 raise KeyError(f"Key `{key}` is not found!")
-            if self._table[index] is not None and self._table[index].key == key:
+            if (
+                    self._table[index] is not None
+                    and self._table[index].key == key
+            ):
                 return self._table[index].value
 
             index = self._increment_index(index)
@@ -52,13 +55,29 @@ class Dictionary:
 
             index = self._increment_index(index)
 
+    def __delitem__(self, key: Hashable) -> None:
+        index = self._get_hash_index(key)
+
+        while True:
+            if (
+                    self._table[index] is not None
+                    and self._table[index].key == key
+            ):
+                self._table[index] = None
+                self._length -= 1
+                break
+            if self._table[index] is None:
+                raise KeyError(f"Key `{key}` is not found!")
+
+            index = self._increment_index(index)
+
     def __len__(self) -> int:
         return self._length
 
     def _get_hash_index(self, key: Hashable) -> int:
         return hash(key) % self._capacity
 
-    def _increment_index(self, index) -> int:
+    def _increment_index(self, index: int) -> int:
         return (index + 1) % self._capacity
 
     def __resize(self) -> None:
