@@ -16,10 +16,12 @@ class Dictionary:
             self.length += 1
 
         else:
-            while self.hash_table[cell_index] is not None and self.hash_table[cell_index][0] != key:
+            while (self.hash_table[cell_index] is not None
+                   and self.hash_table[cell_index][0] != key):
                 cell_index = (cell_index + 1) % self.capacity
 
-            if self.hash_table[cell_index] is not None and self.hash_table[cell_index][0] == key:
+            if (self.hash_table[cell_index] is not None
+                    and self.hash_table[cell_index][0] == key):
                 self.hash_table[cell_index] = (key, value)
 
             else:
