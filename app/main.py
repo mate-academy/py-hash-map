@@ -12,7 +12,7 @@ class Dictionary:
         cell_index = self.calculate_index(key)
 
         if self.hash_table[cell_index] is None:
-            self.hash_table[cell_index] = (key, value)
+            self.hash_table[cell_index] = (key, hash(key), value)
             self.length += 1
 
         else:
@@ -22,10 +22,10 @@ class Dictionary:
 
             if (self.hash_table[cell_index] is not None
                     and self.hash_table[cell_index][0] == key):
-                self.hash_table[cell_index] = (key, value)
+                self.hash_table[cell_index] = (key, hash(key), value)
 
             else:
-                self.hash_table[cell_index] = (key, value)
+                self.hash_table[cell_index] = (key, hash(key), value)
                 self.length += 1
 
         self.resize_if_necessary()
@@ -35,7 +35,7 @@ class Dictionary:
 
         while self.hash_table[cell_index] is not None:
             if self.hash_table[cell_index][0] == key:
-                return self.hash_table[cell_index][1]
+                return self.hash_table[cell_index][2]
             cell_index = (cell_index + 1) % self.capacity
         raise KeyError
 
@@ -52,7 +52,14 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.calculate_index(key)
-        self.hash_table[index] = None
+
+        while self.hash_table[index] is not None:
+            if self.hash_table[index][0] == key:
+                self.hash_table[index] = None
+                return
+            index = (index + 1) % self.capacity
+
+        raise KeyError
 
     def test_deletion(self, key: Hashable) -> None:
         index = self.calculate_index(key)
@@ -67,7 +74,7 @@ class Dictionary:
 
             for item in old_hash_table:
                 if item is not None:
-                    self[item[0]] = item[1]
+                    self[item[0]] = item[2]
 
     def pop(self, key: Hashable) -> Any:
         index = self.calculate_index(key)
