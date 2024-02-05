@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Hashable, Any
 
 DEFAULT_CAPACITY = 8
 
@@ -16,7 +16,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self._number_of_stored_elements
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_of_key = hash(key)
         index_to_insert = self._find_available_cell(key, hash_of_key)
 
@@ -30,7 +30,7 @@ class Dictionary:
 
         self._hash_table[index_to_insert] = (key, hash_of_key, value)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._find_available_cell(key, hash(key))
         if self._hash_table[index] is None:
             raise KeyError(f"{key} is not found")
@@ -48,7 +48,7 @@ class Dictionary:
                 self[item[0]] = item[2]
 
     def _find_available_cell(self,
-                             key: Any,
+                             key: Hashable,
                              hash_of_key: int) -> int:
         available_cell_index = self._get_index_by_hash(hash_of_key)
 
@@ -65,6 +65,6 @@ class Dictionary:
 
     def _is_cell_irrelevant_to_write_key(self,
                                          available_cell_index: int,
-                                         key: Any) -> bool:
+                                         key: Hashable) -> bool:
         cell = self._hash_table[available_cell_index]
         return cell is not None and key != cell[0]
