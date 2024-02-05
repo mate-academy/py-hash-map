@@ -108,11 +108,11 @@ class Dictionary:
             value = self.__getitem__(key)
             self.__delitem__(key)
             return value
-        except KeyError as e:
+        except KeyError:
             raise KeyError(
                 f'Key "{key}" not found in the dictionary.') from None
 
-    def get(self, key: Hashable, default_value=None) -> Any | None:
+    def get(self, key: Hashable, default_value: Any = None) -> Any | None:
         try:
             return self.__getitem__(key)
         except KeyError:
