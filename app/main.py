@@ -51,8 +51,7 @@ class Dictionary:
         index = self._find_available_cell(key, hash_of_key)
         if self._hash_table[index] is None:
             raise KeyError(f"Key {key} not found")
-        else:
-            return self._hash_table[index][2]
+        return self._hash_table[index][2]
 
     def _resize(self) -> None:
         self._capacity *= 2
@@ -61,4 +60,4 @@ class Dictionary:
         self._number_of_stored_elements = 0
         for item in old_hash_table:
             if item is not None:
-                self.__setitem__(item[0], item[2])
+                self[item[0]] = item[2]
