@@ -2,10 +2,10 @@ from typing import Hashable, Any
 
 
 class Node:
-    def __init__(self, key: Hashable, value: Any, hash: int) -> None:
+    def __init__(self, key: Hashable, value: Any, hash_: int) -> None:
         self.key = key
         self.value = value
-        self.hash = hash
+        self.hash_ = hash_
         self.next: None | Node = None
 
 
@@ -27,7 +27,8 @@ class Dictionary:
             current = self.__data[i]
 
             while current:
-                key, value, hash_key = current.key, current.value, current.hash
+                key, value = current.key, current.value
+                hash_key = current.hash_
                 index = hash_key % new_capacity
 
                 if new_data[index] is None:
@@ -52,7 +53,7 @@ class Dictionary:
             current = self.__data[index]
 
             while current:
-                if key == current.key and hash_key == current.hash:
+                if key == current.key and hash_key == current.hash_:
                     current.value = value
                     return
                 if current.next is None:
@@ -71,7 +72,7 @@ class Dictionary:
         current = self.__data[index]
 
         while current:
-            if key == current.key and hash_key == current.hash:
+            if key == current.key and hash_key == current.hash_:
                 return current.value
 
             current = current.next
@@ -93,7 +94,7 @@ class Dictionary:
         previous = None
 
         while current:
-            if key == current.key and hash_key == current.hash:
+            if key == current.key and hash_key == current.hash_:
                 if previous is None:
                     self.__data[index] = current.next
                 else:
