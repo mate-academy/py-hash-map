@@ -18,7 +18,7 @@ class Dictionary:
 
         for node in copy_of_old_table:
             if node is not None:
-                self.__setitem__(node[0], node[2])
+                self[node[0]] = node[2]
 
     def _find_available_cell(self, key: Hashable) -> int:
         index = self._get_hash(key)
@@ -48,6 +48,6 @@ class Dictionary:
             if self._number_of_stored_elements >= self._capacity / 3 * 2:
                 self._resize()
                 self[key] = value
-                return None
+                return
 
         self._hash_table[index_to_insert] = (key, hash_, value)
