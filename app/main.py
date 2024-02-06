@@ -61,10 +61,6 @@ class Dictionary:
 
         raise KeyError
 
-    def test_deletion(self, key: Hashable) -> None:
-        index = self.calculate_index(key)
-        assert self.hash_table[index] is None
-
     def resize_if_necessary(self) -> None:
         if self.length / self.capacity > self.threshold:
             old_hash_table = self.hash_table
@@ -76,11 +72,14 @@ class Dictionary:
                 if item is not None:
                     self[item[0]] = item[2]
 
-    def pop(self, key: Hashable) -> Any:
-        index = self.calculate_index(key)
-        value = self.hash_table[index]
-        self.hash_table[index] = None
-        return value
+    def pop(self, key: Hashable, default=None) -> Any:
+        if key in self.hash_table:
+            index = self.calculate_index(key)
+            value = self.hash_table[index]
+            self.hash_table[index] = None
+            return value
+        else:
+            return default
 
     def __iter__(self) -> iter:
         for pair in self.hash_table:
