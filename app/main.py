@@ -72,7 +72,7 @@ class Dictionary:
                 if item is not None:
                     self[item[0]] = item[2]
 
-    def pop(self, key: Hashable, default=None) -> Any:
+    def pop(self, key: Hashable, default: None = None) -> Any:
         if key in self.hash_table:
             index = self.calculate_index(key)
             value = self.hash_table[index]
