@@ -2,10 +2,10 @@ from typing import Any, Hashable
 
 
 class Dictionary:
+    LOAD_FACTOR = 2 / 3
 
     def __init__(self) -> None:
         self.capacity = 8
-        self.load_factor = 2 / 3
         self.hash_table = [None] * self.capacity
         self.count = 0
 
@@ -13,12 +13,11 @@ class Dictionary:
         index = self.calculate_index(key)
 
         if not self.hash_table[index]:
-            self.count += 1
 
-            if self.count >= int(self.capacity * self.load_factor):
+            if self.count >= int(self.capacity * Dictionary.LOAD_FACTOR):
                 self.resize()
                 index = self.calculate_index(key)
-
+            self.count += 1
         self.hash_table[index] = (key, hash(key), value)
 
     def __getitem__(self, key: Hashable) -> Any:
@@ -36,12 +35,11 @@ class Dictionary:
         self.capacity *= 2
         old_hash_table = self.hash_table
         self.hash_table = [None] * self.capacity
+        self.count = 0
 
         for item in old_hash_table:
             if item:
-                key, hash_, value = item
-                self.hash_table[self.calculate_index(key)] = \
-                    (key, hash_, value)
+                self[item[0]] = item[2]
 
     def calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
