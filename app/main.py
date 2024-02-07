@@ -41,7 +41,7 @@ class Dictionary:
 
         for cell in old_cells:
             if cell:
-                self.__setitem__(cell[0], cell[2])
+                self[cell[0]] = cell[2]
 
     def _find_available_cell(self, key: Hashable, hash_of_key: int) -> int:
         available_cell_index = self._get_index_by_hash(hash_of_key)
