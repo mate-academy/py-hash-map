@@ -1,7 +1,9 @@
 from typing import Hashable, Any
 from collections import namedtuple
 
-HashMap = namedtuple("HashedMap", ["key", "hashed_key", "value", "is_deleted"])
+HashMap = namedtuple(
+    "HashedMap", ["key", "hashed_key", "value", "is_deleted"]
+)
 
 
 class Dictionary:
@@ -13,7 +15,9 @@ class Dictionary:
 
     def __repr__(self) -> str:
         items = [
-            f"{item.key}: {item.value}" for item in self._table if item is not None
+            f"{item.key}: {item.value}"
+            for item in self._table
+            if item is not None
         ]
         return "{" + ", ".join(items) + "}"
 
@@ -23,7 +27,10 @@ class Dictionary:
         while True:
             if self._table[index] is None:
                 raise KeyError(f"Key `{key}` is not found!")
-            if self._table[index] is not None and self._table[index].key == key:
+            if (
+                    self._table[index] is not None
+                    and self._table[index].key == key
+            ):
                 return self._table[index].value
 
             index = self._increment_index(index)
@@ -56,8 +63,13 @@ class Dictionary:
         index = self._get_hash_index(key)
 
         while True:
-            if self._table[index] is not None and self._table[index].key == key:
-                self._table[index] = HashMap(key, hash(key), None, is_deleted=True)
+            if (
+                    self._table[index] is not None
+                    and self._table[index].key == key
+            ):
+                self._table[index] = HashMap(
+                    key, hash(key), None, is_deleted=True
+                )
                 self._length -= 1
                 break
             if self._table[index] is None or not self._table[index].is_deleted:
