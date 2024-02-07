@@ -78,8 +78,7 @@ class Dictionary:
             value = self.hash_table[index]
             self.hash_table[index] = None
             return value
-        else:
-            return default
+        raise KeyError
 
     def __iter__(self) -> iter:
         for pair in self.hash_table:
