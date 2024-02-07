@@ -25,17 +25,16 @@ class Dictionary:
         key_hash = hash(key)
         index = self.__hash_index__(key_hash)
 
-        if not self._hash_table[index]:
+        if self._hash_table[index] is None:
             self._hash_table[index] = []
 
         found = False
-        for item in self._hash_table[index]:
-            if item[0] == key:
-                self._hash_table[index][
-                    self._hash_table[index].index(item)
-                ] = (key, key_hash, value)
+        for i, (item_key, item_hash, _) in enumerate(self._hash_table[index]):
+            if item_key == key:
+                self._hash_table[index][i] = (key, key_hash, value)
                 found = True
                 break
+
         if not found:
             self._hash_table[index].append((key, key_hash, value))
             self.dict_size += 1
@@ -49,9 +48,9 @@ class Dictionary:
         if self._hash_table[index] is None:
             raise KeyError(key)
 
-        for k, kh, v in self._hash_table[index]:
-            if k == key:
-                return v
+        for other_key, key_hash, value in self._hash_table[index]:
+            if other_key == key:
+                return value
 
         raise KeyError(key)
 
@@ -66,24 +65,26 @@ class Dictionary:
         key_hash = hash(key)
         index = self.__hash_index__(key_hash)
 
-        if self.table[index] is None:
+        if self._hash_table[index] is None:
             raise KeyError(key)
 
-        for i, (k, kh, v) in enumerate(self._hash_table[index]):
-            if k == key:
+        for i, (other_key, key_hash, value) in enumerate(
+                self._hash_table[index]
+        ):
+            if other_key == key:
                 del self._hash_table[index][i]
                 self.dict_size -= 1
                 return
 
         raise KeyError(key)
 
-    def get(self, key: Hashable, default: Any = None) -> None:
+    def get(self, key: Hashable, default: Any) -> None:
         try:
             return self.__getitem__(key)
         except KeyError:
             return default
 
-    def pop(self, key: Hashable, default: Any = None) -> None:
+    def pop(self, key: Hashable, default: Any) -> None:
         key_hash = hash(key)
         index = self.__hash_index__(key_hash)
 
@@ -93,8 +94,10 @@ class Dictionary:
             else:
                 raise KeyError(key)
 
-        for i, (k, kh, v) in enumerate(self._hash_table[index]):
-            if k == key:
+        for i, (other_key, key_hash, value) in enumerate(
+                self._hash_table[index]
+        ):
+            if other_key == key:
                 self.dict_size -= 1
                 return self._hash_table[index].pop(i)[2]
 
@@ -104,8 +107,21 @@ class Dictionary:
             raise KeyError(key)
 
     def update(self, *args, **kwargs) -> None:
-        for key, value in dict(*args, **kwargs).items():
+        for key, value in kwargs.items():
             self.__setitem__(key, value)
+
+        for arg in args:
+            if isinstance(arg, dict) or isinstance(arg, Dictionary):
+                for key, value in arg.items():
+                    self.__setitem__(key, value)
+            else:
+                try:
+                    for key, value in arg:
+                        self.__setitem__(key, value)
+                except TypeError:
+                    raise ValueError(
+                        "Argument must be a dictionary-like object"
+                    )
 
     def __iter__(self) -> None:
         for bucket in self._hash_table:
