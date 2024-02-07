@@ -1,23 +1,19 @@
 from typing import Hashable, Any
 from collections import namedtuple
 
-HashedMap = namedtuple(
-    "HashedMap", ["key", "hashed_key", "value"]
-)
+HashMap = namedtuple("HashedMap", ["key", "hashed_key", "value", "is_deleted"])
 
 
 class Dictionary:
     def __init__(self) -> None:
         self._length = 0
         self._capacity = 8
-        self._table: list[None | HashedMap] = [None] * self._capacity
+        self._table: list[None | HashMap] = [None] * self._capacity
         self._threshold = int(self._capacity * (2 / 3))
 
     def __repr__(self) -> str:
         items = [
-            f"{item.key}: {item.value}"
-            for item in self._table
-            if item is not None
+            f"{item.key}: {item.value}" for item in self._table if item is not None
         ]
         return "{" + ", ".join(items) + "}"
 
@@ -27,10 +23,7 @@ class Dictionary:
         while True:
             if self._table[index] is None:
                 raise KeyError(f"Key `{key}` is not found!")
-            if (
-                    self._table[index] is not None
-                    and self._table[index].key == key
-            ):
+            if self._table[index] is not None and self._table[index].key == key:
                 return self._table[index].value
 
             index = self._increment_index(index)
@@ -39,18 +32,22 @@ class Dictionary:
         index = self._get_hash_index(key)
 
         while True:
-            if self._table[index] is None:
+            if self._table[index] is None or self._table[index].is_deleted:
                 self._length += 1
 
                 if self._length >= self._threshold:
                     self.__resize()
                     self[key] = value
 
-                self._table[index] = HashedMap(key, hash(key), value)
+                self._table[index] = HashMap(
+                    key, hash(key), value, is_deleted=False
+                )
                 break
 
             if self._table[index].key == key:
-                self._table[index] = HashedMap(key, hash(key), value)
+                self._table[index] = HashMap(
+                    key, hash(key), value, is_deleted=False
+                )
                 break
 
             index = self._increment_index(index)
@@ -59,14 +56,11 @@ class Dictionary:
         index = self._get_hash_index(key)
 
         while True:
-            if (
-                    self._table[index] is not None
-                    and self._table[index].key == key
-            ):
-                self._table[index] = None
+            if self._table[index] is not None and self._table[index].key == key:
+                self._table[index] = HashMap(key, hash(key), None, is_deleted=True)
                 self._length -= 1
                 break
-            if self._table[index] is None:
+            if self._table[index] is None or not self._table[index].is_deleted:
                 raise KeyError(f"Key `{key}` is not found!")
 
             index = self._increment_index(index)
