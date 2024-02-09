@@ -1,18 +1,20 @@
 from typing import Any
+from collections.abc import Hashable
 
 
 class Dictionary:
     def __init__(
             self,
             initial_capacity: int = 8,
-            load_factor: float = 0.66) -> None:
+            load_factor: float = 0.66
+    ) -> None:
         self.initial_capacity = initial_capacity
         self.load_factor = load_factor
         self.size = 0
         self.capacity = initial_capacity
         self.table = [None] * initial_capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._get_index(key)
         if self.table[index] is None:
             self.table[index] = []
@@ -25,7 +27,7 @@ class Dictionary:
         if self.size >= self.capacity * self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._get_index(key)
         if self.table[index] is None:
             raise KeyError(key)
@@ -37,13 +39,13 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._get_index(key)
         if self.table[index] is None:
             raise KeyError(key)
-        for i, item in enumerate(self.table[index]):
+        for index, item in enumerate(self.table[index]):
             if item[0] == key:
-                del self.table[index][i]
+                del self.table[index][index]
                 self.size -= 1
                 return
         raise KeyError(key)
@@ -54,7 +56,7 @@ class Dictionary:
                 for item in cell:
                     yield item[0]
 
-    def _get_index(self, key: Any) -> int:
+    def _get_index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def _resize(self) -> None:
@@ -73,13 +75,13 @@ class Dictionary:
         self.table = [None] * self.initial_capacity
         self.size = 0
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value: Any = self[key]
             del self[key]
