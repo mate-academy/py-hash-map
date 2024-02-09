@@ -25,10 +25,7 @@ class Dictionary:
         index = self._get_hash_index(key)
 
         while True:
-            if (
-                    self._table[index] is None
-                    or self._table[index].is_deleted
-            ):
+            if self._table[index] is None:
                 raise KeyError(f"Key `{key}` is not found!")
 
             if (
@@ -36,8 +33,8 @@ class Dictionary:
                     and self._table[index].key == key
             ):
                 return self._table[index].value
-
-            index = self._increment_index(index)
+            else:
+                index = self._increment_index(index)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._get_hash_index(key)
