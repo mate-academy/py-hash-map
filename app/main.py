@@ -25,8 +25,12 @@ class Dictionary:
         index = self._get_hash_index(key)
 
         while True:
-            if self._table[index] is None:
+            if (
+                    self._table[index] is None
+                    or self._table[index].is_deleted
+            ):
                 raise KeyError(f"Key `{key}` is not found!")
+
             if (
                     self._table[index] is not None
                     and self._table[index].key == key
