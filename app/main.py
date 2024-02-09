@@ -23,9 +23,8 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_hash_index(key)
-
         while True:
-            if self._table[index] is None:
+            if self._table[index] is None or self._table[index].is_deleted:
                 raise KeyError(f"Key `{key}` is not found!")
 
             if (
@@ -33,8 +32,8 @@ class Dictionary:
                     and self._table[index].key == key
             ):
                 return self._table[index].value
-            else:
-                index = self._increment_index(index)
+
+            index = self._increment_index(index)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._get_hash_index(key)
@@ -73,7 +72,7 @@ class Dictionary:
                 )
                 self._length -= 1
                 break
-            if self._table[index] is None or not self._table[index].is_deleted:
+            if self._table[index] is None or self._table[index].is_deleted:
                 raise KeyError(f"Key `{key}` is not found!")
 
             index = self._increment_index(index)
