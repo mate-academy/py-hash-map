@@ -72,7 +72,7 @@ class Dictionary:
                 )
                 self._length -= 1
                 break
-            if self._table[index] is None or self._table[index].is_deleted:
+            if self._table[index] is None or not self._table[index].is_deleted:
                 raise KeyError(f"Key `{key}` is not found!")
 
             index = self._increment_index(index)
