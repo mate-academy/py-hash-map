@@ -6,7 +6,10 @@ class Dictionary:
         self.capacity = 8
         self.hashmap: list = [[] for _ in range(self.capacity)]
         self.length = 0
-        self.load_factor = 0.75
+        self.LOAD_FACTOR = 0.75
+
+    def hash_key_index(self, key: Hashable) -> int:
+        return hash(key) % self.capacity
 
     def resize(self) -> None:
         self.capacity *= 2
@@ -21,35 +24,30 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_key = hash(key)
-        element_exists = False
-        self.length += 1
 
         for index, (stored_key, stored_value, stored_hash) \
-                in enumerate(self.hashmap[hash_key % self.capacity]):
+                in enumerate(self.hashmap[self.hash_key_index(key)]):
             if stored_hash == hash_key and stored_key == key:
-                self.hashmap[hash_key % self.capacity][index] = \
+                self.hashmap[self.hash_key_index(key)][index] = \
                     (key, value, hash_key)
-                element_exists = True
                 self.length -= 1
                 break
-
-        if not element_exists:
-            self.hashmap[hash_key % self.capacity].append(
+        else:
+            self.hashmap[self.hash_key_index(key)].append(
                 (key, value, hash_key)
             )
 
-        if self.length / float(self.capacity) >= self.load_factor:
+        self.length += 1
+
+        if self.length / float(self.capacity) >= self.LOAD_FACTOR:
             self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_key = hash(key)
-
-        for index, (stored_key, stored_value, stored_hash) \
-                in enumerate(self.hashmap[hash_key % self.capacity]):
-            if stored_key == key and stored_hash == hash_key:
-                return stored_value
-        else:
-            raise KeyError("Key doesn't exist.")
+        for index, data_tuple \
+                in enumerate(self.hashmap[self.hash_key_index(key)]):
+            if data_tuple[0] == key:
+                return data_tuple[1]
+        raise KeyError("Key doesn't exist.")
 
     def __len__(self) -> int:
         return self.length
