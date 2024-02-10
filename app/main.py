@@ -1,57 +1,64 @@
-from typing import Any, Hashable
+from typing import Hashable, Any
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.capacity = 8
-        self.contained = [None] * self.capacity
-        self.size = 0
-        self.load_factor = 2 / 3
+        self._capacity = 8
+        self._hash_table = [None] * self._capacity
+        self._number_of_stored_elements = 0
 
-    def hash(self, key: Hashable) -> int:
-        hash_code = hash(key)
-        return hash_code % self.capacity
-
-    def increase(self, new_capacity: int) -> None:
-        old_table = self.contained
-        self.contained = [None] * new_capacity
-        self.capacity = new_capacity
-        self.size = 0
-
-        for nodes in old_table:
-            if nodes is not None:
-                for node in nodes:
-                    self[node[0]] = node[2]
+    def __len__(self) -> int:
+        return self._number_of_stored_elements
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.size / self.capacity > self.load_factor:
-            self.increase(self.capacity * 2)
+        hash_of_key = hash(key)
+        index_to_insert = self._find_available_cell(key, hash_of_key)
 
-        index = self.hash(key)
-        contained_data = [key, index, value]
+        if self._hash_table[index_to_insert] is None:
+            self._number_of_stored_elements += 1
 
-        if self.contained[index] is None:
-            self.contained[index] = []
-
-        for existing_node in self.contained[index]:
-            if existing_node[0] == key:
-                existing_node[2] = value
+            if self._number_of_stored_elements * 3 > self._capacity * 2:
+                self._resize()
+                self[key] = value
                 return
 
-        self.contained[index].append(contained_data)
-        self.size += 1
+        self._hash_table[index_to_insert] = (key, hash_of_key, value)
 
-    def __getitem__(self, key: Hashable) -> Any | None:
-        index = self.hash(key)
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self._find_available_cell(key, hash(key))
 
-        if self.contained[index] is None:
-            raise KeyError(f"Key {key} not found")
+        if self._hash_table[index] is None:
+            raise KeyError(f"{key} is not found")
 
-        for node in self.contained[index]:
-            if node[0] == key:
-                return node[2]
+        return self._hash_table[index][2]
 
-        raise KeyError(f"Key {key} not found")
+    def _resize(self) -> None:
+        self._capacity *= 2
+        old_hash_table = self._hash_table
+        self._hash_table = [None] * self._capacity
+        self._number_of_stored_elements = 0
 
-    def __len__(self) -> None:
-        return self.size
+        for item in old_hash_table:
+            if item is not None:
+                self[item[0]] = item[2]
+
+    def _find_available_cell(self, key: Hashable, hash_of_key: int) -> int:
+        available_cell_index = hash_of_key % self._capacity
+
+        while self._is_cell_irrelevant_to_write_key(available_cell_index, key):
+            available_cell_index = self._increment_index(available_cell_index)
+
+        return available_cell_index
+
+    def _increment_index(self, index: int) -> int:
+        return (index + 1) % self._capacity
+
+    def _is_cell_irrelevant_to_write_key(
+            self,
+            available_cell_index: int,
+            key: Hashable
+    ) -> bool:
+        return (
+            self._hash_table[available_cell_index] is not None
+            and key != self._hash_table[available_cell_index][0]
+        )
