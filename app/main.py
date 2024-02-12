@@ -34,7 +34,7 @@ class Dictionary:
         for element in self.objects:
             if element[0] == item:
                 return element[1]
-        return None
+        raise KeyError
 
     def __delitem__(self, index: int) -> None:
         self.objects.pop(index)
