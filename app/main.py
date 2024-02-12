@@ -42,7 +42,7 @@ class Dictionary:
     def get(self, index: str) -> None | str:
         return self.__getitem__(index)
 
-    def pop(self, index=None) -> str:
+    def pop(self, index: int = None) -> str:
         if index is None:
             value = self.objects[-1][1]
             self.objects.pop()
