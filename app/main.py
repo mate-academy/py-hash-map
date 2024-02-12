@@ -15,7 +15,7 @@ class Dictionary:
     def clear(self) -> None:
         self.objects = []
 
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: str, value: str) -> None:
         try:
 
             if len(self.objects) == 0:
@@ -30,16 +30,16 @@ class Dictionary:
         except Exception(KeyError):
             raise KeyError
 
-    def __getitem__(self, item) -> None | str:
+    def __getitem__(self, item: str) -> None | str:
         for element in self.objects:
             if element[0] == item:
                 return element[1]
         return None
 
-    def __delitem__(self, index) -> None:
+    def __delitem__(self, index: int) -> None:
         self.objects.pop(index)
 
-    def get(self, index) -> None | str:
+    def get(self, index: str) -> None | str:
         return self.__getitem__(index)
 
     def pop(self, index=None) -> str:
@@ -51,7 +51,7 @@ class Dictionary:
         self.objects.pop(index)
         return value
 
-    def update(self, pair) -> None:
+    def update(self, pair: dict) -> None:
         key = [key for key in pair][0]
         value = pair[key]
 
