@@ -1,8 +1,8 @@
 from typing import Hashable, Any
 from collections import namedtuple
 
-HashMap = namedtuple(
-    "HashedMap", ["key", "hashed_key", "value", "is_deleted"]
+Bucket = namedtuple(
+    "Bucket", ["key", "hashed_key", "value", "is_deleted"]
 )
 
 
@@ -10,7 +10,7 @@ class Dictionary:
     def __init__(self) -> None:
         self._length = 0
         self._capacity = 8
-        self._table: list[None | HashMap] = [None] * self._capacity
+        self._table: list[None | Bucket] = [None] * self._capacity
         self._threshold = int(self._capacity * (2 / 3))
 
     def __repr__(self) -> str:
@@ -23,10 +23,10 @@ class Dictionary:
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_hash_index(key)
-        while True:
-            if self._table[index] is None or self._table[index].is_deleted:
-                raise KeyError(f"Key `{key}` is not found!")
 
+        while True:
+            if self._table[index] is None:
+                raise KeyError(f"Key `{key}` is not found!")
             if (
                     self._table[index] is not None
                     and self._table[index].key == key
@@ -46,13 +46,13 @@ class Dictionary:
                     self.__resize()
                     self[key] = value
 
-                self._table[index] = HashMap(
+                self._table[index] = Bucket(
                     key, hash(key), value, is_deleted=False
                 )
                 break
 
             if self._table[index].key == key:
-                self._table[index] = HashMap(
+                self._table[index] = Bucket(
                     key, hash(key), value, is_deleted=False
                 )
                 break
@@ -67,12 +67,13 @@ class Dictionary:
                     self._table[index] is not None
                     and self._table[index].key == key
             ):
-                self._table[index] = HashMap(
+                self._table[index] = Bucket(
                     key, hash(key), None, is_deleted=True
                 )
                 self._length -= 1
                 break
-            if self._table[index] is None or not self._table[index].is_deleted:
+
+            if self._table[index] is None:
                 raise KeyError(f"Key `{key}` is not found!")
 
             index = self._increment_index(index)
