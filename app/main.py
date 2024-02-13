@@ -68,7 +68,7 @@ class Dictionary:
                     and self._table[index].key == key
             ):
                 self._table[index] = Bucket(
-                    key, hash(key), None, is_deleted=True
+                    None, None, None, is_deleted=True
                 )
                 self._length -= 1
                 break
