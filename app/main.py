@@ -19,9 +19,11 @@ class Dictionary:
         threshold = int(self._capacity * 2 / 3)
 
         if self._hash_table[index_insert] is None:
-            self._length += 1
-            if self._length >= threshold:
+
+            if self._length + 1 >= threshold:
                 self._resize()
+
+            self._length += 1
 
         self._hash_table[index_insert] = (key, key_hash, value)
 
@@ -40,20 +42,25 @@ class Dictionary:
 
     def _resize(self) -> None:
 
-        old_hash_table = list(filter(None, self._hash_table))
+        old_hash_table = self._hash_table.copy()
         self._capacity *= 2
         self._hash_table = [None] * self._capacity
-        for key, key_hash, value in old_hash_table:
-            index_insert = self._find_available_cell(key, key_hash)
-            self._hash_table.__setitem__(index_insert, (key, key_hash, value))
+        self._length = 0
+
+        for cell in old_hash_table:
+            if cell is not None:
+                self[cell[0]] = cell[2]
 
     def _find_available_cell(self, key: Hashable, key_hash: int) -> int:
         available_cell_index = self._get_index_by_hash(key_hash)
 
-        while self._is_cell_irrelevant_to_write_key(available_cell_index, key):
+        while True:
+            cell = self._hash_table[available_cell_index]
+            if cell is None:
+                return available_cell_index
+            if cell[0] == key:
+                return available_cell_index
             available_cell_index = self._increment_index(available_cell_index)
-
-        return available_cell_index
 
     def _get_index_by_hash(self, key_hash: int) -> int:
         return key_hash % self._capacity
