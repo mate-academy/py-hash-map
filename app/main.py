@@ -37,7 +37,7 @@ class Dictionary:
     def __getitem__(self, item: int | str | float) -> list:
         index = self.find_available_index(item)
         if not self.table[index]:
-            raise KeyError(f'Key {item} not found .')
+            raise KeyError(f"Key {item} not found .")
         return self.table[index][2]
 
     def __len__(self) -> int:
