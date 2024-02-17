@@ -22,7 +22,7 @@ class Dictionary:
         if self.load_factor >= self.capacity * 2 / 3:
             self._resize(self.buckets)
 
-        index = hash(key) % self.capacity
+        index = self.get_index(key)
         while self.buckets[index] and self.buckets[index].key != key:
             index = (index + 1) % self.capacity
 
@@ -31,8 +31,7 @@ class Dictionary:
         self.buckets[index] = Node(key, value)
 
     def __getitem__(self, input_key: Any) -> Any:
-        hash_key = hash(input_key)
-        index = hash_key % self.capacity
+        index = self.get_index(input_key)
 
         while self.buckets[index] is not None:
             node = self.buckets[index]
@@ -40,7 +39,7 @@ class Dictionary:
                 return node.value
             index = (index + 1) % self.capacity
 
-        raise KeyError()
+        raise KeyError("Wrong key")
 
     def _resize(self, elements: list) -> None:
         self.capacity *= 2
@@ -54,6 +53,10 @@ class Dictionary:
                     index = (index + 1) % self.capacity
 
                 self.buckets[index] = node
+
+    def get_index(self, input_key: Any) -> Any:
+        hash_key = hash(input_key)
+        return hash_key % self.capacity
 
     def __len__(self) -> int:
         return self.load_factor
