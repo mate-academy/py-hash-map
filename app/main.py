@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
     def __init__(
             self,
-            key: Any,
+            key: Hashable,
             value: Any
     ) -> None:
         self.key = key
@@ -18,7 +18,7 @@ class Dictionary:
         self.capacity = 8
         self.buckets = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.load_factor >= self.capacity * 2 / 3:
             self._resize(self.buckets)
 
