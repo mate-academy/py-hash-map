@@ -13,7 +13,7 @@ class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.length = 0
-        self.load_factor = 2/3
+        self.load_factor = 2 / 3
         self.hash_table: list[Union[None, Node]] = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
@@ -37,8 +37,8 @@ class Dictionary:
         while (
                 self.hash_table[index] is not None
                 and (
-                        self.hash_table[index].hash_ != hash_
-                        or self.hash_table[index].key != key
+                    self.hash_table[index].hash_ != hash_
+                    or self.hash_table[index].key != key
                 )
         ):
             index += 1
