@@ -27,14 +27,11 @@ class Dictionary:
     def _check_index(self, key: Hashable) -> int:
         hash_key = hash(key)
         index = hash_key % self.table_size
-
         while (
             self.hash_table[index] is not None
             and self.hash_table[index][0] != key
         ):
-            index = index + 1
-            if index > self.table_size - 1:
-                index = 0
+            index = (index + 1) % self.table_size
         return index
 
     def _resize_table(self) -> None:
