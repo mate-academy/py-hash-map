@@ -88,4 +88,3 @@ class Dictionary:
         while self.__hash_table[index] and self.__hash_table[index].key != key:
             index = (index + 1) % self.__capacity
         return index
-
