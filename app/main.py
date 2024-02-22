@@ -7,7 +7,7 @@ class Dictionary:
         self.hash_table: list = [None] * 8
         self.capacity = 8
 
-    def get_index(self, key: Hashable) -> int:
+    def get_index_from_hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def __setitem__(
@@ -17,7 +17,7 @@ class Dictionary:
     ) -> None:
         if self.length >= self.capacity * (2 / 3):
             self.resize()
-        index = self.get_index(key)
+        index = self.get_index_from_hash(key)
         while True:
             if not self.hash_table[index]:
                 self.length += 1
@@ -27,10 +27,10 @@ class Dictionary:
             index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
-        return self.hash_table[self.get(key)][2]
+        return self.get(key)
 
-    def get(self, key: Hashable) -> int | KeyError:
-        start_index = self.get_index(key)
+    def get_index(self, key: Hashable) -> int | KeyError:
+        start_index = self.get_index_from_hash(key)
         index = start_index
         while True:
             if self.hash_table[index] and self.hash_table[index][0] == key:
@@ -39,11 +39,14 @@ class Dictionary:
             if index == start_index:
                 raise KeyError("Key was not found")
 
+    def get(self, key: Hashable) -> int | KeyError:
+        return self.hash_table[self.get_index(key)][2]
+
     def __len__(self) -> int:
         return self.length
 
     def __delitem__(self, key: Hashable) -> None:
-        index = self.get(key)
+        index = self.get_index(key)
         self.hash_table[index] = None
         self.length -= 1
 
