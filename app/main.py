@@ -66,3 +66,4 @@ class Dictionary:
 
     def clear(self) -> None:
         self.hash_table.clear()
+        self.length = 0
