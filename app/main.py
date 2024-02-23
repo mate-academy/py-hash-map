@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -10,7 +10,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.len_dictionary
 
-    def find_index(self, key: Any) -> int:
+    def find_index(self, key: Hashable) -> int:
         return hash(key) % self.size_dictionary
 
     def resize_list(self) -> None:
@@ -18,11 +18,11 @@ class Dictionary:
         copy_list_dict = self.list_dictionary[:]
         self.list_dictionary = [None] * self.size_dictionary
         self.len_dictionary = 0
-        for i in copy_list_dict:
-            if i is not None:
-                self.__setitem__(i[0], i[1])
+        for element in copy_list_dict:
+            if element is not None:
+                self.__setitem__(element[0], element[1])
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.find_index(key)
         while self.list_dictionary[index] is not None:
             if self.list_dictionary[index][0] == key:
@@ -30,8 +30,8 @@ class Dictionary:
             index = (index + 1) % self.size_dictionary
         raise KeyError(f"Key {key} is not found")
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        if self.len_dictionary > self.size_dictionary * (2 / 3):
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.len_dictionary > self.size_dictionary * 0.66:
             self.resize_list()
         index = self.find_index(key)
 
