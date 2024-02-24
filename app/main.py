@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 BLANK = object()
@@ -6,7 +6,7 @@ BLANK = object()
 
 class Node:
     def __init__(
-            self, key: str | int | float | tuple,
+            self, key: Hashable,
             node_hash: int,
             value: Any
     ) -> None:
@@ -23,7 +23,7 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: str | int | float | tuple,
+            key: Hashable,
             value: Any
     ) -> None:
         Dictionary.key_type_check(key)
@@ -47,7 +47,7 @@ class Dictionary:
 
     def __getitem__(
             self,
-            key: str | int | float | tuple,
+            key: Hashable,
     ) -> Any | None:
         Dictionary.key_type_check(key)
 
