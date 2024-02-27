@@ -1,3 +1,5 @@
+from typing import Hashable, Any
+
 
 class Dictionary:
 
@@ -8,7 +10,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * self.capacity
 
-    def table_hash(self, key: int | str | object) -> int:
+    def table_hash(self, key: Hashable) -> int:
         hash_key = hash(key)
         return hash_key % len(self.table)
 
@@ -22,7 +24,7 @@ class Dictionary:
             if nod is not None:
                 self.__setitem__(nod[0], nod[2])
 
-    def __setitem__(self, key: int | str | object, value: int) -> None:
+    def __setitem__(self, key: Hashable, value: int) -> None:
         number_hash = self.table_hash(key)
         index = number_hash % self.capacity
 
@@ -38,7 +40,7 @@ class Dictionary:
         if self.size >= self.threshold:
             self.table_resize()
 
-    def __getitem__(self, key: int | str | object) -> int:
+    def __getitem__(self, key: Hashable) -> Any:
         number_hash = self.table_hash(key)
         index = number_hash % self.capacity
         while self.table[index] is not None:
