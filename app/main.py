@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Hashable
 
 
@@ -40,8 +42,7 @@ class Dictionary:
         index = self.get_index(key)
         if self.hash_table[index] and self.hash_table[index].key == key:
             return self.hash_table[index].value
-        else:
-            raise KeyError("Key not found in the dictionary.")
+        raise KeyError("Key not found in the dictionary.")
 
     def resize(self) -> None:
         old_hash_table = self.hash_table.copy()
@@ -67,18 +68,23 @@ class Dictionary:
             index += 1
         raise StopIteration("Dictionary index out of range.")
 
-    def update(self, dictionary: Any) -> None:
-        # Any instead of Dictionary,
-        # because it raises error "name 'Dictionary' is not defined"
+    def update(self, dictionary: Dictionary) -> None:
         for key, value in dictionary.items():
             self[key] = value
+
+    def items(self) -> list:
+        index = 0
+        while index < self.capacity:
+            if self.hash_table[index]:
+                yield [self.hash_table[index].key, self.hash_table[index].value]
+            index += 1
+        raise StopIteration("Dictionary index out of range.")
 
     def get(self, key: Hashable, value: Any = None) -> Any:
         index = self.get_index(key)
         if self.hash_table[index] and self.hash_table[index].key == key:
             return self.hash_table[index].value
-        else:
-            return value
+        return value
 
     def pop(self, key: Hashable, value: Any = None) -> Any:
         index = self.get_index(key)
@@ -87,8 +93,7 @@ class Dictionary:
             self.hash_table[index] = None
             self.size -= 1
             return value
-        else:
-            return value
+        return value
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
@@ -96,5 +101,5 @@ class Dictionary:
             self.hash_table[index] = None
             self.size -= 1
 
-    def clear(self) -> Any:
+    def clear(self) -> Dictionary:
         return self.__init__()
