@@ -76,7 +76,8 @@ class Dictionary:
         index = 0
         while index < self.capacity:
             if self.hash_table[index]:
-                yield [self.hash_table[index].key, self.hash_table[index].value]
+                yield [self.hash_table[index].key,
+                       self.hash_table[index].value]
             index += 1
         raise StopIteration("Dictionary index out of range.")
 
