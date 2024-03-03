@@ -114,3 +114,6 @@ class Dictionary:
 
     def get_capacity(self) -> int:
         return len(self.hash_table)
+
+    def __len__(self) -> int:
+        return self.length
