@@ -34,6 +34,27 @@ class Dictionary:
         except KeyError:
             return None
 
+    def update(self, items: dict | list | tuple) -> None:
+        if not isinstance(items, dict | list | tuple):
+            raise TypeError(f"Cannot convert <{items}> to dictionary")
+        if not items:
+            raise TypeError("Missing required positional argument: 'items'")
+
+        if isinstance(items, dict):
+            [self.__setitem__(key, value) for key, value in items.items()]
+            return
+        if not isinstance(items[0], list | tuple):
+            self.__setitem__(*items)
+            return
+
+        for item in items:
+            if isinstance(item, list | tuple) and len(item) == 2:
+                self.__setitem__(*item)
+            elif isinstance(item, dict):
+                [self.__setitem__(key, value) for key, value in item.items()]
+            else:
+                raise TypeError(f"Cannot convert <{item}> to dictionary entry")
+
     def set_index(self, hash_code: int, key: Any) -> (int, int):
         hash_i = hash_code % self.get_capacity()
         while self.hash_table[hash_i] != -1:
