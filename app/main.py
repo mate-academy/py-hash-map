@@ -72,6 +72,9 @@ class Dictionary:
         self.hash_table[hash_index] = -2
         self.length -= 1
 
+    def clear(self) -> None:
+        self.__init__()
+
     def set_index(self, hash_code: int, key: Any) -> (int, int):
         hash_i = hash_code % self.get_capacity()
         while self.hash_table[hash_i] != -1:
