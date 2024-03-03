@@ -25,6 +25,15 @@ class Dictionary:
         else:
             self.dictionary[dict_index] = (hash_code, key, value)
 
+    def __getitem__(self, key: Any) -> Any:
+        return self.dictionary[self.get_index(key)[-1]][-1]
+
+    def get(self, key: Any) -> Any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return None
+
     def set_index(self, hash_code: int, key: Any) -> (int, int):
         hash_i = hash_code % self.get_capacity()
         while self.hash_table[hash_i] != -1:
@@ -36,6 +45,16 @@ class Dictionary:
                 return hash_i, dict_i
             hash_i = hash_i + 1 if hash_i < self.get_capacity() - 1 else 0
         return hash_i, self.hash_table[hash_i]
+
+    def get_index(self, key: Any) -> (int, int):
+        hash_i = hash(key) % self.get_capacity()
+        while True:
+            dict_i = self.hash_table[hash_i]
+            if dict_i == -1:
+                raise KeyError(f"No such key <{key}> in the dictionary")
+            if dict_i >= 0 and self.dictionary[dict_i][:2] == (hash(key), key):
+                return hash_i, dict_i
+            hash_i = hash_i + 1 if hash_i < self.get_capacity() - 1 else 0
 
     def resize(self) -> None:
         self.hash_table = [-1] * (self.get_capacity() * 2)
