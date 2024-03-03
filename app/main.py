@@ -120,3 +120,16 @@ class Dictionary:
 
     def __iter__(self) -> Any:
         return (item[1] for item in self.dictionary if item)
+
+    def __str__(self) -> str:
+        items = ""
+        for d in self.dictionary:
+            if not d:
+                continue
+            if items:
+                items += ", "
+            items += f"{d[1]}: {d[2]}"
+        return "{" + items + "}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
