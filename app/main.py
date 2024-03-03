@@ -55,6 +55,12 @@ class Dictionary:
             else:
                 raise TypeError(f"Cannot convert <{item}> to dictionary entry")
 
+    def __delitem__(self, key: Any) -> None:
+        hash_index, dict_index = self.get_index(key)
+        self.dictionary[dict_index] = None
+        self.hash_table[hash_index] = -2
+        self.length -= 1
+
     def set_index(self, hash_code: int, key: Any) -> (int, int):
         hash_i = hash_code % self.get_capacity()
         while self.hash_table[hash_i] != -1:
