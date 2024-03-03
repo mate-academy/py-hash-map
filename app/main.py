@@ -55,6 +55,17 @@ class Dictionary:
             else:
                 raise TypeError(f"Cannot convert <{item}> to dictionary entry")
 
+    def pop(self, key: Any, default: Any = None) -> Any:
+        try:
+            value = self.__getitem__(key)
+        except KeyError:
+            if default:
+                return default
+            else:
+                raise
+        self.__delitem__(key)
+        return value
+
     def __delitem__(self, key: Any) -> None:
         hash_index, dict_index = self.get_index(key)
         self.dictionary[dict_index] = None
