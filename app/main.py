@@ -117,3 +117,6 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
+
+    def __iter__(self) -> Any:
+        return (item[1] for item in self.dictionary if item)
