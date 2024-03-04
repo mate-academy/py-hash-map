@@ -154,7 +154,7 @@ def test_dictionary_add(items: list, pairs_after_adding: list):
 def test_dictionary_add_with_mocked_hash(
     mock_hash: mock, items: list, pairs_after_adding: list
 ):
-    mock_hash.return_value = 3
+    mock_hash.return_value = 1  # There was 3 it's okay or some mistake
 
     dictionary = Dictionary()
     for key, value in items:
