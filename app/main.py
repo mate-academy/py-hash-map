@@ -1,5 +1,5 @@
 from math import floor
-from typing import Any, Iterable
+from typing import Any, Iterable, Hashable
 
 
 class Dictionary:
@@ -10,7 +10,7 @@ class Dictionary:
         self._length = 0
         self._hash_table: list = [None] * self._initial_capacity
 
-    def _find_hash_index(self, key_item: Any) -> int:
+    def _find_hash_index(self, key_item: Hashable) -> int:
         hash_index = hash(key_item) % self._initial_capacity
         cell_in_table = self._hash_table
 
@@ -23,7 +23,7 @@ class Dictionary:
                 hash_index = 0
         return hash_index
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._resize <= self._length:
             self._initial_capacity *= 2
             self._resize = floor(self._initial_capacity * self._load_factor)
@@ -34,18 +34,14 @@ class Dictionary:
             for cell_in_table in temporary_hash_table:
                 if cell_in_table:
                     hash_index = self._find_hash_index(cell_in_table[0])
-                    self._hash_table[hash_index] = [
-                        cell_in_table[0],
-                        cell_in_table[1],
-                        cell_in_table[2]
-                    ]
+                    self._hash_table[hash_index] = [*cell_in_table]
             del temporary_hash_table
 
         hash_index = self._find_hash_index(key)
         self._hash_table[hash_index] = [key, hash(key), value]
         self._length = self._initial_capacity - self._hash_table.count(None)
 
-    def __getitem__(self, item: Any) -> Any:
+    def __getitem__(self, item: Hashable) -> Any:
         hash_index = hash(item) % self._initial_capacity
 
         while self._hash_table[hash_index] is not None:
@@ -58,7 +54,7 @@ class Dictionary:
                 return self._hash_table[hash_index][2]
         raise KeyError(f"Key {item} not in the hash table") from None
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_index = self._find_hash_index(key)
         self._hash_table[hash_index] = None
         self._length -= 1
@@ -66,13 +62,13 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> list:
+    def pop(self, key: Hashable, default: Any = None) -> list:
         try:
             result = self.__getitem__(key)
         except KeyError as error:
