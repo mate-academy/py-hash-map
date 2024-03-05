@@ -59,8 +59,9 @@ class Dictionary:
     def find_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
         for _ in range(self.capacity):
-            if key not in self.hash_table[index % self.capacity]:
-                index = (index + 1) % self.capacity
+            if key in self.hash_table[index % self.capacity]:
+                return index
+            index = (index + 1) % self.capacity
 
         if hash(key) not in self.hash_table[index]:
             raise KeyError("Key does not exist")
@@ -80,7 +81,7 @@ class Dictionary:
 
         while self.hash_table[index]:
             index = (index + 1) % self.capacity
-        self.hash_table[index] = [key, value, hash(key)]
+        self.hash_table[index] = [key, value]
 
     def __getitem__(self, item: Hashable) -> Any:
         index = self.find_index(item)
