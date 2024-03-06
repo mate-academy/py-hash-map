@@ -68,7 +68,7 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Hashable, default: Any = None) -> list:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             result = self.__getitem__(key)
         except KeyError as error:
@@ -91,13 +91,10 @@ class Dictionary:
             raise TypeError(f"Unsupported type for {iterable}. "
                             f"Expected Dictionary, list, or tuple.")
 
-    def __iter__(self) -> Any:
-        for item in self._hash_table:
-            if item is not None:
-                yield item[0]
-
-    def __next__(self) -> Any:
-        raise StopIteration
+    def __iter__(self) -> Iterable:
+        return iter(
+            [value[0] for value in self._hash_table if value is not None]
+        )
 
     def items(self) -> Any:
         for item in self._hash_table:
