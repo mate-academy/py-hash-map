@@ -7,11 +7,12 @@ class Node:
             self,
             key: Hashable,
             value: Any,
-            next: int | None = None
+            next: Node | None = None
     ) -> None:
         self.key = key
         self.value = value
         self.next = next
+    # TODO: Need to rewrite all methods for use Node like "next"
 
 
 class Dictionary:
