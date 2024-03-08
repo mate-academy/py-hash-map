@@ -61,20 +61,22 @@ class Dictionary:
         new_capacity = self.capacity * 2
         new_table = [None] * new_capacity
 
-        for key, value, hash_key in self.table:
-            while key:
-                hash_value = hash(key)
+        for element in self.table:
+            while element.key:
+                hash_value = hash(element.key)
                 new_index = hash_value % new_capacity
                 if new_table[new_index] is None:
-                    new_table[new_index] = Node(key, hash_value, value)
+                    new_table[new_index] = Node(element.key,
+                                                hash_value,
+                                                element.value)
                 else:
                     current = new_table[new_index]
                     while current:
-                        if current.key == key:
-                            current.value = value
+                        if current.key == element.key:
+                            current.value = element.value
                             return
                         elif current.next is None:
                             break
                         current = current.next
-                    current.next = Node(key, hash_value, value)
+                    current.next = Node(element.key, hash_value, element.value)
         self.table = new_table
