@@ -25,8 +25,9 @@ class Dictionary:
         return iter(value[0] for value in self.hash_table if value)
 
     def get(
-            self, key: Hashable,
-            default: None
+            self,
+            key: Hashable,
+            default=None
     ) -> Any:
 
         try:
@@ -34,8 +35,15 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Hashable) -> Any:
-        value = self.hash_table[self.find_index(key)][1]
+    def pop(
+            self,
+            key: Hashable,
+            default: Hashable = None
+    ) -> Any:
+        try:
+            value = self.hash_table[self.find_index(key)][1]
+        except KeyError:
+            return default
         self.hash_table[self.find_index(key)] = []
         return value
 
@@ -59,6 +67,7 @@ class Dictionary:
     def find_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
         for _ in range(self.capacity):
+            print(index)
             if key in self.hash_table[index % self.capacity]:
                 return index
             index = (index + 1) % self.capacity
