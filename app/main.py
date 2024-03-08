@@ -27,7 +27,7 @@ class Dictionary:
     def get(
             self,
             key: Hashable,
-            default=None
+            default: None
     ) -> Any:
 
         try:
