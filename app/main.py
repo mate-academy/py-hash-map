@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,7 +9,7 @@ class Dictionary:
         for key, value in kwargs.items():
             self.__setitem__(key, value)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if isinstance(key, list | dict | set):
             raise TypeError(f"<{key}> cannot be a dictionary key")
 
@@ -25,10 +25,10 @@ class Dictionary:
         else:
             self.dictionary[dict_index] = (hash_code, key, value)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         return self.dictionary[self.get_index(key)[-1]][-1]
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
@@ -55,7 +55,7 @@ class Dictionary:
             else:
                 raise TypeError(f"Cannot convert <{item}> to dictionary entry")
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self.__getitem__(key)
         except KeyError:
@@ -66,7 +66,7 @@ class Dictionary:
         self.__delitem__(key)
         return value
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_index, dict_index = self.get_index(key)
         self.dictionary[dict_index] = None
         self.hash_table[hash_index] = -2
@@ -75,7 +75,7 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def set_index(self, hash_code: int, key: Any) -> (int, int):
+    def set_index(self, hash_code: int, key: Hashable) -> (int, int):
         hash_i = hash_code % self.get_capacity()
         while self.hash_table[hash_i] != -1:
             if self.hash_table[hash_i] == -2:
@@ -87,7 +87,7 @@ class Dictionary:
             hash_i = hash_i + 1 if hash_i < self.get_capacity() - 1 else 0
         return hash_i, self.hash_table[hash_i]
 
-    def get_index(self, key: Any) -> (int, int):
+    def get_index(self, key: Hashable) -> (int, int):
         hash_i = hash(key) % self.get_capacity()
         while True:
             dict_i = self.hash_table[hash_i]
