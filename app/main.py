@@ -28,11 +28,11 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         return self.dictionary[self.get_index(key)[-1]][-1]
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, value: Any = None) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
-            return None
+            return value
 
     def update(self, items: dict | list | tuple) -> None:
         if not isinstance(items, dict | list | tuple):
