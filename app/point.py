@@ -1,5 +1,4 @@
 from typing import Any
-from app.main import Dictionary
 
 
 class Point:
@@ -27,29 +26,3 @@ class Point:
     @property
     def y(self) -> float:
         return self._y
-
-
-point = Point(2, 1)
-point2 = Point(1, 2)
-point3 = Point(0, 3)
-dictionary = Dictionary()
-dictionary["point"] = "ApointA"  # 1+
-dictionary[point] = "point"  # 2
-dictionary[point2] = "bbb"  # 3 +
-dictionary["point5"] = 798978  # 4
-dictionary["point3"] = 5523  # 5
-dictionary["point4"] = "66666"  # 6
-
-dictionary["point3"] = "AAAAAAAAA"
-dictionary["point4"] = "FFFFFF"
-
-print(dictionary["point"])
-print(dictionary[point])
-print(dictionary[point2])
-print(dictionary["point5"])
-print(dictionary["point3"])
-print(dictionary["point4"])
-
-print(dictionary)
-
-print(dictionary.__dict__)

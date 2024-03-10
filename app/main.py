@@ -50,7 +50,6 @@ class Dictionary:
             if current.key == key:
                 return current.value
             current = current.next
-
         raise KeyError(f"Key '{key}' not found in the dictionary")
 
     def __len__(self) -> int:
