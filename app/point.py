@@ -53,16 +53,3 @@ print(dictionary["point4"])
 print(dictionary)
 
 print(dictionary.__dict__)
-
-
-def resize_bucket():
-    items = [(f"Element {i}", i) for i in range(1000)]
-    dictionary = Dictionary()
-    for key, value in items:
-        dictionary[key] = value
-
-    for key, value in items:
-        assert dictionary[key] == value
-
-
-resize_bucket()
