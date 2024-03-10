@@ -1,106 +1,78 @@
-from __future__ import annotations
-from typing import Any, List, Hashable
+from typing import Any
+from typing import Hashable
 
 
 class Node:
-    def __init__(
-            self,
-            key: Hashable,
-            value: Any,
-            next: Node | None = None
-    ) -> None:
+    def __init__(self, key: Hashable, hash_value: int, value: Any) -> None:
         self.key = key
+        self.hash_value = hash_value
         self.value = value
-        self.next = next
-    # TODO: Need to rewrite all methods for use Node like "next"
+        self.next = None
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self._capacity = 8
-        self._factor = 2 / 3
-        self._size = 0
-        self._table: List[Node | None] = [None] * self._capacity
-
-    def __str__(self):
-        items = [(node.key, node.value) for node in self._table if
-                 node is not None]
-        return "{" + ", ".join(f"{key}: {value}" for key, value in items) + "}"
-
-    @staticmethod
-    def validation_for_key(key: Any) -> None:
-        if not isinstance(key, Hashable):
-            raise TypeError(f"{type(key)} invalid data type for dictionary")
-
-    def _add_new_node(self, key: Hashable, value: Any) -> None:
-        index = self._get_index(key)
-
-        if self._table[index] is None:
-            self._table[index] = Node(key, value)
-            self._size += 1
-            self._check_resize()
-        elif self._table[index].key == key:
-            self._table[index].value = value
-            return
-        else:
-            index_to_next_node = self._table[index].next
-            while index_to_next_node is not None:
-                if self._table[index_to_next_node].key == key:
-                    self._table[index_to_next_node].value = value
-                    return
-                index_to_next_node = self._table[index_to_next_node].next
-
-            for i in range(self._capacity):
-                new_index = (index + i) % self._capacity
-                if self._table[new_index] is None:
-                    self._table[new_index] = Node(key, value)
-                    self._table[index].next = new_index
-                    self._size += 1
-                    self._check_resize()
-                    break
-                index = new_index
+        self.capacity = 8
+        self.load_factor = 2 / 3
+        self.size = 0
+        self.table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        self.validation_for_key(key)
+        hash_value = hash(key)
+        index = hash_value % self.capacity
 
-        self._add_new_node(key, value)
-
-    def __getitem__(self, key: Hashable) -> Any:
-        self.validation_for_key(key)
-        index = self._get_index(key)
-
-        if self._table[index] is None:
-            raise KeyError(f"Element {key} not in dictionary")
-
-        elif self._table[index].key == key:
-            return self._table[index].value
+        if self.table[index] is None:
+            self.table[index] = Node(key, hash_value, value)
+            self.size += 1
         else:
-            index_to_next_node = self._table[index].next
-            while index_to_next_node is not None:
-                if self._table[index_to_next_node].key == key:
-                    return self._table[index_to_next_node].value
-                index_to_next_node = self._table[index_to_next_node].next
-        raise KeyError(f"Element {key} not in dictionary")
+            current = self.table[index]
+            while current.next:
+                if current.key == key:
+                    current.value = value
+                    return
+                current = current.next
 
-    def __len__(self):
-        return self._size
+            if current.key == key:
+                current.value = value
+            else:
+                current.next = Node(key, hash_value, value)
+                self.size += 1
 
-    def _get_index(self, key: Hashable) -> int:
-        return hash(key) % self._capacity
-
-    def _resize(self) -> None:
-        old_table = [node for node in self._table if node is not None]
-        self._capacity = self._capacity * 2
-        self._table = [None] * self._capacity
-        self._size = 0
-
-        for node in old_table:
-            self._add_new_node(node.key, node.value)
-
-    def _check_resize(self) -> None:
-        if self._size > self._capacity * self._factor:
+        if self.size / self.capacity > self.load_factor:
             self._resize()
 
-    def clear(self) -> None:
-        self._table = [None] * self._capacity
-        self._size = 0
+    def __getitem__(self, key: Hashable) -> Any:
+        hash_value = hash(key)
+        index = hash_value % self.capacity
+
+        current = self.table[index]
+        while current:
+            if current.key == key:
+                return current.value
+            current = current.next
+
+        raise KeyError(f"Key '{key}' not found in the dictionary")
+
+    def __len__(self) -> int:
+        return self.size
+
+    def _resize(self) -> None:
+        new_capacity = self.capacity * 2
+        new_table = [None] * new_capacity
+
+        for node in self.table:
+            while node:
+                new_index = node.hash_value % new_capacity
+                if new_table[new_index] is None:
+                    new_table[new_index] = Node(node.key, node.hash_value,
+                                                node.value)
+                else:
+                    current = new_table[new_index]
+                    while current.next:
+                        current = current.next
+                    current.next = Node(node.key, node.hash_value, node.value)
+
+                node = node.next
+
+        self.table = new_table
+        self.capacity = new_capacity
