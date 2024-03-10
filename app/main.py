@@ -1,4 +1,4 @@
-from typing import Any, Generator, Optional, Tuple, List
+from typing import Any, Generator, Optional, Tuple, List, Hashable
 
 
 class Dictionary:
@@ -15,7 +15,7 @@ class Dictionary:
 
     def _hash(
             self,
-            key: Any
+            key: Hashable
     ) -> int:
         return hash(key) % self.capacity
 
@@ -31,7 +31,7 @@ class Dictionary:
 
     def __setitem__(
             self,
-            key: Any,
+            key: Hashable,
             value: Any
     ) -> None:
         if (
@@ -52,7 +52,7 @@ class Dictionary:
 
     def __getitem__(
             self,
-            key: Any
+            key: Hashable
     ) -> Any:
         index = self._hash(key)
         while self.table[index] is not None:
@@ -63,7 +63,7 @@ class Dictionary:
 
     def __delitem__(
             self,
-            key: Any
+            key: Hashable
     ) -> None:
         index = self._hash(key)
         while self.table[index] is not None:
@@ -83,7 +83,7 @@ class Dictionary:
 
     def get(
             self,
-            key: Any,
+            key: Hashable,
             default: Optional[Any] = None
     ) -> Any:
         try:
