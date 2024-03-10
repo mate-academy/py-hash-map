@@ -29,38 +29,40 @@ class Point:
         return self._y
 
 
-# point = Point(2, 1)
-# point2 = Point(1, 2)
-# point3 = Point(0, 3)
-# dictionary = Dictionary()
-# dictionary["point"] = "ApointA" #1+
-# dictionary[point] = "point" #2
-# dictionary[point2] = "bbb" #3 +
-# dictionary["point5"] = 798978 #4
-# dictionary["point3"] = 5523 #5
-# dictionary["point4"] = "66666" #6
+point = Point(2, 1)
+point2 = Point(1, 2)
+point3 = Point(0, 3)
+dictionary = Dictionary()
+dictionary["point"] = "ApointA"  # 1+
+dictionary[point] = "point"  # 2
+dictionary[point2] = "bbb"  # 3 +
+dictionary["point5"] = 798978  # 4
+dictionary["point3"] = 5523  # 5
+dictionary["point4"] = "66666"  # 6
 
-# dictionary["point3"] = "AAAAAAAAA"
-# dictionary["point4"] = "FFFFFF"
+dictionary["point3"] = "AAAAAAAAA"
+dictionary["point4"] = "FFFFFF"
 
-#
-# print(dictionary["point"])
-# print(dictionary[point])
-# print(dictionary[point2])
-# print(dictionary["point5"])
-# print(dictionary["point3"])
-# print(dictionary["point4"])
-#
-# print(dictionary)
-#
-# print(dictionary.__dict__)
+print(dictionary["point"])
+print(dictionary[point])
+print(dictionary[point2])
+print(dictionary["point5"])
+print(dictionary["point3"])
+print(dictionary["point4"])
 
-# def resize_bucket():
-#     items = [(f"Element {i}", i) for i in range(1000)]
-#     dictionary = Dictionary()
-#     for key, value in items:
-#         dictionary[key] = value
-#
-#     for key, value in items:
-#         assert dictionary[key] == value
-# resize_bucket()
+print(dictionary)
+
+print(dictionary.__dict__)
+
+
+def resize_bucket():
+    items = [(f"Element {i}", i) for i in range(1000)]
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
+
+    for key, value in items:
+        assert dictionary[key] == value
+
+
+resize_bucket()
