@@ -7,7 +7,6 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.length = 0
         self.hash_table = [None] * self.capacity
-        # self.resize = len(self.hash_table) * self.load_factor
 
     def __len__(self) -> int:
         return self.length
