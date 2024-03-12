@@ -1,4 +1,4 @@
-from typing import Any, Hashable
+from typing import Any, Hashable, Optional
 
 
 class Dictionary:
@@ -39,8 +39,13 @@ class Dictionary:
             if index == start_index:
                 raise KeyError("Key was not found")
 
-    def get(self, key: Hashable) -> int | KeyError:
-        return self.hash_table[self.get_index(key)][2]
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
+        try:
+            return self.hash_table[self.get_index(key)][2]
+        except KeyError:
+            if default is not None:
+                return default
+            raise KeyError(key)
 
     def __len__(self) -> int:
         return self.length
