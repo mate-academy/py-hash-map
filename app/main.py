@@ -29,7 +29,7 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         return self.get(key)
 
-    def get_index(self, key: Hashable) -> int | KeyError:
+    def get_index(self, key: Hashable) -> int:
         start_index = hash(key) % self.capacity
         index = start_index
         while True:
@@ -40,12 +40,9 @@ class Dictionary:
                 raise KeyError("Key was not found")
 
     def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
-        try:
+        if self.get_index(key) is not None:
             return self.hash_table[self.get_index(key)][2]
-        except KeyError:
-            if default is not None:
-                return default
-            raise KeyError(key)
+        return default
 
     def __len__(self) -> int:
         return self.length
