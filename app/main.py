@@ -1,8 +1,8 @@
-from typing import Any, Iterable, Tuple
+from typing import Any, Iterable, Tuple, Hashable
 
 
 class Node:
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.next = None
@@ -18,7 +18,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         node = self.hash_table[index]
         while node:
@@ -27,7 +27,7 @@ class Dictionary:
             node = node.next
         raise KeyError(key)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self.capacity
         if not self.hash_table[index]:
             self.hash_table[index] = Node(key, value)
@@ -45,7 +45,7 @@ class Dictionary:
         if self.length >= self.load_factor * self.capacity:
             self._resize()
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.capacity
         node = self.hash_table[index]
         prev = None
@@ -89,13 +89,13 @@ class Dictionary:
         self.length = 0
         self.hash_table = [None] * self.capacity
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self[key]
             del self[key]
