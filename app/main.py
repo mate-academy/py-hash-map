@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -13,7 +13,7 @@ class Dictionary:
         self.size = size
         self.hash_table = [None] * self.capacity
 
-    def get_index(self, key: Any) -> int:
+    def get_index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def resize(self) -> None:
@@ -28,7 +28,7 @@ class Dictionary:
                     new_hash_table[index].append([key, value, hash_key])
         self.hash_table = new_hash_table
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.get_index(key)
         if self.hash_table[index] is None:
             self.hash_table[index] = []
@@ -72,7 +72,7 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.size = 0
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable) -> Any:
         try:
             return self[key]
         except KeyError:
@@ -82,7 +82,7 @@ class Dictionary:
         for key, value in other.items():
             self[key] = value
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         try:
             value = self[key]
             del self[key]
