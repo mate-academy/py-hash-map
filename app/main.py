@@ -72,11 +72,11 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.size = 0
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default_value: None) -> Any:
         try:
             return self[key]
         except KeyError:
-            raise KeyError(key)
+            return default_value
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
