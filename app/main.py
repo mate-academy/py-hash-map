@@ -3,13 +3,12 @@ from typing import Any, Hashable, Optional
 
 class Dictionary:
 
-    __capacity: int = 8
     __load_factor: float = 0.66
 
     def __init__(self) -> None:
-        self.__size_of_hash_table: int = self.__capacity
+        self.__size_of_hash_table: int = 8
         self.__hash_table: list[Optional[tuple[Hashable, int, Any]]] = [
-            None for _ in range(self.__capacity)
+            None for _ in range(self.__size_of_hash_table)
         ]
         self.__index_of_cell: int
         self.__index_of_iteration: int
@@ -61,13 +60,13 @@ class Dictionary:
         return sum(1 for cell in self.__hash_table if cell)
 
     def clear(self) -> None:
-        self.__size_of_hash_table = self.__capacity
-        self.__hash_table = [None for _ in range(self.__capacity)]
+        self.__size_of_hash_table = 8
+        self.__hash_table = [None for _ in range(self.__size_of_hash_table)]
 
     def __resize_hash_table(self) -> None:
         old_hash_table = self.__hash_table
 
-        self.__size_of_hash_table += self.__capacity
+        self.__size_of_hash_table *= 2
         self.__hash_table = [() for _ in range(self.__size_of_hash_table)]
 
         for cell in old_hash_table:
