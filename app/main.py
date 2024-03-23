@@ -6,15 +6,15 @@ class Dictionary:
     __load_factor: float = 0.66
 
     def __init__(self) -> None:
-        self.__size_of_hash_table: int = 8
+        self.__capacity: int = 8
         self.__hash_table: list[Optional[tuple[Hashable, int, Any]]] = [
-            None for _ in range(self.__size_of_hash_table)
+            None for _ in range(self.__capacity)
         ]
         self.__index_of_cell: int
         self.__index_of_iteration: int
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.__len__() > self.__size_of_hash_table * self.__load_factor:
+        if self.__len__() > self.__capacity * self.__load_factor:
             self.__resize_hash_table()
 
         self.__put_item_to_hash_table(key=key, hash_inf=hash(key), value=value)
@@ -60,14 +60,14 @@ class Dictionary:
         return sum(1 for cell in self.__hash_table if cell)
 
     def clear(self) -> None:
-        self.__size_of_hash_table = 8
-        self.__hash_table = [None for _ in range(self.__size_of_hash_table)]
+        self.__capacity = 8
+        self.__hash_table = [None for _ in range(self.__capacity)]
 
     def __resize_hash_table(self) -> None:
         old_hash_table = self.__hash_table
 
-        self.__size_of_hash_table *= 2
-        self.__hash_table = [() for _ in range(self.__size_of_hash_table)]
+        self.__capacity *= 2
+        self.__hash_table = [() for _ in range(self.__capacity)]
 
         for cell in old_hash_table:
             if cell:
@@ -86,10 +86,10 @@ class Dictionary:
 
             self.__index_of_cell = (
                 self.__index_of_cell + 1
-            ) % self.__size_of_hash_table
+            ) % self.__capacity
 
     def __get_index_for_hash_table(self, key: Hashable) -> int:
-        return hash(key) % self.__size_of_hash_table
+        return hash(key) % self.__capacity
 
     def __put_item_to_hash_table(
         self, key: Hashable, hash_inf: int, value: Any
@@ -109,7 +109,7 @@ class Dictionary:
 
             self.__index_of_cell = (
                 self.__index_of_cell + 1
-            ) % self.__size_of_hash_table
+            ) % self.__capacity
 
     def __iter__(self) -> "Dictionary":
         self.__index_of_iteration = 0
