@@ -1,8 +1,8 @@
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
-        self.hash_table: list = [None] * 8
         self.load_factor = 2 / 3
+        self.hash_table: list = [None] * 8
 
     def __len__(self) -> int:
         return self.length
