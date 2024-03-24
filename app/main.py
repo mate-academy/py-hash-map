@@ -1,3 +1,6 @@
+from typing import Hashable
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
@@ -7,12 +10,13 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __setitem__(self, key: any, value: any) -> None:
+    def __setitem__(self, key: Hashable, value: any) -> None:
         _hash = hash(key)
         cell = _hash % len(self.hash_table)
         while 1:
             if not self.hash_table[cell]:
                 if self.check_if_resize_is_required():
+                    self.resize()
                     cell = _hash % len(self.hash_table)
                     continue
                 self.length += 1
@@ -23,7 +27,7 @@ class Dictionary:
                 break
             cell = (cell + 1) % len(self.hash_table)
 
-    def __getitem__(self, item: any) -> any:
+    def __getitem__(self, item: Hashable) -> any:
         cell = hash(item) % len(self.hash_table)
         checked = 0
         while checked < len(self):
@@ -41,6 +45,5 @@ class Dictionary:
 
     def check_if_resize_is_required(self) -> bool:
         if self.length + 1 > self.load_factor * len(self.hash_table):
-            self.resize()
             return True
         return False
