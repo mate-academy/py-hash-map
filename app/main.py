@@ -6,7 +6,7 @@ class Dictionary:
 
     def __setitem__(self, key: any, value: any) -> None:
         hash_value = hash(key) % self.capacity
-        while(
+        while (
                 self.table[hash_value] is not None
                 and self.table[hash_value][0] != key
         ):
@@ -26,8 +26,6 @@ class Dictionary:
 
     def __len__(self) -> int:
         return sum(1 for entry in self.table if entry is not None)
-
-
 
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
