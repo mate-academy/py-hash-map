@@ -1,10 +1,13 @@
+from typing import Hashable
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.load_factor = 2 / 3
         self.table = [None] * self.capacity
 
-    def __setitem__(self, key: any, value: any) -> None:
+    def insert_into_hash_table(self, key: Hashable, value: any) -> None:
         hash_value = hash(key) % self.capacity
         while (
                 self.table[hash_value] is not None
@@ -12,10 +15,13 @@ class Dictionary:
         ):
             hash_value = (hash_value + 1) % self.capacity
         self.table[hash_value] = (key, hash_value, value)
+
+    def __setitem__(self, key: Hashable, value: any) -> None:
+        self.insert_into_hash_table(key, value)
         if len(self) >= self.load_factor * self.capacity:
             self._resize()
 
-    def __getitem__(self, key: any) -> any:
+    def __getitem__(self, key: Hashable) -> any:
         hash_value = hash(key) % self.capacity
         while self.table[hash_value] is not None:
             if self.table[hash_value][0] == key:
