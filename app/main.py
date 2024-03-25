@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,7 +9,7 @@ class Dictionary:
         self.capacity = 8
         self.table = [None] * 8
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = hash(key)
         index = hash_value % self.capacity
         if self.table[index] is None:
