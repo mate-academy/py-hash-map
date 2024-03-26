@@ -1,4 +1,4 @@
-from typing import Hashable
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -7,7 +7,7 @@ class Dictionary:
         self.hash_table: list = [None] * 8
         self.load_hash_table = 2 / 3
 
-    def __setitem__(self, key: Hashable, value: str) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_ = hash(key)
         item_hashing = hash_ % len(self.hash_table)
         while 1:
@@ -25,7 +25,7 @@ class Dictionary:
                 break
             item_hashing = (item_hashing + 1) % len(self.hash_table)
 
-    def __getitem__(self, item: Hashable) -> any:
+    def __getitem__(self, item: Hashable) -> Any:
         hash_item = hash(item) % len(self.hash_table)
         checked = 0
         while checked < len(self):
