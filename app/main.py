@@ -9,14 +9,7 @@ class Dictionary:
         self.list_dict = [None] * self.capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if self.len_dict > self.capacity * self.dict_load:
-            self.capacity *= 2
-            new_list_dict = self.list_dict[:]
-            self.list_dict = [None] * self.capacity
-            self.len_dict = 0
-            for i in new_list_dict:
-                if i is not None:
-                    self.__setitem__(i[0], i[1])
+        self.resize()
         index = hash(key) % self.capacity
         if self.list_dict[index] is None:
             self.len_dict += 1
@@ -39,6 +32,16 @@ class Dictionary:
                 return self.list_dict[index][1]
             index = (index + 1) % self.capacity
         raise KeyError
+
+    def resize(self) -> None:
+        if self.len_dict > self.capacity * self.dict_load:
+            self.capacity *= 2
+            new_list_dict = self.list_dict[:]
+            self.list_dict = [None] * self.capacity
+            self.len_dict = 0
+            for i in new_list_dict:
+                if i is not None:
+                    self.__setitem__(i[0], i[1])
 
     def __len__(self) -> int:
         return self.len_dict
