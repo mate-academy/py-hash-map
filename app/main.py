@@ -7,7 +7,7 @@ class Dictionary:
         self.hash_table: list = [None] * 8
         self.load_hash_table = 2 / 3
 
-    def __setitem__(self, key: str, value: str) -> None:
+    def __setitem__(self, key: Hashable, value: str) -> None:
         hash_ = hash(key)
         item_hashing = hash_ % len(self.hash_table)
         while 1:
