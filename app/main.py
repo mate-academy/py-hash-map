@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,7 +8,7 @@ class Dictionary:
         self.dict_load = 2 / 3
         self.list_dict = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self.resize()
         index = hash(key) % self.capacity
         if self.list_dict[index] is None:
@@ -25,7 +25,7 @@ class Dictionary:
                 self.len_dict += 1
         self.list_dict[index] = [key, value, hash(key)]
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         while self.list_dict[index] is not None:
             if self.list_dict[index][0] == key:
