@@ -7,18 +7,19 @@ class Dictionary:
 
     def __setitem__(self, key, value):
         index = hash(key) % self._capacity
-
+        # Треба збільшити розмір словника
         if self._size > round(self._capacity * self._load_factor):
             self._resize()
-
+        # Коли ключа немає в словнику
         if self._buckets[index] is None:
             self._buckets[index] = (key, hash(key), value)
         else:
-            while self._buckets[index] is not None:
+            while self._buckets[index] is not None and self._buckets[index][0] != key:
                 index = (index + 1) % self._capacity
-
+            # Коли ключ вже є в словнику
             if self._buckets[index][0] == key:
                 self._buckets[index][2] = value
+            # Коли ключа немає в словнику але хеш повторюеться і ми шукаємо нову комірку (Коалізія)
             elif self._buckets[index][0] != key and self._buckets[index][1] == hash(key):
                 self._buckets[index] = (key, hash(key), value)
             else:
@@ -27,7 +28,7 @@ class Dictionary:
 
     def __getitem__(self, key):
         index = hash(key) % self._capacity
-
+        # шукаємо унікальний ключ
         while self._buckets[index] is not None:
             if self._buckets[index][0] == key and self._buckets[index][1] == hash(key):
                 return self._buckets[index][2]
@@ -52,6 +53,7 @@ class Dictionary:
 
     def __delitem__(self, key):
         index = hash(key) % self._capacity
+
         if self._buckets[index] is None:
             raise KeyError
         for k, h, v in self._buckets[index]:
