@@ -35,9 +35,8 @@ class Dictionary:
             self.size -= 1
 
     def clear(self) -> None:
-        self.table = [None]
+        self.table = []
         self.size = 0
-        self.capacity = 0
 
     def hash_func(self, key: Hashable) -> int:
         return hash(key) % self.capacity
