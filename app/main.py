@@ -3,13 +3,12 @@ from typing import Any, Hashable
 
 class Dictionary:
     def __init__(self,
-                 capacity: int = 8,
                  load_factor: float = 2 / 3,
                  size: int = 0) -> None:
-        self.capacity = capacity
+        self.capacity = 8
         self.load_factor = load_factor
         self.size = size
-        self.table = [None] * capacity
+        self.table = [None] * self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.find_index(key)
