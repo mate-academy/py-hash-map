@@ -12,7 +12,8 @@ class Dictionary:
         index = hash(key) % self._capacity
 
         # Handle collision by linear probing
-        while self._buckets[index] is not None and self._buckets[index][0] != key:
+        while (self._buckets[index] is not None
+               and self._buckets[index][0] != key):
             index = (index + 1) % self._capacity
 
         # If the key is not in the dictionary, increment the size
@@ -64,15 +65,16 @@ class Dictionary:
                 self._buckets[index] = None
                 self._size -= 1
                 return
+
         raise KeyError
 
-    def get(self, key: Hashable, default=None) -> Any:
+    def get(self, key: Hashable, default: None = None) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
             return default
 
-    def pop(self, key: Hashable, default=None) -> Any:
+    def pop(self, key: Hashable, default: None = None) -> Any:
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
