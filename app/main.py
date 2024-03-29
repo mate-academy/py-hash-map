@@ -57,22 +57,19 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self._capacity
-
+        # Search for the key in the dictionary
         if self._buckets[index] is None:
             raise KeyError
-        for k, h, v in self._buckets[index]:
-            if k == key and h == hash(key):
+        for _key, _hash, _value in self._buckets[index]:
+            if _key == key and _hash == hash(key):
                 self._buckets[index] = None
                 self._size -= 1
                 return
 
         raise KeyError
 
-    def get(self, key: Hashable, default: None = None) -> Any:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
+    def get(self, key: Hashable) -> Any:
+        return self.__getitem__(key)
 
     def pop(self, key: Hashable, default: None = None) -> Any:
         try:
@@ -84,7 +81,7 @@ class Dictionary:
 
     def update(self, other: dict) -> None:
         for key, value in other.items():
-            self.__setitem__(key, value)
+            self[key] = value
 
     def __iter__(self) -> Any:
         for bucket in self._buckets:
