@@ -12,7 +12,7 @@ class Dictionary:
     def __setitem__(self, key: str, value: int) -> None:
         index = self._get_index(key)
         for node in self._table[index]:
-            if node[0] == key:
+            if node[0] == key and node[1] == hash(key):
                 node[2] = value
                 return
         self._table[index].append([key, hash(key), value])
@@ -24,7 +24,7 @@ class Dictionary:
         index = self._get_index(key)
         chain = self._table[index]
         for node in chain:
-            if node[0] == key:
+            if node[0] == key and hash(key):
                 return node[2]
         raise KeyError(key)
 
