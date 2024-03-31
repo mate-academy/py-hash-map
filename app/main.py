@@ -1,3 +1,6 @@
+from typing import Hashable
+
+
 class Dictionary:
     def __init__(
             self,
@@ -9,7 +12,7 @@ class Dictionary:
         self._load_factor = load_factor
         self._table = [[] for _ in range(self._capacity)]
 
-    def __setitem__(self, key: str, value: int) -> None:
+    def __setitem__(self, key: Hashable, value: any) -> None:
         index = self._get_index(key)
         for node in self._table[index]:
             if node[0] == key and node[1] == hash(key):
@@ -20,7 +23,7 @@ class Dictionary:
         if self._size > self._capacity * self._load_factor:
             self._resize()
 
-    def __getitem__(self, key: str) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         index = self._get_index(key)
         chain = self._table[index]
         for node in chain:
@@ -38,7 +41,7 @@ class Dictionary:
         self._table = new_table
         self._capacity = new_capacity
 
-    def _get_index(self, key: str) -> int:
+    def _get_index(self, key: Hashable) -> int:
         return hash(key) % self._capacity
 
     def __len__(self) -> int:
