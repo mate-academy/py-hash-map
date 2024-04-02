@@ -2,12 +2,10 @@ from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self,
-                 load_factor: float = 2 / 3,
-                 size: int = 0) -> None:
+    def __init__(self) -> None:
+        self.load_factor = 2 / 3
+        self.size = 0
         self.capacity = 8
-        self.load_factor = load_factor
-        self.size = size
         self.table = [None] * self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
@@ -34,8 +32,8 @@ class Dictionary:
             self.size -= 1
 
     def clear(self) -> None:
-        self.table = []
-        self.size = 0
+        self.capacity = 8
+        self.table = [None for _ in range(self.capacity)]
 
     def hash_func(self, key: Hashable) -> int:
         return hash(key) % self.capacity
