@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Hashable
+
 
 class Dictionary:
     def __init__(
@@ -10,7 +12,7 @@ class Dictionary:
         self.load_kef = (2 / 3)
         self.hash_table: list = [None] * self.capacity
 
-    def get_index(self, key: object) -> object:
+    def get_index(self, key: Hashable) -> object:
         index = hash(key) % self.capacity
         while self.hash_table[index] and self.hash_table[index][0] != key:
             index = (index + 1) % self.capacity
@@ -28,7 +30,7 @@ class Dictionary:
             if item is not None:
                 self[item[0]] = item[2]
 
-    def __setitem__(self, key: object, value: object) -> None:
+    def __setitem__(self, key: Hashable, value: object) -> None:
         index = self.get_index(key)
         if not self.hash_table[index]:
             if self.capacity * self.load_kef < self.length:
@@ -37,7 +39,7 @@ class Dictionary:
             self.length += 1
         self.hash_table[index] = (key, hash(key), value)
 
-    def __getitem__(self, key: object) -> object:
+    def __getitem__(self, key: Hashable) -> object:
         index = self.get_index(key)
         if not self.hash_table[index]:
             raise KeyError
@@ -46,7 +48,7 @@ class Dictionary:
     def __iter__(self) -> iter:
         return iter(self.hash_table)
 
-    def __delitem__(self, key: object) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         self.hash_table[hash(key) % len(self.hash_table)] = None
 
     def clear(self) -> None:
