@@ -7,7 +7,7 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
 
     def __repr__(self) -> str:
-        return f"{self.__dict__["hash_table"]}"
+        return f'{self.__dict__["hash_table"]}'
 
     def _get_node_index(self, key: Any) -> int:
         """ Computes node index based on the key hash """
