@@ -1,60 +1,81 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
-        self.hash_table = [[] for _ in range(self.capacity)]
+        self.hash_table = [None] * 8
+        self.load_factor = 2 / 3
+        self.size = 0
 
     def __repr__(self) -> str:
-        return f'{self.__dict__["hash_table"]}'
+        return str(
+            {
+                item[0]: item[2]
+                for item in self.hash_table
+                if item is not None
+            }
+        )
 
-    def _get_node_index(self, key: Any) -> int:
+    def _get_node_index(self, key: Hashable, capacity: int) -> int:
         """ Computes node index based on the key hash """
-        return hash(key) % self.capacity
+        return hash(key) % capacity
 
-    def _get_node_content(self, key: Any) -> list:
-        """ Returns a single node content """
-        node_index = self._get_node_index(key)
-        return self.hash_table[node_index]
+    def _resize(self) -> None:
+        new_capacity = self.capacity * 2
+        new_hash_table = [None] * new_capacity
+        for node in self.hash_table:
+            if node:
+                key, *_ = node
+                new_node_index = self._get_node_index(key, new_capacity)
+                while new_hash_table[new_node_index]:
+                    new_node_index = (new_node_index + 1) % new_capacity
+                new_hash_table[new_node_index] = (key, *_)
+        self.hash_table = new_hash_table
+        self.capacity = new_capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        """ Stores a new key-value pair or update existing. """
-        node_content = self._get_node_content(key)
-        for i, (k, *_) in enumerate(node_content):
-            if k == key:
-                del node_content[i]
-                node_content.insert(i, (key, hash(key), value))
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        """ Stores a new key-value pair or updates existing. """
+        node_index = self._get_node_index(key, self.capacity)
+        while self.hash_table[node_index]:
+            if self.hash_table[node_index][0] == key:
+                self.hash_table[node_index] = (key, hash(key), value)
                 return
-        node_content.append((key, hash(key), value))
+            node_index = (node_index + 1) % self.capacity
+        self.hash_table[node_index] = (key, hash(key), value)
+        self.size += 1
+        if self.size / self.capacity >= self.load_factor:
+            self._resize()
 
-    def __getitem__(self, key: Any) -> str | int:
+    def __getitem__(self, key: Hashable) -> str | int:
         """ Looks up a value with the specified key """
-        node_content = self._get_node_content(key)
-        for k, _, v in node_content:
-            if key == k:
-                return v
+        node_index = self._get_node_index(key, self.capacity)
+        while self.hash_table[node_index]:
+            if self.hash_table[node_index][0] == key:
+                return self.hash_table[node_index][2]
+            node_index = (node_index + 1) % self.capacity
         raise KeyError(f"Key {key} doesn't exist.")
 
-    def __delitem__(self, key: Any) -> None:
-        node_content = self._get_node_content(key)
-        for i, (k, _, v) in enumerate(node_content):
-            if k == key:
-                del node_content[i]
-                return
-        raise KeyError(f"Key {key} doesn't exist.")
+    def __delitem__(self, key: Hashable) -> None:
+        """ Deletes item with the specified key """
+        node_index = self._get_node_index(key, self.capacity)
+        while self.hash_table[node_index]:
+            if self.hash_table[node_index][0] == key:
+                self.hash_table[node_index] = None
+                self.size -= 1
+            node_index = (node_index + 1) % self.capacity
 
     def __len__(self) -> int:
-        return sum(len(node) for node in self.hash_table)
+        return self.size
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         """ Returns a value of the specified key, otherwise default value """
         try:
-            return self.__getitem__(key)
+            return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         """ Removes the element with the specified key """
         try:
             value = self[key]
@@ -66,21 +87,14 @@ class Dictionary:
     def update(self, other_dict: dict) -> None:
         """ Updates the dictionary with the specified key-value pairs """
         for key, value in other_dict.items():
-            self.__setitem__(key, value)
+            self[key] = value
 
     def __iter__(self) -> None:
         for node in self.hash_table:
-            for key, *_ in node:
-                yield key
+            if node:
+                yield node[0]
 
     def clear(self) -> None:
         """ Removes all the elements from the dictionary """
-        self.hash_table = [[] for _ in range(self.capacity)]
-
-    def resize(self) -> None:
-        self.capacity *= 2
-        old_hash_table = self.hash_table
-        self.hash_table = [[] for _ in range(self.capacity)]
-        for node in old_hash_table:
-            for key, _, value in node:
-                self[key] = value
+        self.hash_table = [None] * self.capacity
+        self.size = 0
