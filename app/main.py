@@ -12,7 +12,7 @@ class Dictionary(object):
         index = self.get_index(key, hash(key))
 
         if not self._table[index]:
-            raise KeyError(f"{key} is not found")
+            raise KeyError(f"{key} is not found!")
 
         return self._table[index][2]
 
