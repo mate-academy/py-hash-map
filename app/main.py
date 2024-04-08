@@ -1,15 +1,18 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self) -> None:
+    def __init__(self,
+                 hash_size: int = 8,
+                 resize_factor: float = 2 / 3,
+                 resize_multiplier: int = 2) -> None:
         self.length = 0
         self.hash_table: list = [None] * 8
-        self.hash_size = 8
-        self.resize_factor = 2 / 3
-        self.resize_multiplier = 2
+        self.hash_size = hash_size
+        self.resize_factor = resize_factor
+        self.resize_multiplier = resize_multiplier
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self._hash_size_check_increase()
 
         key_hash_position = hash(key) % self.hash_size
@@ -25,7 +28,7 @@ class Dictionary:
         self.hash_table[key_hash_position] = [key, value]
         self.length += 1
 
-    def __getitem__(self, item: Any) -> Any | None:
+    def __getitem__(self, item: Hashable) -> Any | None:
         key_hash_position = hash(item) % self.hash_size
 
         if not self.hash_table[key_hash_position]:
@@ -61,10 +64,9 @@ class Dictionary:
                 item_key_hash_position = hash(item[0]) % self.hash_size
                 # check so they don't overwrite each-other
                 while temp_hash_table[item_key_hash_position]:
-                    if item_key_hash_position != self.hash_size - 1:
-                        item_key_hash_position += 1
-                    else:
-                        item_key_hash_position = 0
+                    item_key_hash_position = (
+                            (item_key_hash_position + 1) % self.hash_size
+                    )
                 temp_hash_table[item_key_hash_position] = item
         self.hash_table = temp_hash_table
         print(f"Dictionary size were increased "
