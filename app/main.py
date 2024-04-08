@@ -11,7 +11,7 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         self._hash_size_check_increase()
-        key_hash_position = hash(key) % self._hash_size
+        key_hash_position = self._find_key_position(key)
 
         while self._hash_table[key_hash_position]:
             if self._hash_table[key_hash_position][0] == key:
@@ -25,7 +25,7 @@ class Dictionary:
               f"is set to {key_hash_position} index in the Dictionary")
 
     def __getitem__(self, item: Hashable) -> Any | None:
-        key_hash_position = hash(item) % self._hash_size
+        key_hash_position = self._find_key_position(item)
 
         # find item by key_hash_position and if it has the right key to it
         while self._hash_table[key_hash_position]:
@@ -45,16 +45,21 @@ class Dictionary:
         return "{" + ", \n".join(result) + "}"
 
     def __delitem__(self, key: Hashable) -> None:
-        key_hash_position = hash(key) % self._hash_size
+        key_hash_position = self._find_key_position(key)
 
         while self._hash_table[key_hash_position]:
             if self._hash_table[key_hash_position][0] == key:
                 self._hash_table[key_hash_position] = None
-                print(f"removed: {key} at {key_hash_position} position")
+                print(f"removed: {key} from position {key_hash_position}")
                 return
             key_hash_position = (key_hash_position + 1) % self._hash_size
 
         raise KeyError("Key is not found in the Dictionary")
+
+    def pop(self, key: Hashable) -> Any:
+        result = self.__getitem__(key)
+        self.__delitem__(key)
+        return result
 
     def get(self, key: Hashable) -> Any | None:
         """
@@ -72,6 +77,14 @@ class Dictionary:
         self._hash_table = [None] * 8
         self._hash_size = 8
         self._length = 0
+
+    def _find_key_position(self, key: Hashable) -> int:
+        try:
+            key_hash_position = hash(key) % self._hash_size
+        except TypeError as e:
+            raise TypeError(e)
+        else:
+            return key_hash_position
 
     def _hash_size_check_increase(self) -> None:
         """Supporting func to check and increase hash_table size when needed"""
