@@ -19,17 +19,20 @@ class Dictionary:
             index = (index + 1) % self.capacity
         return index
 
+    def resizing(self) -> None:
+        table_copy = self.hash_table
+        self.capacity *= self.resize
+        self.threshold = self.capacity * self.load_factor
+        self.hash_table = [None] * self.capacity
+        self.length = 0
+
+        for element in table_copy:
+            if element:
+                self[element[0]] = element[2]
+
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length > self.threshold:
-            table_copy = self.hash_table
-            self.capacity *= self.resize
-            self.threshold = self.capacity * self.load_factor
-            self.hash_table = [None] * self.capacity
-            self.length = 0
-
-            for element in table_copy:
-                if element:
-                    self[element[0]] = element[2]
+            self.resizing()
 
         index = self.get_index(key)
         if self.hash_table[index] is None:
@@ -40,5 +43,5 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
         if not self.hash_table[index]:
-            raise KeyError
+            raise KeyError(f"The {key} doesn't exist!")
         return self.hash_table[index][2]
