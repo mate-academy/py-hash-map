@@ -5,7 +5,6 @@ class HashTable:
     def __init__(self, key: Any, value: any, hash_num: int) -> None:
         self.key = key
         self.value = value
-        self.hash_num = hash_num
 
 
 class Dictionary:
