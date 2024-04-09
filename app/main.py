@@ -49,20 +49,20 @@ class Dictionary:
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.capacity
-        if self.hash_table[index]:
-            self.hash_table[index] = None
-            self.length -= 1
-        else:
-            raise KeyError(f"Key {key} does not exist")
+        while self.hash_table[index]:
+            if self.hash_table[index]:
+                if self.hash_table[index][0] == key:
+                    self.hash_table[index] = None
+                    self.length -= 1
+                index = (index + 1) % self.capacity
+            else:
+                raise KeyError(f"Key {key} does not exist")
 
-    def get(self, key: Hashable, value: Any = None) -> None:
-        if key in self:
-            return self[key]
-        else:
-            self[key] = value
-            self.length += 1
-            self._resize_dict()
-            return self[key]
+    def get(self, key: Hashable, default: Any = None) -> None:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
 
     def pop(self, key: Hashable, default: Any = None) -> None:
         try:
