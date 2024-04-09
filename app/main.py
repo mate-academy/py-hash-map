@@ -2,7 +2,7 @@ from typing import Any
 
 
 class HashTable:
-    def __init__(self, key: Any, value: any, hash_num: int) -> None:
+    def __init__(self, key: Any, value: any) -> None:
         self.key = key
         self.value = value
 
