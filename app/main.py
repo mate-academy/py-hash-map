@@ -13,7 +13,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def get_ind(self, key: Hashable) -> object:
+    def get_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
         while self.hash_table[index] and self.hash_table[index][0] != key:
             index = (index + 1) % self.capacity
@@ -31,14 +31,14 @@ class Dictionary:
                 if element:
                     self[element[0]] = element[2]
 
-        ind = self.get_ind(key)
-        if self.hash_table[ind] is None:
+        index = self.get_index(key)
+        if self.hash_table[index] is None:
             self.length += 1
 
-        self.hash_table[ind] = (key, hash(key), value)
+        self.hash_table[index] = (key, hash(key), value)
 
     def __getitem__(self, key: Hashable) -> Any:
-        ind = self.get_ind(key)
-        if not self.hash_table[ind]:
+        index = self.get_index(key)
+        if not self.hash_table[index]:
             raise KeyError
-        return self.hash_table[ind][2]
+        return self.hash_table[index][2]
