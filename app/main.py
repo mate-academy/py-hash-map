@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from collections import defaultdict
 
 INITIAL_CAPACITY = 8
-LOAD_FACTOR = 0.75
+LOAD_FACTOR = 2 / 3
 
 
 @dataclass
