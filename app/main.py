@@ -34,6 +34,7 @@ class Dictionary:
         ind = self.get_ind(key)
         if self.hash_table[ind] is None:
             self.length += 1
+
         self.hash_table[ind] = (key, hash(key), value)
 
     def __getitem__(self, key: Hashable) -> Any:
