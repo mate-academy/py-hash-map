@@ -51,6 +51,7 @@ class Dictionary:
             if self._hash_table[key_hash_position][0] == key:
                 self._hash_table[key_hash_position] = None
                 print(f"removed: {key} from position {key_hash_position}")
+                self._length -= 1
                 return
             key_hash_position = (key_hash_position + 1) % self._hash_size
 
@@ -61,17 +62,15 @@ class Dictionary:
         self.__delitem__(key)
         return result
 
-    def get(self, key: Hashable) -> Any | None:
+    def get(self, key: Hashable, default: Any = None) -> Any | None:
         """
         Works same as __getitem__ but
         doesn't return KeyError if key doesn't exist
         """
         try:
-            self.__getitem__(key)
-        except KeyError:
-            return None
-        else:
             return self.__getitem__(key)
+        except KeyError:
+            return default
 
     def clear(self) -> None:
         self._hash_table = [None] * 8
