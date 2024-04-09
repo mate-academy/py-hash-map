@@ -29,7 +29,7 @@ class Dictionary:
                 return
             index = (index + 1) % self.capacity
 
-        self.table[index] = HashTable(key, value, hash(key))
+        self.table[index] = HashTable(key, value)
         self.size += 1
         if self.size / self.capacity >= self.load_factor:
             self.resize()
