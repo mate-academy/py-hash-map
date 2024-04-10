@@ -53,14 +53,7 @@ class Dictionary:
         new_table = [None] * new_capacity
         for node in self.table:
             while node:
-                new_index: int = hash(node.key) % new_capacity
-                if new_table[new_index] is None:
-                    new_table[new_index] = Node(node.key, node.value)
-                else:
-                    current = new_table[new_index]
-                    while current.next:
-                        current = current.next
-                    current.next = Node(node.key, node.value)
+                self.__setitem__(node.key, node.value)
                 node = node.next
         self.capacity = new_capacity
         self.table = new_table
