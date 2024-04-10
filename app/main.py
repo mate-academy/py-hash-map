@@ -1,44 +1,48 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Any, Hashable
+
+
+@dataclass
+class Node:
+    key: Hashable
+    value: Any
 
 
 class Dictionary(object):
 
-    def __init__(self) -> None:
-        self._capacity = 8
+    def __init__(self, capacity: int = 8) -> None:
+        self._capacity = capacity
         self._size = 0
-        self._table = [None] * self._capacity
+        self._table: list[None | Node] = [None] * self._capacity
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self.get_index(key, hash(key))
+        index = self.get_index(key)
 
         if not self._table[index]:
-            raise KeyError(f"{key} is not found!")
+            raise KeyError(f"Key: {key} is not found!")
 
-        return self._table[index][2]
+        return self._table[index].value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self._size > self._capacity * 2 / 3:
-            self._resize()
-
-        key_hash = hash(key)
-        index = self.get_index(key, key_hash)
+        index = self.get_index(key)
         if not self._table[index]:
-            self._size += 1
+            if self._size + 1 >= self._capacity * 2 / 3:
+                self._resize()
+                return self.__setitem__(key, value)
 
-        self._table[index] = (key, key_hash, value)
+            self._size += 1
+        self._table[index] = Node(key, value)
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
 
         if self._table[index] is None:
-            raise KeyError(key)
+            raise KeyError(f"Key: {key} is not found!")
 
-        for index, item in enumerate(self._table[index]):
-            if item[0] == key:
-                del self._table[index][index]
-                self._size -= 1
-                return
-            raise KeyError(key)
+        self._table[index] = None
+        self._size -= 1
 
     def __len__(self) -> int:
         return self._size
@@ -46,44 +50,45 @@ class Dictionary(object):
     def __iter__(self) -> Any:
         for cell in self._table:
             if cell:
-                yield cell[0]
+                yield cell.key
 
-    def get_index(self, key: Hashable, key_hash: int) -> int:
-        index = key_hash % self._capacity
+    def __str__(self) -> str:
+        return str(self._table)
 
-        while self._table[index] and self._table[index][0] != key:
-            index += 1
+    def get_index(self, key: Hashable) -> int:
+        index = hash(key) % self._capacity
 
-            index %= self._capacity
+        while (self._table[index]
+               and self._table[index].key != key):
+            index = (index + 1) % self._capacity
+
         return index
 
     def _resize(self) -> None:
         table_copy = self._table
-        self._capacity *= 2
-        self._table = [None] * self._capacity
-        self._size = 0
+        self.__init__(self._capacity * 2)
         for item in table_copy:
             if item:
-                self[item[0]] = item[2]
+                self.__setitem__(item.key, item.value)
 
     def clear(self) -> None:
         self._table = [None] * self._capacity
         self._size = 0
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
-            return None
+            return default
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value: Any = self[key]
             del self[key]
             return value
         except KeyError:
-            return None
+            return default
 
-    def update(self, other_dict: dict) -> None:
+    def update(self, other_dict: dict | Dictionary) -> None:
         for key, value in other_dict.items():
             self[key] = value
