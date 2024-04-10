@@ -1,73 +1,73 @@
-from typing import Any
-
-
-class HashTable:
-    def __init__(self, key: Any, value: any) -> None:
-        self.key = key
-        self.value = value
+from fractions import Fraction
+from typing import Any, Hashable
 
 
 class Dictionary:
+    class Node:
+        def __init__(self, key: Hashable, value: Any, hash_num: int) -> None:
+            self.key = key
+            self.value = value
+            self.hash_num = hash_num
+
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
         self.table = [None] * self.capacity
-        self.load_factor = 0.75
+        self.load_factor = Fraction(2, 3)
 
     def __str__(self) -> str:
         return f"{self.table}"
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        if not hash(key):
-            raise TypeError("Dictionary key must be immutable")
-
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.get_index(key)
+        index = self.find_index(index, key)
+        if index[1]:
+            self.table[index[0]].value = value
+            return
 
-        while self.table[index] is not None:
-            if self.table[index].key == key:
-                self.table[index].value = value
-                return
-            index = (index + 1) % self.capacity
-
-        self.table[index] = HashTable(key, value)
+        self.table[index[0]] = Dictionary.Node(key, value, hash(key))
         self.size += 1
         if self.size / self.capacity >= self.load_factor:
             self.resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
         index = self.find_index(index, key)
 
-        if index is None:
+        if not index[1]:
             raise KeyError(f"Requested key '{key}' "
                            f"is not found in a dictionary")
 
-        return self.table[index].value
+        return self.table[index[0]].value
 
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
-        self.find_index(index, key)
+        index = self.find_index(index, key)
 
-        if index:
-            self.table[index] = None
+        if index[1]:
+            self.table[index[0]] = None
             self.size -= 1
             self.rehash()
         else:
             raise KeyError("Сan`t delete a key that "
                            "does not exist in a dictionary")
 
-    def get_index(self, key: Any) -> int:
+    def get_index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
-    def find_index(self, index: int, key: Any) -> int | None:
+    def find_index(
+            self,
+            index: int,
+            key: Hashable
+    ) -> tuple[int | Any, bool] | None:
         while self.table[index] is not None:
             if self.table[index].key == key:
-                return index
+                return index, True
             index = (index + 1) % self.capacity
-        return None
+        return index, False
 
     def resize(self) -> None:
         old_table = self.table[:]
@@ -89,7 +89,7 @@ class Dictionary:
                 self.__setitem__(node.key, node.value)
 
     def __iter__(self) -> list:
-        return [node.key for node in self.table if node is not None]
+        return (node.key for node in self.table if node is not None)
 
     def update(self, other: Any) -> None:
         if hasattr(other, "items"):
@@ -104,13 +104,13 @@ class Dictionary:
             raise ValueError("The input must be a dictionary "
                              "or an iterable of key-value pairs")
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         index = self.get_index(key)
-        self.find_index(index, key)
+        index = self.find_index(index, key)
 
-        if index:
-            value = self.table[index].value
-            self.table[index] = None
+        if index[1]:
+            value = self.table[index[0]].value
+            self.table[index[0]] = None
             self.size -= 1
             self.rehash()
             return value
