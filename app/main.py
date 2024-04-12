@@ -32,13 +32,13 @@ class Dictionary:
         item_index = hash(key) % self.capacity
 
         if self.hash_table[item_index] is None:
-            raise KeyError
+            raise KeyError(key)
         if self.hash_table[item_index][0] == key:
             return item_index
         for item_index, elem in enumerate(self.hash_table):
             if elem is not None and elem[0] == key:
                 return item_index
-        raise KeyError
+        raise KeyError(key)
 
     def set_element(self, key: Hashable, value: Any) -> bool:
 
@@ -77,9 +77,18 @@ class Dictionary:
         self.hash_table[hash_index] = None
         self.length -= 1
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(
+        self,
+        key: Hashable,
+        defaultvalue: Any = None
+    ) -> Any:
+        try:
+            value = self.__getitem__(key)
+        except KeyError:
+            if defaultvalue:
+                return defaultvalue
+            raise
 
-        value = self.__getitem__(key)
         self.__delitem__(key)
         return value
 
@@ -92,7 +101,7 @@ class Dictionary:
     def update(self, other: Dictionary) -> Any:
         for elem in other.hash_table:
             if elem is not None:
-                self.__setitem__(elem[0], elem[2])
+                self[elem[0]] = elem[2]
 
     def __iter__(self) -> Dictionary:
         self.current = 0
