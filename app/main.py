@@ -6,22 +6,38 @@ class Dictionary:
 
     def __init__(self) -> None:
 
-        self.length = 0
-        self.capacity = 8
-        self.load_factor = 2 / 3
-        self.hash_table = [None] * self.capacity
+        self._length = 0
+        self._capacity = 8
+        self._load_factor = 2 / 3
+        self._hash_table = [None] * self._capacity
+
+    @property
+    def length(self) -> int:
+        return self._length
+
+    @property
+    def capacity(self) -> int:
+        return self._capacity
+
+    @property
+    def load_factor(self) -> float:
+        return self._load_factor
+
+    @property
+    def hash_table(self) -> list:
+        return self._hash_table
 
     def threshold(self) -> None:
         return (
-            self.hash_table.count(None)
-            <= self.capacity * (1 - self.load_factor)
+            self._hash_table.count(None)
+            <= self._capacity * (1 - self._load_factor)
         )
 
     def resize(self) -> None:
 
-        old_hash_table = self.hash_table.copy()
-        self.capacity = self.capacity * 2
-        self.hash_table = [None] * self.capacity
+        old_hash_table = self._hash_table.copy()
+        self._capacity = self._capacity * 2
+        self._hash_table = [None] * self._capacity
 
         for elem in old_hash_table:
             if elem is not None:
@@ -29,13 +45,13 @@ class Dictionary:
 
     def find_item_hash_index(self, key: Hashable) -> int:
 
-        item_index = hash(key) % self.capacity
+        item_index = hash(key) % self._capacity
 
-        if self.hash_table[item_index] is None:
+        if self._hash_table[item_index] is None:
             raise KeyError(key)
-        if self.hash_table[item_index][0] == key:
+        if self._hash_table[item_index][0] == key:
             return item_index
-        for item_index, elem in enumerate(self.hash_table):
+        for item_index, elem in enumerate(self._hash_table):
             if elem is not None and elem[0] == key:
                 return item_index
         raise KeyError(key)
@@ -43,39 +59,39 @@ class Dictionary:
     def set_element(self, key: Hashable, value: Any) -> bool:
 
         key_hash = hash(key)
-        hash_table_index = key_hash % self.capacity
+        hash_table_index = key_hash % self._capacity
         while True:
             if (
-                self.hash_table[hash_table_index] is None
-                or self.hash_table[hash_table_index][0] == key
+                self._hash_table[hash_table_index] is None
+                or self._hash_table[hash_table_index][0] == key
             ):
-                is_new_element = self.hash_table[hash_table_index] is None
-                self.hash_table[hash_table_index] = (key, key_hash, value)
+                is_new_element = self._hash_table[hash_table_index] is None
+                self._hash_table[hash_table_index] = (key, key_hash, value)
                 return is_new_element
-            hash_table_index = (hash_table_index + 1) % self.capacity
+            hash_table_index = (hash_table_index + 1) % self._capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.threshold():
             self.resize()
-        self.length += self.set_element(key, value)
+        self._length += self.set_element(key, value)
 
     def __getitem__(self, key: Hashable) -> Any:
         hash_index = self.find_item_hash_index(key)
-        return self.hash_table[hash_index][2]
+        return self._hash_table[hash_index][2]
 
     def __len__(self) -> int:
-        return self.length
+        return self._length
 
     def clear(self) -> None:
-        self.hash_table = [None] * self.capacity
+        self._hash_table = [None] * self._capacity
 
     def __delitem__(self, key: Hashable) -> None:
         try:
             hash_index = self.find_item_hash_index(key)
         except KeyError:
             return
-        self.hash_table[hash_index] = None
-        self.length -= 1
+        self._hash_table[hash_index] = None
+        self._length -= 1
 
     def pop(
         self,
@@ -99,7 +115,7 @@ class Dictionary:
             return default_value
 
     def update(self, other: Dictionary) -> Any:
-        for elem in other.hash_table:
+        for elem in other._hash_table:
             if elem is not None:
                 self[elem[0]] = elem[2]
 
@@ -108,9 +124,9 @@ class Dictionary:
         return self
 
     def __next__(self) -> Hashable:
-        while self.current < self.capacity:
-            if self.hash_table[self.current] is not None:
-                return_value = self.hash_table[self.current][0]
+        while self.current < self._capacity:
+            if self._hash_table[self.current] is not None:
+                return_value = self._hash_table[self.current][0]
                 self.current += 1
                 return return_value
             self.current += 1
@@ -118,7 +134,7 @@ class Dictionary:
 
     def __repr__(self) -> str:
         items = []
-        for elem in self.hash_table:
+        for elem in self._hash_table:
             if elem is not None:
                 items.append(f"{elem[0]}: {elem[2]}")
         return "{" + ", ".join(items) + "}"
