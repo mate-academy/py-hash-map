@@ -1,3 +1,4 @@
+from __future__ import annotations
 from app.point import Point
 from typing import Any
 
@@ -63,6 +64,19 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.current_size
+
+    def __iter__(self) -> Dictionary:
+        self.iter_index = -1
+        return self
+
+    def __next__(self) -> Any:
+        while self.iter_index <= self.current_bucket:
+            self.iter_index += 1
+            try:
+                if self.hash_table[self.iter_index]:
+                    return self.hash_table[self.iter_index]
+            except IndexError:
+                raise StopIteration
 
     def keys(self) -> list[int | str | tuple | float | Point]:
         return [pair[0] for pair in self.hash_table if pair]
