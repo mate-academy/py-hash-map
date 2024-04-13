@@ -1,9 +1,9 @@
-from typing import Any, Optional
+from typing import Any, Optional, Hashable
 
 
 class Node:
-    def __init__(self, key: Any, hash_value: int, value: Any) -> None:
-        self.key: Any = key
+    def __init__(self, key: Hashable, hash_value: int, value: Any) -> None:
+        self.key: Hashable = key
         self.hash: int = hash_value
         self.value: Any = value
         self.next: Optional["Node"] = None
@@ -16,7 +16,7 @@ class Dictionary:
         self.buckets: list[Optional[Node]] = [None] * self.capacity
         self.load_factor: float = 0.75
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value: int = hash(key)
         index: int = hash_value % self.capacity
         if self.buckets[index] is None:
@@ -35,7 +35,7 @@ class Dictionary:
         if self.size / self.capacity > self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_value: int = hash(key)
         index: int = hash_value % self.capacity
         current: Optional[Node] = self.buckets[index]
