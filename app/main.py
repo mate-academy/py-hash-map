@@ -1,6 +1,5 @@
 from app.point import Point
 from typing import Any
-import sys
 
 
 class Dictionary:
