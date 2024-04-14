@@ -32,7 +32,7 @@ class Dictionary:
                 index = 0
 
         if self.current_size == int(self.current_bucket * (2 / 3)) + 1:
-            self.table_size_up()
+            self.__table_size_up()
 
     def __getitem__(self, item: Hashable) -> Any:
         if item not in self.keys():
@@ -60,7 +60,7 @@ class Dictionary:
                 index = 0
 
         if 8 < self.current_size < int(self.current_bucket / 2 * (2 / 3)):
-            self.table_size_down()
+            self.__table_size_down()
 
     def __len__(self) -> int:
         return self.current_size
@@ -84,21 +84,21 @@ class Dictionary:
     def values(self) -> list[Any]:
         return [pair[1] for pair in self.hash_table if pair]
 
-    def table_size_up(self) -> None:
-        self.increased_table = [[]] * self.current_bucket * 2
+    def __table_size_up(self) -> None:
+        self.__increased_table = [[]] * self.current_bucket * 2
         self.current_bucket *= 2
         self.current_size = 0
 
-        self.hash_table = self.recalculation(self.increased_table)
+        self.hash_table = self.__recalculation(self.__increased_table)
 
-    def table_size_down(self) -> None:
-        self.reduced_table = [[]] * int(self.current_bucket / 2)
+    def __table_size_down(self) -> None:
+        self.__reduced_table = [[]] * int(self.current_bucket / 2)
         self.current_bucket //= 2
         self.current_size = 0
 
-        self.hash_table = self.recalculation(self.reduced_table)
+        self.hash_table = self.__recalculation(self.__reduced_table)
 
-    def recalculation(self, table: list) -> None:
+    def __recalculation(self, table: list) -> list:
         for cell in self.hash_table:
             if cell:
                 index = hash(cell[0]) % self.current_bucket
