@@ -108,7 +108,7 @@ class Dictionary:
         self.current_size = 0
         self.hash_table = [[]] * self.current_bucket
 
-    def __resize(self):
+    def __resize(self) -> None:
         if inspect.stack()[1].function == "__setitem__":
             self.current_bucket *= 2
         if inspect.stack()[1].function == "__delitem__":
