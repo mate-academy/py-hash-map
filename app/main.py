@@ -1,6 +1,6 @@
 from __future__ import annotations
 from app.point import Point
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -11,7 +11,7 @@ class Dictionary:
         self.current_size = 0
 
     def __setitem__(self,
-                    key: int | str | tuple | float | Point,
+                    key: Hashable,
                     value: Any) -> None:
 
         if not isinstance(key, (int, str, tuple, float, Point)):
@@ -34,7 +34,7 @@ class Dictionary:
         if self.current_size == int(self.current_bucket * (2 / 3)) + 1:
             self.table_size_up()
 
-    def __getitem__(self, item: int | str | tuple | float | Point) -> Any:
+    def __getitem__(self, item: Hashable) -> Any:
         if item not in self.keys():
             raise KeyError
 
@@ -47,7 +47,7 @@ class Dictionary:
             if index > self.current_bucket - 1:
                 index = 0
 
-    def __delitem__(self, item: int | str | tuple | float | Point) -> None:
+    def __delitem__(self, item: Hashable) -> None:
         index = hash(item) % self.current_bucket
 
         while True:
@@ -59,7 +59,7 @@ class Dictionary:
             if index > self.current_bucket - 1:
                 index = 0
 
-        if self.current_size < int(self.current_bucket / 2 * (2 / 3)):
+        if 8 < self.current_size < int(self.current_bucket / 2 * (2 / 3)):
             self.table_size_down()
 
     def __len__(self) -> int:
@@ -78,7 +78,7 @@ class Dictionary:
             except IndexError:
                 raise StopIteration
 
-    def keys(self) -> list[int | str | tuple | float | Point]:
+    def keys(self) -> list[Hashable]:
         return [pair[0] for pair in self.hash_table if pair]
 
     def values(self) -> list[Any]:
