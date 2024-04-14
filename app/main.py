@@ -27,9 +27,8 @@ class Dictionary:
                 self.hash_table[index] = [key, value]
                 self.current_size += 1
                 break
-            index += 1
-            if index > self.current_bucket - 1:
-                index = 0
+
+            index = (index + 1) % self.current_bucket
 
         if self.current_size == int(self.current_bucket * (2 / 3)) + 1:
             self.__table_size_up()
@@ -43,21 +42,29 @@ class Dictionary:
         while True:
             if self.hash_table[index][0] == item:
                 return self.hash_table[index][1]
-            index += 1
-            if index > self.current_bucket - 1:
-                index = 0
 
-    def __delitem__(self, item: Hashable) -> None:
+            index = (index + 1) % self.current_bucket
+
+    def __delitem__(self, item: Hashable, pop: bool = False) -> Any | None:
+        if item not in self.keys():
+            raise KeyError
+
         index = hash(item) % self.current_bucket
 
         while True:
+            if (pop and self.hash_table[index]
+                    and self.hash_table[index][0] == item):
+                value = self.hash_table[index][1]
+                self.hash_table[index] = []
+                self.current_size -= 1
+                return value
+
             if self.hash_table[index] and self.hash_table[index][0] == item:
                 self.hash_table[index] = []
                 self.current_size -= 1
                 break
-            index += 1
-            if index > self.current_bucket - 1:
-                index = 0
+
+            index = (index + 1) % self.current_bucket
 
         if 8 < self.current_size < int(self.current_bucket / 2 * (2 / 3)):
             self.__table_size_down()
@@ -84,30 +91,39 @@ class Dictionary:
     def values(self) -> list[Any]:
         return [pair[1] for pair in self.hash_table if pair]
 
+    def get(self, key: Hashable) -> Any:
+        return self.__getitem__(key)
+
+    def pop(self, key: Hashable, default: bool = False) -> None:
+        keys = self.keys()
+        if not default and key not in keys:
+            raise KeyError
+        if default and key not in keys:
+            return default
+        return self.__delitem__(key, pop=True)
+
+    def clear(self) -> None:
+        self.current_bucket = 8
+        self.current_size = 0
+        self.hash_table = [[]] * self.current_bucket
+
     def __table_size_up(self) -> None:
-        self.__increased_table = [[]] * self.current_bucket * 2
+        self.__old_table = self.hash_table.copy()
         self.current_bucket *= 2
         self.current_size = 0
+        self.hash_table = [[]] * self.current_bucket
 
-        self.hash_table = self.__recalculation(self.__increased_table)
+        self.__recalculation(self.__old_table)
 
     def __table_size_down(self) -> None:
-        self.__reduced_table = [[]] * int(self.current_bucket / 2)
+        self.__old_table = self.hash_table.copy()
         self.current_bucket //= 2
         self.current_size = 0
+        self.hash_table = [[]] * self.current_bucket
 
-        self.hash_table = self.__recalculation(self.__reduced_table)
+        self.__recalculation(self.__old_table)
 
-    def __recalculation(self, table: list) -> list:
-        for cell in self.hash_table:
+    def __recalculation(self, table: list) -> None:
+        for cell in table:
             if cell:
-                index = hash(cell[0]) % self.current_bucket
-                while True:
-                    if not table[index]:
-                        table[index] = [cell[0], cell[1]]
-                        self.current_size += 1
-                        break
-                    index += 1
-                    if index > self.current_bucket - 1:
-                        index = 0
-        return table
+                self.__setitem__(*cell)
