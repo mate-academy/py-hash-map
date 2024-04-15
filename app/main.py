@@ -46,6 +46,10 @@ class Dictionary:
 
             self.table = new_table
 
+            for bucket in new_table.values():
+                for node in bucket:
+                    self.__setitem__(node.key, node.value)
+
     def __setitem__(self, key: Any, value: Any) -> None:
         index = self._calculate_index(key)
         node = self._find_node(key, index)
