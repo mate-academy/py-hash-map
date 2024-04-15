@@ -86,7 +86,7 @@ class Dictionary:
 
         for node in old_table:
             if node is not None:
-                self.__setitem__(node.key, node.value)
+                self[node.key] = node.value
 
     def __iter__(self) -> list:
         return (node.key for node in self.table if node is not None)
