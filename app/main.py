@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import Any, Hashable
+from typing import Any, Hashable, Iterable
 
 
 class Dictionary:
@@ -25,7 +25,7 @@ class Dictionary:
             self.table[index[0]].value = value
             return
 
-        self.table[index[0]] = Dictionary.Node(key, value, hash(key))
+        self.table[index[0]] = self.Node(key, value, hash(key))
         self.size += 1
         if self.size / self.capacity >= self.load_factor:
             self.resize()
@@ -77,7 +77,7 @@ class Dictionary:
 
         for node in old_table:
             if node is not None:
-                self.__setitem__(node.key, node.value)
+                self[node.key] = node.value
 
     def rehash(self) -> None:
         old_table = self.table[:]
@@ -91,7 +91,7 @@ class Dictionary:
     def __iter__(self) -> list:
         return (node.key for node in self.table if node is not None)
 
-    def update(self, other: Any) -> None:
+    def update(self, other: dict | Iterable) -> None:
         if hasattr(other, "items"):
             items = other.items()
         else:
@@ -104,7 +104,7 @@ class Dictionary:
             raise ValueError("The input must be a dictionary "
                              "or an iterable of key-value pairs")
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         index = self.get_index(key)
         index = self.find_index(index, key)
 
@@ -114,6 +114,9 @@ class Dictionary:
             self.size -= 1
             self.rehash()
             return value
+
+        if default is not None:
+            return default
 
         raise KeyError(f"Requested key '{key}' is not found in a dictionary")
 
