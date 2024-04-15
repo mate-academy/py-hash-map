@@ -54,9 +54,12 @@ class Dictionary:
 
         raise KeyError("Key is not found in the Dictionary")
 
-    def pop(self, key: Hashable) -> Any:
-        result = self[key]
-        del self[key]
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            result = self[key]
+            del self[key]
+        except KeyError:
+            return default
         return result
 
     def get(self, key: Hashable, default: Any = None) -> Any | None:
