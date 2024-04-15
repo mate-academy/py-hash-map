@@ -39,6 +39,9 @@ class Dictionary:
         return "{" + ", \n".join(result) + "}"
 
     def __delitem__(self, key: Hashable) -> None:
+        """
+        func to delete item by key if key exists, otherwise raise KeyError
+        """
         key_hash_position = self._find_key_position(key)
         index_len = 0
 
@@ -55,6 +58,10 @@ class Dictionary:
         raise KeyError("Key is not found in the Dictionary")
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
+        """
+        func returns/removes value/item if key exists,
+        otherwise return/raise default/KeyError
+        """
         try:
             result = self[key]
             del self[key]
@@ -81,7 +88,9 @@ class Dictionary:
         return hash(key) % self._hash_size
 
     def _hash_size_check_increase(self) -> None:
-        """Supporting func to check and increase hash_table size when needed"""
+        """
+        Supporting func to check and increase hash_table size when needed
+        """
         if len(self) == int(self._hash_size * self._resize_factor):
             self._hash_size *= self._resize_multiplier
             temp_hash_table = [None] * self._hash_size
@@ -90,19 +99,20 @@ class Dictionary:
 
         for item in self._hash_table:
             if item is not None:
-                item_key_hash_position = hash(item.key) % self._hash_size
+                item_key_hash = hash(item.key) % self._hash_size
 
-                while temp_hash_table[item_key_hash_position] is not None:
-                    item_key_hash_position = ((item_key_hash_position + 1)
-                                              % self._hash_size)
+                while temp_hash_table[item_key_hash] is not None:
+                    item_key_hash = (item_key_hash + 1) % self._hash_size
 
-                temp_hash_table[item_key_hash_position] = item
+                temp_hash_table[item_key_hash] = item
         self._hash_table = temp_hash_table
 
-    def _while_key_hash_occupied(self,
-                                 action: str,
-                                 key: Hashable,
-                                 value: Any = None) -> tuple:
+    def _while_key_hash_occupied(
+            self,
+            action: str,
+            key: Hashable,
+            value: Any = None
+    ) -> tuple:
 
         key_hash_position = self._find_key_position(key)
         decision_condition = False
