@@ -1,13 +1,12 @@
 from __future__ import annotations
 from app.point import Point
 from typing import Any, Hashable
-import inspect
 
 
 class Dictionary:
 
     def __init__(self) -> None:
-        self.hash_table = [[]] * 8
+        self.hash_table = [None] * 8
         self.current_bucket = 8
         self.current_size = 0
 
@@ -67,9 +66,6 @@ class Dictionary:
 
             index = (index + 1) % self.current_bucket
 
-        if 8 < self.current_size < int(self.current_bucket / 2 * (2 / 3)):
-            self.__resize()
-
     def __len__(self) -> int:
         return self.current_size
 
@@ -92,7 +88,9 @@ class Dictionary:
     def values(self) -> list[Any]:
         return [pair[1] for pair in self.hash_table if pair]
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        if key not in self.keys():
+            return default
         return self.__getitem__(key)
 
     def pop(self, key: Hashable, default: bool = False) -> None:
@@ -106,16 +104,13 @@ class Dictionary:
     def clear(self) -> None:
         self.current_bucket = 8
         self.current_size = 0
-        self.hash_table = [[]] * self.current_bucket
+        self.hash_table = [None] * self.current_bucket
 
     def __resize(self) -> None:
-        if inspect.stack()[1].function == "__setitem__":
-            self.current_bucket *= 2
-        if inspect.stack()[1].function == "__delitem__":
-            self.current_bucket //= 2
+        self.current_bucket *= 2
         self.__old_table = self.hash_table.copy()
         self.current_size = 0
-        self.hash_table = [[]] * self.current_bucket
+        self.hash_table = [None] * self.current_bucket
 
         self.__recalculation(self.__old_table)
 
