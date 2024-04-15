@@ -87,6 +87,8 @@ class Dictionary(object):
             del self[key]
             return value
         except KeyError:
+            if default is None:
+                raise KeyError
             return default
 
     def update(self, other_dict: dict | Dictionary) -> None:
