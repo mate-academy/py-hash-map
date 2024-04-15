@@ -46,14 +46,13 @@ class Dictionary:
     def find_item_hash_index(self, key: Hashable) -> int:
 
         item_index = hash(key) % self._capacity
-
-        if self._hash_table[item_index] is None:
-            raise KeyError(key)
-        if self._hash_table[item_index][0] == key:
-            return item_index
-        for item_index, elem in enumerate(self._hash_table):
-            if elem is not None and elem[0] == key:
+        for _ in range(self._capacity):
+            if self._hash_table[item_index] is None:
+                item_index = (item_index + 1) % self.capacity
+                continue
+            if self._hash_table[item_index][0] == key:
                 return item_index
+            item_index = (item_index + 1) % self.capacity
         raise KeyError(key)
 
     def set_element(self, key: Hashable, value: Any) -> bool:
@@ -95,14 +94,14 @@ class Dictionary:
 
     def pop(
         self,
-        key: Hashable,
-        defaultvalue: Any = None
+        *args
     ) -> Any:
+        key = args[0]
         try:
-            value = self.__getitem__(key)
+            value = self.find_item_hash_index(key)
         except KeyError:
-            if defaultvalue:
-                return defaultvalue
+            if len(args) == 2:
+                return args[1]
             raise
 
         self.__delitem__(key)

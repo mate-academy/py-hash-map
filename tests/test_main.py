@@ -18,6 +18,27 @@ def test_deletion():
     for key, value in items:
         del dictionary[key]
     print(len(dictionary))
+    
+    
+def test_should_find_element_after_deletion():
+    d = Dictionary()
+    d[1] = 5
+    d[9] = 10
+    del d[1]
+    assert d[9] == 10
+    
+
+
+@pytest.mark.parametrize(
+    "defalut_value",
+    [(1,), (False,), (None, ), (5, )]
+)
+def test_pop_should_return_defalt_value(
+    defalut_value
+):
+    my_dict = Dictionary()
+    assert my_dict.pop("test_key", defalut_value) == defalut_value
+    
 
 
 @pytest.mark.parametrize(
