@@ -16,7 +16,7 @@ class Dictionary:
         if self.hash_table[table_index] is None:
             self.hash_table[table_index] = []
         for cell in self.hash_table[table_index]:
-            if cell[0] == key:
+            if cell[0] == key and cell[1] == hash(key):
                 cell[2] = value
                 return
 
@@ -28,7 +28,7 @@ class Dictionary:
         if self.hash_table[table_index] is None:
             raise KeyError
         for cell in self.hash_table[table_index]:
-            if cell[0] == item:
+            if cell[0] == item and cell[1] == hash(item):
                 return cell[2]
         raise KeyError
 
@@ -44,4 +44,4 @@ class Dictionary:
             if cell is None:
                 continue
             for ele in cell:
-                self.__setitem__(ele[0], ele[2])
+                self[ele[0]] = ele[2]
