@@ -23,7 +23,7 @@ class Dictionary:
         self.hash_table[table_index].append([key, hash(key), value])
         self.length += 1
 
-    def __getitem__(self, item: Any) -> Any:
+    def __getitem__(self, item: Hashable) -> Any:
         table_index = hash(item) % self.capacity
         if self.hash_table[table_index] is None:
             raise KeyError
