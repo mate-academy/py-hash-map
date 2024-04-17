@@ -26,10 +26,10 @@ class Dictionary:
         self._length += 1
 
     def __getitem__(self, key: Hashable) -> Any | None:
-        return self.find_key_in_table(action="get", key=key)
+        return self._find_key_in_table(action="get", key=key)
 
     def __delitem__(self, key: Hashable) -> None:
-        return self.find_key_in_table(action="del", key=key)
+        return self._find_key_in_table(action="del", key=key)
 
     def __len__(self) -> int:
         return self._length
@@ -93,7 +93,7 @@ class Dictionary:
                 temp_hash_table[item_key_hash] = item
         self._hash_table = temp_hash_table
 
-    def find_key_in_table(self, action: str, key: Hashable) -> Any | None:
+    def _find_key_in_table(self, action: str, key: Hashable) -> Any | None:
         hash_key = self._find_key_position(key)
         table = self._hash_table
         for _ in range(self._hash_size):
