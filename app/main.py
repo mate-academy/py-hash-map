@@ -53,7 +53,7 @@ class Dictionary:
                 return default
             raise KeyError(f"Key '{key}' is not found in dictionary")
         return result
-    
+
     def get(self, key: Hashable, default: Any = None) -> Any | None:
         """
         Works same as __getitem__ but
