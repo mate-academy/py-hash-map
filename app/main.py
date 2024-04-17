@@ -13,21 +13,23 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         self._hash_size_check_increase()
-        key_exists, key_hash_position = self._while_key_hash_occupied(
-            action="set", key=key, value=value
-        )
-        if not key_exists:
-            node = Node(hash_=hash(key), key=key, value=value)
-            self._hash_table[key_hash_position] = node
-            self._length += 1
+
+        hash_key = self._find_key_position(key)
+        while self._hash_table[hash_key] is not None:
+            if self._hash_table[hash_key].key == key:
+                self._hash_table[hash_key].value = value
+                return
+            hash_key = self._move_table_right(hash_key)
+
+        node = Node(hash_=hash(key), key=key, value=value)
+        self._hash_table[hash_key] = node
+        self._length += 1
 
     def __getitem__(self, key: Hashable) -> Any | None:
-        key_exists, return_value = self._while_key_hash_occupied(
-            action="get", key=key
-        )
-        if key_exists:
-            return return_value
-        raise KeyError("Key is not found in the Dictionary")
+        return self.find_key_in_table(action="get", key=key)
+
+    def __delitem__(self, key: Hashable) -> None:
+        return self.find_key_in_table(action="del", key=key)
 
     def __len__(self) -> int:
         return self._length
@@ -37,25 +39,6 @@ class Dictionary:
                   for item in self._hash_table
                   if item is not None]
         return "{" + ", \n".join(result) + "}"
-
-    def __delitem__(self, key: Hashable) -> None:
-        """
-        func to delete item by key if key exists, otherwise raise KeyError
-        """
-        key_hash_position = self._find_key_position(key)
-        index_len = 0
-
-        while index_len <= self._hash_size:
-            if (self._hash_table[key_hash_position]
-                    and self._hash_table[key_hash_position].key == key):
-                self._hash_table[key_hash_position] = None
-                self._length -= 1
-                return
-
-            key_hash_position += 1
-            index_len += 1
-
-        raise KeyError("Key is not found in the Dictionary")
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
         """
@@ -87,6 +70,9 @@ class Dictionary:
     def _find_key_position(self, key: Hashable) -> int:
         return hash(key) % self._hash_size
 
+    def _move_table_right(self, hashed_key: int) -> int:
+        return (hashed_key + 1) % self._hash_size
+
     def _hash_size_check_increase(self) -> None:
         """
         Supporting func to check and increase hash_table size when needed
@@ -107,26 +93,16 @@ class Dictionary:
                 temp_hash_table[item_key_hash] = item
         self._hash_table = temp_hash_table
 
-    def _while_key_hash_occupied(
-            self,
-            action: str,
-            key: Hashable,
-            value: Any = None
-    ) -> tuple:
-
-        key_hash_position = self._find_key_position(key)
-        decision_condition = False
+    def find_key_in_table(self, action: str, key: Hashable) -> Any | None:
+        hash_key = self._find_key_position(key)
         table = self._hash_table
-
-        while table[key_hash_position] is not None:
-            if table[key_hash_position].key == key:
-                if action == "set":
-                    table[key_hash_position].value = value
-                    decision_condition = True
-                    return decision_condition, key_hash_position
-                elif action == "get":
-                    decision_condition = True
-                    return decision_condition, table[key_hash_position].value
-            key_hash_position = (key_hash_position + 1) % self._hash_size
-
-        return decision_condition, key_hash_position
+        for _ in range(self._hash_size):
+            if table[hash_key] is not None and table[hash_key].key == key:
+                if action == "get":
+                    return table[hash_key].value
+                elif action == "del":
+                    table[hash_key] = None
+                    self._length -= 1
+                    return
+            hash_key = self._move_table_right(hash_key)
+        raise KeyError(f"Key '{key}' is not found in dictionary")
