@@ -1,6 +1,6 @@
-from typing import Any, Hashable
+from dataclasses import dataclass
 from fractions import Fraction
-from app.node import Node
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -21,15 +21,18 @@ class Dictionary:
                 return
             hash_key = self._move_table_right(hash_key)
 
-        node = Node(hash_=hash(key), key=key, value=value)
+        node = self.Node(hash_=hash(key), key=key, value=value)
         self._hash_table[hash_key] = node
         self._length += 1
 
-    def __getitem__(self, key: Hashable) -> Any | None:
-        return self._find_key_in_table(action="get", key=key)
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self._find_key_in_table(key=key)
+        return self._hash_table[index].value
 
     def __delitem__(self, key: Hashable) -> None:
-        return self._find_key_in_table(action="del", key=key)
+        index = self._find_key_in_table(key=key)
+        self._hash_table[index] = None
+        self._length -= 1
 
     def __len__(self) -> int:
         return self._length
@@ -95,16 +98,18 @@ class Dictionary:
                 temp_hash_table[item_key_hash] = item
         self._hash_table = temp_hash_table
 
-    def _find_key_in_table(self, action: str, key: Hashable) -> Any | None:
-        hash_key = self._find_key_position(key)
+    def _find_key_in_table(self, key: Hashable) -> int:
+        index = self._find_key_position(key)
         table = self._hash_table
+
         for _ in range(self._hash_size):
-            if table[hash_key] is not None and table[hash_key].key == key:
-                if action == "get":
-                    return table[hash_key].value
-                elif action == "del":
-                    table[hash_key] = None
-                    self._length -= 1
-                    return
-            hash_key = self._move_table_right(hash_key)
+            if table[index] is not None and table[index].key == key:
+                return index
+            index = self._move_table_right(index)
         raise KeyError(f"Key '{key}' is not found in dictionary")
+
+    @dataclass
+    class Node:
+        hash_: int
+        key: Hashable
+        value: Any
