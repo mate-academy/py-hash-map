@@ -40,7 +40,7 @@ class Dictionary:
             for k, v in bucket:
                 if k == key:
                     return v
-        raise KeyError(f'Key {key} not in hash table')
+        raise KeyError(f"Key {key} not in hash table")
 
     def __delitem__(self, key: Immutable) -> None:
         index = self._hash(key)
@@ -50,7 +50,7 @@ class Dictionary:
                 del bucket[i]
                 self.length -= 1
                 return
-        raise KeyError(f'Key {key} not in hash table')
+        raise KeyError(f"Key {key} not in hash table")
 
     def __iter__(self) -> Iterable:
         for bucket in self.hash_table:
