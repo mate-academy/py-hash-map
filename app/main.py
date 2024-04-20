@@ -9,7 +9,9 @@ class Node:
 
 
 class Dictionary:
-    def __init__(self, capacity: Hashable, load_factor: Hashable = 0.7) -> None:
+    def __init__(
+            self, capacity: Hashable, load_factor: Hashable = 0.7
+    ) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
