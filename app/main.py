@@ -1,21 +1,21 @@
 class Node:
-    def __init__(self, key: int | str, value: int | str) -> None:
+    def __init__(self, key: Hashable, value: Hashable) -> None:
         self.key = key
         self.value = value
         self.next = None
 
 
 class Dictionary:
-    def __init__(self, capacity: int = 10, load_factor: float = 0.7) -> None:
+    def __init__(self, capacity: Hashable, load_factor: Hashable = 0.7) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
         self.size = 0
         self.table = [None] * capacity
 
-    def _hash(self, key: int | str) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
-    def __setitem__(self, key: int | str, value: int | str) -> None:
+    def __setitem__(self, key: Hashable, value: Hashable) -> None:
         index = self._hash(key)
         node = self.table[index]
         while node is not None:
@@ -30,7 +30,7 @@ class Dictionary:
         if self.size > self.capacity * self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: int | str) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         index = self._hash(key)
         node = self.table[index]
         while node is not None:
