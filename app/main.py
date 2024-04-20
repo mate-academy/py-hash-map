@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.table = [[], [], [], [], [], [], [], []]
+        self.table = [[] for _ in range(8)]
         self.capacity = 8
         self.size = 0
         self.load_factor = 2 / 3
@@ -21,7 +21,7 @@ class Dictionary:
         if self.size > self.load_factor * self.capacity:
             self.resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         while self.table[index] and self.table[index][0] != key:
             index = (index + 1) % self.capacity
