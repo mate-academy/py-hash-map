@@ -8,7 +8,7 @@ class Dictionary:
         self.size = 0
         self.load_factor = 2 / 3
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self.capacity
         while self.table[index] and self.table[index][0] != key:
             index = (index + 1) % self.capacity
