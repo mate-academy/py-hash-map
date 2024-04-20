@@ -1,13 +1,6 @@
 from typing import Any, Iterable, Optional, Hashable
 
 
-def _get_index_in_bucket(bucket: list, key: Hashable) -> int:
-    for i, (k, _) in enumerate(bucket):
-        if k == key:
-            return i
-    raise KeyError()
-
-
 class Dictionary:
 
     def __init__(
@@ -97,3 +90,10 @@ class Dictionary:
     def update(self, other: dict) -> None:
         for key, value in other.items():
             self[key] = value
+
+    @staticmethod
+    def _get_index_in_bucket(bucket: list, key: Hashable) -> int:
+        for i, (k, _) in enumerate(bucket):
+            if k == key:
+                return i
+        raise KeyError()
