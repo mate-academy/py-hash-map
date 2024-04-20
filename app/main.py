@@ -1,4 +1,4 @@
-from typing import Hashable
+from typing import Hashable, Any
 
 
 class Node:
@@ -10,7 +10,7 @@ class Node:
 
 class Dictionary:
     def __init__(
-            self, capacity: Hashable, load_factor: Hashable = 0.7
+            self, capacity: Hashable = 10, load_factor: Hashable = 0.7
     ) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
@@ -35,7 +35,7 @@ class Dictionary:
         if self.size > self.capacity * self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: Hashable) -> None:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._hash(key)
         node = self.table[index]
         while node is not None:
