@@ -2,7 +2,7 @@ from typing import Hashable, Any
 
 
 class Node:
-    def __init__(self, key: Hashable, value: Hashable) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.next = None
@@ -10,7 +10,7 @@ class Node:
 
 class Dictionary:
     def __init__(
-            self, capacity: Hashable = 10, load_factor: Hashable = 0.7
+            self, capacity: int = 10, load_factor: float = 0.7
     ) -> None:
         self.capacity = capacity
         self.load_factor = load_factor
@@ -20,7 +20,7 @@ class Dictionary:
     def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
-    def __setitem__(self, key: Hashable, value: Hashable) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._hash(key)
         node = self.table[index]
         while node is not None:
