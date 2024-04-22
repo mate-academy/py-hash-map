@@ -59,4 +59,4 @@ class Dictionary:
                 node = node.next
         self.table = new_table
         self.capacity = new_capacity
-
+        
