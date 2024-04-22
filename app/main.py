@@ -34,9 +34,9 @@ class Dictionary:
         index = self.get_index(key)
         bucket = self.hash_table[index]
         if bucket:
-            for k, v in bucket:
-                if k == key:
-                    return v
+            for keys, values in bucket:
+                if keys == key:
+                    return values
         raise KeyError(f"Key {key} not in hash table")
 
     def __iter__(self) -> Iterable:
@@ -85,10 +85,11 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
         bucket = self.hash_table[index]
-        try:
-            del bucket[self._get_index_in_bucket(bucket, key)]
+        index_in_bucket = self._get_index_in_bucket(bucket, key)
+        if index_in_bucket is not None:
+            del bucket[index_in_bucket]
             self.length -= 1
-        except KeyError:
+        else:
             raise KeyError(f"Key {key} not in hash table")
 
     @staticmethod
