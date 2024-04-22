@@ -52,10 +52,11 @@ class Dictionary:
         new_table = [None] * new_capacity
         for node in self.table:
             while node:
-                index = hash(node.key) % new_capacity
+                index = self._hash(node.key) % new_capacity
                 new_node = Node(node.key, node.value)
                 new_node.next = new_table[index]
                 new_table[index] = new_node
                 node = node.next
         self.table = new_table
         self.capacity = new_capacity
+
