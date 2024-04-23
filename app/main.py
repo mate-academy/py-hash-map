@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Iterable
 from dataclasses import dataclass
 from collections import defaultdict
 
@@ -7,13 +7,13 @@ LOAD_FACTOR = 2 / 3
 
 
 @dataclass
-class Node:
-    key: Any
-    value: Any
-    hash_value: int
-
-
 class Dictionary:
+    @dataclass
+    class Node:
+        key: Any
+        value: Any
+        hash_value: int
+
     def __init__(
             self,
             initial_capacity: int = INITIAL_CAPACITY,
@@ -56,7 +56,7 @@ class Dictionary:
         if node:
             node.value = value
         else:
-            self.table[index].append(Node(key, value, hash(key)))
+            self.table[index].append(self.Node(key, value, hash(key)))
             self.size += 1
             self._resize()
 
@@ -84,9 +84,13 @@ class Dictionary:
             for node in bucket:
                 yield node.key, node.value
 
-    def update(self, other: dict) -> None:
-        for key, value in other.items():
-            self[key] = value
+    def update(self, other: dict | Iterable[tuple[Any, Any]]) -> None:
+        if isinstance(other, dict):
+            for key, value in other.items():
+                self[key] = value
+        else:
+            for key, value in other:
+                self[key] = value
 
     def get(self, key: Any, default: Any = None) -> Any:
         try:
