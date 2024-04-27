@@ -13,30 +13,38 @@ class Dictionary:
         self.load_factor: float = load_factor
         self.hash_table: list = [None] * capacity
 
+    def __repr__(self) -> str:
+        items = []
+        for bucket in self.hash_table:
+            if bucket:
+                for key, value in bucket:
+                    items.append(f"{key}: {value}")
+        return "{" + ", ".join(items) + "}"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def __len__(self) -> int:
         return self.length
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.get_index(key)
+        while self.hash_table[index] and self.hash_table[index][0] != key:
+            index = (index + 1) % self.capacity
         if not self.hash_table[index]:
-            self.hash_table[index] = []
-        bucket = self.hash_table[index]
-        for i, (keys, values) in enumerate(bucket):
-            if keys == key:
-                bucket[i] = (key, value)
-                return
-        bucket.append((key, value))
-        self.length += 1
+            self.hash_table[index] = [key, value]
+            self.length += 1
+        elif self.hash_table[index][0] == key:
+            self.hash_table[index][1] = value
         if self.length >= self.capacity * self.load_factor:
             self._resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
-        bucket = self.hash_table[index]
-        if bucket:
-            for keys, values in bucket:
-                if keys == key:
-                    return values
+        while self.hash_table[index]:
+            if self.hash_table[index][0] == key:
+                return self.hash_table[index][1]
+            index = (index + 1) % self.capacity
         raise KeyError(f"Key {key} not in hash table")
 
     def __iter__(self) -> Iterable:
@@ -59,9 +67,9 @@ class Dictionary:
             if bucket:
                 for key, value in bucket:
                     index = self.get_index(key)
-                    if not new_hash[index]:
-                        new_hash[index] = []
-                    new_hash[index].append((key, value))
+                    while new_hash[index]:
+                        index = (index + 1) % self.capacity
+                    new_hash[index] = [key, value]
         self.hash_table = new_hash
 
     def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
@@ -85,16 +93,10 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self.get_index(key)
         bucket = self.hash_table[index]
-        index_in_bucket = self._get_index_in_bucket(bucket, key)
-        if index_in_bucket is not None:
-            del bucket[index_in_bucket]
-            self.length -= 1
-        else:
-            raise KeyError(f"Key {key} not in hash table")
-
-    @staticmethod
-    def _get_index_in_bucket(bucket: list, key: Hashable) -> int:
-        for i, (keys, _) in enumerate(bucket):
-            if keys == key:
-                return i
-        raise KeyError()
+        if bucket:
+            for i, (stored_key, _) in enumerate(bucket):
+                if stored_key == key:
+                    del bucket[i]
+                    self.length -= 1
+                    return
+        raise KeyError(f"Key {key} not in hash table")
