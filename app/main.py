@@ -1,127 +1,71 @@
-from __future__ import annotations
-
-from typing import Any, Hashable
-
-
-class Node:
-    def __init__(self, key: Hashable, value: Any) -> None:
-        self.key = key
-        self.hash = hash(self.key)
-        self.value = value
-
-    def __repr__(self) -> str:
-        return f"{self.key}: {self.value} (hash: {self.hash})"
+from typing import Any, Hashable, Optional
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.capacity: int = 8
-        self.fullness_of_table: int = 0
-        self.load_factor: int = int(self.capacity * 2 / 3)
-        self.hash_table: list = [None] * self.capacity
+        self.length = 0
+        self.hash_table: list = [None] * 8
+        self.capacity = 8
 
-    def __repr__(self) -> str:
-        result_str: str = ""
-        for item in self.hash_table:
-            if item is not None:
-                result_str += f"{item.key}: {item.value} (hash: {item.hash})\n"
-        return result_str[:-1]
+    def get_index_from_hash(self, key: Hashable) -> int:
+        return hash(key) % self.capacity
 
-    def __setitem__(self, key: Hashable, value: Any) -> None:
-        node: Node = Node(key, value)
-        if self.fullness_of_table > self.load_factor:
+    def __setitem__(
+            self,
+            key: Hashable,
+            value: Any
+    ) -> None:
+        if self.length >= self.capacity * (2 / 3):
             self.resize()
-        self.input_node_in_hash_table(node)
+        index = hash(key) % self.capacity
+        while True:
+            if not self.hash_table[index]:
+                self.length += 1
+            if not self.hash_table[index] or self.hash_table[index][0] == key:
+                self.hash_table[index] = (key, hash(key), value)
+                break
+            index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Hashable) -> Any:
-        no_cell: int = hash(key) % self.capacity
-        find: bool = False
-        for cell in range(no_cell, no_cell + self.capacity + 1):
-            cell %= self.capacity
-            if (isinstance(self.hash_table[cell], Node)
-                    and self.hash_table[cell].key == key):
-                find = True
-                return self.hash_table[cell].value
-        if not find:
-            raise KeyError(f"{key} is not find!")
+        return self.get(key)
+
+    def get_index(self, key: Hashable) -> int:
+        start_index = hash(key) % self.capacity
+        index = start_index
+        while True:
+            if self.hash_table[index] and self.hash_table[index][0] == key:
+                return index
+            index = (index + 1) % self.capacity
+            if index == start_index:
+                raise KeyError("Key was not found")
+
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
+        if self.get_index(key) is not None:
+            return self.hash_table[self.get_index(key)][2]
+        return default
 
     def __len__(self) -> int:
-        return self.fullness_of_table
+        return self.length
 
     def __delitem__(self, key: Hashable) -> None:
-        no_cell: int = key % self.capacity
-        find: bool = False
-        for cell in range(no_cell, no_cell + self.capacity + 1):
-            cell %= self.capacity
-            if (isinstance(self.hash_table[cell], Node)
-                    and self.hash_table[cell].key == key):
-                find = True
-                self.hash_table[cell] = None
-                self.fullness_of_table -= 1
-                break
-        if not find:
-            raise KeyError(f"{key} is not find!")
-
-    def __iter__(self) -> Dictionary:
-        self.current = 0
-        return self
-
-    def __next__(self) -> Node | str:
-        try:
-            while self.hash_table[self.current] is None:
-                self.current += 1
-            next_value: int = self.hash_table[self.current]
-            self.current += 1
-            return next_value
-        except IndexError:
-            self.current = 0
-            raise EOFError("End of file.")
-
-    def clear(self) -> None:
-        self.hash_table: list = [None] * self.capacity
-        self.fullness_of_table = 0
-
-    def get(self, key: Hashable, value: Any = None) -> Any | None:
-        try:
-            self.__getitem__(key)
-        except KeyError:
-            return value
-
-    def pop(self, key: Hashable) -> Any | None:
-        try:
-            return_value: Any = self.__getitem__(key)
-            self.__delitem__(key)
-            return return_value
-        except KeyError:
-            return None
-
-    def update(self, other: Dictionary | dict | list) -> Dictionary:
-        if isinstance(other, Dictionary):
-            for item in other.hash_table:
-                if isinstance(item, Node):
-                    self.__setitem__(item.key, item.value)
-        if isinstance(other, dict):
-            for key, value in other.items():
-                self.__setitem__(key, value)
-        if isinstance(other, list):
-            for item in other:
-                self.__setitem__(item[0], item[1])
-        return self
-
-    def input_node_in_hash_table(self, node: Node) -> None:
-        no_cell: int = node.hash % self.capacity
-        while (self.hash_table[no_cell] is not None
-               and self.hash_table[no_cell].key != node.key):
-            no_cell = (no_cell + 1) % self.capacity
-        if self.hash_table[no_cell] is None:
-            self.fullness_of_table += 1
-        self.hash_table[no_cell] = node
+        index = self.get_index(key)
+        self.hash_table[index] = None
+        self.length -= 1
 
     def resize(self) -> None:
-        old_hash_table = self.hash_table
+        copy_hash_table = self.hash_table.copy()
+        self.hash_table += [None] * self.capacity
         self.capacity *= 2
-        self.load_factor: int = int(self.capacity * 2 / 3)
-        self.clear()
-        for cell in old_hash_table:
-            if isinstance(cell, Node):
-                self.input_node_in_hash_table(cell)
+        for item in copy_hash_table:
+            if item:
+                del self[item[0]]
+                self[item[0]] = item[2]
+
+    def __iter__(self) -> tuple:
+        for item in self.hash_table:
+            if item:
+                yield item
+
+    def clear(self) -> None:
+        self.hash_table.clear()
+        self.length = 0
