@@ -11,7 +11,8 @@ class Node:
 
     def __repr__(self) -> str:
         return f"{self.key}: {self.value} (hash: {self.hash})"
-    
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.capacity: int = 8
