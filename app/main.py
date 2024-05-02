@@ -64,7 +64,10 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
     def get(self, key: Hashable) -> Any:
-        return self.__getitem__(key)
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return None
 
     def pop(self, key: Hashable) -> Any:
         temp = self.__getitem__(key)
