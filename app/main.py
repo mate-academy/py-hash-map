@@ -24,7 +24,7 @@ class Dictionary:
         index = hash_value % self.capacity
         node = self.table[index]
         while node:
-            if node.key == key:
+            if node.key == key and node.hash_value == hash_value:
                 node.value = value
                 return
             else:
