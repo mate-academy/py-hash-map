@@ -1,4 +1,5 @@
 from typing import Any
+from typing import Hashable
 
 
 class Dictionary:
@@ -18,7 +19,7 @@ class Dictionary:
                 if node:
                     self.__setitem__(node.key, node.value)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self._resize()
         hash_value = hash(key)
         index = hash_value % self.capacity
@@ -33,12 +34,12 @@ class Dictionary:
         self.table[index] = Node(key, hash_value, value)
         self.size += 1
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         hash_value = hash(key)
         index = hash_value % self.capacity
         node = self.table[index]
         while node:
-            if node.key == key:
+            if node.key == key and node.hash_value == hash_value:
                 return node.value
             else:
                 index = (index + 1) % self.capacity
