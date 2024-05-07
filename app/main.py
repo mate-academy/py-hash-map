@@ -51,7 +51,7 @@ class Dictionary:
 
 
 class Node:
-    def __init__(self, key: Any, hash_value: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, hash_value: Any, value: Any) -> None:
         self.key = key
         self.hash_value = hash_value
         self.value = value
