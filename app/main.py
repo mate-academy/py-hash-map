@@ -13,9 +13,7 @@ class Dictionary:
         hash_code = hash(key)
         data = (key, hash_code, value)
 
-        if self.length > (self.capacity * self.load_factor):
-            self.storage.extend([None] * self.capacity)
-            self.capacity *= 2
+        self._resize()
 
         for i in range(len(self.storage)):
             if self.storage[i] and key == self.storage[i][0]:
@@ -81,3 +79,8 @@ class Dictionary:
     def update(self, new_pair: list[tuple]) -> None:
         for pair in new_pair:
             self[pair[0]] = pair[1]
+
+    def _resize(self) -> None:
+        if self.length > (self.capacity * self.load_factor):
+            self.storage.extend([None] * self.capacity)
+            self.capacity *= 2
