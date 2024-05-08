@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,7 +9,7 @@ class Dictionary:
         self.storage: list = [None] * 8
         self.length = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_code = hash(key)
         data = (key, hash_code, value)
         index = hash_code % self.capacity
@@ -31,7 +31,7 @@ class Dictionary:
         self.length += 1
         self._resize()
 
-    def __getitem__(self, key: Any) -> Any | Exception:
+    def __getitem__(self, key: Hashable) -> Any | Exception:
         for item in self.storage:
             if item:
                 key_, hash_code, value = item
@@ -42,7 +42,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __delitem__(self, key: Any) -> None | Exception:
+    def __delitem__(self, key: Hashable) -> None | Exception:
         for item in self.storage:
             if item and key in item:
                 self.storage.remove(item)
@@ -52,7 +52,7 @@ class Dictionary:
 
     def __iter__(self) -> Dictionary:
         self._index = 0
-        self._clean_storage = [x[2] for x in self.storage if x]
+        self._clean_storage = [item[2] for item in self.storage if item]
         return self
 
     def __next__(self) -> Any | Exception:
@@ -67,13 +67,13 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def get(self, key: Any, default: Any = None) -> Any | None:
+    def get(self, key: Hashable, default: Any = None) -> Any | None:
         for item in self.storage:
             if item and key in item:
                 return item[2]
         return default
 
-    def pop(self, key: Any, default: Any = None) -> Any | Exception:
+    def pop(self, key: Hashable, default: Any = None) -> Any | Exception:
         return_value = self.get(key)
         try:
             del self[key]
@@ -89,7 +89,7 @@ class Dictionary:
 
     def _resize(self) -> None:
         if self.length > (self.capacity * self.load_factor):
-            reindex = [x for x in self.storage if x]
+            reindex = [item for item in self.storage if item]
             self.storage.clear()
             self.length = 0
             self.capacity *= 2
