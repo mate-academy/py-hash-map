@@ -15,7 +15,7 @@ class Dictionary:
         index = hash_code % self.capacity
 
         for i in range(len(self.storage)):
-            if self.storage[i] and key in self.storage[i]:
+            if self.storage[i] and key == self.storage[i][0]:
                 self.storage[i] = data
                 return
 
