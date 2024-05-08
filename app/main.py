@@ -12,23 +12,24 @@ class Dictionary:
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_code = hash(key)
         data = (key, hash_code, value)
-
-        self._resize()
+        index = hash_code % self.capacity
 
         for i in range(len(self.storage)):
-            if self.storage[i] and key == self.storage[i][0]:
+            if self.storage[i] and key in self.storage[i]:
                 self.storage[i] = data
                 return
 
-        if not self.storage[hash_code % self.capacity]:
-            self.storage[hash_code % self.capacity] = data
-            self.length += 1
+        if not self.storage[index]:
+            self.storage[index] = data
+
         else:
             for i in range(len(self.storage)):
                 if not self.storage[i]:
                     self.storage[i] = data
-                    self.length += 1
                     break
+
+        self.length += 1
+        self._resize()
 
     def __getitem__(self, key: Any) -> Any | Exception:
         for item in self.storage:
@@ -66,14 +67,20 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def get(self, key: Any) -> Any | None:
+    def get(self, key: Any, default: Any = None) -> Any | None:
         for item in self.storage:
             if item and key in item:
                 return item[2]
+        return default
 
-    def pop(self, key: Any) -> Any | Exception:
+    def pop(self, key: Any, default: Any = None) -> Any | Exception:
         return_value = self.get(key)
-        del self[key]
+        try:
+            del self[key]
+        except KeyError:
+            if default:
+                return default
+            raise KeyError(f"Dictionary has not key {key}")
         return return_value
 
     def update(self, new_pair: list[tuple]) -> None:
@@ -82,5 +89,10 @@ class Dictionary:
 
     def _resize(self) -> None:
         if self.length > (self.capacity * self.load_factor):
-            self.storage.extend([None] * self.capacity)
+            reindex = [x for x in self.storage if x]
+            self.storage.clear()
+            self.length = 0
             self.capacity *= 2
+            self.storage = [None] * self.capacity
+            for item in reindex:
+                self.__setitem__(item[0], item[2])
