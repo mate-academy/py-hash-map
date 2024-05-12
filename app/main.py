@@ -12,29 +12,31 @@ class Dictionary:
     def __post_init__(self) -> None:
         self.table = self.capacity * [None]
 
+    def resize_table(self) -> list:
+        self.size = 0
+        self.capacity *= 2
+        new_table = self.capacity * [None]
+        for node in self.table:
+            if not node:
+                continue
+            hash_value = hash(node[0])
+            num_of_hash_table = hash_value % self.capacity
+            while True:
+                if not new_table[num_of_hash_table]:
+                    new_table[num_of_hash_table] = [
+                        node[0],
+                        node[1]
+                    ]
+                    self.size += 1
+                    break
+                num_of_hash_table += 1
+                if num_of_hash_table == self.capacity:
+                    num_of_hash_table = 0
+        return new_table.copy()
+
     def __setitem__(self, key: Hashable, value: object) -> None:
         if (self.size + 1) > self.capacity * self.load_factor:
-            self.size = 0
-            self.capacity *= 2
-            new_table = self.capacity * [None]
-            for node in self.table:
-                if not node:
-                    continue
-                hash_value = hash(node[0])
-                num_of_hash_table = hash_value % self.capacity
-                while True:
-                    if not new_table[num_of_hash_table]:
-                        new_table[num_of_hash_table] = [
-                            node[0],
-                            node[1]
-                        ]
-                        self.size += 1
-                        break
-                    num_of_hash_table += 1
-                    if num_of_hash_table == self.capacity:
-                        num_of_hash_table = 0
-
-            self.table = new_table.copy()
+            self.table = self.resize_table()
 
         hash_value = hash(key)
         num_of_hash_table = hash_value % self.capacity
@@ -46,9 +48,7 @@ class Dictionary:
             elif self.table[num_of_hash_table][0] == key:
                 self.table[num_of_hash_table] = [key, value]
                 break
-            num_of_hash_table += 1
-            if num_of_hash_table == self.capacity:
-                num_of_hash_table = 0
+            num_of_hash_table = (num_of_hash_table + 1) % self.capacity
 
     def __getitem__(self, item: Hashable) -> object:
         hash_value = hash(item)
@@ -57,9 +57,7 @@ class Dictionary:
             if not self.table[num_of_hash_table]:
                 raise KeyError
             if self.table[num_of_hash_table][0] != item:
-                num_of_hash_table += 1
-                if num_of_hash_table == self.capacity:
-                    num_of_hash_table = 0
+                num_of_hash_table = (num_of_hash_table + 1) % self.capacity
             else:
                 return self.table[num_of_hash_table][1]
 
@@ -83,20 +81,18 @@ class Dictionary:
                 self.table[num_of_hash_table] = None
                 self.size -= 1
                 return
-            num_of_hash_table += 1
-            if num_of_hash_table == self.capacity:
-                num_of_hash_table = 0
+            num_of_hash_table = (num_of_hash_table + 1) % self.capacity
 
-    def get(self, key: Hashable) -> object | None:
+    def get(self, key: Hashable, *arg: object) -> object | None:
         hash_value = hash(key)
         num_of_hash_table = hash_value % self.capacity
         while True:
             if not self.table[num_of_hash_table]:
+                if arg:
+                    return arg
                 return None
             if self.table[num_of_hash_table][0] != key:
-                num_of_hash_table += 1
-                if num_of_hash_table == self.capacity:
-                    num_of_hash_table = 0
+                num_of_hash_table = (num_of_hash_table + 1) % self.capacity
             else:
                 return self.table[num_of_hash_table][1]
 
@@ -112,9 +108,7 @@ class Dictionary:
                 self.table[num_of_hash_table] = None
                 self.size -= 1
                 return value
-            num_of_hash_table += 1
-            if num_of_hash_table == self.capacity:
-                num_of_hash_table = 0
+            num_of_hash_table = (num_of_hash_table + 1) % self.capacity
 
     def items(self) -> list:
         list_items = []
