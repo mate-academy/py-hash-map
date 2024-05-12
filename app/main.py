@@ -96,11 +96,13 @@ class Dictionary:
             else:
                 return self.table[num_of_hash_table][1]
 
-    def pop(self, key: Hashable) -> object:
+    def pop(self, key: Hashable, *arg: object) -> object:
         hash_value = hash(key)
         num_of_hash_table = hash_value % self.capacity
         while True:
             if not self.table[num_of_hash_table]:
+                if arg:
+                    return arg
                 raise Exception("Dict does not have such a key")
 
             if self.table[num_of_hash_table][0] == key:
