@@ -15,9 +15,9 @@ class Dictionary:
         index = hash(key) % self.capacity
         while self.table[index] is not None:
             if self.table[index][0] == key:
-                self.table[index][1] = value
+                self.table[index] = (key, value)
                 return
-            index = (hash(key) + 1) % self.capacity
+            index = (index + 1) % self.capacity
 
         self.table[index] = (key, value)
         self.length += 1
@@ -27,7 +27,7 @@ class Dictionary:
         while self.table[index] is not None:
             if self.table[index][0] == key:
                 return self.table[index][1]
-            index = (hash(key) + 1) % self.capacity
+            index = (index + 1) % self.capacity
 
         raise KeyError(key)
 
@@ -38,12 +38,11 @@ class Dictionary:
         old_table = self.table[:]
         self.capacity *= 2
         self.table = [None] * self.capacity
+        self.length = 0
         for item in old_table:
-            key, value = item
-            index = hash(key) % self.capacity
-            while self.table[index] is not None:
-                index = (hash(key) + 1) % self.capacity
-            self.table[index] = (key, value)
+            if item is not None:
+                key, value = item
+                self.__setitem__(key, value)
 
     def clear(self) -> None:
         self.length = 0
@@ -57,7 +56,7 @@ class Dictionary:
                 self.table[index] = None
                 self.length -= 1
                 return
-            index = (hash(key) + 1) % self.capacity
+            index = (index + 1) % self.capacity
 
         raise KeyError(key)
 
