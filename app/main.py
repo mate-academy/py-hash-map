@@ -20,12 +20,19 @@ class Dictionary:
     def _index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
 
-        if self.table[index] is None or (
-            self.table[index].key == key and hash(self.table[index].key) == hash(key)
+        if (
+                self.table[index] is None
+                or (
+                self.table[index].key == key
+                and hash(self.table[index].key) == hash(key)
+                )
         ):
             return index
         else:
-            while self.table[index] is not None and self.table[index].key != key:
+            while (
+                    self.table[index] is not None
+                    and self.table[index].key != key
+            ):
                 index += 1
                 if index > len(self.table) - 1:
                     index = 0
