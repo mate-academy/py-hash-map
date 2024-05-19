@@ -1,10 +1,10 @@
-from typing import Hashable
+from typing import Hashable, Any
 
 import copy
 
 
 class DictionaryMember:
-    def __init__(self, key: Hashable, value: any, index: int = None) -> None:
+    def __init__(self, key: Hashable, value: Any, index: int = None) -> None:
         self.key = key
         self.value = value
         self.index = index
@@ -21,17 +21,17 @@ class Dictionary:
         index = hash(key) % self.capacity
 
         if (
-                self.table[index] is None
-                or (
+            self.table[index] is None
+            or (
                 self.table[index].key == key
                 and hash(self.table[index].key) == hash(key)
-                )
+            )
         ):
             return index
         else:
             while (
-                    self.table[index] is not None
-                    and self.table[index].key != key
+                self.table[index] is not None
+                and self.table[index].key != key
             ):
                 index += 1
                 if index > len(self.table) - 1:
@@ -67,14 +67,13 @@ class Dictionary:
         if self.size / self.capacity > self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: int | str | tuple | float) -> any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._index(key)
         current = self.table[index]
 
         if current is None:
             raise KeyError
-        else:
-            return current.value
+        return current.value
 
     def _clear(self) -> None:
         self.table = [None] * self.capacity
