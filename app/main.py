@@ -51,7 +51,7 @@ class Dictionary:
             try:
                 self.__setitem__(key=member.key, value=member.value)
             except AttributeError:
-                pass
+                print("Error: Unable to set item in dictionary")
 
     def __setitem__(self, key: int | str | tuple | float, value: any) -> None:
         key_index = self._index(key)
