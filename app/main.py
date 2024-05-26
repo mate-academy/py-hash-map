@@ -5,27 +5,28 @@ class Dictionary:
     def __init__(self) -> None:
         self.storage_length = 8
         self.storage = [None] * self.storage_length
+        self.size = 0
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         new_item = (key, hash(key), value)
         index = self.get_index(new_item)
         self.storage[index] = new_item
-        if len([i for i in self.storage if i]) >= 2 * self.storage_length / 3:
+        self.size += 1
+        if self.size >= 2 * self.storage_length / 3:
             self.resize()
 
     def get_index(self, new_item: tuple) -> int:
         index = new_item[1] % self.storage_length
-        for item_index, item in enumerate(self.storage):
-            if item:
-                if item[0] == new_item[0] and item[1] == new_item[1]:
-                    return item_index
         while True:
             if not self.storage[index]:
+                return index
+            if (self.storage[index] and self.storage[index][0] == new_item[0]
+                    and self.storage[index][1] == new_item[1]):
                 return index
             index = (index + 1) % self.storage_length
 
     def resize(self) -> None:
-        temp_storage = [i for i in self.storage if i]
+        temp_storage = [item for item in self.storage if item]
         self.storage_length *= 2
         self.storage = [None] * self.storage_length
         for i in temp_storage:
@@ -87,11 +88,10 @@ class Dictionary:
                 if item_[0] == key and item_[1] == key_hash:
                     value = item_[2]
                     self.storage[index_] = None
+                    self.size =- 1
                     return value
         raise KeyError(key)
 
     def update(self, item: Any) -> None:
-        # what foram data must be passed here? As dict? Or as **kwargs?
-        # realised as a dict with use dict methods (sorry)
         for key, value in item.items():
-            self.__setitem__(key, value)
+            self[key] = value
