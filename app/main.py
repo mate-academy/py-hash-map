@@ -88,7 +88,7 @@ class Dictionary:
                 if item_[0] == key and item_[1] == key_hash:
                     value = item_[2]
                     self.storage[index_] = None
-                    self.size =- 1
+                    self.size -= 1
                     return value
         raise KeyError(key)
 
