@@ -5,7 +5,7 @@ class Dictionary:
     def __init__(self) -> None:
         self.load_factor = 2 / 3
         self. capacity = 8
-        self.storage = [None] * 8
+        self.storage = [None] * self.capacity
         self.length = 0
 
     def _resize(self) -> None:
@@ -27,15 +27,18 @@ class Dictionary:
             self._resize()
 
         index = self._hash(key)
-        if self.storage[index] is None:
-            self.storage[index] = []
-
-        for i, pair_k_v in enumerate(self.storage[index]):
-            if pair_k_v[0] == key:
-                self.storage[index][i] = (key, value)
+        while True:
+            if self.storage[index] is None:
+                self.storage[index] = [(key, value)]
+                self.length += 1
                 return
-        self.storage[index].append((key, value))
-        self.length += 1
+
+            for i, pair_k_v in enumerate(self.storage[index]):
+                if pair_k_v[0] == key:
+                    self.storage[index][i] = (key, value)
+                    return
+            self.storage[index].append((key, value))
+            self.length += 1
 
     def __getitem__(self, key: Hashable) -> None:
         index = self._hash(key)
@@ -44,8 +47,7 @@ class Dictionary:
             for pair in self.storage[index]:
                 if pair[0] == key:
                     return pair[1]
-            raise KeyError
-        raise KeyError
+        raise KeyError(f"Key {key} not found")
 
     def __len__(self) -> int:
         return self.length
