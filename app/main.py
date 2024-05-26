@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -6,7 +6,7 @@ class Dictionary:
         self.storage_length = 8
         self.storage = [None] * self.storage_length
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         new_item = (key, hash(key), value)
         index = self.get_index(new_item)
         self.storage[index] = new_item
@@ -32,13 +32,13 @@ class Dictionary:
             self.__setitem__(i[0], i[2])
         del temp_storage
 
-    def __getitem__(self, item: Any) -> Any:
-        key_hash = hash(item)
+    def __getitem__(self, key: Hashable) -> Any:
+        key_hash = hash(key)
         for item_ in self.storage:
             if item_:
-                if item_[0] == item and item_[1] == key_hash:
+                if item_[0] == key and item_[1] == key_hash:
                     return item_[2]
-        raise KeyError(item)
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return len([i for i in self.storage if i])
@@ -53,15 +53,15 @@ class Dictionary:
             return string
         return "{}"
 
-    def __delitem__(self, item: Any) -> Any:
-        key_hash = hash(item)
-        print(item)
+    def __delitem__(self, key: Hashable) -> Any:
+        key_hash = hash(key)
+        print(key)
         for index_, item_ in enumerate(self.storage):
             if item_:
-                if item_[0] == item and item_[1] == key_hash:
+                if item_[0] == key and item_[1] == key_hash:
                     self.storage[index_] = None
                     return
-        raise KeyError(item)
+        raise KeyError(key)
 
     def __iter__(self) -> tuple:
         for item in self.storage:
@@ -71,24 +71,24 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def get(self, item: Any) -> Any:
-        key_hash = hash(item)
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        key_hash = hash(key)
         for item_ in self.storage:
             if item_:
-                if item_[0] == item and item_[1] == key_hash:
+                if item_[0] == key and item_[1] == key_hash:
                     return item_[2]
-        return None
+        return default
 
-    def pop(self, item: Any) -> Any:
-        key_hash = hash(item)
-        print(item)
+    def pop(self, key: Hashable) -> Any:
+        key_hash = hash(key)
+        print(key)
         for index_, item_ in enumerate(self.storage):
             if item_:
-                if item_[0] == item and item_[1] == key_hash:
+                if item_[0] == key and item_[1] == key_hash:
                     value = item_[2]
                     self.storage[index_] = None
                     return value
-        raise KeyError(item)
+        raise KeyError(key)
 
     def update(self, item: Any) -> None:
         # what foram data must be passed here? As dict? Or as **kwargs?
