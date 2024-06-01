@@ -11,10 +11,9 @@ class Dictionary:
         index = hash(key) % self.__capacity
         while self.hash_table[index] and self.hash_table[index][0] != key:
             index = (index + 1) % self.__capacity
-        if not self.hash_table[index]:
-            self.hash_table[index] = (key, hash(key), value)
-            self.length += 1
-        elif self.hash_table[index][0] == key:
+        if not self.hash_table[index] or self.hash_table[index][0] == key:
+            if not self.hash_table[index]:
+                self.length += 1
             self.hash_table[index] = (key, hash(key), value)
         if self.length >= self.__capacity * 2 / 3:
             self.__resize()
@@ -35,16 +34,14 @@ class Dictionary:
         self.length = 0
 
     def __resize(self) -> None:
+        old_hash_table = self.hash_table
         self.__capacity *= 2
-        new_hash_table = [None] * self.__capacity
-        for item in self.hash_table:
+        self.hash_table = [None] * self.__capacity
+        self.length = 0
+        for item in old_hash_table:
             if item:
                 key, _hash, value = item
-                index = hash(key) % self.__capacity
-                while new_hash_table[index]:
-                    index = (index + 1) % self.__capacity
-                new_hash_table[index] = (key, hash(key), value)
-        self.hash_table = new_hash_table
+                self.__setitem__(key, value)
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
