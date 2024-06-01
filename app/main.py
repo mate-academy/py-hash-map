@@ -28,6 +28,8 @@ class Dictionary:
 
         while True:
             if not self.hash_table[position_in_table]:
+                print(position_in_table)
+                print(self.hash_table[position_in_table])
                 raise KeyError
             if self.hash_table[position_in_table][0] == item:
                 return self.hash_table[position_in_table][1]
@@ -44,7 +46,6 @@ class Dictionary:
         for i in range(len(old_hash_table)):
             if old_hash_table[i]:
                 key, value, key_hash = old_hash_table[i]
-                self.hash_table[i] = None
                 self.__setitem__(key, value)
 
     def __len__(self) -> int:
