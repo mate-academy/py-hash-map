@@ -5,10 +5,10 @@ class Dictionary:
         self.load_factor = self.calculate_load_factor()
         self.size = 0
 
-    def calculate_load_factor(self):
+    def calculate_load_factor(self) -> int:
         return int(self.capacity * (2 / 3))
 
-    def create_hash_table(self):
+    def create_hash_table(self) -> list:
         return [None for _ in range(self.capacity)]
 
     def __setitem__(self, key: any, value: any) -> None:
