@@ -21,12 +21,10 @@ class Dictionary:
     def _get_index(self, key: Hashable) -> int:
         hash_ = hash(key)
         index = hash_ % self.capacity
-
         while (self._hash_table[index] is not None
                and self._hash_table[index].key != key):
-            index = + 1
+            index += 1
             index = index % self.capacity
-
         return index
 
     def _max_load(self) -> float:
@@ -45,8 +43,11 @@ class Dictionary:
         if self.length > self._max_load():
             self._resize()
         index = self._get_index(key)
-        self._hash_table[index] = Node(key, hash(key), value)
-        self.length += 1
+        if self._hash_table[index] is None:
+            self._hash_table[index] = Node(key, hash(key), value)
+            self.length += 1
+        else:
+            self._hash_table[index].value = value
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_index(key)
