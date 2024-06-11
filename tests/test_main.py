@@ -161,6 +161,7 @@ def test_dictionary_add_with_mocked_hash(
         dictionary[key] = value
 
     for key, value in pairs_after_adding:
+        print(dictionary[key])
         assert dictionary[key] == value
     assert len(dictionary) == len(pairs_after_adding)
 
