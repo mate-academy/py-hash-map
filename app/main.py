@@ -5,8 +5,8 @@ class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.hash_table = self.create_hash_table
-        self.load_factor = self.calculate_load_factor
+        self.hash_table = self.create_hash_table()
+        self.load_factor = self.calculate_load_factor()
 
     def create_hash_table(self) -> list:
         return [None for _ in range(self.capacity)]
@@ -41,7 +41,6 @@ class Dictionary:
                 raise KeyError
             if self.hash_table[position][0] == hash_key:
                 return self.hash_table[position][1]
-                break
             position += 1
             position %= self.capacity
 
