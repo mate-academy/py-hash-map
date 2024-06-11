@@ -1,96 +1,56 @@
-from typing import Hashable, Any
-from app.point import Point
-from dataclasses import dataclass
-
-
-@dataclass
-class Node:
-    key: int
-    hash: int
-    value: int
-    next: "Node" = None
-
-    def __iter__(self):
-        self.current = self
-        return self
-
-    def __next__(self):
-        if self.current is None:
-            raise StopIteration
-        else:
-            result = self.current
-            self.current = self.current.next
-            return result
-
-
 class Dictionary:
-    def __init__(self):
-        self.size = 8
-        self.length = 0
-        self.load_factor = 0.66
-        self.hash_table = [None] * self.size
-        self.resize = int(self.size * self.load_factor)
+    def __init__(self) -> None:
+        self.capacity = 8   # default value
+        self.hash_table = self.create_hash_table()
+        self.load_factor = self.calculate_load_factor()
+        self.size = 0
 
-    def _resize(self):
-        new_capacity = self.size * 2
-        new_hash_table = [None] * new_capacity
+    def create_hash_table(self) -> list:
+        return [None] * self.capacity
 
-        for node in self.hash_table:
-            while node is not None:
-                new_index = self._get_index(node.key, new_capacity)
-                if new_hash_table[new_index] is None:
-                    new_hash_table[new_index] = node
-                else:
-                    cur_new_index = new_hash_table[new_index]
-                    while cur_new_index.next is not None:
-                        cur_new_index = cur_new_index.next
-                    cur_new_index.next = node
+    def calculate_load_factor(self) -> int:
+        return int(self.capacity * (2 / 3))
 
-                if node is not None and node.next is not None:
-                    node = node.next
-                else:
-                    break
-
-        self.hash_table = new_hash_table
-        self.size = new_capacity
-        self.resize = int(self.size * self.load_factor)
-
-    def _get_index(self, key: Hashable) -> int:
+    def __setitem__(self, key: int, value: int) -> int:
         hash_key = hash(key)
-        return hash_key % self.size
+        index = hash_key % self.capacity
 
-    def __getitem__(self, key):
-        index = self._get_index(key)
-        node = self.hash_table[index]
+        while True:
+            if self.hash_table[index] is None:
+                self.hash_table[index] = (key, value, hash_key)
+                self.size += 1
+                if self.size == self.load_factor:
+                    self.resise_table()
+                break
+            elif self.hash_table[index][0] == key:
+                self.hash_table[index] = (key, value, hash_key)
+                break
+            index += 1
+            index %= self.capacity
 
-        while node is not None:
-            if node.key == key:
-                return node.value
-            node = node.next
-        raise KeyError("This is not found, please, try again")
+    def __getitem__(self, key: int) -> None:
+        hash_key = hash(key)
+        index = hash_key % self.capacity
 
-    def __setitem__(self, key, value):
-        index = self._get_index(key)
-        node = Node(key, hash(key), value)
+        while True:
+            if self.hash_table[index] is None:
+                raise KeyError
+            if self.hash_table[index][0] == key:
+                return self.hash_table[index][1]
+                break
+            index += 1
+            index %= self.capacity
 
-        if self.hash_table[index] is None:
-            self.hash_table[index] = node
-            self.length += 1
-        else:
-            cur_index = self.hash_table[index]
-            while cur_index is not None:
-                if cur_index.key == key:
-                    cur_index.value = value
-                    return
-                if cur_index.key == key:
-                    break
-                cur_index = cur_index.next
+    def resise_table(self) -> None:
+        self.capacity *= 2
+        self.load_factor = self.calculate_load_factor()
+        old_hash_table = self.hash_table.copy()
+        self.hash_table = self.create_hash_table()
+        self.size = 0
+        for node in old_hash_table:
+            if node:
+                key, value, hash_key = node
+                self.__setitem__(key, value)
 
-            cur_index.next = node
-            self.length += 1
-
-        if self.length >= self.resize:
-            self.resize()
-
-    def __len__(self):
-        return self.length
+    def __len__(self) -> int:
+        return self.size
