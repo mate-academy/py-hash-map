@@ -24,7 +24,7 @@ class Dictionary:
             if not self.hash_table[position]:
                 self.hash_table[position] = (key, value, hash_key)
                 self.size += 1
-                if self.size >= self.calculate_load_factor():
+                if self.size >= self.load_factor:
                     self.resize()
                 break
             elif self.hash_table[position][0] == key:
@@ -39,7 +39,7 @@ class Dictionary:
         while True:
             if not self.hash_table[position]:
                 raise KeyError
-            if self.hash_table[position][0] == hash_key:
+            if self.hash_table[position][0] == item:
                 return self.hash_table[position][1]
             position += 1
             position %= self.capacity
