@@ -21,7 +21,7 @@ class Dictionary:
         hash_key = hash(key)
         index = hash_key % self.capacity
         while self.hash_table[index] and self.hash_table[index][0] != key:
-            index = (index + 1) & self.capacity
+            index = (index + 1) % self.capacity
 
         if not self.hash_table[index]:
             self.hash_table[index] = (key, value, hash_key)
