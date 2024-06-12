@@ -26,9 +26,9 @@ class Dictionary:
             current = self.hash_table[index]
             while current:
                 if current.key == key:
-                    current.value == value
+                    current.value = value
                     return
-                if current.next is None:
+                if current.next_node is None:
                     break
                 current = current.next_node
             current.next_node = Node(key, value)
@@ -48,7 +48,7 @@ class Dictionary:
                                                      current.value)
                 else:
                     new_current = new_hash_table[new_index]
-                    while new_current.next:
+                    while new_current.next_node:
                         new_current = new_current.next_node
                     new_current.next_node = Node(current.key, current.value)
                 current = current.next_node
@@ -76,12 +76,12 @@ class Dictionary:
                 if prev is None:
                     self.hash_table[index] = current.next_node
                 else:
-                    prev.next = current.next_node
+                    prev.next_node = current.next_node
                 self.size -= 1
                 return
             prev = current
-            current = current.next
-        raise KeyError(item)
+            current = current.next_node
+        raise KeyError(key)
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
