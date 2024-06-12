@@ -75,16 +75,6 @@ class Dictionary:
             if self.hash_table[index].key == key:
                 self.hash_table[index] = None
                 self.size -= 1
-                self._rehash(index)
                 return
             index = (index + 1) % self.capacity
         raise KeyError(f"Key {key} not found")
-
-    def _rehash(self, index: int) -> None:
-        next_index = (index + 1) % self.capacity
-        while self.hash_table[next_index] is not None:
-            node = self.hash_table[next_index]
-            self.hash_table[next_index] = None
-            self.size -= 1
-            self.__setitem__(node.key, node.value)
-            next_index = (next_index + 1) % self.capacity
