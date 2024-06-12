@@ -19,16 +19,13 @@ class Dictionary:
         self.length = 0
         self._hash_table: list[Optional[Node]] = [None] * capacity
 
-    def _get_index(self, key: Hashable, hash_value: int) -> int:
-        index = hash_value % self.capacity
-        while (
-            self._hash_table[index] is not None
-            and (
-                    self._hash_table[index].hash_ != hash_value
-                    or self._hash_table[index].key != key
-            )
-        ):
-            index = (index + 1) % self.capacity
+    def _get_index(self, key: Hashable) -> int:
+        hash_ = hash(key)
+        index = hash_ % self.capacity
+        while (self._hash_table[index] is not None
+               and self._hash_table[index].key != key):
+            index += 1
+            index %= self.capacity
         return index
 
     def _resize(self) -> None:
@@ -43,12 +40,12 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = hash(key)
-        index = self._get_index(key, hash_value)
+        index = self._get_index(key)
 
         if self._hash_table[index] is None:
             if self.length >= int(self.LOAD_FACTOR * self.capacity):
                 self._resize()
-                index = self._get_index(key, hash_value)
+                index = self._get_index(key)
 
             self._hash_table[index] = Node(key, hash_value, value)
             self.length += 1
@@ -56,8 +53,7 @@ class Dictionary:
             self._hash_table[index].value = value
 
     def __getitem__(self, key: Hashable) -> Any:
-        hash_value = hash(key)
-        index = self._get_index(key, hash_value)
+        index = self._get_index(key)
 
         if self._hash_table[index] is None:
             raise KeyError(f"No such key: {key}")
@@ -65,8 +61,7 @@ class Dictionary:
         return self._hash_table[index].value
 
     def __delitem__(self, key: Hashable) -> None:
-        hash_value = hash(key)
-        index = self._get_index(key, hash_value)
+        index = self._get_index(key)
 
         if self._hash_table[index] is None:
             raise KeyError(f"No such key: {key}")
