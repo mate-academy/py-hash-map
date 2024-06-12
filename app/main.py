@@ -1,4 +1,4 @@
-from typing import Hashable, Any, Iterator
+from typing import Hashable, Any
 
 
 class Node:
@@ -37,11 +37,6 @@ class Dictionary:
                 return self.hash_table[index].value
             index = (index + 1) % self.capacity
         raise KeyError(f"Key {key} not found")
-
-    def __iter__(self) -> Iterator:
-        for node in self.hash_table:
-            if node:
-                yield node.key
 
     def __len__(self) -> int:
         return self.size
