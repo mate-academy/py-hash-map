@@ -80,7 +80,7 @@ class Dictionary:
             node = self._hash_table[next_index]
             self._hash_table[next_index] = None
             self.length -= 1
-            self.__setitem__(node.key, node.value)
+            self[node.key] = node.value
             next_index = (next_index + 1) % self.capacity
 
     def get(self, key: Hashable, default: any = None) -> any:
@@ -91,8 +91,8 @@ class Dictionary:
 
     def pop(self, key: Hashable, default: any = None) -> any:
         try:
-            value = self.__getitem__(key)
-            self.__delitem__(key)
+            value = self[key]
+            del self[key]
             return value
         except KeyError:
             if default is None:
@@ -101,7 +101,7 @@ class Dictionary:
 
     def update(self, **kwargs) -> None:
         for key, value in kwargs.items():
-            self.__setitem__(key, value)
+            self[key] = value
 
     def __iter__(self) -> any:
         for node in self._hash_table:
