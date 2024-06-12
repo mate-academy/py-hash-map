@@ -10,83 +10,49 @@ class Node:
 
 
 class Dictionary:
-    LOAD_FACTOR = 2 / 3
     INITIAL_CAPACITY = 8
+    LOAD_FACTOR = 2 / 3
     CAPACITY_MULTIPLIED = 2
 
     def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
         self.capacity = capacity
         self.length = 0
-        self._hash_table: list[None | Node] = [None] * capacity
+        self.hash_table: list[None | Node] = [None] * capacity
 
-    @property
-    def _table_limit(self) -> int | float:
-        return self.LOAD_FACTOR * self.capacity
-
-    def _get_index(self, key: Hashable) -> int:
+    def get_index(self, key: Hashable) -> int:
         hash_ = hash(key)
-        index = hash_ * self.capacity
-
-        while (self._hash_table[index] is not None
-               and self._hash_table[index].key != key):
+        index = hash_ % self.capacity
+        while (self.hash_table[index] is not None
+               and self.hash_table[index].key != key):
             index += 1
             index %= self.capacity
-
         return index
 
-    def _resize(self) -> None:
-        old_hash_table = self._hash_table
+    def resize(self) -> None:
+        hash_table_copy = self.hash_table
         self.__init__(self.capacity * self.CAPACITY_MULTIPLIED)
+        for node in hash_table_copy:
+            if node:
+                self.__setitem__(node.key, node.value)
 
-        for element in old_hash_table:
-            if element:
-                self[element.key] = element.value
-
-    def __setitem__(self, key: Hashable, value: Any) -> Any:
-        index = self._get_index(key)
-
-        if self._hash_table[index] is None:
-            if self.length + 1 >= self._table_limit:
-                self._resize()
-                self[key] = value
-            else:
-                self._hash_table[index] = Node(key, hash(key), value)
-                self.length += 1
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.length / self.capacity > self.LOAD_FACTOR:
+            self.resize()
+        index = self.get_index(key)
+        if self.hash_table[index] is None:
+            self.hash_table[index] = Node(key, hash(key), value)
+            self.length += 1
         else:
-            self._hash_table[index].value = value
+            self.hash_table[index].value = value
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self._get_index(key)
+        index = self.get_index(key)
+        if self.hash_table[index] is None:
+            raise KeyError("No such key")
+        return self.hash_table[index].value
 
-        if self._hash_table[index] is None:
-            raise KeyError(f"No such key: {key}")
-
-        return self._hash_table[index].value
-
-    def __delitem__(self, key: Hashable) -> None:
-        index = self._get_index(key)
-
-        if self._hash_table[index] is None:
-            raise KeyError(f"No such key: {key}")
-
-        self._hash_table[index] = None
-        self.length -= 1
-
-    def clear(self) -> None:
-        self.__init__()
-
-    def get(self, key: Hashable, default: Any = None) -> Any:
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
-    def __contains__(self, key: Hashable) -> bool:
-        index = self._get_index(key)
-
-        if self._hash_table[index] is None:
-            return False
-        return True
+    def __len__(self) -> int:
+        return self.length
 
     def pop(self, *args) -> Any:
         key, *other = args
@@ -105,9 +71,13 @@ class Dictionary:
         else:
             return other[0]
 
-    def __len__(self) -> int:
-        return self.length
+    def clear(self) -> None:
+        self.hash_table = [None] * self.capacity
+        self.length = 0
 
-
-if __name__ == "__main__":
-    dict_ = Dictionary
+    def get(self, key: Hashable) -> Any:
+        index = self.get_index(key)
+        value = self.hash_table[index].value
+        if self.hash_table[index] is None:
+            raise KeyError("No such key")
+        return value
