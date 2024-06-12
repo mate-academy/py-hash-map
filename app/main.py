@@ -4,7 +4,7 @@ from typing import Any, Hashable
 
 @dataclass
 class Node:
-    hash: int
+    key_hash: int
     key: Hashable
     value: Any
 
@@ -36,9 +36,9 @@ class Dictionary:
 
         return self.hash_table[index].value
 
-    def __contains__(self, key: Hashable):
+    def __contains__(self, key: Hashable) -> bool:
         index = self._get_index(key)
-        return self.hash_table[index]
+        return self.hash_table[index] is not None
 
     def __len__(self) -> int:
         return self.length
@@ -63,7 +63,8 @@ class Dictionary:
         index = hash(key) % self.size
         end_index = index - 1
         while end_index != index:
-            exists = self.hash_table[index] and self.hash_table[index].key == key
+            exists = (self.hash_table[index]
+                      and self.hash_table[index].key == key)
             if exists or self.hash_table[index] is None:
                 return index
             index = (index + 1) % self.size
