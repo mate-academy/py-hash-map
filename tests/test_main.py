@@ -165,6 +165,7 @@ def test_dictionary_add_with_mocked_hash(
     assert len(dictionary) == len(pairs_after_adding)
 
 
+@pytest.mark.timeout(5)
 def test_resize_bucket():
     items = [(f"Element {i}", i) for i in range(1000)]
     dictionary = Dictionary()
