@@ -23,7 +23,10 @@ class Dictionary:
         index = hash_value % self.capacity
         while (
             self._hash_table[index] is not None
-            and (self._hash_table[index].hash_ != hash_value or self._hash_table[index].key != key)
+            and (
+                    self._hash_table[index].hash_ != hash_value
+                    or self._hash_table[index].key != key
+            )
         ):
             index = (index + 1) % self.capacity
         return index
