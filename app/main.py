@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Hashable, Any
+from typing import Callable
 
 
 @dataclass
@@ -14,17 +15,19 @@ class Dictionary:
     LOAD_FACTOR = 2 / 3
     CAPACITY_MULTIPLIER = 2
 
-    def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
+    def __init__(self, capacity: int = INITIAL_CAPACITY,
+                 hash_function: Callable[[Hashable], int] = hash) -> None:
         self.capacity = capacity
         self.length = 0
         self._hash_table: list[None | Node] = [None] * capacity
+        self.hash_function = hash_function
 
     @property
     def _table_limit(self) -> int:
         return self.LOAD_FACTOR * self.capacity
 
     def _get_index(self, key: Hashable) -> int:
-        hash_ = hash(key)
+        hash_ = self.hash_function(key)
         index = hash_ % self.capacity
 
         while (
