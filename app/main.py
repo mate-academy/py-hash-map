@@ -51,7 +51,7 @@ class Dictionary:
             current.next = new_node
             self.size += 1
 
-    def __getitem__(self, key: Hashable) -> None:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
         current = self.tables[index]
 
@@ -73,15 +73,15 @@ class Dictionary:
         index = self.get_index(key)
         tables = self.tables[index]
 
-        for i, node in enumerate(tables):
+        for element, node in enumerate(tables):
             if node.key == key:
-                del tables[i]
+                del tables[element]
                 self.size -= 1
                 return
 
         raise KeyError(f"Key '{key}' not found.")
 
-    def get(self, key: Any, other: Optional[Any] = None) -> None:
+    def get(self, key: Any, other: Optional[Any] = None) -> Any:
         try:
             return self[key]
         except KeyError:
@@ -91,10 +91,10 @@ class Dictionary:
         index = self.get_index(key)
         tables = self.tables[index]
 
-        for i, node in enumerate(tables):
+        for element, node in enumerate(tables):
             if node.key == key:
                 value = node.value
-                del tables[i]
+                del tables[element]
                 self.size -= 1
                 return value
 
