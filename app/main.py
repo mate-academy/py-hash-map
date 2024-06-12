@@ -20,16 +20,15 @@ class Dictionary:
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_key = hash(key)
         position = hash_key % self.capacity
-        while True:
-            if not self.hash_table[position]:
-                self.hash_table[position] = (key, value, hash_key)
-                self.size += 1
-                if self.size >= self.load_factor:
-                    self.resize()
-                break
-            elif self.hash_table[position][0] == key:
-                self.hash_table[position] = (key, value, hash_key)
-                break
+        while not self.hash_table[position]:
+            self.hash_table[position] = (key, value, hash_key)
+            self.size += 1
+            if self.size >= self.load_factor:
+                self.resize()
+            break
+
+        if self.hash_table[position][0] == key:
+            self.hash_table[position] = (key, value, hash_key)
             position += 1
             position %= self.capacity
 
