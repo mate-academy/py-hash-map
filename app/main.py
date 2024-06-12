@@ -27,7 +27,8 @@ class Dictionary:
         hash_ = hash(key)
         index = hash_ % self.capacity
 
-        while self._hash_table[index] is not None and self._hash_table[index].key != key:
+        while (self._hash_table[index] is not None
+               and self._hash_table[index].key != key):
             index += 1
             index %= self.capacity
 
@@ -80,7 +81,7 @@ class Dictionary:
         except KeyError:
             return default
 
-    def __contains__(self, key) -> bool:
+    def __contains__(self, key: Hashable) -> bool:
         index = self._get_index(key)
 
         if self._hash_table[index] is None:
@@ -99,18 +100,13 @@ class Dictionary:
         if len(other) == 0:
             raise KeyError("No such key")
         elif len(other) > 1:
-            raise TypeError(f"pop expected at most 2 arguments, got {len(args)}")
+            raise TypeError(f"pop expected at most 2 arguments, "
+                            f"got {len(args)}")
         else:
             return other[0]
 
     def __len__(self) -> int:
         return self.length
-
-    def __iter__(self):
-        pass
-
-    def update(self):
-        pass
 
 
 if __name__ == "__main__":
