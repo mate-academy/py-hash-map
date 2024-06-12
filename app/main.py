@@ -92,8 +92,8 @@ class Dictionary:
         if len(other) == 0:
             raise KeyError("No such key")
         elif len(other) > 1:
-            raise TypeError(f"pop expected at most 2 arguments, got {len(args)}")
+            raise TypeError(
+                f"pop expected at most 2 arguments, got {len(args)}"
+            )
         else:
             return other[0]
-
-
