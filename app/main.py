@@ -44,7 +44,7 @@ class Dictionary:
                 if index > self.capacity:
                     index = 0
                 if coli > self.capacity * 2:
-                    raise KeyError
+                    raise KeyError("Error due to big count of collisions!!")
             else:
                 return val
 
