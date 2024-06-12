@@ -19,29 +19,28 @@ class Dictionary:
 
     def __setitem__(self, key: Any, value: Any) -> None:
         hash_key = hash(key)
-        position = hash_key % self.capacity
-        while not self.hash_table[position]:
-            self.hash_table[position] = (key, value, hash_key)
+        index = hash_key % self.capacity
+        while self.hash_table[index] and self.hash_table[index][0] != key:
+            index = (index + 1) & self.capacity
+
+        if not self.hash_table[index]:
+            self.hash_table[index] = (key, value, hash_key)
             self.size += 1
             if self.size >= self.load_factor:
                 self.resize()
-            break
-
-        if self.hash_table[position][0] == key:
-            self.hash_table[position] = (key, value, hash_key)
-            position += 1
-            position %= self.capacity
+        else:
+            self.hash_table[index] = (key, value, hash_key)
 
     def __getitem__(self, item: Any) -> Any:
         hash_key = hash(item)
-        position = hash_key % self.capacity
+        index = hash_key % self.capacity
         while True:
-            if not self.hash_table[position]:
+            if not self.hash_table[index]:
                 raise KeyError
-            if self.hash_table[position][0] == item:
-                return self.hash_table[position][1]
-            position += 1
-            position %= self.capacity
+            if self.hash_table[index][0] == item:
+                return self.hash_table[index][1]
+            index += 1
+            index %= self.capacity
 
     def resize(self) -> None:
         self.capacity *= 2
