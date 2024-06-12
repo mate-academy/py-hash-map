@@ -14,7 +14,7 @@ class Dictionary:
     INITIAL_CAPACITY = 8
     LOAD_FACTOR = 2 / 3
 
-    def __init__(self, capacity: int = INITIAL_CAPACITY):
+    def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
         self.capacity = capacity
         self.length = 0
         self._hash_table: list[Optional[Node]] = [None] * capacity
