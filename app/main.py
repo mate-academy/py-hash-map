@@ -19,8 +19,7 @@ class Dictionary:
         self.hash_table: list[None | Node] = [None] * capacity
 
     def get_index(self, key: Hashable) -> int:
-        hash_ = hash(key)
-        index = hash_ % self.capacity
+        index = hash(key) % self.capacity
         while (self.hash_table[index] is not None
                and self.hash_table[index].key != key):
             index += 1
@@ -47,18 +46,21 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         index = self.get_index(key)
         if self.hash_table[index] is None:
-            raise KeyError("No such key")
+            raise KeyError(f"No such key {key}")
         return self.hash_table[index].value
 
     def __len__(self) -> int:
         return self.length
 
-    def pop(self, key: Hashable) -> Any:
-        index = self.get_index(key)
-        value = self.hash_table[index].value
-        if self.hash_table[index] is None:
-            raise KeyError("No such key")
-        self.hash_table[index] = None
+    def __delitem__(self, key: Hashable) -> None:
+        self[key] = None
+        self.length -= 1
+
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        if self[key] is None:
+            return default
+        value = self[key]
+        del self[key]
         self.length -= 1
         return value
 
@@ -67,15 +69,13 @@ class Dictionary:
         self.length = 0
 
     def get(self, key: Hashable) -> Any:
-        index = self.get_index(key)
-        value = self.hash_table[index].value
-        if self.hash_table[index] is None:
-            raise KeyError("No such key")
-        return value
+        try:
+            return self[key]
+        except KeyError:
+            return None
 
     def update(self, key: Hashable, value: Any) -> None:
-        index = self.get_index(key)
-        self.hash_table[index] = Node(key, hash(key), value)
+        self[key] = Node(key, hash(key), value)
         self.length += 1
 
     def __iter__(self) -> None:
