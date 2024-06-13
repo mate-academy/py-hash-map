@@ -84,9 +84,7 @@ class Dictionary:
     def __contains__(self, key: Hashable) -> bool:
         index = self._get_index(key)
 
-        if self._hash_table[index] is None:
-            return False
-        return True
+        return self._hash_table[index] is not None
 
     def pop(self, *args) -> Any:
         key, *other = args
@@ -102,8 +100,7 @@ class Dictionary:
         elif len(other) > 1:
             raise TypeError(f"pop expected at most 2 arguments, "
                             f"got {len(args)}")
-        else:
-            return other[0]
+        return other[0]
 
     def __len__(self) -> int:
         return self.length
