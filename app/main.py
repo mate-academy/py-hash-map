@@ -22,7 +22,7 @@ class Dictionary:
         self._check_resize()
         index = self._get_index(key)
 
-        if self.hash_table[index] is not None:
+        if self.hash_table[index]:
             self.hash_table[index].value = value
         else:
             self.hash_table[index] = Node(hash(key), key, value)
@@ -31,7 +31,7 @@ class Dictionary:
     def __getitem__(self, key: Hashable) -> Any:
         index = self._get_index(key)
 
-        if self.hash_table[index] is None:
+        if not self.hash_table[index]:
             raise KeyError(f"There is not key: {key}")
 
         return self.hash_table[index].value
@@ -52,7 +52,7 @@ class Dictionary:
             raise KeyError(f"There is not key: {key}")
 
     @property
-    def _get_limit(self) -> int:
+    def _get_limit(self) -> bool:
         return self.length / self.size >= self.load_factor
 
     def _check_resize(self) -> None:
@@ -65,7 +65,7 @@ class Dictionary:
         while end_index != index:
             exists = (self.hash_table[index]
                       and self.hash_table[index].key == key)
-            if exists or self.hash_table[index] is None:
+            if exists or not self.hash_table[index]:
                 return index
             index = (index + 1) % self.size
 
