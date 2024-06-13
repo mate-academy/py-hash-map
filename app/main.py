@@ -25,7 +25,7 @@ class Dictionary:
                     self.length -= 1
                     return
 
-        raise KeyError(key)
+                    raise KeyError(f"Key '{key}' not found")
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hashed_key = hash(key)
