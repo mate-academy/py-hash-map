@@ -96,7 +96,7 @@ class Dictionary:
             return value
         except KeyError:
             if default is None:
-                raise
+                raise KeyError(f"Element '{key}' not found")
             return default
 
     def update(self, **kwargs) -> None:
