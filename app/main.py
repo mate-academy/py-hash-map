@@ -71,7 +71,7 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self._get_index(key)
 
-        if self._hash_table[index] is None:
+        if self._hash_table.get(index) is None:
             raise KeyError(f"No such key: {key}")
 
         self._hash_table[index] = None
@@ -89,9 +89,7 @@ class Dictionary:
     def __contains__(self, key: Hashable) -> bool:
         index = self._get_index(key)
 
-        if self._hash_table[index] is None:
-            return False
-        return True
+        return self._hash_table[index] is not None
 
     def __len__(self) -> int:
         return self.length
@@ -110,5 +108,4 @@ class Dictionary:
         elif len(other) > 1:
             raise TypeError(f"pop expected at most 2 arguments, "
                             f"got {len(args)}")
-        else:
-            return other[0]
+        return other[0]
