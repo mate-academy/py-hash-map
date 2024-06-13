@@ -95,5 +95,4 @@ class Dictionary:
             raise TypeError(
                 f"pop expected at most 2 arguments, got {len(args)}"
             )
-        else:
-            return other[0]
+        return other[0]
