@@ -68,8 +68,7 @@ class Dictionary:
         elif len(other) > 1:
             raise TypeError(f"pop expected at most 2 arguments, "
                             f"got {len(args)}")
-        else:
-            return other[0]
+        return other[0]
 
     def clear(self) -> None:
         self.hash_table = [None] * self.capacity
