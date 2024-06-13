@@ -52,11 +52,11 @@ class Dictionary:
             raise KeyError(f"There is not key: {key}")
 
     @property
-    def _get_limit(self) -> bool:
+    def _check_limit(self) -> bool:
         return self.length / self.size >= self.load_factor
 
     def _check_resize(self) -> None:
-        if self._get_limit:
+        if self._check_limit:
             self._resize()
 
     def _get_index(self, key: Hashable) -> int:
