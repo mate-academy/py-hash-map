@@ -7,10 +7,16 @@ class Dictionary:
     size = 0
 
     def __init__(self) -> None:
-        self.hash_table = self.create_hash_table(8)
+        self.hash_table = [[None, None]] * (self.capacity + 1)
 
     def __len__(self) -> int:
         return self.size
+
+    def tst_ind(self, ar_ind: int) -> int:
+        ar_ind = ar_ind + 1
+        if ar_ind > self.capacity:
+            ar_ind = 0
+        return ar_ind
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         self.size += 1
@@ -21,16 +27,12 @@ class Dictionary:
         keys = [key[0] for key in self.hash_table]
         if key in keys:
             while keys[index] != key:
-                index += 1
-                if index > self.capacity:
-                    index = 0
+                index = self.tst_ind(index)
             self.hash_table[index] = [key, value]
             self.size -= 1
         else:
             while self.hash_table[index] != [None, None]:
-                index += 1
-                if index > self.capacity:
-                    index = 0
+                index = self.tst_ind(index)
             self.hash_table[index] = [key, value]
 
     def __getitem__(self, find_key: Hashable) -> any:
@@ -40,17 +42,11 @@ class Dictionary:
             key_d, val = self.hash_table[index]
             if key_d != find_key:
                 coli += 1
-                index += 1
-                if index > self.capacity:
-                    index = 0
+                index = self.tst_ind(index)
                 if coli > self.capacity * 2:
                     raise KeyError("Error due to big count of collisions!!")
             else:
                 return val
-
-    @staticmethod
-    def create_hash_table(size: int) -> list:
-        return [[None, None] for _ in range(size + 1)]
 
     def calculate_index(self, hash_key: int) -> int:
         index = hash_key % self.capacity
@@ -59,13 +55,11 @@ class Dictionary:
     def resize(self) -> None:
         temp = self.hash_table
         self.capacity *= 2
-        self.hash_table = self.create_hash_table(self.capacity)
+        self.hash_table = [[None, None]] * (self.capacity + 1)
         for fill_cell in temp:
             if fill_cell != [None, None]:
                 key, val = fill_cell
                 index = hash(key) % self.capacity
-                while self.hash_table[index] != [None, None]:
-                    index += 1
-                    if index > self.capacity:
-                        index = 0
+                while self.hash_table[index][0] is not None:
+                    index = self.tst_ind(index)
                 self.hash_table[index] = (key, val)
