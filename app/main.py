@@ -18,28 +18,32 @@ class Dictionary:
         self.length = 0
         self.hash_table: list[Optional[Node]] = [None] * capacity
 
-    def _get_index(self, key: Hashable) -> int:
+    def _get_index(
+            self,
+            key: Hashable,
+            hash_table: Optional[list[Optional[Node]]] = None
+    ) -> int:
+        if hash_table is None:
+            hash_table = self.hash_table
+        capacity = len(hash_table)
         hash_ = hash(key)
-        index = hash_ % self.capacity
+        index = hash_ % capacity
 
         while (
-            self.hash_table[index] is not None
-            and self.hash_table[index].key != key
+            hash_table[index] is not None
+            and hash_table[index].key != key
         ):
-            index += 1
-            index = index % self.capacity
+            index = (index + 1) % capacity
 
         return index
 
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
         new_hash_table = [None] * new_capacity
+
         for node in self.hash_table:
             if node is not None:
-                index = node.hash_ % new_capacity
-                while new_hash_table[index] is not None:
-                    index += 1
-                    index = index % new_capacity
+                index = self._get_index(node.key, new_hash_table)
                 new_hash_table[index] = node
 
         self.capacity = new_capacity
