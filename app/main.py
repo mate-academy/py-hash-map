@@ -4,48 +4,44 @@ from typing import Any
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
-        self.hash_table = self.create_hash_table()
+        self.hash_table = [None] * self.capacity
         self.load_factor = self.calculate_factor()
         self.size = 0
-
-    def create_hash_table(self) -> list:
-        return [None for _ in range(self.capacity)]
 
     def calculate_factor(self) -> int:
         return int(self.capacity * (2 / 3))
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def get_position(self, key: Any) -> int:
         key_hash = hash(key)
         position = key_hash % self.capacity
-        while True:
-            if not self.hash_table[position]:
-                self.hash_table[position] = (key, value, key_hash)
-                self.size += 1
-                if self.size >= self.load_factor:
-                    self.increase()
-                break
-            elif self.hash_table[position][0] == key:
-                self.hash_table[position] = (key, value, key_hash)
-                break
+
+        while (self.hash_table[position] is not None
+               and self.hash_table[position][0] != key):
             position += 1
-            position %= self.capacity
+            position = position % self.capacity
+
+        return position
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        if self.size >= self.load_factor:
+            self.increase()
+        position = self.get_position(key)
+        if self.hash_table[position] is None:
+            self.size += 1
+        self.hash_table[position] = (key, value, hash(key))
 
     def __getitem__(self, item: Any) -> Any:
-        key_hash = hash(item)
-        position = key_hash % self.capacity
-        while True:
-            if not self.hash_table[position]:
-                raise KeyError
-            if self.hash_table[position][0] == item:
-                return self.hash_table[position][1]
-            position += 1
-            position %= self.capacity
+        position = self.get_position(item)
+        if not self.hash_table[position]:
+            raise KeyError(item)
+        if self.hash_table[position][0] == item:
+            return self.hash_table[position][1]
 
     def increase(self) -> None:
         old_hash_table = self.hash_table.copy()
         self.capacity *= 2
         self.load_factor = self.calculate_factor()
-        self.hash_table = self.create_hash_table()
+        self.hash_table = [None] * self.capacity
         self.size = 0
         for i in old_hash_table:
             if i:
@@ -54,4 +50,3 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.size
-# im tired, i need more practice
