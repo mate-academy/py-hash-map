@@ -12,11 +12,11 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def tst_ind(self, ar_ind: int) -> int:
-        ar_ind = ar_ind + 1
-        if ar_ind > self.capacity:
-            ar_ind = 0
-        return ar_ind
+    def test_index_paramete(self, index_parameter: int) -> int:
+        index_parameter = index_parameter + 1
+        if index_parameter > self.capacity:
+            index_parameter = 0
+        return index_parameter
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         self.size += 1
@@ -27,12 +27,12 @@ class Dictionary:
         keys = [key[0] for key in self.hash_table]
         if key in keys:
             while keys[index] != key:
-                index = self.tst_ind(index)
+                index = self.test_index_paramete(index)
             self.hash_table[index] = [key, value]
             self.size -= 1
         else:
             while self.hash_table[index] != [None, None]:
-                index = self.tst_ind(index)
+                index = self.test_index_paramete(index)
             self.hash_table[index] = [key, value]
 
     def __getitem__(self, find_key: Hashable) -> any:
@@ -40,13 +40,12 @@ class Dictionary:
         index = hash(find_key) % self.capacity
         while True:
             key_d, val = self.hash_table[index]
-            if key_d != find_key:
-                coli += 1
-                index = self.tst_ind(index)
-                if coli > self.capacity * 2:
-                    raise KeyError("Error due to big count of collisions!!")
-            else:
+            if key_d == find_key:
                 return val
+            coli += 1
+            index = self.test_index_paramete(index)
+            if coli > self.capacity * 2:
+                raise KeyError("Error due to big count of collisions!!")
 
     def calculate_index(self, hash_key: int) -> int:
         index = hash_key % self.capacity
@@ -61,5 +60,5 @@ class Dictionary:
                 key, val = fill_cell
                 index = hash(key) % self.capacity
                 while self.hash_table[index][0] is not None:
-                    index = self.tst_ind(index)
+                    index = self.test_index_paramete(index)
                 self.hash_table[index] = (key, val)
