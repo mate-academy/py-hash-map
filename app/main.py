@@ -18,23 +18,28 @@ class Dictionary:
     def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
+    def _find_node(self, key: Hashable) -> tuple:
+        index = self._hash(key)
+        current = self.hash_table[index]
+        prev = None
+        while current:
+            if current.key == key:
+                return current, prev
+            prev = current
+            current = current.next_node
+        return None, prev
+
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._hash(key)
-        if self.hash_table[index] is None:
-            self.hash_table[index] = Node(key, value)
+        current, _ = self._find_node(key)
+        if current:
+            current.value = value
         else:
-            current = self.hash_table[index]
-            while current:
-                if current.key == key:
-                    current.value = value
-                    return
-                if current.next_node is None:
-                    break
-                current = current.next_node
-            current.next_node = Node(key, value)
-        self.size += 1
-        if self.size / self.capacity > 0.7:
-            self._resize()
+            new_node = Node(key, value, self.hash_table[index])
+            self.hash_table[index] = new_node
+            self.size += 1
+            if self.size / self.capacity > 0.7:
+                self._resize()
 
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
@@ -56,37 +61,30 @@ class Dictionary:
         self.capacity = new_capacity
 
     def __getitem__(self, item: Hashable) -> Any:
-        index = self._hash(item)
-        current = self.hash_table[index]
-        while current:
-            if current.key == item:
-                return current.value
-            current = current.next_node
-        raise KeyError(item)
+        current, _ = self._find_node(item)
+        if current:
+            return current.value
+        raise KeyError(f"Key '{item}' not in Dictionary")
 
     def __len__(self) -> int:
         return self.size
 
     def __delitem__(self, key: Hashable) -> None:
         index = self._hash(key)
-        current = self.hash_table[index]
-        prev = None
-        while current:
-            if current.key == key:
-                if prev is None:
-                    self.hash_table[index] = current.next_node
-                else:
-                    prev.next_node = current.next_node
-                self.size -= 1
-                return
-            prev = current
-            current = current.next_node
-        raise KeyError(key)
+        current, prev = self._find_node(key)
+        if current:
+            if prev:
+                prev.next_node = current.next_node
+            else:
+                self.hash_table[index] = current.next_node
+            self.size -= 1
+        else:
+            raise KeyError(key)
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
-        except KeyError:
+        except KeyError(f"Key '{self[key]}' not in Dictionary"):
             return default
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
@@ -96,7 +94,7 @@ class Dictionary:
             return value
         except KeyError:
             if default is None:
-                raise
+                raise KeyError(f"Key '{self[key]}' not in Dictionary")
             return default
 
     def update(self, other: dict) -> None:
