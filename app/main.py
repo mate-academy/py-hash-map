@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from typing import Hashable
+
 
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.dictionary = [-1] * self.capacity
+        self.dictionary = [None] * self.capacity
 
     def hash_func(self, key: any) -> int:
         return hash(key) % self.capacity
@@ -13,18 +15,18 @@ class Dictionary:
     def resize_dict(self) -> None:
         self.capacity = self.capacity * 2
         temp_list = self.dictionary[:]
-        self.dictionary = [-1] * self.capacity
+        self.dictionary = [None] * self.capacity
         self.size = 0
         for item in temp_list:
-            if item != -1:
+            if item:
                 self.__setitem__(item[0], item[2])
 
-    def __setitem__(self, key: any, value: any) -> None:
+    def __setitem__(self, key: Hashable, value: any) -> None:
         if self.size + 1 > self.capacity * 2 / 3:
             self.resize_dict()
         hash_for_key = self.hash_func(key)
 
-        if (self.dictionary[hash_for_key] == -1
+        if (not self.dictionary[hash_for_key]
                 or self.dictionary[hash_for_key] == "deleted"):
             self.dictionary[hash_for_key] = [key, hash_for_key, value]
             self.size += 1
@@ -34,12 +36,12 @@ class Dictionary:
             return
         else:
             temp_counter = hash_for_key
-            while ((self.dictionary[temp_counter] != -1
+            while ((self.dictionary[temp_counter]
                     or self.dictionary[hash_for_key] == "deleted")
                    and self.dictionary[temp_counter][0] != key):
                 temp_counter = (temp_counter + 1) % self.capacity
 
-            if (self.dictionary[temp_counter] == -1
+            if (not self.dictionary[temp_counter]
                     or self.dictionary[temp_counter] == "deleted"):
                 self.dictionary[temp_counter] = [key, hash_for_key, value]
                 self.size += 1
@@ -48,33 +50,33 @@ class Dictionary:
 
     def __getitem__(self, item: any) -> any:
         hash_for_key = self.hash_func(item)
-        if self.dictionary[hash_for_key] == -1:
+        if not self.dictionary[hash_for_key]:
             raise KeyError
 
         temp_counter = hash_for_key
 
-        while ((self.dictionary[temp_counter] != -1
+        while ((self.dictionary[temp_counter]
                 or self.dictionary[temp_counter] != "deleted")
                and self.dictionary[temp_counter][0] != item):
             temp_counter = (temp_counter + 1) % self.capacity
 
-        if (self.dictionary[temp_counter] == -1
+        if (not self.dictionary[temp_counter]
                 or self.dictionary[temp_counter] == "deleted"):
             raise KeyError
         return self.dictionary[temp_counter][2]
 
     def __delitem__(self, key: any) -> None:
         hash_for_key = self.hash_func(key)
-        if self.dictionary[hash_for_key] == -1:
+        if not self.dictionary[hash_for_key]:
             raise KeyError
 
         temp_counter = hash_for_key
-        while ((self.dictionary[temp_counter] != -1
+        while ((self.dictionary[temp_counter]
                 or self.dictionary[temp_counter] != "deleted")
                and self.dictionary[temp_counter][0] != key):
             temp_counter = (temp_counter + 1) % self.capacity
 
-        if self.dictionary[temp_counter] == -1:
+        if not self.dictionary[temp_counter]:
             raise KeyError
 
         self.dictionary[temp_counter] = "deleted"
@@ -85,7 +87,7 @@ class Dictionary:
     def clear(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.dictionary = [-1] * self.capacity
+        self.dictionary = [None] * self.capacity
 
     def __len__(self) -> int:
         return self.size
@@ -104,7 +106,7 @@ class DictIterator:
         while self._index < self._size:
             value = self.dictionary[self._index]
             self._index += 1
-            if value != -1 and value != "deleted":
+            if value and value != "deleted":
                 return value[0]
 
         raise StopIteration
