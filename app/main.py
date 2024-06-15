@@ -10,7 +10,7 @@ class Dictionary:
         self.load_factor = load_factor
         self.capacity = initial_capacity
         self.size = 0
-        self.buckets: list[list[Any]] = [[] for _ in range(initial_capacity)]
+        self.buckets: list[Optional[list[Any]]] = [None] * initial_capacity
 
     class Node:
         def __init__(self, key: Any, value: Any) -> None:
@@ -20,12 +20,15 @@ class Dictionary:
 
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
-        new_buckets = [[] for _ in range(new_capacity)]
+        new_buckets: list[Optional[list[Any]]] = [None] * new_capacity
 
         for bucket in self.buckets:
-            for node in bucket:
-                index = node.hash % new_capacity
-                new_buckets[index].append(node)
+            if bucket is not None:
+                for node in bucket:
+                    index = node.hash % new_capacity
+                    if new_buckets[index] is None:
+                        new_buckets[index] = []
+                    new_buckets[index].append(node)
 
         self.buckets = new_buckets
         self.capacity = new_capacity
@@ -38,6 +41,9 @@ class Dictionary:
             self._resize()
 
         index = self._get_index(key)
+        if self.buckets[index] is None:
+            self.buckets[index] = []
+
         bucket = self.buckets[index]
 
         for node in bucket:
@@ -53,9 +59,10 @@ class Dictionary:
         index = self._get_index(key)
         bucket = self.buckets[index]
 
-        for node in bucket:
-            if node.key == key:
-                return node.value
+        if bucket is not None:
+            for node in bucket:
+                if node.key == key:
+                    return node.value
 
         raise KeyError(f"Key '{key}' not found.")
 
@@ -63,18 +70,19 @@ class Dictionary:
         return self.size
 
     def clear(self) -> None:
-        self.buckets = [[] for _ in range(self.capacity)]
+        self.buckets = [None] * self.capacity
         self.size = 0
 
     def __delitem__(self, key: Any) -> None:
         index = self._get_index(key)
         bucket = self.buckets[index]
 
-        for i, node in enumerate(bucket):
-            if node.key == key:
-                del bucket[i]
-                self.size -= 1
-                return
+        if bucket is not None:
+            for index, node in enumerate(bucket):
+                if node.key == key:
+                    del bucket[index]
+                    self.size -= 1
+                    return
 
         raise KeyError(f"Key '{key}' not found.")
 
@@ -88,12 +96,13 @@ class Dictionary:
         index = self._get_index(key)
         bucket = self.buckets[index]
 
-        for i, node in enumerate(bucket):
-            if node.key == key:
-                value = node.value
-                del bucket[i]
-                self.size -= 1
-                return value
+        if bucket is not None:
+            for index, node in enumerate(bucket):
+                if node.key == key:
+                    value = node.value
+                    del bucket[index]
+                    self.size -= 1
+                    return value
 
         if default is not None:
             return default
@@ -106,5 +115,6 @@ class Dictionary:
 
     def __iter__(self) -> Iterator[Any]:
         for bucket in self.buckets:
-            for node in bucket:
-                yield node.key
+            if bucket is not None:
+                for node in bucket:
+                    yield node.key
