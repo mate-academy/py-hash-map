@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
@@ -51,7 +54,7 @@ class Dictionary:
         temp_counter = hash_for_key
 
         while ((self.dictionary[temp_counter] != -1
-               or self.dictionary[temp_counter] != "deleted")
+                or self.dictionary[temp_counter] != "deleted")
                and self.dictionary[temp_counter][0] != item):
             temp_counter = (temp_counter + 1) % self.capacity
 
@@ -67,7 +70,7 @@ class Dictionary:
 
         temp_counter = hash_for_key
         while ((self.dictionary[temp_counter] != -1
-               or self.dictionary[temp_counter] != "deleted")
+                or self.dictionary[temp_counter] != "deleted")
                and self.dictionary[temp_counter][0] != key):
             temp_counter = (temp_counter + 1) % self.capacity
 
@@ -76,6 +79,9 @@ class Dictionary:
 
         self.dictionary[temp_counter] = "deleted"
 
+    def __iter__(self) -> DictIterator:
+        return DictIterator(self.dictionary, self.capacity)
+
     def clear(self) -> None:
         self.capacity = 8
         self.size = 0
@@ -83,3 +89,22 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.size
+
+
+class DictIterator:
+    def __init__(self, dictionary: list, size: int) -> None:
+        self.dictionary = dictionary
+        self._size = size
+        self._index = 0
+
+    def __iter__(self) -> DictIterator:
+        return self
+
+    def __next__(self) -> any:
+        while self._index < self._size:
+            value = self.dictionary[self._index]
+            self._index += 1
+            if value != -1 and value != "deleted":
+                return value[0]
+
+        raise StopIteration
