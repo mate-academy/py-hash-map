@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Hashable
+from typing import Hashable, Any
 
 
 class Dictionary:
@@ -9,7 +9,7 @@ class Dictionary:
         self.size = 0
         self.dictionary = [None] * self.capacity
 
-    def hash_func(self, key: any) -> int:
+    def hash_func(self, key: Any) -> int:
         return hash(key) % self.capacity
 
     def resize_dict(self) -> None:
@@ -21,7 +21,7 @@ class Dictionary:
             if item:
                 self.__setitem__(item[0], item[2])
 
-    def __setitem__(self, key: Hashable, value: any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size + 1 > self.capacity * 2 / 3:
             self.resize_dict()
         hash_for_key = self.hash_func(key)
@@ -48,7 +48,7 @@ class Dictionary:
             else:
                 self.dictionary[temp_counter][2] = value
 
-    def __getitem__(self, item: any) -> any:
+    def __getitem__(self, item: Any) -> Any:
         hash_for_key = self.hash_func(item)
         if not self.dictionary[hash_for_key]:
             raise KeyError
@@ -65,7 +65,7 @@ class Dictionary:
             raise KeyError
         return self.dictionary[temp_counter][2]
 
-    def __delitem__(self, key: any) -> None:
+    def __delitem__(self, key: Any) -> None:
         hash_for_key = self.hash_func(key)
         if not self.dictionary[hash_for_key]:
             raise KeyError
@@ -102,7 +102,7 @@ class DictIterator:
     def __iter__(self) -> DictIterator:
         return self
 
-    def __next__(self) -> any:
+    def __next__(self) -> Any:
         while self._index < self._size:
             value = self.dictionary[self._index]
             self._index += 1
