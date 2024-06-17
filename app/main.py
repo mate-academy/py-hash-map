@@ -79,6 +79,7 @@ class Dictionary:
         if not self.dictionary[temp_counter]:
             raise KeyError
 
+        self.size -= 1
         self.dictionary[temp_counter] = "deleted"
 
     def __iter__(self) -> DictIterator:
