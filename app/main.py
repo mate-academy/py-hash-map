@@ -74,9 +74,10 @@ if __name__ == "__main__":
     ]
 
     dictionary = Dictionary()
+
     for key, value in items:
         dictionary[key] = value
-    print(dictionary.dict_data)
+
     for key, value in pairs_after_adding:
         assert dictionary[key] == value
     assert len(dictionary) == len(pairs_after_adding)
