@@ -16,7 +16,7 @@ class Dictionary:
 
         if not self.dict_data[index_to_write]:
             self.dict_data[index_to_write] = (key_hash, key, value)
-            self.free_paces_in_dict_data.remove(self.free_paces_in_dict_data[0])
+            self.free_paces_in_dict_data.remove(index_to_write)
             self.dict_len += 1
 
         elif self.dict_data[index_to_write]:
@@ -25,22 +25,35 @@ class Dictionary:
             if item_hash == hash(key) and item_key == key:
                 self.dict_data[index_to_write] = (item_hash, item_key, value)
             else:
-                temp_index = self.free_paces_in_dict_data[0]
-                self.dict_data[temp_index] = (key_hash, key, value)
-                self.free_paces_in_dict_data.remove(temp_index)
-                self.dict_len += 1
+                need_to_continue = True
+
+                for i, item in enumerate(self.dict_data):
+                    if item:
+                        sec_item_hash, sec_item_key, sec_item_value = item
+                        if sec_item_hash == key_hash and sec_item_key == key:
+                            self.dict_data[i] = (sec_item_hash, sec_item_key, value)
+                            need_to_continue = False
+                            break
+
+                if need_to_continue:
+                    temp_index = self.free_paces_in_dict_data[0]
+                    self.dict_data[temp_index] = (key_hash, key, value)
+                    self.free_paces_in_dict_data.remove(temp_index)
+                    self.dict_len += 1
+
         self.check_load_factor()
 
     def __getitem__(self, key):
         index = hash(key) % self.dict_capacity
         data_hash, data_key, data_value = self.dict_data[index]
+
         if key == data_key:
             return data_value
-        else:
-            for data_item in [item for item in self.dict_data if item]:
-                data_item_hash, data_item_key, data_item_value = data_item
-                if data_item_key == key:
-                    return data_item_value
+
+        for data_item in [item for item in self.dict_data if item]:
+            data_item_hash, data_item_key, data_item_value = data_item
+            if data_item_key == key:
+                return data_item_value
 
     def __len__(self):
         return self.dict_len
@@ -60,14 +73,7 @@ class Dictionary:
 
         for item in only_true_dict_data:
             item_hash, item_key, item_value = item
-            index_to_write = item_hash % self.dict_capacity
-            if not self.dict_data[index_to_write]:
-                self.dict_data[index_to_write] = (item_hash, item_key, item_value)
-            else:
-                temp_index = self.free_paces_in_dict_data[0]
-                self.dict_data[temp_index] = (item_hash, item_key, item_value)
-                self.free_paces_in_dict_data.remove(temp_index)
-            self.dict_len += 1
+            self.__setitem__(item_key, item_value)
             self.need_to_extend = False
 
 
@@ -82,36 +88,37 @@ if __name__ == "__main__":
         ("two", 2),
         (Point(1, 1), "a"),
         ("one", 1),
-        # ("one", 11),
-        # ("one", 111),
-        # ("one", 1111),
-        # (145, 146),
-        # (145, 145),
-        # (145, -1),
-        # ("two", 22),
-        # ("two", 222),
-        # ("two", 2222),
-        # ("two", 22222),
-        # (Point(1, 1), "A"),
+        ("one", 11),
+        ("one", 111),
+        ("one", 1111),
+        (145, 146),
+        (145, 145),
+        (145, -1),
+        ("two", 22),
+        ("two", 222),
+        ("two", 2222),
+        ("two", 22222),
+        (Point(1, 1), "A"),
     ]
-    # pairs_after_adding = [
-    #     (8, "8"),
-    #     (16, "16"),
-    #     (32, "32"),
-    #     (64, "64"),
-    #     (128, "128"),
-    #     ("one", 1111),
-    #     ("two", 22222),
-    #     (145, -1),
-    #     (Point(1, 1), "A"),
-    # ]
+    pairs_after_adding = [
+        (8, "8"),
+        (16, "16"),
+        (32, "32"),
+        (64, "64"),
+        (128, "128"),
+        ("one", 1111),
+        ("two", 22222),
+        (145, -1),
+        (Point(1, 1), "A"),
+    ]
 
     dictionary = Dictionary()
 
     for key, value in items:
         dictionary[key] = value
+
+    # print(len(dictionary), dictionary.dict_capacity, dictionary.load_factor)
     print(dictionary.dict_data)
-    print(len(dictionary), dictionary.dict_capacity, dictionary.load_factor)
-    # for key, value in pairs_after_adding:
-    #     assert dictionary[key] == value
-    # assert len(dictionary) == len(pairs_after_adding)
+    for key, value in pairs_after_adding:
+        assert dictionary[key] == value,(dictionary[key], value)
+    assert len(dictionary) == len(pairs_after_adding)
