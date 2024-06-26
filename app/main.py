@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -10,7 +10,7 @@ class Dictionary:
         self.free_paces_in_dict_data = [i for i in range(self.dict_capacity)]
         self.need_to_extend = False
 
-    def __setitem__(self, key: (str, int, object, tuple), value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         key_hash = hash(key)
         index_to_write = key_hash % self.dict_capacity
 
@@ -45,7 +45,7 @@ class Dictionary:
 
         self.check_load_factor()
 
-    def __getitem__(self, key: (str, int, object, tuple)) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.dict_capacity
 
         if not self.dict_data[index]:
@@ -67,9 +67,9 @@ class Dictionary:
     def check_load_factor(self) -> None:
         if self.dict_len == self.load_factor:
             self.need_to_extend = True
-            self.expand_dict_data()
+            self.__resize__()
 
-    def expand_dict_data(self) -> None:
+    def __resize__(self) -> None:
         self.dict_capacity *= 2
         self.load_factor = int(self.dict_capacity * (2 / 3))
         self.free_paces_in_dict_data = [_ for _ in range(self.dict_capacity)]
