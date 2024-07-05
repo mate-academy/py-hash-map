@@ -50,7 +50,7 @@ class Dictionary:
             return self.hash_table[index].value
         raise KeyError(f"No value for this key: {key}")
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.length
 
     def clear(self) -> None:
