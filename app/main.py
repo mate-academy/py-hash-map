@@ -62,10 +62,11 @@ class Dictionary:
         self.hash_table[index] = None
         self.length -= 1
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable, value: Any = None) -> Any:
         index = self.__find_index(key)
         if self.hash_table[index]:
-            return self.hash_table[index].value
+            if value == self.hash_table[index].value:
+                return self.hash_table[index].value
         return None
 
     def pop(self, key: Hashable) -> Any:
