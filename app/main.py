@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Hashable
 
 
 class Node:
@@ -16,7 +16,7 @@ class Dictionary:
         self.size = 0
         self.hash_table: List[List[Node]] = [[] for _ in range(self.capacity)]
 
-    def _hash(self, key: Any) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key)
 
     def _resize(self) -> None:
@@ -31,7 +31,7 @@ class Dictionary:
         self.hash_table = new_table
         self.capacity = new_capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size / self.capacity >= self.load_factor:
             self._resize()
 
@@ -46,7 +46,7 @@ class Dictionary:
         self.hash_table[index].append(Node(key, hash_value, value))
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_value = self._hash(key)
         index = hash_value % self.capacity
 
@@ -59,7 +59,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_value = self._hash(key)
         index = hash_value % self.capacity
 
@@ -75,13 +75,13 @@ class Dictionary:
         self.hash_table = [[] for _ in range(self.capacity)]
         self.size = 0
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self[key]
             del self[key]
