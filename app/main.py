@@ -1,30 +1,29 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.threshold = 5
+        self.threshold = 2 / 3
         self.nodes = [(0, 0, 0)] * self.capacity
 
     def __str__(self) -> str:
-        return ("{"
-                + ", ".join(
-                    [
-                        f"{node[0]}: {node[2]}"
-                        for node in self.nodes if any(node)
-                    ]
-                )
-                + "}")
+        dict_body = ", ".join(
+            [
+                f"{node[0]}: {node[2]}"
+                for node in self.nodes if any(node)
+            ]
+        )
+        return f"{{{dict_body}}}"
 
     def __setitem__(
             self,
-            key: Any,
+            key: Hashable,
             value: Any
     ) -> None:
 
-        if self.size >= self.threshold:
+        if self.size >= self.threshold * self.capacity:
             self.resize()
 
         key_hash = hash(key)
@@ -35,7 +34,7 @@ class Dictionary:
 
     def __getitem__(
             self,
-            key: Any
+            key: Hashable
     ) -> Any:
         key_index = self.get_index(key)
         if not any(self.nodes[key_index]):
@@ -47,7 +46,6 @@ class Dictionary:
 
     def resize(self) -> None:
         self.capacity *= 2
-        self.threshold = self.capacity * 2 / 3
 
         old_nodes = self.nodes.copy()
 
@@ -58,9 +56,8 @@ class Dictionary:
 
     def get_index(
             self,
-            key: Any
+            key: Hashable
     ) -> int:
-        # return unoccupied index for node
         key_hash = hash(key)
         key_index = key_hash % self.capacity
 
@@ -76,22 +73,20 @@ class Dictionary:
     def clear(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.threshold = 5
         self.nodes = [(0, 0, 0)] * self.capacity
 
     def __delitem__(
             self,
-            key: Any
+            key: Hashable
     ) -> None:
+        self.__getitem__(key)
         key_index = self.get_index(key)
-        if not any(self.nodes[key_index]):
-            raise KeyError
         self.nodes[key_index] = (0, 0, 0)
         self.size -= 1
 
     def get(
             self,
-            key: Any,
+            key: Hashable,
             value: Any = None
 
     ) -> Any:
@@ -102,7 +97,7 @@ class Dictionary:
 
     def pop(
             self,
-            key: Any,
+            key: Hashable,
             value: None
     ) -> Any:
         try:
