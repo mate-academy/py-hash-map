@@ -53,4 +53,3 @@ class Dictionary:
             if i is not None:
                 length += 1
         return length
-t
