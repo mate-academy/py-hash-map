@@ -19,7 +19,7 @@ class Dictionary:
         if self.__len__() == self.threshold:
             self.resize_table(self.hash_table)
 
-        if isinstance(key, list | set | dict):
+        if not isinstance(key, Hashable):
             raise TypeError("Key must be Hashable")
 
         key_hash = hash(key)
