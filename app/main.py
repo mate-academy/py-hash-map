@@ -6,8 +6,10 @@ class Dictionary:
         self.size = 8
         self.threshold = int(self.size * 2 / 3)
         self.hash_table = [None for _ in range(self.size)]
+        self.length = 0
 
     def resize_table(self, old_hash_table: list) -> None:
+        self.length = 0
         self.size *= 2
         self.threshold = int(self.size * 2 / 3)
         self.hash_table = [None for _ in range(self.size)]
@@ -24,17 +26,16 @@ class Dictionary:
 
         key_hash = hash(key)
         table_index = key_hash % self.size
-        if self.hash_table[table_index] is not None:
-            for _ in range(self.size):
-                if self.hash_table[table_index] is None:
-                    self.hash_table[table_index] = [key, value, key_hash]
-                    break
-                if (self.hash_table[table_index][0] == key
-                        and key_hash == self.hash_table[table_index][2]):
-                    self.hash_table[table_index][1] = value
-                    break
-                table_index = (table_index + 1) % self.size
-        self.hash_table[table_index] = [key, value, key_hash]
+        while True:
+            if self.hash_table[table_index] is None:
+                self.hash_table[table_index] = [key, value, key_hash]
+                self.length += 1
+                break
+            if key_hash == self.hash_table[table_index][2] and \
+                    key == self.hash_table[table_index][0]:
+                self.hash_table[table_index][1] = value
+                break
+            table_index = (table_index + 1) % self.size
 
     def __getitem__(self, key: Hashable) -> Any:
         key_hash = hash(key)
@@ -42,14 +43,12 @@ class Dictionary:
         while True:
             if self.hash_table[table_index] is None:
                 raise KeyError
-            if key_hash == self.hash_table[table_index][2] and \
-                    key == self.hash_table[table_index][0]:
+            if (
+                    key_hash == self.hash_table[table_index][2]
+                    and key == self.hash_table[table_index][0]
+            ):
                 return self.hash_table[table_index][1]
             table_index = (table_index + 1) % self.size
 
     def __len__(self) -> int:
-        length = 0
-        for i in self.hash_table:
-            if i is not None:
-                length += 1
-        return length
+        return self.length
