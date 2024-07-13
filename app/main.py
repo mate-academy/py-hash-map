@@ -1,4 +1,4 @@
-from typing import Any, Optional, Iterator
+from typing import Any, Optional, Iterator, Hashable
 
 
 class Node:
@@ -24,7 +24,7 @@ class Dictionary:
         self.size: int = 0
         self.table: list[Optional[Node]] = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._index_for_hash(hash(key))
         node = self.table[index]
         if node is None:
@@ -106,19 +106,3 @@ class Dictionary:
             while node:
                 self[node.key] = node.value
                 node = node.next
-
-
-class Point:
-    def __init__(
-            self,
-            x: int,
-            y: int
-    ) -> None:
-        self.x: int = x
-        self.y: int = y
-
-    def __hash__(self) -> int:
-        return hash((self.x, self.y))
-
-    def __eq__(self, other: "Point") -> bool:
-        return self.x == other.x and self.y == other.y
