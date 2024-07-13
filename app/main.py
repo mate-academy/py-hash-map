@@ -31,8 +31,10 @@ class Dictionary:
                 self.hash_table[table_index] = [key, value, key_hash]
                 self.length += 1
                 break
-            if key_hash == self.hash_table[table_index][2] and \
-                    key == self.hash_table[table_index][0]:
+            if (
+                    key_hash == self.hash_table[table_index][2]
+                    and key == self.hash_table[table_index][0]
+            ):
                 self.hash_table[table_index][1] = value
                 break
             table_index = (table_index + 1) % self.size
