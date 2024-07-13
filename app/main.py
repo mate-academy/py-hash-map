@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -10,7 +10,7 @@ class Dictionary:
         self._size = 0
         self._buckets = [[] for _ in range(self._capacity)]
 
-    def __hash_index(self, key: int) -> int:
+    def __hash_index(self, key: Hashable) -> int:
         return hash(key) % self._capacity
 
     def __resize(self) -> None:
@@ -25,7 +25,7 @@ class Dictionary:
         self._buckets = new_buckets
         self._capacity = new_capacity
 
-    def __setitem__(self, key: int, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._size / self._capacity > self._load_factor:
             self.__resize()
 
@@ -33,21 +33,21 @@ class Dictionary:
         index = self.__hash_index(key)
         bucket = self._buckets[index]
 
-        for i, (k, h, v) in enumerate(bucket):
+        for i, (new_key, new_hash_key, new_value) in enumerate(bucket):
 
-            if k == key:
+            if new_key == key:
                 bucket[i] = (key, hash_key, value)
                 return
         bucket.append((key, hash_key, value))
         self._size += 1
 
-    def __getitem__(self, key: int) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.__hash_index(key)
         bucket = self._buckets[index]
 
-        for k, h, v in bucket:
-            if k == key:
-                return v
+        for new_key, new_hash_key, new_value in bucket:
+            if new_key == key:
+                return new_value
 
         raise KeyError(f"Key {key} not found")
 
