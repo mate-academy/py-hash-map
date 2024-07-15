@@ -4,10 +4,10 @@ from typing import Any, Optional, Iterator, Hashable
 class Node:
     def __init__(
             self,
-            key: Any,
+            key: Hashable,
             value: Any
     ) -> None:
-        self.key: Any = key
+        self.key: Hashable = key
         self.value: Any = value
         self.hash: int = hash(key)
         self.next: Optional[Node] = None
@@ -42,7 +42,7 @@ class Dictionary:
         if self.size / self.capacity > self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._index_for_hash(hash(key))
         node = self.table[index]
         while node:
@@ -58,7 +58,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * self.capacity
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._index_for_hash(hash(key))
         node = self.table[index]
         prev: Optional[Node] = None
@@ -73,13 +73,13 @@ class Dictionary:
             prev, node = node, node.next
         raise KeyError(f"Key {key} not found")
 
-    def get(self, key: Any, default: Optional[Any] = None) -> Any:
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         value = self[key]
         del self[key]
         return value
