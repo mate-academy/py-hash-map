@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Hashable, Any
 
 
 class Node:
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.hash = hash(key)
@@ -22,7 +22,7 @@ class Dictionary:
         self.size = 0
         self.buckets = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if isinstance(key, (list, dict)):
             raise KeyError(f"Invalid key: {key}]")
 
@@ -41,7 +41,7 @@ class Dictionary:
         self.buckets[index].append(Node(key, value))
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         if self.buckets[index]:
             for node in self.buckets[index]:
