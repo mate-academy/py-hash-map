@@ -1,3 +1,6 @@
+from typing import Hashable, Any
+
+
 class Dictionary:
     def __init__(self) -> None:
         self.capacity: int = 8
@@ -6,12 +9,12 @@ class Dictionary:
         self.hash_table: list = [None] * self.capacity
 
     class Node:
-        def __init__(self, key: str, value: str, hash_code: int) -> None:
-            self.key: str = key
-            self.value: str = value
+        def __init__(self, key: Hashable, value: Any, hash_code: int) -> None:
+            self.key: Hashable = key
+            self.value: Any = value
             self.hash_code: int = hash_code
 
-    def _hash(self, key: str) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key)
 
     def _resize(self) -> None:
@@ -24,7 +27,7 @@ class Dictionary:
             if node is not None:
                 self.__setitem__(node.key, node.value)
 
-    def __setitem__(self, key: str, value: str) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size / self.capacity >= self.load_factor:
             self._resize()
 
@@ -41,7 +44,7 @@ class Dictionary:
         self.hash_table[index] = new_node
         self.size += 1
 
-    def __getitem__(self, key: str) -> str:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_code = self._hash(key)
         index = hash_code % self.capacity
 
@@ -60,7 +63,7 @@ class Dictionary:
         self.size = 0
         self.hash_table = [None] * self.capacity
 
-    def __delitem__(self, key: str) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_code = self._hash(key)
         index = hash_code % self.capacity
 
@@ -73,13 +76,13 @@ class Dictionary:
 
         raise KeyError(f"Key '{key}' not in Dictionary")
 
-    def get(self, key: str, default: str = None) -> str:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
             return default
 
-    def pop(self, key: str, default: str = None) -> str:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self.__getitem__(key)
             self.__delitem__(key)
