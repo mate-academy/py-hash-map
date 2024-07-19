@@ -8,7 +8,7 @@ class Node:
         self.value = value
 
     def __repr__(self) -> str:
-        return f'Node(key={self.key}, value={self.value})'
+        return f"Node(key={self.key}, value={self.value})"
 
 
 class Dictionary:
