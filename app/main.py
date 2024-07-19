@@ -36,6 +36,7 @@ class Dictionary:
                         if self.__arr[next_i] == 0:
                             self.__add_node(next_i, key, value)
                             break
+
                 if self.__arr[i] == 0:
                     self.__add_node(i, key, value)
                     break
