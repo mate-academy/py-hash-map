@@ -2,7 +2,7 @@ from typing import Any
 
 
 class Dictionary:
-    def __init__(self):
+    def __init__(self) -> None:
         self.capacity_table = 8
         self.size_dict = 0
         self.table = [None, None, None] * self.capacity_table
@@ -26,7 +26,7 @@ class Dictionary:
         if self.size_dict >= self.capacity_table * (2 / 3):
             self.resize_dict(self.table)
 
-    def resize_dict(self, table_for_resize) -> None:
+    def resize_dict(self, table_for_resize: list) -> None:
         self.capacity_table *= 2
         self.size_dict = 0
         self.table = [None] * self.capacity_table
