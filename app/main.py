@@ -7,7 +7,7 @@ class Dictionary:
         self.size_dict = 0
         self.table = [None, None, None] * self.capacity_table
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if not isinstance(key, Hashable):
             raise TypeError("Key not hashable")
         key_hash = hash(key)
@@ -43,7 +43,7 @@ class Dictionary:
             if item:
                 self.__setitem__(item[0], item[1])
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         key_hash = hash(key)
         index_table_cell = key_hash % self.capacity_table
         while self.table[index_table_cell]:
