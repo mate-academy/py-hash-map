@@ -23,8 +23,12 @@ class Dictionary:
                 ):
                     self.table[index_table_cell][1] = value
                     return
-                if self.table[(index_table_cell + 1) % self.capacity_table] is None:
-                    self.table[(index_table_cell + 1) % self.capacity_table] = [key, value, key_hash]
+                if self.table[
+                    (index_table_cell + 1) % self.capacity_table
+                ] is None:
+                    self.table[
+                        (index_table_cell + 1) % self.capacity_table
+                    ] = [key, value, key_hash]
                     break
                 index_table_cell = (index_table_cell + 1) % self.capacity_table
         self.size_dict += 1
