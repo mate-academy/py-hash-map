@@ -12,19 +12,22 @@ class Dictionary:
             raise TypeError("Key not hashable")
         key_hash = hash(key)
         index_table_cell = key_hash % self.capacity_table
-        while True:
-            if self.table[index_table_cell] is None:
-                self.table[index_table_cell] = [key, value, key_hash]
-                self.size_dict += 1
-                break
-            if (
-                    self.table[index_table_cell][0] == key
-                    and self.table[index_table_cell][2] == key_hash
-            ):
-                self.table[index_table_cell][1] = value
-                break
-            index_table_cell += 1
+        if self.table[index_table_cell] is None:
+            self.table[index_table_cell] = [key, value, key_hash]
+        else:
 
+            while self.table[index_table_cell]:
+                if (
+                        self.table[index_table_cell][0] == key
+                        and self.table[index_table_cell][2] == key_hash
+                ):
+                    self.table[index_table_cell][1] = value
+                    return
+                if self.table[(index_table_cell + 1) % self.capacity_table] is None:
+                    self.table[(index_table_cell + 1) % self.capacity_table] = [key, value, key_hash]
+                    break
+                index_table_cell = (index_table_cell + 1) % self.capacity_table
+        self.size_dict += 1
         if self.size_dict > self.capacity_table * (2 / 3):
             self.resize_dict(self.table)
 
@@ -42,8 +45,8 @@ class Dictionary:
         while self.table[index_table_cell]:
             if self.table[index_table_cell][0] == key:
                 return self.table[index_table_cell][1]
-            index_table_cell += 1
-        raise KeyError
+            index_table_cell = (index_table_cell + 1) % self.capacity_table
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.size_dict
