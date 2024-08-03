@@ -1,4 +1,5 @@
 from typing import Any
+from app.point import Point
 
 
 class Dictionary:
@@ -10,17 +11,19 @@ class Dictionary:
         if len(self) == round(len(self.hash_table) * self.threshold):
             self.hash_table = self._double_hash_table()
 
+        value_updated = False
         key_hash = hash(key)
         index = key_hash % len(self.hash_table)
         if self.hash_table[index]:
-            if self.hash_table[index][1] == key:
-                self.hash_table[index][2] = value
-            else:
-                print(f"{index=}")
-                while self.hash_table[index]:
-                    if index == len(self.hash_table) - 1:
-                        index = 0
-                    index += 1
+            while self.hash_table[index]:
+                if self.hash_table[index][1] == key:
+                    self.hash_table[index][2] = value
+                    value_updated = True
+                    break
+                if index == len(self.hash_table) - 1:
+                    index = 0
+                index += 1
+            if not value_updated:
                 self.hash_table[index].extend([key_hash, key, value])
         else:
             self.hash_table[index].extend([key_hash, key, value])
@@ -44,11 +47,11 @@ class Dictionary:
         index = item_hash % len(self.hash_table)
         if self.hash_table[index]:
             while self.hash_table[index][1] != item:
-                if index == 0:
-                    index = len(self.hash_table) - 1
-                index -= 1
+                if index == len(self.hash_table) - 1:
+                    index = 0
+                index += 1
             return self.hash_table[index][2]
-        raise KeyError
+        raise KeyError(f"No such key '{item}' in a dictionary")
 
     def __len__(self) -> int:
         size = 0
@@ -56,12 +59,31 @@ class Dictionary:
             if index:
                 size += 1
         return size
-
+items = [
+    (8, "8"),
+    (16, "16"),
+    (32, "32"),
+    (64, "64"),
+    (128, "128"),
+    ("one", 2),
+    ("two", 2),
+    (Point(1, 1), "a"),
+    ("one", 1),
+    ("one", 11),
+    ("one", 111),
+    ("one", 1111),
+    (145, 146),
+    (145, 145),
+    (145, -1),
+    ("two", 22),
+    ("two", 222),
+    ("two", 2222),
+    ("two", 22222),
+    (Point(1, 1), "A"),]
 
 dictionary = Dictionary()
-print(dictionary.hash_table)
-print(len(dictionary))
-dictionary[1] = 0
-dictionary[9] = 1
-print(dictionary.hash_table)
-
+for key, value in items:
+    print(f"{key=}, {value=}")
+    dictionary[key] = value
+    print(dictionary.hash_table)
+    print(dictionary[key])
