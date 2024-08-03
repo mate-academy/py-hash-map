@@ -1,48 +1,32 @@
-from typing import Any
-from app.point import Point
+from typing import Any, Hashable
 
 
 class Dictionary:
     def __init__(self, threshold: float = 2 / 3, **kwargs) -> None:
         self.threshold = threshold
-        self.hash_table = [[] for _ in range(8)]
+        self._table_size = 8
+        self._size = 0
+        self.hash_table = [[] for _ in range(self._table_size)]
 
-    def __setitem__(self, key, value) -> None:
-        if len(self) == round(len(self.hash_table) * self.threshold):
-            self.hash_table = self._double_hash_table()
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        if len(self) >= self._table_size * self.threshold:
+            self._resize()
 
-        value_updated = False
         key_hash = hash(key)
-        index = key_hash % len(self.hash_table)
+        index = key_hash % self._table_size
+
         if self.hash_table[index]:
             while self.hash_table[index]:
                 if self.hash_table[index][1] == key:
                     self.hash_table[index][2] = value
-                    value_updated = True
-                    break
-                if index == len(self.hash_table) - 1:
+                    return
+                if index == self._table_size - 1:
                     index = 0
                 index += 1
-            if not value_updated:
-                self.hash_table[index].extend([key_hash, key, value])
-        else:
-            self.hash_table[index].extend([key_hash, key, value])
+        self.hash_table[index].extend([key_hash, key, value])
+        self._size += 1
 
-    def _double_hash_table(self) -> list:
-        new_table = [[] for _ in range(len(self.hash_table) * 2)]
-        for element in self.hash_table:
-            if element:
-                key_hash, key, value = element
-                index = key_hash % len(new_table)
-                if new_table[index]:
-                    while new_table[index]:
-                        if index == len(new_table) - 1:
-                            index = 0
-                        index += 1
-                new_table[index].extend([key_hash, key, value])
-        return new_table
-
-    def __getitem__(self, item) -> Any:
+    def __getitem__(self, item: Hashable) -> Any:
         item_hash = hash(item)
         index = item_hash % len(self.hash_table)
         if self.hash_table[index]:
@@ -54,36 +38,28 @@ class Dictionary:
         raise KeyError(f"No such key '{item}' in a dictionary")
 
     def __len__(self) -> int:
-        size = 0
-        for index in self.hash_table:
-            if index:
-                size += 1
-        return size
-items = [
-    (8, "8"),
-    (16, "16"),
-    (32, "32"),
-    (64, "64"),
-    (128, "128"),
-    ("one", 2),
-    ("two", 2),
-    (Point(1, 1), "a"),
-    ("one", 1),
-    ("one", 11),
-    ("one", 111),
-    ("one", 1111),
-    (145, 146),
-    (145, 145),
-    (145, -1),
-    ("two", 22),
-    ("two", 222),
-    ("two", 2222),
-    ("two", 22222),
-    (Point(1, 1), "A"),]
+        return self._size
 
-dictionary = Dictionary()
-for key, value in items:
-    print(f"{key=}, {value=}")
-    dictionary[key] = value
-    print(dictionary.hash_table)
-    print(dictionary[key])
+    def _resize(self) -> None:
+        new_table = [[] for _ in range(len(self.hash_table) * 2)]
+        self._table_size *= 2
+        for element in self.hash_table:
+            if element:
+                key_hash, key, value = element
+                index = key_hash % self._table_size
+                if new_table[index]:
+                    while new_table[index]:
+                        if index == self._table_size - 1:
+                            index = 0
+                        index += 1
+                new_table[index].extend([key_hash, key, value])
+        self.hash_table = new_table
+
+    def clear(self) -> None:
+        self.hash_table = [[] for _ in range(self._table_size)]
+
+    def get(self, item: Hashable, default_value: Any = None) -> Any:
+        try:
+            return self.__getitem__(item)
+        except (KeyError, IndexError):
+            return default_value
