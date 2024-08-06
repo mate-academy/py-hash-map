@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Callable, Iterable, Hashable, NamedTuple
+import dataclasses
+from typing import Any, Callable, Iterable, Hashable
 
 
-class Node(NamedTuple):
+@dataclasses.dataclass
+class Node:
     key: Hashable
     k_hash: int
     value: Any
@@ -35,8 +37,6 @@ class Dictionary:
         return self._data_handler(key)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if not hash(key):
-            raise TypeError(f"unhashable type: {type(key)}")
 
         if self.get_load():
             self._data_handler(key, value)
@@ -158,21 +158,32 @@ class Dictionary:
     ) -> None:
         node = self._hash_table[index]
 
-        if node and node.key == key:
-            node.value = value
-            return
+        if node:
 
-        if not node:
+            if node.key == key:
+
+                node.value = value
+                self._values[self._keys.index(key)] = value
+                return
+
+            else:
+                i = (index + 1) % self._capacity
+
+                while self._hash_table[i] and self._hash_table[i].key != key:
+                    i = (i + 1) % self._capacity
+
+                if self._hash_table[i] and self._hash_table[i].key == key:
+
+                    self._hash_table[i].value = value
+                    self._values[self._keys.index(key)] = value
+
+                else:
+                    self._hash_table[i] = Node(key, k_hash, value)
+                    self._keys.append(key)
+                    self._values.append(value)
+        else:
+
             self._hash_table[index] = Node(key, k_hash, value)
-            self._keys.append(key)
-            self._values.append(value)
-            return
-
-        if node and node.key != key:
-            i = index
-            while self._hash_table[i]:
-                i = (i + 1) % self._capacity
-            self._hash_table[i] = Node(key, k_hash, value)
             self._keys.append(key)
             self._values.append(value)
 
@@ -181,10 +192,10 @@ class Dictionary:
         # handling empty nodes left after removing collided elements
         if not node:
             if index < len(self._hash_table) - 1:
-                i = index
+                i = index + 1
             else:
                 i = 0
-            while self._hash_table[i] != index:
+            while i != index:
 
                 if self._hash_table[i] and self._hash_table[i].key == key:
                     return self._hash_table[i].value
