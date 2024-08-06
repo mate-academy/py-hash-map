@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import copy
-from app.point import Point
-from typing import NamedTuple, Any
+from typing import Any, Callable, Iterable, Hashable, NamedTuple
 
 
 class Node(NamedTuple):
-    key: int | float | str | bool | dict
-    hash: int
+    key: Hashable
+    k_hash: int
     value: Any
 
 
 class Dictionary:
 
-    def __init__(self):
+    def __init__(self) -> None:
         # added mainly to keep track of input order, iteration
         self._keys = []
         self._values = []
@@ -25,17 +24,17 @@ class Dictionary:
         self._hash_table = [[] for _ in range(self._capacity)]
 
     # didn't add formating for different types due to time complexity
-    def __str__(self):
+    def __str__(self) -> str:
         pairs = []
         for key, value in zip(self._keys, self._values):
             pairs.append(f"{key}: {value}")
         result = "{" + ", ".join(pairs) + "}"
         return result
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable) -> Any:
         return self._data_handler(key)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if not hash(key):
             raise TypeError(f"unhashable type: {type(key)}")
 
@@ -44,73 +43,77 @@ class Dictionary:
         else:
             self.resize()
             self.__setitem__(key, value)
-            
-    def __len__(self):
+
+    def __len__(self) -> int:
         return sum(1 for item in self._hash_table if item)
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Hashable) -> None:
         if self.__getitem__(key):
             self._data_handler(key, delete=True)
 
-    def keys(self):
-        class dict_keys:
-            def __init__(self, keys: list = None):
+    def keys(self) -> str:
+        class DictKeys:
+            def __init__(self, keys: list = None) -> None:
                 self._keys = keys if keys else []
 
-            def __iter__(self):
+            def __iter__(self) -> Iterable:
                 return iter(self._keys)
 
-            def __repr__(self):
+            def __repr__(self) -> str:
                 return f"dict_keys({self._keys})"
 
-        return dict_keys(self._keys)
+        return DictKeys(self._keys)
 
-    def values(self):
-        class dict_values:
-            def __init__(self, values: list = None):
+    def values(self) -> str:
+        class DictValues:
+            def __init__(self, values: list = None) -> None:
                 self._values = values if values else []
 
-            def __iter__(self):
+            def __iter__(self) -> Iterable:
                 return iter(self._values)
 
-            def __repr__(self):
+            def __repr__(self) -> str:
                 return f"dict_values({self._values})"
 
-        return dict_values(self._values)
+        return DictValues(self._values)
 
-    def clear(self):
+    def clear(self) -> None:
         self._hash_table = [[] for _ in range(self._capacity)]
         self._keys = []
         self._values = []
 
-    def get(self, key):
+    def get(self, key: Hashable) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
             return None
 
-    def pop(self, key):
+    def pop(self, key: Hashable) -> Any:
         value = self.__getitem__(key)
         self.__delitem__(key)
         return value
 
-    def __iter__(self):
+    def __iter__(self) -> Dictionary:
         self.current_key = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> Hashable:
         while self.current_key < len(self._keys):
             key = self._keys[self.current_key]
             self.current_key += 1
             return key
         raise StopIteration
 
-    def update(self, other: Dictionary):
+    def update(self, other: Dictionary) -> None:
         for item in other:
             self.__setitem__(item, other[item])
 
-
-    def _data_handler(self, key, value=None, delete=None):
+    def _data_handler(
+            self,
+            key: Hashable,
+            value: Any = None,
+            delete: bool = None
+    ) -> None | Callable:
         k_hash = hash(key)
         index = k_hash % self._capacity
 
@@ -127,14 +130,14 @@ class Dictionary:
         else:
             return self._find_item(key=key, index=index)
 
-    def get_load(self):
+    def get_load(self) -> int | bool:
         threshold = self._capacity * self._load_factor
         load = sum(1 for node in self._hash_table if node)
         if load < threshold:
             return int(threshold - load)
         return False
 
-    def resize(self):
+    def resize(self) -> None:
         self._capacity *= 2
         old_table = copy.deepcopy(self._hash_table)
 
@@ -146,7 +149,13 @@ class Dictionary:
             if item:
                 self._data_handler(item.key, item.value)
 
-    def _add_item(self, key, value, k_hash, index):
+    def _add_item(
+            self,
+            key: Hashable,
+            value: Any,
+            k_hash: int,
+            index: int
+    ) -> None:
         node = self._hash_table[index]
 
         if node and node.key == key:
@@ -167,7 +176,7 @@ class Dictionary:
             self._keys.append(key)
             self._values.append(value)
 
-    def _find_item(self, key, index):
+    def _find_item(self, key: Hashable, index: int) -> Any:
         node = self._hash_table[index]
         # handling empty nodes left after removing collided elements
         if not node:
@@ -196,8 +205,9 @@ class Dictionary:
 
         raise KeyError(f"{key}")
 
-    def _delete_item(self, key, index):
+    def _delete_item(self, key: Hashable, index: int) -> None:
         node = self._hash_table[index]
+
         if node and node.key == key:
             self._hash_table[index] = []
 
