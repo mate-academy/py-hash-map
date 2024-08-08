@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
-    def __init__(self, key: Any, hash_key: int, value: Any) -> None:
+    def __init__(self, key: Hashable, hash_key: int, value: Any) -> None:
         self.key = key
         self.hash_key = hash_key
         self.value = value
@@ -17,7 +17,7 @@ class Dictionary:
         self.current_size = 0
         self.capacity = len(self.hash_table)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
 
         threshold = int(0.66 * self.capacity)
         node = Node(key, hash(key), value)
@@ -43,7 +43,7 @@ class Dictionary:
         self.current_size = 0
         self.update(old_hash_table)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         for el in self.hash_table:
             if el and el.key == key and el.hash_key == hash(key):
                 return el.value
@@ -55,19 +55,19 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table = [None for _ in range(len(self.hash_table))]
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         for i, el in enumerate(self.hash_table):
             if el and el.key == key:
                 self.hash_table[i] = None
         raise KeyError(key)
 
-    def get(self, key: Any, default_value: Any = "some value") -> Any:
+    def get(self, key: Hashable, default_value: Any = "some value") -> Any:
         try:
             self.__getitem__(key)
         except KeyError:
             return default_value
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         value = self.__getitem__(key)
         self.__delitem__(key)
         return Node(key, hash(key), value)
