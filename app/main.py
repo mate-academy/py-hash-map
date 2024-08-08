@@ -1,52 +1,64 @@
 from typing import Any
 
 
+class Node:
+    def __init__(self, key: Any, hash_key: int, value: Any) -> None:
+        self.key = key
+        self.hash_key = hash_key
+        self.value = value
+
+    def __eq__(self, other: object) -> bool:
+        return self.key == other.key and self.hash_key == other.hash_key
+
+
 class Dictionary:
     def __init__(self) -> None:
-        self.hash_table = [[] for _ in range(8)]
+        self.hash_table = [None for _ in range(8)]
         self.current_size = 0
+        self.capacity = len(self.hash_table)
 
     def __setitem__(self, key: Any, value: Any) -> None:
 
-        capacity = len(self.hash_table)
-        threshold = int(0.66 * capacity)
+        threshold = int(0.66 * self.capacity)
+        node = Node(key, hash(key), value)
 
         if self.current_size + 1 > threshold:
-            old_hash_table = self.hash_table
-            self.hash_table = [[] for _ in range(capacity * 2)]
-            capacity = len(self.hash_table)
-            self.current_size = 0
-            self.update(old_hash_table)
+            self.__resize_hash_table()
 
-        index = hash(key) % capacity
-        for i, el in enumerate(self.hash_table):
-            if el and el[0] == key and el[1] == hash(key):
-                self.hash_table[i][2] = value
+        index = hash(key) % self.capacity
+        while True:
+            if not self.hash_table[index]:
+                self.hash_table[index] = node
+                self.current_size += 1
                 break
-        else:
-            while True:
-                if not self.hash_table[index]:
-                    self.hash_table[index] = [key, hash(key), value]
-                    self.current_size += 1
-                    break
-                index = (index + 1) % capacity
+            elif self.hash_table[index] == node:
+                self.hash_table[index] = node
+                break
+            index = (index + 1) % self.capacity
 
-    def __getitem__(self, item: Any) -> Any:
+    def __resize_hash_table(self) -> None:
+        old_hash_table = [node for node in self.hash_table if node is not None]
+        self.hash_table = [None for _ in range(self.capacity * 2)]
+        self.capacity = len(self.hash_table)
+        self.current_size = 0
+        self.update(old_hash_table)
+
+    def __getitem__(self, key: Any) -> Any:
         for el in self.hash_table:
-            if el and el[0] == item and el[1] == hash(item):
-                return el[2]
-        raise KeyError(item)
+            if el and el.key == key and el.hash_key == hash(key):
+                return el.value
+        raise KeyError(key)
 
     def __len__(self) -> int:
         return self.current_size
 
     def clear(self) -> None:
-        self.hash_table = [[] for _ in range(len(self.hash_table))]
+        self.hash_table = [None for _ in range(len(self.hash_table))]
 
     def __delitem__(self, key: Any) -> None:
-        for el in self.hash_table:
-            if el and el[0] == key and el[1] == hash(key):
-                return el[2]
+        for i, el in enumerate(self.hash_table):
+            if el and el.key == key:
+                self.hash_table[i] = None
         raise KeyError(key)
 
     def get(self, key: Any, default_value: Any = "some value") -> Any:
@@ -57,16 +69,12 @@ class Dictionary:
 
     def pop(self, key: Any) -> Any:
         value = self.__getitem__(key)
-        return [key, value]
+        self.__delitem__(key)
+        return Node(key, hash(key), value)
 
-    def update(self, other: list[tuple] | list[list]) -> None:
-        try:
-            for key, value in other:
-                self.__setitem__(key, value)
-        except ValueError:
-            for el in other:
-                if el:
-                    self.__setitem__(el[0], el[2])
+    def update(self, other: list[Node]) -> None:
+        for node in other:
+            self.__setitem__(node.key, node.value)
 
     def __iter__(self) -> object:
         self.current_element = 0
@@ -76,6 +84,6 @@ class Dictionary:
         if self.current_element >= self.current_size:
             raise StopIteration
 
-        result = self.hash_table[self.current_element][0]
+        result = self.hash_table[self.current_element]
         self.current_element += 1
         return result
