@@ -2,15 +2,16 @@ from typing import Hashable, Any
 
 
 class Dictionary:
-    def __init__(self,
-                 capacity: int = 8,
-                 size: int = 0,
-                 load_factor: float = 2 / 3
-                 ) -> None:
+    def __init__(
+            self,
+            capacity: int = 8,
+            size: int = 0,
+            load_factor: float = 2 / 3
+    ) -> None:
         self.capacity = capacity
         self.size = size
         self.load_factor = load_factor
-        self.storage = [(None, None, None)] * self.capacity
+        self.storage = [[None]] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size > self.capacity * self.load_factor:
@@ -39,7 +40,7 @@ class Dictionary:
     def resize(self) -> None:
         self.capacity *= 2
         temp_list = self.storage
-        self.storage = [(None, None, None)] * self.capacity
+        self.storage = [[None]] * self.capacity
         for element in temp_list:
             key_index = self.get_index(element[0])
             self.storage[key_index] = element
@@ -56,5 +57,4 @@ class Dictionary:
     def __repr__(self) -> str:
         return (f"capacity: {self.capacity} "
                 f"size: {self.size} "
-                f"storage: {self.storage}"
-                )
+                f"storage: {self.storage}")
