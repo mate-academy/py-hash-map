@@ -21,7 +21,7 @@ class Dictionary:
         for kv in self.table[index]:
             if kv[0] == key:
                 return kv[1]
-        raise KeyError(f'Key {key} not found')
+        raise KeyError(f"Key {key} not found")
 
     def __len__(self) -> int:
         return sum(len(bucket) for bucket in self.table)
