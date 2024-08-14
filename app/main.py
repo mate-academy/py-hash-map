@@ -2,9 +2,9 @@ from typing import Any
 
 
 class Node:
-    def __init__(self, key: Any, hash_value: int, value: Any) -> None:
+    def __init__(self, key: Any, hash_key: int, value: Any) -> None:
         self.key = key
-        self.hash_value = hash_value
+        self.hash_key = hash_key
         self.value = value
 
 
@@ -19,23 +19,22 @@ class Dictionary:
         self._size = 0
         self._buckets = [[] for _ in range(self._capacity)]
 
+    def _get_index(self, key: Any) -> int:
+        return hash(key) % self._capacity
+
     def __setitem__(self, key: Any, value: Any) -> None:
         if self._size / self._capacity >= self._load_factor:
             self._resize()
-        hash_value = hash(key)
-        index = hash_value % self._capacity
-
+        index = self._get_index(key)
         for node in self._buckets[index]:
             if node.key == key:
                 node.value = value
                 return
-        self._buckets[index].append(Node(key, hash_value, value))
+        self._buckets[index].append(Node(key, hash(key), value))
         self._size += 1
 
     def __getitem__(self, key: Any) -> Any:
-        hash_value = hash(key)
-        index = hash_value % self._capacity
-
+        index = self._get_index(key)
         for node in self._buckets[index]:
             if node.key == key:
                 return node.value
@@ -47,10 +46,9 @@ class Dictionary:
     def _resize(self) -> None:
         new_capacity = self._capacity * 2
         new_buckets = [[] for _ in range(new_capacity)]
-
         for bucket in self._buckets:
             for node in bucket:
-                index = node.hash_value % new_capacity
+                index = node.hash_key % new_capacity
                 new_buckets[index].append(node)
         self._buckets = new_buckets
         self._capacity = new_capacity
@@ -60,9 +58,7 @@ class Dictionary:
         self._size = 0
 
     def __delitem__(self, key: Any) -> None:
-        hash_value = hash(key)
-        index = hash_value % self._capacity
-
+        index = self._get_index(key)
         for i, node in enumerate(self._buckets[index]):
             if node.key == key:
                 del self._buckets[index][i]
@@ -77,16 +73,13 @@ class Dictionary:
             return default
 
     def pop(self, key: Any, default: Any = None) -> Any:
-        hash_value = hash(key)
-        index = hash_value % self._capacity
-
+        index = self._get_index(key)
         for i, node in enumerate(self._buckets[index]):
             if node.key == key:
                 value = node.value
                 del self._buckets[index][i]
                 self._size -= 1
                 return value
-
         if default is not None:
             return default
         raise KeyError(key)
