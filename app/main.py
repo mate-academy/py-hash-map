@@ -83,3 +83,15 @@ class Dictionary:
 
     def __str__(self) -> str:
         return str(self.hash_table)
+
+    def clear(self) -> None:
+        self.__init__()
+
+    def pop(self, key: Any) -> Any:
+        value = self[key]
+        self.__delitem__(key)
+        return value
+
+    def update(self, **kwargs) -> None:
+        for key, value in kwargs.items():
+            self.__setitem__(key, value)
