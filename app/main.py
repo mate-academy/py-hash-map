@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -18,7 +18,7 @@ class Dictionary:
                 self.__setitem__(node.key, node.value)
                 node = node.next
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.length >= int(self.load_factor * len(self.hash_table)):
             self._reorganize()
 
@@ -41,7 +41,7 @@ class Dictionary:
 
         self.length += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         key_hash = hash(key)
         index = key_hash % len(self.hash_table)
         node = self.hash_table[index]
@@ -56,7 +56,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         key_hash = hash(key)
         index = key_hash % len(self.hash_table)
         node = self.hash_table[index]
@@ -80,7 +80,7 @@ class Dictionary:
 
 
 class Node:
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.next = None
