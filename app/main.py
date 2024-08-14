@@ -53,3 +53,32 @@ class Dictionary:
             self.size += 1
 
         self.hash_table[index] = Node(key, value)
+
+    def __getitem__(self, key: Hashable) -> None:
+        index = self._calculate_index(key)
+
+        if self.hash_table[index] is None:
+            raise KeyError("Cannot find")
+
+        return self.hash_table[index].value
+
+    def __delitem__(self, key: Hashable) -> None:
+        index = self._calculate_index(key)
+
+        if self._calculate_index[index] is None:
+            raise KeyError("Cannot find")
+
+        self.hash_table[index] = None
+        self.size -= 1
+
+    def get(self, key: Hashable, default: Any = None) -> None:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __len__(self) -> int:
+        return self.size
+
+    def __str__(self) -> str:
+        return str(self.hash_table)
