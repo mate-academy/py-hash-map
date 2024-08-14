@@ -3,7 +3,7 @@ from typing import Hashable, Any
 
 
 INITIAL_CAPACITY = 8
-RESIZE_THRESHOLD = 2/3
+RESIZE_THRESHOLD = 2 / 3
 CAPACITY_MULTIPLIER = 2
 
 
@@ -14,27 +14,27 @@ class Node:
 
 
 class Dictionary:
-    def __init__(self, capacity: int):
+    def __init__(self, capacity: int) -> None:
         self.capacity = capacity
         self.size = 0
         self.hash_table: list[Node | None] = [None] * self.capacity
 
-    def _calculate_index(self, key):
+    def _calculate_index(self, key: float) -> None:
         index = hash(key) % self.capacity
 
         while (
-            self.hash_table[index] is not None and
-            self.hash_table[index].key != key
+            self.hash_table[index] is not None
+            and self.hash_table[index].key != key
         ):
             index = (index + 1) % self.capacity
 
         return index
 
     @property
-    def current_max_size(self):
+    def current_max_size(self) -> float:
         return self.capacity * RESIZE_THRESHOLD
 
-    def resize(self):
+    def resize(self) -> None:
         old_hash_table = self.hash_table
 
         self.__init__(self.capacity * CAPACITY_MULTIPLIER)
@@ -43,13 +43,13 @@ class Dictionary:
             if node is not None:
                 self.__setitem__(node.key, node.value)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: float, value: float) -> None:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
             if self.size + 1 >= self.current_max_size:
                 self.resize()
-                return self.__setitem__(key,value)
+                return self.__setitem__(key, value)
             self.size += 1
 
         self.hash_table[index] = Node(key, value)
