@@ -60,7 +60,7 @@ class Dictionary:
 
         return False
 
-    def get_index(self, key: Any) -> int:
+    def get_index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def resize(self) -> None:
