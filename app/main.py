@@ -25,7 +25,7 @@ class Dictionary:
         self.buckets[index].append((key, value, key_hash))
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index: int = self.get_index(key)
         key_hash: int = hash(key)
 
