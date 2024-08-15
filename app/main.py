@@ -56,7 +56,8 @@ class Dictionary:
         index = hash(key) % self.length_hash_table
         try:
             while True:
-                if self.hash_table[index][0] == hash(key):
+                print(f"Getitem Key = {hash(key)} \n Key in hash table = {self.hash_table[index][2]}")
+                if self.hash_table[index][0] == key:
                     break
                 if index == self.length_hash_table - 1:
                     index = 0
