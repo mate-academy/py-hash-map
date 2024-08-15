@@ -50,7 +50,7 @@ class Dictionary:
 
         raise KeyError(f"Key '{key}' not found.")
 
-    def __contains__(self, key: Any) -> bool:
+    def __contains__(self, key: Hashable) -> bool:
         index: int = self.get_index(key)
         key_hash: int = hash(key)
 
