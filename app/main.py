@@ -77,7 +77,7 @@ class Dictionary:
         self.buckets = [[] for _ in range(self.capacity)]
         self.size = 0
 
-    def get(self, key: Any, default: Optional[Any] = None) -> Optional[Any]:
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Optional[Any]:
         try:
             return self.__getitem__(key)
         except KeyError:
