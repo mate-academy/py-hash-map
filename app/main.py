@@ -11,7 +11,7 @@ class Dictionary:
         self.buckets: List[List[Tuple[Any, Any, int]]] = \
             [[] for _ in range(self.capacity)]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size / self.capacity > self.load_factor:
             self.resize()
         index: int = self.get_index(key)
