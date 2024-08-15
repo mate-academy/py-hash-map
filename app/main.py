@@ -1,5 +1,6 @@
-from typing import Any
 from copy import deepcopy
+from fractions import Fraction
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -7,18 +8,15 @@ class Dictionary:
             self,
     ) -> None:
         self._capacity = 8
-        self._load_factor = 2 / 3
+        self._load_factor = Fraction(2, 3)
         self._threshold = self._capacity * self._load_factor
         self._hash_table = [[] for _ in range(self._capacity)]
         self._size = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._size > self._threshold:
             self._get_resized()
-        try:
-            calc_hash = hash(key)
-        except TypeError:
-            raise TypeError
+        calc_hash = hash(key)
         index = calc_hash % self._capacity
         for cell in self._hash_table[index]:
             if cell[0] == key:
@@ -31,7 +29,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self._size
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         try:
             index = hash(key) % self._capacity
         except TypeError:
@@ -49,4 +47,4 @@ class Dictionary:
         self._size = 0
         for ext_cell in copy_table:
             for key, value, _ in ext_cell:
-                self.__setitem__(key, value)
+                self[key] = value
