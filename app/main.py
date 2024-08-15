@@ -1,4 +1,4 @@
-from typing import List, Any, Optional, Tuple, Iterator
+from typing import List, Any, Optional, Tuple, Iterator, Hashable
 
 
 class Dictionary:
@@ -11,56 +11,56 @@ class Dictionary:
         self.buckets: List[List[Tuple[Any, Any, int]]] = \
             [[] for _ in range(self.capacity)]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size / self.capacity > self.load_factor:
             self.resize()
         index: int = self.get_index(key)
         key_hash: int = hash(key)
 
-        for i, (k, v, h) in enumerate(self.buckets[index]):
-            if k == key:
+        for i, (stored_key, _, stored_hash) in enumerate(self.buckets[index]):
+            if stored_key == key:
                 self.buckets[index][i] = (key, value, key_hash)
                 return
 
         self.buckets[index].append((key, value, key_hash))
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index: int = self.get_index(key)
         key_hash: int = hash(key)
 
-        for k, v, h in self.buckets[index]:
-            if k == key and h == key_hash:
-                return v
+        for stored_key, stored_value, stored_hash in self.buckets[index]:
+            if stored_key == key and stored_hash == key_hash:
+                return stored_value
 
         raise KeyError(f"Key '{key}' not found.")
 
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index: int = self.get_index(key)
         key_hash: int = hash(key)
 
-        for i, (k, v, h) in enumerate(self.buckets[index]):
-            if k == key and h == key_hash:
+        for i, (stored_key, _, stored_hash) in enumerate(self.buckets[index]):
+            if stored_key == key and stored_hash == key_hash:
                 del self.buckets[index][i]
                 self.size -= 1
                 return
 
         raise KeyError(f"Key '{key}' not found.")
 
-    def __contains__(self, key: Any) -> bool:
+    def __contains__(self, key: Hashable) -> bool:
         index: int = self.get_index(key)
         key_hash: int = hash(key)
 
-        for k, v, h in self.buckets[index]:
-            if k == key and h == key_hash:
+        for stored_key, _, stored_hash in self.buckets[index]:
+            if stored_key == key and stored_hash == key_hash:
                 return True
 
         return False
 
-    def get_index(self, key: Any) -> int:
+    def get_index(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def resize(self) -> None:
@@ -70,20 +70,24 @@ class Dictionary:
         self.size = 0
 
         for bucket in old_buckets:
-            for key, value, h in bucket:
+            for key, value, _ in bucket:
                 self.__setitem__(key, value)
 
     def clear(self) -> None:
         self.buckets = [[] for _ in range(self.capacity)]
         self.size = 0
 
-    def get(self, key: Any, default: Optional[Any] = None) -> Optional[Any]:
+    def get(self,
+            key: Hashable,
+            default: Optional[Any] = None) -> Optional[Any]:
         try:
             return self.__getitem__(key)
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Optional[Any] = None) -> Optional[Any]:
+    def pop(self,
+            key: Hashable,
+            default: Optional[Any] = None) -> Optional[Any]:
         try:
             value: Any = self.__getitem__(key)
             self.__delitem__(key)
@@ -100,5 +104,5 @@ class Dictionary:
 
     def __iter__(self) -> Iterator[Any]:
         for bucket in self.buckets:
-            for key, value, h in bucket:
+            for key, _, _ in bucket:
                 yield key
