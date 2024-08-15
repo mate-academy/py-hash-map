@@ -38,7 +38,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index: int = self.get_index(key)
         key_hash: int = hash(key)
 
