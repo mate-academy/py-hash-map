@@ -40,7 +40,7 @@ class Dictionary:
         index = hash(key) % self.length_hash_table
         print("Index = ", index)
         while True:
-            if self.hash_table[index] is None:
+            if (self.hash_table[index] is None) or (self.hash_table[index][0] == key):
                 break
             if index == self.length_hash_table - 1:
                 index = 0
