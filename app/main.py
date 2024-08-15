@@ -1,35 +1,45 @@
 class Dictionary:
-    hash_table = []
-    len_hash_table = 8
 
-    def __init__(self, value, key) -> None:
-        # self.value = value
-        # self.key = key
-        # self.hask_key = hash(key)
+    def __init__(self) -> None:
+        self.length = 0
+        self.hash_table = [None] * 8
+        self.k_hash_table = 1
+
+    def update(self):
+        self.k_hash_table += 1
+        index = 0
+        old_hash = self.hash_table
+        self.hash_table = [None] * 8 * self.k_hash_table
+
+        for data in old_hash:
+            key, value = data[0], data[1]
+            index = hash(key) % (8 * self.k_hash_table)
+            while True:
+                if not (self.hash_table[index]):
+                    break
+                index += 1
+            self.hash_table[index]  = [key, value, hash(key)]
+
 
     def __setitem__(self, key, value):
-        if len(self.hash_table) > (self.len_hash_table * 2) / 3:
-            self.len_hash_table *= 2
+        print(f"Key = {key} Value = {value} Hash = {self.hash_table}")
+        if self.length > len(self.hash_table)* 2 / 3:
+            self.update()
 
-        index = hash(key) % self.len_hash_table
+        index = hash(key) % (self.k_hash_table * 8)
         while True:
             if not (self.hash_table[index]):
                 break
             index += 1
 
         self.hash_table[index] = [key, value, hash(key)]
+        self.length += 1
+
 
     def __getitem__(self, key):
-        index = hash(key) % self.len_hash_table
-        while True:
-            if self.hash_table[index]:
-                break
-            index += 1
-        return self.hash_table[index]
+        print(f"Key = {key} Value = {value} Hash = {self.hash_table}")
+        index = hash(key) % (self.k_hash_table * 8)
+        return self.hash_table[index][1]
 
     def __len__(self):
-        _len = 0
-        for data in self.hash_table:
-            if data:
-                _len += 1
-        return _len
+        return self.length
