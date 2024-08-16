@@ -26,7 +26,7 @@ class Dictionary:
         self._capacity_multiplier = capacity_multiplier
         self._size = 0
         self._hash_table: list[Dictionary.Node | None] = (
-            [None] * self._capacity
+                [None] * self._capacity
         )
 
     def _calculate_index(self, key: Hashable) -> int:
@@ -142,6 +142,7 @@ class Dictionary:
             if isinstance(item, Dictionary.Node)
         ]
 
-    def update(self, other: Dictionary) -> None:
-        for key, value in other.items():
-            self[key] = value
+    def update(self, other: Dictionary = None) -> None:
+        if other:
+            for key, value in other.items():
+                self[key] = value
