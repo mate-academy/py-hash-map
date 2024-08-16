@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, Hashable
 from copy import deepcopy
 
 
 class Node:
-    def __init__(self, key: Any, value: Any) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
 
@@ -18,38 +18,29 @@ class Dictionary:
         self.__size = 0
         self.__arr: list[int | Node] = [0 for _ in range(self.__capacity)]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.__ready_to_resize():
             self.__resize()
 
-        index = hash(key) % self.__capacity
-        if self.__arr[index] != 0 and self.__arr[index].key == key:
-            self.__arr[index].value = value
-            return
-
+        index = self.__find_index(key)
         if self.__arr[index] == 0:
-            self.__add_node(index, key, value)
-        elif self.__arr[index] != 0 and self.__arr[index].key != key:
-            for i in range(index, self.__capacity):
-                if i == self.__capacity - 1:
-                    for next_i in range(0, self.__capacity):
-                        if self.__arr[next_i] == 0:
-                            self.__add_node(next_i, key, value)
-                            break
+            self.__size += 1
+        self.__add_node(index, key, value)
 
-                if self.__arr[i] == 0:
-                    self.__add_node(i, key, value)
-                    break
-                if self.__arr[i] != 0 and self.__arr[i].key == key:
-                    self.__arr[i].value = value
-                    break
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self.__find_index(key)
+        if self.__arr[index] == 0:
+            raise KeyError(f"Value for key '{key}' not found")
 
-    def __getitem__(self, key: Any) -> Any:
-        for i in range(self.__capacity):
-            if self.__arr[i] != 0 and self.__arr[i].key == key:
-                return self.__arr[i].value
+        return self.__arr[index].value
 
-        raise KeyError(f"Value for key '{key}' not found")
+    def __delitem__(self, key: Hashable) -> None:
+        index = self.__find_index(key)
+        if self.__arr[index] == 0:
+            raise KeyError(f"Value for key '{key}' not found")
+
+        self.__arr[index] = 0
+        self.__size -= 1
 
     def __len__(self) -> int:
         return self.__size
@@ -57,11 +48,18 @@ class Dictionary:
     def __repr__(self) -> str:
         return str(self.__arr)
 
+    def __find_index(self, key: Hashable) -> int:
+        index = hash(key) % self.__capacity
+        while self.__arr[index] != 0 and self.__arr[index].key != key:
+            index = (index + 1) % self.__capacity
+
+        return index
+
     def clear(self) -> None:
         self.__init__()
 
     def __ready_to_resize(self) -> bool:
-        return self.__size == round(self.__capacity * self.__load_factor)
+        return self.__size >= self.__capacity * self.__load_factor
 
     def __resize(self) -> None:
         self.__capacity = self.__capacity * 2
@@ -75,4 +73,3 @@ class Dictionary:
 
     def __add_node(self, index: int, key: Any, value: Any) -> None:
         self.__arr[index] = Node(key, value)
-        self.__size += 1
