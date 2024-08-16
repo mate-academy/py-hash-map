@@ -85,11 +85,13 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__(INITIAL_CAPACITY)
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
-            raise KeyError(f"Cannot find value for key: {key}")
+            if default is not None:
+                return default
+            raise KeyError(f"Cannot find a key: {key}")
 
         removed = self.hash_table[index].value
         self.hash_table[index] = None
