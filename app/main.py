@@ -3,7 +3,8 @@ from typing import Hashable, Any
 
 CAPACITY = 8
 INCREASE_KOEF = 2
-TO_INCREASE = 2/3
+TO_INCREASE = 2 / 3
+
 
 @dataclass()
 class Node:
@@ -21,8 +22,8 @@ class Dictionary:
         index = hash(key) % self.capacity
 
         while (
-            self.hash_table[index] is not None and
-            self.hash_table[index].key != key
+            self.hash_table[index] is not None
+            and self.hash_table[index].key != key
         ):
 
             index = (index + 1) % self.capacity
@@ -57,7 +58,7 @@ class Dictionary:
     def __getitem__(self, key) -> Any:
         index = self.calculate_index(key)
 
-        if self.hash_table[index] == None:
+        if self.hash_table[index] is None:
             raise KeyError(f"Can not find element with key: '{key}'")
 
         return self.hash_table[index].value
