@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Node:
-    def __init__(self, key: Any, hash_key: int, value: Any) -> None:
+    def __init__(self, key: Hashable, hash_key: int, value: Any) -> None:
         self.key = key
         self.hash_key = hash_key
         self.value = value
@@ -19,10 +19,10 @@ class Dictionary:
         self._size = 0
         self._buckets = [[] for _ in range(self._capacity)]
 
-    def _get_index(self, key: Any) -> int:
+    def _get_index(self, key: Hashable) -> int:
         return hash(key) % self._capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._size / self._capacity >= self._load_factor:
             self._resize()
         index = self._get_index(key)
@@ -33,12 +33,12 @@ class Dictionary:
         self._buckets[index].append(Node(key, hash(key), value))
         self._size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._get_index(key)
         for node in self._buckets[index]:
             if node.key == key:
                 return node.value
-        raise KeyError(key)
+        raise KeyError(f"KeyError: '{key}' not found in Dictionary")
 
     def __len__(self) -> int:
         return self._size
@@ -57,22 +57,22 @@ class Dictionary:
         self._buckets = [[] for _ in range(self._capacity)]
         self._size = 0
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._get_index(key)
         for i, node in enumerate(self._buckets[index]):
             if node.key == key:
                 del self._buckets[index][i]
                 self._size -= 1
                 return
-        raise KeyError(key)
+        raise KeyError(f"KeyError: '{key}' not found in Dictionary")
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         index = self._get_index(key)
         for i, node in enumerate(self._buckets[index]):
             if node.key == key:
@@ -82,9 +82,11 @@ class Dictionary:
                 return value
         if default is not None:
             return default
-        raise KeyError(key)
+        raise KeyError(f"KeyError: '{key}' not found in Dictionary")
 
     def update(self, other: dict) -> None:
+        if other is None:
+            return
         for key, value in other.items():
             self[key] = value
 
