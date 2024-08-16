@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from copy import deepcopy
 from fractions import Fraction
 from typing import Any, Hashable
 
 
 class Node:
-    def __init__(self, key: Hashable, value: Any, hash_value: int, next_node: Node = None) -> None:
+    def __init__(
+            self,
+            key: Hashable,
+            value: Any,
+            hash_value: int,
+            next_node: Node = None
+    ) -> None:
         self.key = key
         self.value = value
         self.hash_value = hash_value
