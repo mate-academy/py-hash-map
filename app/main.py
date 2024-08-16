@@ -13,12 +13,12 @@ class Node:
 
 
 class Dictionary:
-    def __init__(self, capacity: int = CAPACITY):
+    def __init__(self, capacity: int = CAPACITY) -> None:
         self.capacity = capacity
         self.length = 0
         self.hash_table = [None] * self.capacity
 
-    def calculate_index(self, key) -> int:
+    def calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
 
         while (
@@ -30,7 +30,7 @@ class Dictionary:
 
         return index
 
-    def rehash(self, key, value):
+    def rehash(self, key: Hashable, value: Any) -> None:
         old_hash_table = self.hash_table
 
         self.__init__(self.capacity * 2)
@@ -44,7 +44,7 @@ class Dictionary:
     def max_size(self) -> int:
         return round(self.capacity * TO_INCREASE)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.calculate_index(key)
 
         if self.length > self.max_size:
@@ -55,7 +55,7 @@ class Dictionary:
 
         self.hash_table[index] = Node(key, value)
 
-    def __getitem__(self, key) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.calculate_index(key)
 
         if self.hash_table[index] is None:
@@ -78,5 +78,5 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.hash_table)
