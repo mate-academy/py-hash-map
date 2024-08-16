@@ -1,25 +1,32 @@
-from typing import Hashable, Any, Iterator
+from dataclasses import dataclass
+from fractions import Fraction
+from typing import Hashable, Any, Iterator, Iterable
+
+
+@dataclass
+class Node:
+    key: Hashable
+    value: Any
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.__iter = 0
         self.__capacity = 8
-        self.__threshold = 2 / 3
+        self.__threshold = Fraction(2, 3)
         self.__table = [None] * self.__capacity
         self.__length = 0
+        self.__deleted = object()
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if not isinstance(key, Hashable):
-            raise TypeError(f"unhashable type: {type(key)}")
-
         index = hash(key) % self.__capacity
-        node = (hash(key), key, value)
+        node = Node(key, value)
 
         if self.__table[index]:
             for _ in range(self.__capacity):
 
-                if key == self.__table[index][1]:
+                if (self.__table[index] == self.__deleted
+                        or key == self.__table[index].key):
                     self.__table[index] = node
                     return
 
@@ -31,11 +38,13 @@ class Dictionary:
                 if not self.__table[index]:
                     break
 
+        if self.__length + 1 > round(self.__capacity * self.__threshold):
+            self.__double_capacity()
+            self[key] = value
+            return
+
         self.__table[index] = node
         self.__length += 1
-
-        if self.__length > round(self.__capacity * self.__threshold):
-            self.__double_capacity()
 
     def __getitem__(self, key: Hashable) -> Any:
         return self.__find_entry(key, False)
@@ -48,51 +57,55 @@ class Dictionary:
 
     def __str__(self) -> str:
         return str([
-            f"Key: {entry[1]}, Val: {entry[2]}"
-            for entry in self.__table
-            if entry
+            f"Key: {node.key}, Val: {node.value}"
+            for node in self.__table
+            if node and node != self.__deleted
         ])
 
     def __iter__(self) -> Iterator:
-        self.__iter = 0
+        self.__counter = 0
         return self
 
     def __next__(self) -> Any:
-        while self.__iter < self.__capacity and not self.__table[self.__iter]:
-            self.__iter += 1
-
-        if self.__iter >= self.__capacity:
+        if self.__counter == self.__capacity:
             raise StopIteration
 
-        result = self.__table[self.__iter][2]
-        self.__iter += 1
-        return result
+        if (
+            self.__table[self.__counter] is None
+            or self.__table[self.__counter] == self.__deleted
+        ):
+            self.__counter += 1
+            next(self)
+            return
+
+        return self.__table[self.__counter - 1].value
 
     def __find_entry(self, key: Hashable, erase: bool) -> Any:
-        if not isinstance(key, Hashable):
-            raise TypeError(f"unhashable type: {type(key)}")
-
         index = hash(key) % self.__capacity
 
-        if not self.__table[index]:
-            raise KeyError(f"no such key: {key}")
-
         while True:
-            if key == self.__table[index][1]:
+            if not self.__table[index]:
+                raise KeyError(f"no such key: {key}")
+            if self.__table[index] == self.__deleted:
+                continue
+            if key == self.__table[index].key:
                 temp = self.__table[index]
                 if erase:
-                    self.__iter = 0
-                    self.__table[index] = None
-                return temp[2]
+                    self.__counter = 0
+                    self.__table[index] = self.__deleted
+                return temp.value
             index += 1
             if index == self.__capacity:
                 index = 0
 
-    def pop(self, key: Hashable) -> Any:
-        return self.__find_entry(key, True)
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            return self.__find_entry(key, True)
+        except KeyError:
+            return default
 
     def __double_capacity(self) -> None:
-        self.__iter = 0
+        self.__counter = 0
         self.__capacity *= 2
         self.__length = 0
         old_table = self.__table
@@ -100,17 +113,22 @@ class Dictionary:
 
         for node in old_table:
             if node is not None:
-                self.__setitem__(node[1], node[2])
+                self[node.key] = node.value
 
-    def update(self, source: dict) -> None:
-        """
-        Here we could use the "Iterable" type annotation to
-        make the method more flexible in terms of the arguments it
-        processes. Naturally, with a more complex implementation,
-        but I already want to move on to the next task :)
-        """
-        for key, value in source.items():
-            self.__setitem__(key, value)
+    def update(
+            self,
+            source: dict | Iterable[tuple[Hashable, Any]] = None,
+            **kwargs
+    ) -> None:
+        if source:
+            if isinstance(source, dict):
+                for key, value in source.items():
+                    self[key] = value
+            if isinstance(source, Iterable):
+                for tuple_ in source:
+                    self[tuple_[0]] = tuple_[1]
+        for key, value in kwargs.items():
+            self[key] = value
 
     def clear(self) -> None:
         self.__init__()
