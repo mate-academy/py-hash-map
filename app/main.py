@@ -23,7 +23,6 @@ class Dictionary:
         self.__capacity = 8
         self.__size = 0
         self.__threshold = int(Fraction(2, 3) * self.__capacity)
-        print("threshold", self.__threshold)
         self.__table = [Dictionary.__Node()] * self.__capacity
 
         if initial_data:
@@ -148,10 +147,8 @@ class Dictionary:
 
     def __resize(self) -> None:
         self.__capacity *= 2
-        print("resized to", self.__capacity)
         self.__size = 0
         self.__threshold = int(Fraction(2, 3) * self.__capacity)
-        print("threshold", self.__threshold)
         self.__table_before_resize = self.__table
         self.__table = [Dictionary.__Node()] * self.__capacity
 
