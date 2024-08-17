@@ -7,16 +7,13 @@ class Dictionary:
         def __init__(
                 self,
                 key: Optional[Hashable] = None,
-                value: Any = None,
+                value: Optional[Any] = None,
                 key_hash: Optional[int] = None
         ) -> None:
             self.key = key
             self.value = value
             self.key_hash = key_hash
             self.deleted = False
-
-        def __repr__(self) -> str:
-            return f"({self.key}: {self.value}; deleted: {self.deleted})"
 
     def __init__(
             self,
@@ -85,13 +82,13 @@ class Dictionary:
         self.__table = [Dictionary.__Node()] * self.__capacity
         self.__size = 0
 
-    def get(self, key: Hashable, value: Any = None) -> Any:
+    def get(self, key: Hashable, value: Optional[Any] = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return value
 
-    def pop(self, key: Hashable, default_value: Any = None) -> Any:
+    def pop(self, key: Hashable, default_value: Optional[Any] = None) -> Any:
         try:
             value_to_return = self[key]
             del self[key]
