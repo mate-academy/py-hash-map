@@ -25,7 +25,6 @@ class Dictionary:
             self.hash_table[index] is not None
             and self.hash_table[index].key != key
         ):
-
             index = (index + 1) % self.capacity
 
         return index
@@ -70,7 +69,7 @@ class Dictionary:
         index = self.calculate_index(key)
 
         if self.hash_table[index] is None:
-            raise KeyError(f"No such element with key: '{key}'")
+            raise KeyError(f"Cannot find a key: '{key}'")
 
         self.hash_table[index] = None
         self.length -= 1
