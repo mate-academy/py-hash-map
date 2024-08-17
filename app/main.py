@@ -1,151 +1,165 @@
-from typing import Hashable, Any
+from fractions import Fraction
+from typing import Any, Hashable, Iterable, Optional
 
 
 class Dictionary:
+    class __Node:
+        def __init__(
+                self,
+                key: Optional[Hashable] = None,
+                value: Any = None,
+                key_hash: Optional[int] = None
+        ) -> None:
+            self.key = key
+            self.value = value
+            self.key_hash = key_hash
+            self.deleted = False
+
+        def __repr__(self) -> str:
+            return f"({self.key}: {self.value}; deleted: {self.deleted})"
+
     def __init__(
             self,
-            keys: list[Hashable] | None = None,
-            values: list[Any] | None = None
+            initial_data: Optional[Iterable[tuple[Hashable, Any]]] = None,
+            **kwargs
     ) -> None:
         self.__capacity = 8
         self.__size = 0
-        self.__threshold = int((2 / 3) * self.__capacity)
-        self.__table = [(None,)] * self.__capacity
+        self.__threshold = int(Fraction(2, 3) * self.__capacity)
+        print("threshold", self.__threshold)
+        self.__table = [Dictionary.__Node()] * self.__capacity
 
-        if keys and values:
-            for key, value in zip(keys, values):
-                self.__setitem__(key, value)
+        if initial_data:
+            self.update(initial_data)
+        if kwargs:
+            self.update(**kwargs)
 
     def __repr__(self) -> str:
         items = ", ".join(f"{key}: {value}" for key, value in self.items())
         return f"{{{items}}}"
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        key_hash, index = self.__get_key_hash_and_index(key)
+        index = self.__calculate_index(key)
 
-        while self.__table[index][0] is not None:
-            if self.__table[index][0] == key:
-                self.__table[index] = (key, key_hash, value)
-                return
-            index += 1
-            if index == self.__capacity:
-                index = 0
+        if self.__table[index].key is None:
+            if self.__size + 1 > self.__threshold:
+                self.__resize()
+                return self.__setitem__(key, value)
+            self.__size += 1
 
-        self.__table[index] = (key, key_hash, value)
-        self.__size += 1
-
-        if self.__size > self.__threshold:
-            self.__resize()
+        self.__table[index] = Dictionary.__Node(key, value, hash(key))
 
     def __getitem__(self, key: Hashable) -> Any:
-        key_hash, index = self.__get_key_hash_and_index(key)
-        start_index = index
+        index = self.__calculate_index(key)
 
-        while (
-                self.__table[index][0] is not None
-                or "Deleted" in self.__table[index]
-        ):
-            if self.__table[index][0] == key:
-                return self.__table[index][2]
-            index += 1
-            if index == self.__capacity:
-                index = 0
-            if index == start_index:
-                break
+        if self.__table[index].key is None:
+            raise KeyError(key)
 
-        raise KeyError(key)
+        return self.__table[index].value
 
     def __delitem__(self, key: Hashable) -> None:
-        key_hash, index = self.__get_key_hash_and_index(key)
-        while (
-                self.__table[index][0] is not None
-                or "Deleted" in self.__table[index]
-        ):
-            if self.__table[index][0] == key:
-                self.__table[index] = (None, "Deleted")
-                self.__size -= 1
-                return
-            index += 1
-            if index == self.__capacity:
-                index = 0
+        index = self.__calculate_index(key)
 
-        raise KeyError(key)
+        if self.__table[index].key is None:
+            raise KeyError(key)
+
+        self.__table[index] = Dictionary.__Node()
+        self.__table[index].deleted = True
+        self.__size -= 1
 
     def __len__(self) -> int:
         return self.__size
 
     def __iter__(self) -> "Dictionary":
         self.__current_index = 0
-        self.__keys = [element[0] for element in self.__table if element[0]]
+        self.__keys = (node.key for node in self.__table if node.key)
         return self
 
     def __next__(self) -> Any:
         if self.__current_index >= self.__size:
             raise StopIteration
-        result_to_return = self.__keys[self.__current_index]
         self.__current_index += 1
-        return result_to_return
+        return next(self.__keys)
 
     def clear(self) -> None:
-        self.__table = [(None,)] * self.__capacity
+        self.__table = [Dictionary.__Node()] * self.__capacity
         self.__size = 0
 
-    def get(self, key: Hashable, value: Any = None) -> Any | None:
+    def get(self, key: Hashable, value: Any = None) -> Any:
         try:
-            return self.__getitem__(key)
+            return self[key]
         except KeyError:
             return value
 
-    def pop(self, key: Hashable, defaultvalue: Any = None) -> Any:
+    def pop(self, key: Hashable, default_value: Any = None) -> Any:
         try:
-            value_to_return = self.__getitem__(key)
-            self.__delitem__(key)
+            value_to_return = self[key]
+            del self[key]
             return value_to_return
         except KeyError:
-            if defaultvalue:
-                return defaultvalue
+            if default_value:
+                return default_value
             raise
 
-    def update(self, keys: list[Hashable], values: list[Any]) -> None:
-        for key, value in zip(keys, values):
-            self.__setitem__(key, value)
+    def update(
+            self,
+            data: Optional[Iterable[tuple[Hashable, Any]]] = None,
+            **kwargs
+    ) -> None:
+        if data:
+            for key, value in data:
+                self[key] = value
 
-    def items(self) -> list:
-        return [
-            (element[0], element[2])
-            for element in self.__table
-            if element[0] is not None
-        ]
+        for key, value in kwargs.items():
+            self[key] = value
 
-    def keys(self) -> list:
-        return [
-            element[0]
-            for element in self.__table
-            if element[0] is not None
-        ]
+    def items(self) -> set[tuple[Hashable, Any]]:
+        return {
+            (node.key, node.value)
+            for node in self.__table
+            if node.key is not None
+        }
 
-    def values(self) -> list:
+    def keys(self) -> set[Hashable]:
+        return {
+            node.key
+            for node in self.__table
+            if node.key is not None
+        }
+
+    def values(self) -> list[Any]:
         return [
-            element[2]
-            for element in self.__table
-            if element[0] is not None
+            node.value
+            for node in self.__table
+            if node.key is not None
         ]
 
     def copy(self) -> "Dictionary":
-        return Dictionary(self.keys(), self.values())
+        return Dictionary(self.items())
+
+    def __calculate_index(self, key: Hashable) -> int:
+        index = hash(key) % self.__capacity
+
+        while (
+            self.__table[index].key is not None
+            and self.__table[index].key != key
+            or self.__table[index].deleted is True
+        ):
+            index = (index + 1) % self.__capacity
+
+        return index
 
     def __resize(self) -> None:
         self.__capacity *= 2
+        print("resized to", self.__capacity)
         self.__size = 0
-        self.__threshold = int((2 / 3) * self.__capacity)
+        self.__threshold = int(Fraction(2, 3) * self.__capacity)
+        print("threshold", self.__threshold)
         self.__table_before_resize = self.__table
-        self.__table = [(None,)] * self.__capacity
+        self.__table = [Dictionary.__Node()] * self.__capacity
 
-        for element in self.__table_before_resize:
-            if element[0] is not None:
-                self.__setitem__(element[0], element[2])
+        for node in self.__table_before_resize:
+            if node.key is not None:
+                self[node.key] = node.value
 
         del self.__table_before_resize
-
-    def __get_key_hash_and_index(self, key: Hashable) -> tuple:
-        return hash(key), hash(key) % self.__capacity
