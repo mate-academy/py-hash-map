@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-import copy
-import dataclasses
-from typing import Any, Callable, Iterable, Hashable
+from dataclasses import dataclass
+from fractions import Fraction
+from typing import Any, Hashable
 
 
-@dataclasses.dataclass
+CAPACITY = 8
+LOAD_FACTOR = Fraction(2, 3)
+CAPACITY_MULTIPLIER = 2
+
+
+@dataclass
 class Node:
     key: Hashable
     k_hash: int
@@ -13,230 +18,116 @@ class Node:
 
 
 class Dictionary:
+    def __init__(self, capacity: int = CAPACITY) -> None:
+        self.capacity = capacity
+        self.hashtable: list[Node | None] = [None] * self.capacity
+        self.size = 0
+        self.keys = []
 
-    def __init__(self) -> None:
-        # added mainly to keep track of input order, iteration
-        self._keys = []
-        self._values = []
+    def get_index(self, key: Hashable) -> int:
+        index = hash(key) % self.capacity
 
-        self._initial_capacity = 8
-        self._load_factor = 2 / 3
+        while (
+            self.hashtable[index] is not None
+            and self.hashtable[index].key != key
+        ):
+            index = (index + 1) % self.capacity
 
-        self._capacity = self._initial_capacity
-        self._hash_table = [[] for _ in range(self._capacity)]
+        return index
 
-    # didn't add formating for different types due to time complexity
-    def __str__(self) -> str:
-        pairs = []
-        for key, value in zip(self._keys, self._values):
-            pairs.append(f"{key}: {value}")
-        result = "{" + ", ".join(pairs) + "}"
-        return result
+    @property
+    def resize_threshold(self) -> Fraction:
+        return self.capacity * LOAD_FACTOR
 
     def __getitem__(self, key: Hashable) -> Any:
-        return self._data_handler(key)
+        index = self.get_index(key)
+
+        if self.hashtable[index] is None:
+            raise KeyError(f"{key}")
+
+        return self.hashtable[index].value
+
+    def resize(self) -> None:
+        old_hash_table = self.hashtable
+        self.__init__(self.capacity * CAPACITY_MULTIPLIER)
+
+        for node in old_hash_table:
+            if node is not None:
+                self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        index = self.get_index(key)
 
-        if self.get_load():
-            self._data_handler(key, value)
-        else:
-            self.resize()
-            self.__setitem__(key, value)
+        if self.hashtable[index] is None:
+            if self.size + 1 >= self.resize_threshold:
+                self.resize()
+                return self.__setitem__(key, value)
+            self.size += 1
+            self.keys.append(key)
+
+        self.hashtable[index] = Node(key, hash(key), value)
 
     def __len__(self) -> int:
-        return sum(1 for item in self._hash_table if item)
+        return self.size
 
     def __delitem__(self, key: Hashable) -> None:
-        if self.__getitem__(key):
-            self._data_handler(key, delete=True)
+        index = self.get_index(key)
 
-    def keys(self) -> str:
-        class DictKeys:
-            def __init__(self, keys: list = None) -> None:
-                self._keys = keys if keys else []
+        if self.hashtable[index] is None:
+            raise KeyError(f"{key}")
 
-            def __iter__(self) -> Iterable:
-                return iter(self._keys)
-
-            def __repr__(self) -> str:
-                return f"dict_keys({self._keys})"
-
-        return DictKeys(self._keys)
-
-    def values(self) -> str:
-        class DictValues:
-            def __init__(self, values: list = None) -> None:
-                self._values = values if values else []
-
-            def __iter__(self) -> Iterable:
-                return iter(self._values)
-
-            def __repr__(self) -> str:
-                return f"dict_values({self._values})"
-
-        return DictValues(self._values)
+        self.hashtable[index] = None
+        self.keys.remove(key)
+        self.size -= 1
 
     def clear(self) -> None:
-        self._hash_table = [[] for _ in range(self._capacity)]
-        self._keys = []
-        self._values = []
+        for i in range(len(self.hashtable)):
+            if self.hashtable[i] is not None:
+                self.hashtable[i] = None
+        self.keys = []
 
-    def get(self, key: Hashable) -> Any:
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return None
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        index = self.get_index(key)
 
-    def pop(self, key: Hashable) -> Any:
-        value = self.__getitem__(key)
-        self.__delitem__(key)
-        return value
+        if self.hashtable[index] is None:
+            return default
+
+        return self.hashtable[index]
+
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        index = self.get_index(key)
+        node = self.hashtable[index]
+
+        if node is None:
+            if default is not None:
+                return default
+            raise KeyError(f"{key}")
+
+        self.hashtable[index] = None
+        self.keys.remove(key)
+        self.size -= 1
+
+        return node.value
+
+    def update(self, other: Dictionary) -> None:
+        if isinstance(other, Dictionary):
+            for node in other:
+                if node is not None:
+                    self.__setitem__(node.key, node.value)
+        else:
+            raise TypeError(
+                f"{other} is {type(other).__name__}, not a Dictionary"
+            )
 
     def __iter__(self) -> Dictionary:
         self.current_key = 0
         return self
 
-    def __next__(self) -> Hashable:
-        while self.current_key < len(self._keys):
-            key = self._keys[self.current_key]
-            self.current_key += 1
-            return key
-        raise StopIteration
-
-    def update(self, other: Dictionary) -> None:
-        for item in other:
-            self.__setitem__(item, other[item])
-
-    def _data_handler(
-            self,
-            key: Hashable,
-            value: Any = None,
-            delete: bool = None
-    ) -> None | Callable:
-        k_hash = hash(key)
-        index = k_hash % self._capacity
-
-        if delete:
-            return self._delete_item(key, index)
-
-        if value is not None:
-            self._add_item(
-                key=key,
-                value=value,
-                k_hash=k_hash,
-                index=index
+    def __next__(self) -> Node:
+        while self.current_key < len(self.keys):
+            index = self.get_index(
+                self.keys[self.current_key]
             )
-        else:
-            return self._find_item(key=key, index=index)
-
-    def get_load(self) -> int | bool:
-        threshold = self._capacity * self._load_factor
-        load = sum(1 for node in self._hash_table if node)
-        if load < threshold:
-            return int(threshold - load)
-        return False
-
-    def resize(self) -> None:
-        self._capacity *= 2
-        old_table = copy.deepcopy(self._hash_table)
-
-        self._keys = []
-        self._values = []
-
-        self._hash_table = [[] for _ in range(self._capacity)]
-        for item in old_table:
-            if item:
-                self._data_handler(item.key, item.value)
-
-    def _add_item(
-            self,
-            key: Hashable,
-            value: Any,
-            k_hash: int,
-            index: int
-    ) -> None:
-        node = self._hash_table[index]
-
-        if node:
-
-            if node.key == key:
-
-                node.value = value
-                self._values[self._keys.index(key)] = value
-                return
-
-            else:
-                i = (index + 1) % self._capacity
-
-                while self._hash_table[i] and self._hash_table[i].key != key:
-                    i = (i + 1) % self._capacity
-
-                if self._hash_table[i] and self._hash_table[i].key == key:
-
-                    self._hash_table[i].value = value
-                    self._values[self._keys.index(key)] = value
-
-                else:
-                    self._hash_table[i] = Node(key, k_hash, value)
-                    self._keys.append(key)
-                    self._values.append(value)
-        else:
-
-            self._hash_table[index] = Node(key, k_hash, value)
-            self._keys.append(key)
-            self._values.append(value)
-
-    def _find_item(self, key: Hashable, index: int) -> Any:
-        node = self._hash_table[index]
-        # handling empty nodes left after removing collided elements
-        if not node:
-            if index < len(self._hash_table) - 1:
-                i = index + 1
-            else:
-                i = 0
-            while i != index:
-
-                if self._hash_table[i] and self._hash_table[i].key == key:
-                    return self._hash_table[i].value
-
-                i = (i + 1) % self._capacity
-
-        if node and node.key == key:
-            return node.value
-
-        if node and node.key != key:
-            i = index
-            while self._hash_table[i]:
-
-                if self._hash_table[i].key == key:
-                    return self._hash_table[i].value
-
-                i = (i + 1) % self._capacity
-
-        raise KeyError(f"{key}")
-
-    def _delete_item(self, key: Hashable, index: int) -> None:
-        node = self._hash_table[index]
-
-        if node and node.key == key:
-            self._hash_table[index] = []
-
-            key_index = self._keys.index(key)
-            self._keys.pop(key_index)
-            self._values.pop(key_index)
-            return
-
-        if node and node.key != key:
-            i = index
-            while self._hash_table[i]:
-
-                if self._hash_table[i].key == key:
-                    self._hash_table[i] = []
-
-                    key_index = self._keys.index(key)
-                    self._keys.pop(key_index)
-                    self._values.pop(key_index)
-
-                    return
-                i = (i + 1) % self._capacity
+            self.current_key += 1
+            return self.hashtable[index]
+        raise StopIteration()
