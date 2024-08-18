@@ -24,7 +24,7 @@ class Dictionary:
                 node for node in dict_.hash_table if node is not None
             )
 
-        def __iter__(self) -> DictionaryIterator:
+        def __iter__(self) -> DictionaryIterator:  # noqa: F821
             return self
 
         def __next__(self) -> Any:
