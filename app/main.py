@@ -111,8 +111,12 @@ class Dictionary:
                 continue
             yield node.key, node.value
 
-    def update(self, other: dict | Dictionary) -> None:
-        for key, value in other.items():
+    def update(
+        self, other: dict | Dictionary | Iterable[tuple[Hashable, Any]]
+    ) -> None:
+        if isinstance(other, (dict, Dictionary)):
+            other = other.items()
+        for key, value in other:
             self[key] = value
 
     def get(self, key: Hashable, default: Any | None = None) -> Any:
