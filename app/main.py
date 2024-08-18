@@ -1,26 +1,31 @@
 from dataclasses import dataclass
-from typing import Hashable, Any
-
-
-INITIAL_CAPACITY = 8
-RESIZE_THRESHOLD = 2 / 3
-CAPACITY_MULTIPLIER = 2
-
-
-@dataclass
-class Node:
-    key: Hashable
-    value: Any
+from typing import Hashable, Any, Optional
+from fractions import Fraction
 
 
 class Dictionary:
-    def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
-        self.capacity = capacity
-        self.size = 0
-        self.hash_table: list[Node | None] = [None] * self.capacity
+    _INITIAL_CAPACITY = 8
+    _RESIZE_THRESHOLD = Fraction(2, 3)
+    _CAPACITY_MULTIPLIER = 2
 
-    def _calculate_index(self, key: Hashable) -> int:
-        index = hash(key) % self.capacity
+    @dataclass
+    class Node:
+        key: Hashable
+        value: Any
+        hash: int
+
+    def __init__(
+            self,
+            capacity: int = _INITIAL_CAPACITY
+    ) -> None:
+        self.capacity = capacity
+        self.resize_threshold: Fraction = Dictionary._RESIZE_THRESHOLD
+        self.capacity_multyplier: int = Dictionary._CAPACITY_MULTIPLIER
+        self.size = 0
+        self.hash_table: list[Dictionary.Node | None] = [None] * self.capacity
+
+    def _calculate_index(self, key: Hashable, hash_value: int) -> int:
+        index = hash_value % self.capacity
 
         while (
                 self.hash_table[index] is not None
@@ -30,31 +35,37 @@ class Dictionary:
         return index
 
     @property
-    def current_max_size(self) -> float:
-        return self.capacity * RESIZE_THRESHOLD
+    def current_max_size(self) -> int:
+        return int(self.capacity * self.resize_threshold)
 
     def resize(self) -> None:
         old_hash_table = self.hash_table
-
-        self.__init__(self.capacity * CAPACITY_MULTIPLIER)
+        self.capacity *= self.capacity_multyplier
+        self.size = 0
+        self.hash_table = [None] * self.capacity
 
         for node in old_hash_table:
             if node is not None:
                 self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        index = self._calculate_index(key)
+        hash_value = hash(key)
+        index = self._calculate_index(key, hash_value)
 
         if self.hash_table[index] is None:
             if self.size + 1 >= self.current_max_size:
                 self.resize()
                 return self.__setitem__(key, value)
             self.size += 1
+        elif self.hash_table[index].key == key:
+            self.hash_table[index].value = value
+            return
 
-        self.hash_table[index] = Node(key, value)
+        self.hash_table[index] = Dictionary.Node(key, value, hash_value)
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self._calculate_index(key)
+        hash_value = hash(key)
+        index = self._calculate_index(key, hash_value)
 
         if self.hash_table[index] is None:
             raise KeyError(f"Cannot find value for key: {key}")
@@ -62,7 +73,8 @@ class Dictionary:
         return self.hash_table[index].value
 
     def __delitem__(self, key: Hashable) -> None:
-        index = self._calculate_index(key)
+        hash_value = hash(key)
+        index = self._calculate_index(key, hash_value)
 
         if self.hash_table[index] is None:
             raise KeyError(f"Cannot find value for key: {key}")
@@ -70,7 +82,7 @@ class Dictionary:
         self.hash_table[index] = None
         self.size -= 1
 
-    def get(self, key: Hashable, default: Any = None) -> Hashable:
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
         try:
             return self[key]
         except KeyError:
@@ -83,17 +95,14 @@ class Dictionary:
         return str(self.hash_table)
 
     def clear(self) -> None:
-        self.__init__(INITIAL_CAPACITY)
+        self.__init__()
 
-    def pop(self, key: Hashable, default: Any = None) -> Any:
-        index = self._calculate_index(key)
-
-        if self.hash_table[index] is None:
+    def pop(self, key: Hashable, default: Optional[Any] = None) -> Any:
+        try:
+            value = self[key]
+            del self[key]
+            return value
+        except KeyError:
             if default is not None:
                 return default
             raise KeyError(f"Cannot find a key: {key}")
-
-        removed = self.hash_table[index].value
-        self.hash_table[index] = None
-        self.size -= 1
-        return removed
