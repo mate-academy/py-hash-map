@@ -19,7 +19,7 @@ class Dictionary:
         self.size = 0
         self.hash_table: list[Node | None] = [None] * self.capacity
 
-    def _calculate_index(self, key: Any) -> int:
+    def _calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
 
         while (
@@ -44,7 +44,7 @@ class Dictionary:
             if node is not None:
                 self.__setitem__(node.key, node.value)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
@@ -54,14 +54,14 @@ class Dictionary:
             self.size += 1
         self.hash_table[index] = Node(key, value)
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
             raise KeyError(f"Cannot find value for key: {key}")
         return self.hash_table[index].value
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
