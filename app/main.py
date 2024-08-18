@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Hashable, Any
 
-from point import Point
+from app.point import Point
 
 
 INITIAL_CAPACITY = 8

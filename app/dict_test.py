@@ -1,4 +1,4 @@
-from main import Dictionary
+from app.main import Dictionary
 
 
 if __name__ == "__main__":
