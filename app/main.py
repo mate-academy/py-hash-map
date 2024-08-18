@@ -1,86 +1,62 @@
+from fractions import Fraction
 from typing import Any, Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
-        self.length = 0
-        self.hash_table: list = [None] * 8
-        self.load_factor = 2 / 3
+        self.capacity = 8
+        self.size = 0
+        self.hash_table: list[Dictionary.Node | None] = [None] * self.capacity
+        self.load_factor = Fraction(2, 3)
 
-    def _reorganize(self) -> None:
-        old_table = self.hash_table
-        new_capacity = len(old_table) * 2
-        self.hash_table = [None] * new_capacity
-        self.length = 0
+    def _calculate_index(self, key: Hashable) -> tuple[int, int]:
+        key_hash = hash(key)
+        index = key_hash % self.capacity
 
-        for node in old_table:
-            while node:
-                self.__setitem__(node.key, node.value)
-                node = node.next
+        while (
+            self.hash_table[index] is not None
+            and self.hash_table[index].key != key
+        ):
+            index = (index + 1) % self.capacity
+        return index, key_hash
+
+    def rebuild(self) -> None:
+        previous_table = self.hash_table
+        self.capacity *= 2
+        self.hash_table = [None] * self.capacity
+        self.size = 0
+
+        for node in previous_table:
+            if node is not None:
+                index = node.key_hash % self.capacity
+                while self.hash_table[index] is not None:
+                    index = (index + 1) % self.capacity
+                self.hash_table[index] = node
+                self.size += 1
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.length >= int(self.load_factor * len(self.hash_table)):
-            self._reorganize()
+        index, key_hash = self._calculate_index(key)
 
-        new_node = Node(key, value)
-        key_hash = hash(key)
-        index = key_hash % len(self.hash_table)
-
-        if self.hash_table[index]:
-            node = self.hash_table[index]
-            while node:
-                if node.key == key:
-                    node.value = value
-                    return
-                if not node.next:
-                    break
-                node = node.next
-            node.next = new_node
-        else:
-            self.hash_table[index] = new_node
-
-        self.length += 1
+        if self.hash_table[index] is None:
+            if self.size + 1 > int(self.capacity * self.load_factor):
+                self.rebuild()
+                return self.__setitem__(key, value)
+            self.size += 1
+        self.hash_table[index] = Dictionary.Node(key, key_hash, value)
 
     def __getitem__(self, key: Hashable) -> Any:
-        key_hash = hash(key)
-        index = key_hash % len(self.hash_table)
-        node = self.hash_table[index]
-        if node is None:
-            raise KeyError("Unknown key")
-        while node:
-            if node.key == key:
-                return node.value
-            node = node.next
-        raise KeyError("Unknown key")
+        index, _ = self._calculate_index(key)
+
+        if self.hash_table[index] is None:
+            raise KeyError(f"Unknown key: {key}")
+
+        return self.hash_table[index].value
 
     def __len__(self) -> int:
-        return self.length
+        return self.size
 
-    def __delitem__(self, key: Hashable) -> None:
-        key_hash = hash(key)
-        index = key_hash % len(self.hash_table)
-        node = self.hash_table[index]
-        node_prev = None
-
-        while node:
-            if node.key == key:
-                if node_prev is None:
-                    self.hash_table[index] = node.next
-                else:
-                    node_prev.next = node.next
-                self.length -= 1
-                return
-            node_prev = node
-            node = node.next
-
-        raise KeyError(f"Key {key} not found")
-
-    def clear(self) -> None:
-        self.hash_table = {}
-
-
-class Node:
-    def __init__(self, key: Hashable, value: Any) -> None:
-        self.key = key
-        self.value = value
-        self.next = None
+    class Node:
+        def __init__(self, key: Hashable, key_hash: int, value: Any) -> None:
+            self.key = key
+            self.key_hash = key_hash
+            self.value = value
