@@ -22,7 +22,7 @@ class Dictionary:
             self.dict = dict_
             self.index = 0
 
-        def __iter__(self):
+        def __iter__(self) -> DictionaryIterator:
             return self
 
         def __next__(self) -> Any:
