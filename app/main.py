@@ -20,24 +20,15 @@ class Dictionary:
     class DictionaryIterator:
         def __init__(self, dict_: Dictionary) -> None:
             self.dict = dict_
-            self.index = 0
+            self.generator = (
+                node for node in dict_.hash_table if node is not None
+            )
 
         def __iter__(self) -> DictionaryIterator:
             return self
 
         def __next__(self) -> Any:
-            hash_table_len = len(self.dict.hash_table)
-            while (
-                self.index < hash_table_len
-                and self.dict.hash_table[self.index] is None
-            ):
-                self.index += 1
-            if self.index >= hash_table_len:
-                raise StopIteration
-
-            key = self.dict.hash_table[self.index].key
-            self.index += 1
-            return key
+            return next(self.generator).key
 
     def __init__(self, items: Iterable = (), **kwargs) -> None:
         self.length = 0
