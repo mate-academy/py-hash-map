@@ -17,6 +17,28 @@ class Dictionary:
         key: Hashable
         value: Any
 
+    class DictionaryIterator:
+        def __init__(self, dict_: Dictionary) -> None:
+            self.dict = dict_
+            self.index = 0
+
+        def __iter__(self):
+            return self
+
+        def __next__(self) -> Any:
+            hash_table_len = len(self.dict.hash_table)
+            while (
+                self.index < hash_table_len
+                and self.dict.hash_table[self.index] is None
+            ):
+                self.index += 1
+            if self.index >= hash_table_len:
+                raise StopIteration
+
+            key = self.dict.hash_table[self.index].key
+            self.index += 1
+            return key
+
     def __init__(self, items: Iterable = (), **kwargs) -> None:
         self.length = 0
         self.hash_table: list[self.__class__.Node | None] = [
@@ -87,7 +109,7 @@ class Dictionary:
         return self.length
 
     def __iter__(self) -> DictionaryIterator:
-        return DictionaryIterator(self)
+        return self.__class__.DictionaryIterator(self)
 
     def clear(self) -> None:
         self.__init__()
@@ -117,23 +139,3 @@ class Dictionary:
             return default
         del self[key]
         return value
-
-
-class DictionaryIterator:
-    def __init__(self, dict_: Dictionary) -> None:
-        self.dict = dict_
-        self.index = 0
-
-    def __next__(self) -> Any:
-        hash_table_len = len(self.dict.hash_table)
-        while (
-            self.index < hash_table_len
-            and self.dict.hash_table[self.index] is None
-        ):
-            self.index += 1
-        if self.index >= hash_table_len:
-            raise StopIteration
-
-        key = self.dict.hash_table[self.index][0]
-        self.index += 1
-        return key
