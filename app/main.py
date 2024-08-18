@@ -56,15 +56,20 @@ class Dictionary:
             if index == first_index:
                 raise KeyError(key)
 
-    def _set_with_hash(self, key: Hashable, hash_: int, value: Any) -> None:
+    def _get_index(self, key: Hashable) -> int:
         hash_table_len = len(self.hash_table)
-        index = hash_ % hash_table_len
+        index = hash(key) % hash_table_len
 
         while (
             self.hash_table[index] is not None
             and self.hash_table[index][0] != key
         ):
             index = (index + 1) % hash_table_len
+
+        return index
+
+    def _set_with_hash(self, key: Hashable, hash_: int, value: Any) -> None:
+        index = self._get_index(key)
 
         if self.hash_table[index] is None:
             self.length += 1
