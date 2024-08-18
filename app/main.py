@@ -19,7 +19,7 @@ class Dictionary:
         self.update(kwargs)
 
     def __getitem__(self, key: Hashable) -> Any:
-        _, _, value = self.hash_table[self._get_with_hash(key, hash(key))]
+        _, _, value = self._get_with_hash(key, hash(key))
         return value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
@@ -31,7 +31,8 @@ class Dictionary:
         self._set_with_hash(key, key_hash, value)
 
     def __delitem__(self, key: Hashable) -> None:
-        self.hash_table[self._get_with_hash(key, hash(key))] = None
+        self[key]
+        self.hash_table[self._get_index(key)] = None
         self.length -= 1
 
     def _resize(self) -> None:
@@ -44,17 +45,11 @@ class Dictionary:
             self._set_with_hash(saved_key, saved_hash, saved_value)
 
     def _get_with_hash(self, key: Hashable, hash_: int) -> int:
-        hash_table_len = len(self.hash_table)
-        first_index = index = hash_ % hash_table_len
-
-        while True:
-            if self.hash_table[index]:
-                saved_key, hash_, value = self.hash_table[index]
-                if key == saved_key:
-                    return index
-            index = (index + 1) % hash_table_len
-            if index == first_index:
-                raise KeyError(key)
+        index = self._get_index(key)
+        node = self.hash_table[index]
+        if node is None:
+            raise KeyError(key)
+        return node
 
     def _get_index(self, key: Hashable) -> int:
         hash_table_len = len(self.hash_table)
