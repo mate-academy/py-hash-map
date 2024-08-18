@@ -12,7 +12,7 @@ class Dictionary:
     class Node:
         key: Hashable
         value: Any
-        hash: int
+        hash_value: int
 
     def __init__(
             self,
