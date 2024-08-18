@@ -1,5 +1,6 @@
 from __future__ import annotations
 from fractions import Fraction
+from dataclasses import dataclass
 from typing import Any, Iterable, Hashable
 
 
@@ -10,17 +11,25 @@ class Dictionary:
     DEFAULT_SIZE = 8
     THRESHOLD = Fraction(2, 3)
 
+    @dataclass
+    class Node:
+        hash_: int
+        key: Hashable
+        value: Any
+
     def __init__(self, items: Iterable = (), **kwargs) -> None:
         self.length = 0
-        self.hash_table = [None] * self.DEFAULT_SIZE
+        self.hash_table: list[self.__class__.Node | None] = [
+            None
+        ] * self.DEFAULT_SIZE
 
         for key, value in items:
             self[key] = value
         self.update(kwargs)
 
     def __getitem__(self, key: Hashable) -> Any:
-        _, _, value = self._get_with_hash(key, hash(key))
-        return value
+        node = self._get_with_hash(key, hash(key))
+        return node.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         key_hash = hash(key)
@@ -41,8 +50,8 @@ class Dictionary:
         self.length = 0
         self.hash_table = [None] * len(old_hash_table) * 2
 
-        for saved_key, saved_hash, saved_value in filter(None, old_hash_table):
-            self._set_with_hash(saved_key, saved_hash, saved_value)
+        for node in filter(None, old_hash_table):
+            self._set_with_hash(node.key, node.hash_, node.value)
 
     def _get_with_hash(self, key: Hashable, hash_: int) -> int:
         index = self._get_index(key)
@@ -57,7 +66,7 @@ class Dictionary:
 
         while (
             self.hash_table[index] is not None
-            and self.hash_table[index][0] != key
+            and self.hash_table[index].key != key
         ):
             index = (index + 1) % hash_table_len
 
@@ -68,9 +77,11 @@ class Dictionary:
 
         if self.hash_table[index] is None:
             self.length += 1
-            self.hash_table[index] = (key, hash_, value)
+            self.hash_table[index] = self.__class__.Node(hash_, key, value)
         else:
-            self.hash_table[index] = (self.hash_table[index][0], hash_, value)
+            self.hash_table[index] = self.__class__.Node(
+                hash_, self.hash_table[index].key, value
+            )
 
     def __len__(self) -> int:
         return self.length
@@ -82,11 +93,10 @@ class Dictionary:
         self.__init__()
 
     def items(self) -> Iterable[tuple[Hashable, Any]]:
-        for row in self.hash_table:
-            if not row:
+        for node in self.hash_table:
+            if not node:
                 continue
-            key, _, value = row
-            yield key, value
+            yield node.key, node.value
 
     def update(self, other: dict | Dictionary) -> None:
         for key, value in other.items():
