@@ -38,10 +38,10 @@ class Dictionary:
         index_in_hash_table = self.__find_index(key)
         cell = self.hash_table[index_in_hash_table]
         if not cell:
-            self.hash_table[index_in_hash_table] = Node(key=key,
-                                                        key_hash=hash(key),
-                                                        value=value
-                                                        app)
+            self.hash_table[index_in_hash_table] = (
+                Node(key=key, key_hash=hash(key), value=value)
+            )
+
             if not ignore_counter_of_length:
                 self.length += 1
         else:
