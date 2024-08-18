@@ -1,4 +1,5 @@
 from __future__ import annotations
+from fractions import Fraction
 from typing import Any, Iterable, Hashable
 
 
@@ -7,7 +8,7 @@ _not_provided = object()
 
 class Dictionary:
     DEFAULT_SIZE = 8
-    THRESHOLD = 2 / 3
+    THRESHOLD = Fraction(2, 3)
 
     def __init__(self, items: Iterable = (), **kwargs) -> None:
         self.length = 0
