@@ -63,7 +63,7 @@ class Dictionary:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
-            raise KeyError(f'Cannot find value for key: {key}')
+            raise KeyError(f"Cannot find value for key: {key}")
 
         self.hash_table[index] = None
         self.size -= 1
@@ -111,4 +111,4 @@ class Dictionary:
             for key, value in other.items():
                 self.hash_table[key] = value
         else:
-            raise TypeError("Update data must be 'Dictionary'!")
+            raise TypeError("Update data must be Dictionary!")
