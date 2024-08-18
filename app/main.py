@@ -92,13 +92,13 @@ class Dictionary:
         for key, value in other.items():
             self[key] = value
 
-    def get(self, key: Hashable, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any | None = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Hashable, default: Any = _not_provided) -> Any:
+    def pop(self, key: Hashable, default: Any | None = _not_provided) -> Any:
         try:
             value = self[key]
         except KeyError:
