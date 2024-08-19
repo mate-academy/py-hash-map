@@ -62,7 +62,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Hashable) -> None:
         index = self.calculate_index(key)
 
         if self.buckets[index] is None:
@@ -70,4 +70,3 @@ class Dictionary:
 
         self.buckets[index] = None
         self.size -= 1
-
