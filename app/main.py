@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import Any, Hashable, Iterable, Optional
+from typing import Any, Generator, Hashable, Iterable, Optional
 
 
 class Dictionary:
@@ -39,8 +39,8 @@ class Dictionary:
 
         if self.__table[index].key is None:
             if self.__size + 1 > self.__threshold:
-                self.__resize()
-                return self.__setitem__(key, value)
+                self.__resize(key, value)
+                return
             self.__size += 1
 
         self.__table[index] = Dictionary.__Node(key, value, hash(key))
@@ -66,16 +66,8 @@ class Dictionary:
     def __len__(self) -> int:
         return self.__size
 
-    def __iter__(self) -> "Dictionary":
-        self.__current_index = 0
-        self.__keys = (node.key for node in self.__table if node.key)
-        return self
-
-    def __next__(self) -> Any:
-        if self.__current_index >= self.__size:
-            raise StopIteration
-        self.__current_index += 1
-        return next(self.__keys)
+    def __iter__(self) -> Generator:
+        return (node.key for node in self.__table if node.key)
 
     def clear(self) -> None:
         self.__table = [Dictionary.__Node()] * self.__capacity
@@ -109,19 +101,19 @@ class Dictionary:
         for key, value in kwargs.items():
             self[key] = value
 
-    def items(self) -> set[tuple[Hashable, Any]]:
-        return {
+    def items(self) -> list[tuple[Hashable, Any]]:
+        return [
             (node.key, node.value)
             for node in self.__table
             if node.key is not None
-        }
+        ]
 
-    def keys(self) -> set[Hashable]:
-        return {
+    def keys(self) -> list[Hashable]:
+        return [
             node.key
             for node in self.__table
             if node.key is not None
-        }
+        ]
 
     def values(self) -> list[Any]:
         return [
@@ -145,7 +137,7 @@ class Dictionary:
 
         return index
 
-    def __resize(self) -> None:
+    def __resize(self, key: Hashable, value: Any) -> None:
         self.__capacity *= 2
         self.__size = 0
         self.__threshold = int(Fraction(2, 3) * self.__capacity)
@@ -157,3 +149,5 @@ class Dictionary:
                 self[node.key] = node.value
 
         del self.__table_before_resize
+
+        self[key] = value
