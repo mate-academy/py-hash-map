@@ -33,7 +33,7 @@ class Dictionary:
         key: Hashable,
         value: Any,
         ignore_counter_of_length: bool = False
-    ) -> Any:
+    ) -> None:
 
         index_in_hash_table = self.__find_index(key)
         cell = self.hash_table[index_in_hash_table]
