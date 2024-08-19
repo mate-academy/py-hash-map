@@ -19,9 +19,6 @@ class Point:
         # in the hashtable as well
         return hash((self.x, self.y))
 
-    def __repr__(self) -> str:
-        return f"(Point: x: ({self.x}), y: ({self.y}))"
-
     @property
     def x(self) -> float:
         return self._x

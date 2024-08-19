@@ -1,22 +1,23 @@
 from dataclasses import dataclass
 from typing import Hashable, Any
+from fractions import Fraction
 
 CAPACITY = 8
-INCREASE_KOEF = 2
-TO_INCREASE = 2 / 3
+INCREASE_MULTIPLIER = 2
+LOAD_FACTOR = Fraction(2, 3)
 
 
-@dataclass()
+@dataclass
 class Node:
     key: Hashable
     value: Any
 
 
 class Dictionary:
-    def __init__(self, capacity: int = CAPACITY) -> None:
+    def __init__(self, capacity: int = 8) -> None:
         self.capacity = capacity
         self.length = 0
-        self.hash_table = [None] * self.capacity
+        self.hash_table: list[Node] = [None] * self.capacity
 
     def calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
@@ -32,16 +33,16 @@ class Dictionary:
     def rehash(self, key: Hashable, value: Any) -> None:
         old_hash_table = self.hash_table
 
-        self.__init__(self.capacity * 2)
-        self.__setitem__(key, value)
+        self.__init__(self.capacity * INCREASE_MULTIPLIER)
+        self[key] = value
 
         for obj in old_hash_table:
             if obj is not None:
-                self.__setitem__(obj.key, obj.value)
+                self[obj.key] = obj.value
 
     @property
     def max_size(self) -> int:
-        return round(self.capacity * TO_INCREASE)
+        return int(self.capacity * LOAD_FACTOR)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.calculate_index(key)
