@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-
-from click import Tuple
 from typing import Hashable, Any, Iterator
 
 INITIAL_CAPACITY = 8
