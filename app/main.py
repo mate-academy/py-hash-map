@@ -96,13 +96,13 @@ class Dictionary:
 
         return self.hashtable[index]
 
-    _NO_DEFAULT = object()
+    _NOT_PROVIDED = object()
 
-    def pop(self, key: Hashable, default: Any = _NO_DEFAULT) -> Any:
+    def pop(self, key: Hashable, default: Any = _NOT_PROVIDED) -> Any:
         index = self.get_index(key)
         node = self.hashtable[index]
         if node is None:
-            if default is not Dictionary._NO_DEFAULT:
+            if default is not Dictionary._NOT_PROVIDED:
                 return default
             raise KeyError(f"{key}")
 
@@ -112,7 +112,9 @@ class Dictionary:
 
         return node.value
 
-    def update(self, other: Dictionary | Iterable) -> None:
+    def update(self, other: Dictionary | Iterable = _NOT_PROVIDED) -> None:
+        if other == Dictionary._NOT_PROVIDED:
+            return
         if isinstance(other, Dictionary):
             for node in other:
                 self.__setitem__(node.key, node.value)
