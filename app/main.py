@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Any, Hashable, Iterable
+from typing import Any, Hashable, Iterable, Optional
 
 
 @dataclass
@@ -88,31 +88,33 @@ class Dictionary:
         self.__init__()
         self.keys = []
 
-    def get(self, key: Hashable, default: Any = None) -> Any:
-        index = self.get_index(key)
-
-        if self.hashtable[index] is None:
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
             return default
-
-        return self.hashtable[index]
 
     _NOT_PROVIDED = object()
 
-    def pop(self, key: Hashable, default: Any = _NOT_PROVIDED) -> Any:
-        index = self.get_index(key)
-        node = self.hashtable[index]
-        if node is None:
+    def pop(
+            self,
+            key: Hashable,
+            default: Optional[Any] = _NOT_PROVIDED
+    ) -> Any:
+        try:
+            value = self[key]
+        except KeyError:
             if default is not Dictionary._NOT_PROVIDED:
                 return default
             raise KeyError(f"{key}")
+        else:
+            del self[key]
+            return value
 
-        del self.hashtable[index]
-        self.keys.remove(key)
-        self.size -= 1
-
-        return node.value
-
-    def update(self, other: Dictionary | Iterable = _NOT_PROVIDED) -> None:
+    def update(
+            self,
+            other: Dictionary | Iterable = _NOT_PROVIDED
+    ) -> None:
         if other == Dictionary._NOT_PROVIDED:
             return
         if isinstance(other, Dictionary):
