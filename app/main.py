@@ -120,6 +120,9 @@ class Dictionary:
         self.__setitem__(data.key, data.value)
 
     def _update_from_dict(self, data: Dictionary) -> None:
+        """
+        Updates the dictionary with a Dictionary object.
+        """
         for node in data.hash_table:
             if node is not None:
                 self.__setitem__(node.key, node.value)
