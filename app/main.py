@@ -14,11 +14,8 @@ class Dictionary:
         value: Any
         hash_value: int
 
-    def __init__(
-            self,
-            capacity: int = _INITIAL_CAPACITY
-    ) -> None:
-        self.capacity = capacity
+    def __init__(self) -> None:
+        self.capacity = Dictionary._INITIAL_CAPACITY
         self.resize_threshold: Fraction = Dictionary._RESIZE_THRESHOLD
         self.capacity_multyplier: int = Dictionary._CAPACITY_MULTIPLIER
         self.size = 0
@@ -46,7 +43,7 @@ class Dictionary:
 
         for node in old_hash_table:
             if node is not None:
-                self.__setitem__(node.key, node.value)
+                self[node.key] = node.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_value = hash(key)
