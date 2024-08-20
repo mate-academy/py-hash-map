@@ -1,6 +1,7 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Hashable, Any, Iterator, Optional
+from typing import Hashable, Any, Iterator, Optional, Iterable
 
 
 class Dictionary:
@@ -8,7 +9,7 @@ class Dictionary:
     class Node:
         key: Hashable
         value: Any
-        hashed: int
+        key_hash: int
 
     INITIAL_CAPACITY = 8
     RESIZE_THRESHOLD = Fraction(2, 3)
@@ -34,7 +35,7 @@ class Dictionary:
     def current_max_size(self) -> int:
         return int(self.capacity * self.RESIZE_THRESHOLD)
 
-    def resize(self) -> None:
+    def _resize(self) -> None:
         old_hash_table = self.hash_table
 
         self.__init__(self.capacity * self.CAPACITY_MULTIPLIER)
@@ -49,7 +50,7 @@ class Dictionary:
 
         if self.hash_table[index] is None:
             if self.size + 1 >= self.current_max_size:
-                self.resize()
+                self._resize()
                 index = self._calculate_index(key)
             self.size += 1
 
@@ -118,7 +119,12 @@ class Dictionary:
         """
         self.__setitem__(data.key, data.value)
 
-    def _update_from_dict(self, data: dict) -> None:
+    def _update_from_dict(self, data: Dictionary) -> None:
+        for node in data.hash_table:
+            if node is not None:
+                self.__setitem__(node.key, node.value)
+
+    def _update_from_builtin_dict(self, data: dict) -> None:
         """
         Updates the dictionary with key-value pairs from builtin dictionary.
         """
@@ -133,29 +139,63 @@ class Dictionary:
             raise ValueError("Tuple must have 2 elements (key, value)")
 
         key, value = data
+
+        if not isinstance(key, Hashable):
+            raise TypeError("Key must be Hashable")
+
         self.__setitem__(key, value)
 
     def update(
             self,
-            data: list[Node | dict | tuple] | Node | dict | tuple
+            data: Dictionary | list[Node | dict | tuple] | Node | dict | tuple
     ) -> None:
         """
         Updates Dictionary with various types of data.
         """
-        if isinstance(data, list):
+        if isinstance(data, Dictionary):
+            self._update_from_dict(data)
+        elif isinstance(data, list):
             for item in data:
                 if isinstance(item, Dictionary.Node):
                     self._update_from_node(item)
-                if isinstance(item, dict):
-                    self._update_from_dict(item)
-                if isinstance(item, tuple):
+                elif isinstance(item, dict):
+                    self._update_from_builtin_dict(item)
+                elif isinstance(item, tuple):
                     self._update_from_tuple(item)
 
-        if isinstance(data, Dictionary.Node):
+        elif isinstance(data, Dictionary.Node):
             self._update_from_node(data)
-
-        if isinstance(data, dict):
-            self._update_from_dict(data)
-
-        if isinstance(data, tuple):
+        elif isinstance(data, dict):
+            self._update_from_builtin_dict(data)
+        elif isinstance(data, tuple):
             self._update_from_tuple(data)
+
+    def copy(self) -> Dictionary:
+        """
+        Creates a copy of the dictionary.
+        """
+        new_dict = Dictionary(self.capacity)
+
+        for node in self.hash_table:
+            if node is not None:
+                new_dict.__setitem__(node.key, node.value)
+
+        return new_dict
+
+    def clear(self) -> None:
+        """
+        Resets the dictionary to its initial state.
+        """
+        self.__init__(self.INITIAL_CAPACITY)
+
+    @staticmethod
+    def from_keys(keys: Iterable, value: Any = None) -> Dictionary:
+        """
+        Static method to create a new dictionary from keys.
+        """
+        new_dict = Dictionary(Dictionary.INITIAL_CAPACITY)
+
+        for key in keys:
+            new_dict.__setitem__(key, value)
+
+        return new_dict
