@@ -2,27 +2,27 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Any, Hashable, Iterable, Optional
-
-
-@dataclass
-class Node:
-    key: Hashable
-    k_hash: int
-    value: Any
+from typing import Any, Hashable, Iterable, Optional, Generator
 
 
 class Dictionary:
+    @dataclass
+    class Node:
+        key: Hashable
+        k_hash: int
+        value: Any
+
     INITIAL_CAPACITY = 8
     LOAD_FACTOR = Fraction(2, 3)
     CAPACITY_MULTIPLIER = 2
+    _NOT_PROVIDED = object()
 
     def __init__(self) -> None:
         try:
             self.capacity
         except AttributeError:
             self.capacity = Dictionary.INITIAL_CAPACITY
-        self.hashtable: list[Node | None] = [None] * self.capacity
+        self.hashtable: list[Dictionary.Node | None] = [None] * self.capacity
         self.size = 0
         self.keys = []
 
@@ -69,7 +69,7 @@ class Dictionary:
             self.size += 1
             self.keys.append(key)
 
-        self.hashtable[index] = Node(key, hash(key), value)
+        self.hashtable[index] = Dictionary.Node(key, hash(key), value)
 
     def __len__(self) -> int:
         return self.size
@@ -93,8 +93,6 @@ class Dictionary:
             return self[key]
         except KeyError:
             return default
-
-    _NOT_PROVIDED = object()
 
     def pop(
             self,
@@ -136,9 +134,9 @@ class Dictionary:
                 f"got {type(other).__name__}"
             )
 
-    def __iter__(self) -> Dictionary:
+    def __iter__(self) -> Generator:
         self.current_key = 0
         while self.current_key < len(self.keys):
             index = self.get_index(self.keys[self.current_key])
             self.current_key += 1
-            yield self.hashtable[index]
+            yield self.hashtable[index].key
