@@ -1,22 +1,23 @@
 from dataclasses import dataclass
-from typing import Hashable, Any, Iterator
-
-INITIAL_CAPACITY = 8
-RESIZE_THRESHOLD = 2 / 3
-CAPACITY_MULTIPLIER = 2
-
-
-@dataclass
-class Node:
-    key: Hashable
-    value: Any
+from fractions import Fraction
+from typing import Hashable, Any, Iterator, Optional
 
 
 class Dictionary:
+    @dataclass
+    class Node:
+        key: Hashable
+        value: Any
+        hashing: int
+
+    INITIAL_CAPACITY = 8
+    RESIZE_THRESHOLD = Fraction(2, 3)
+    CAPACITY_MULTIPLIER = 2
+
     def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
         self.capacity = capacity
         self.size = 0
-        self.hash_table: list[Node | None] = [None] * self.capacity
+        self.hash_table: list[Dictionary.Node | None] = [None] * self.capacity
 
     def _calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
@@ -31,12 +32,12 @@ class Dictionary:
 
     @property
     def current_max_size(self) -> int:
-        return self.capacity * RESIZE_THRESHOLD
+        return int(self.capacity * self.RESIZE_THRESHOLD)
 
     def resize(self) -> None:
         old_hash_table = self.hash_table
 
-        self.__init__(self.capacity * CAPACITY_MULTIPLIER)
+        self.__init__(self.capacity * self.CAPACITY_MULTIPLIER)
 
         for node in old_hash_table:
             if node is not None:
@@ -44,16 +45,17 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._calculate_index(key)
+        key_hash = hash(key)
 
         if self.hash_table[index] is None:
             if self.size + 1 >= self.current_max_size:
                 self.resize()
-                return self.__setitem__(key, value)
+                index = self._calculate_index(key)
             self.size += 1
 
-        self.hash_table[index] = Node(key, value)
+        self.hash_table[index] = Dictionary.Node(key, value, key_hash)
 
-    def __getitem__(self, key: Hashable) -> Node:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
@@ -73,7 +75,7 @@ class Dictionary:
     def __iter__(self) -> Iterator[tuple[Hashable, Any]]:
         for node in self.hash_table:
             if node is not None:
-                yield (node.key, node.value)
+                yield node.key, node.value
 
     def __len__(self) -> int:
         return self.size
@@ -86,16 +88,74 @@ class Dictionary:
         ]
         return "{" + ", ".join(items) + "}"
 
-    def get(self, key: Hashable, default: Any = None) -> Node:
+    def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
+        """
+        Get the value for the given key.
+        If the key does not exist, return the default value.
+
+        Default value is optional.
+        If it was not provided, method will raise KeyError.
+        """
         try:
             return self[key]
         except KeyError:
-            return default
+            if default is not None:
+                return default
+            else:
+                raise KeyError(
+                    f"Cannot find value for key: {key}"
+                    "and no default value is provided"
+                )
 
-    def pop(self, key: Hashable, default: Any = None) -> Node:
+    def pop(self, key: Hashable) -> Any:
         value = self[key]
         self.__delitem__(key)
         return value
 
-    def update(self, data: Node) -> None:
+    def _update_from_node(self, data: Node) -> None:
+        """
+        Updates the dictionary with a Node object.
+        """
         self.__setitem__(data.key, data.value)
+
+    def _update_from_dict(self, data: dict) -> None:
+        """
+        Updates the dictionary with key-value pairs from builtin dictionary.
+        """
+        for key, value in data.items():
+            self.__setitem__(key, value)
+
+    def _update_from_tuple(self, data: tuple) -> None:
+        """
+        Updates the dictionary with a key-value pair from a tuple.
+        """
+        if len(data) != 2:
+            raise ValueError("Tuple must have 2 elements (key, value)")
+
+        key, value = data
+        self.__setitem__(key, value)
+
+    def update(
+            self,
+            data: list[Node | dict | tuple] | Node | dict | tuple
+    ) -> None:
+        """
+        Updates Dictionary with various types of data.
+        """
+        if isinstance(data, list):
+            for item in data:
+                if isinstance(item, Dictionary.Node):
+                    self._update_from_node(item)
+                if isinstance(item, dict):
+                    self._update_from_dict(item)
+                if isinstance(item, tuple):
+                    self._update_from_tuple(item)
+
+        if isinstance(data, Dictionary.Node):
+            self._update_from_node(data)
+
+        if isinstance(data, dict):
+            self._update_from_dict(data)
+
+        if isinstance(data, tuple):
+            self._update_from_tuple(data)
