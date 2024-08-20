@@ -2,21 +2,21 @@ from typing import Any, Hashable
 from copy import deepcopy
 
 
-class Node:
-    def __init__(self, key: Hashable, value: Any) -> None:
-        self.key = key
-        self.value = value
-
-    def __repr__(self) -> str:
-        return f"Node(key={self.key}, value={self.value})"
-
-
 class Dictionary:
+    class Node:
+        def __init__(self, key: Hashable, value: Any, my_hash: int) -> None:
+            self.key = key
+            self.value = value
+            self.my_hash = my_hash
+
+        def __repr__(self) -> str:
+            return f"Node(key={self.key}, value={self.value})"
+
     def __init__(self) -> None:
         self.__capacity = 8
         self.__load_factor = 2 / 3
         self.__size = 0
-        self.__arr: list[int | Node] = [0 for _ in range(self.__capacity)]
+        self.__arr = [0 for _ in range(self.__capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.__ready_to_resize():
@@ -64,12 +64,12 @@ class Dictionary:
     def __resize(self) -> None:
         self.__capacity = self.__capacity * 2
         self.__size = 0
-        copy_arr: list[int | Node] = deepcopy(self.__arr)
-        self.__arr: list[int | Node] = [0 for _ in range(self.__capacity)]
+        copy_arr: list = deepcopy(self.__arr)
+        self.__arr: list = [0 for _ in range(self.__capacity)]
 
         for values in copy_arr:
             if values != 0:
                 self.__setitem__(values.key, values.value)
 
     def __add_node(self, index: int, key: Any, value: Any) -> None:
-        self.__arr[index] = Node(key, value)
+        self.__arr[index] = Dictionary.Node(key, value, hash(key))
