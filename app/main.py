@@ -8,7 +8,7 @@ class Dictionary:
     class Node:
         key: Hashable
         value: Any
-        hash: int
+        hashed: int
 
     INITIAL_CAPACITY = 8
     RESIZE_THRESHOLD = Fraction(2, 3)
