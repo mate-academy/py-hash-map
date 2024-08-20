@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Hashable, Any
 
-from app.point import Point
-
 
 INITIAL_CAPACITY = 8
 RESIZE_THRESHOLD = 0.62
@@ -98,32 +96,3 @@ class Dictionary:
     def clear(self) -> None:
         self.hash_table = [None] * self.capacity
         self.size = 0
-
-
-if __name__ == "__main__":
-    custom_dict = Dictionary()
-
-    point1 = Point(5.0, 3.2)
-    point2 = Point(1.0, 1.0)
-    point3 = Point(4.0, 4.2)
-
-    custom_dict[point1] = "Point 1"
-    custom_dict[point2] = "Point 2"
-    custom_dict[point3] = "Point 3"
-
-    print(custom_dict[point1])
-    print(custom_dict[point2])
-    print(custom_dict[point3])
-
-    custom_dict.clear()
-    print(len(custom_dict))
-
-# resize
-    for i in range(5):
-        custom_dict[i] = i
-    print(len(custom_dict))
-    print("capacity:", custom_dict.capacity)
-
-    custom_dict[5] = 5
-    print(len(custom_dict))
-    print("capacity:", custom_dict.capacity)
