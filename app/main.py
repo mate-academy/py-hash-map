@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class Dictionary:
 
     def __init__(self) -> None:
@@ -5,7 +8,7 @@ class Dictionary:
         self.hash_table = [None] * 8
         self.length_hash_table = 8
 
-    def update(self):
+    def update(self) -> None:
         self.length_hash_table *= 2
         index = 0
         old_hash = self.hash_table
@@ -15,10 +18,8 @@ class Dictionary:
             print("Data", data)
 
             if data is not None:
-                key = data[0]
-                value = data[1]
+                key, value = data[0], data[1]
                 index = hash(key) % self.length_hash_table
-
 
                 while True:
                     if self.hash_table[index] is None:
@@ -28,18 +29,18 @@ class Dictionary:
                         continue
                     index += 1
 
-                self.hash_table[index]  = [key, value, hash(key)]
+                self.hash_table[index] = [key, value, hash(key)]
 
+    def __setitem__(self, key: Any, value: Any) -> None:
 
-    def __setitem__(self, key, value):
-        # print(f"Key = {key} \nValue = {value} \nHash table= {self.hash_table} \nHash_key = {hash(key)}\n-------")
         if self.length > self.length_hash_table * 2 / 3:
             self.update()
 
         index = hash(key) % self.length_hash_table
-        # print("Index = ", index)
+
         while True:
-            if (self.hash_table[index] is None) or (self.hash_table[index][0] == key):
+            if ((self.hash_table[index] is None)
+                    or (self.hash_table[index][0] == key)):
                 break
             if index == self.length_hash_table - 1:
                 index = 0
@@ -53,14 +54,10 @@ class Dictionary:
 
         self.hash_table[index] = [key, value, hash(key)]
 
-        # print(f"out Key = {self.hash_table[index][0]} \nValue = {self.hash_table[index][1]} \nHash table= {self.hash_table[index]} \nHash_key = {hash(key)}\n-------")
-
-
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any) -> Any:
         index = hash(key) % self.length_hash_table
         try:
             while True:
-                # print(f"Getitem Key = {hash(key)} \n Key in hash table = {self.hash_table[index][2]}")
                 if self.hash_table[index][0] == key:
                     break
                 if index == self.length_hash_table - 1:
@@ -73,5 +70,5 @@ class Dictionary:
         except Exception:
             raise KeyError
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.length
