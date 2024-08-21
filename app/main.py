@@ -81,7 +81,6 @@ class Dictionary:
             print(f"Error! Value with key {key} does not exist")
         return None
 
-
     def clear(self) -> None:
         self.__init__()
 
