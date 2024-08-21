@@ -7,6 +7,7 @@ class Dictionary:
     class Node:
 
         def __init__(self, key: Hashable, value: Any) -> None:
+            self.hash = hash(key)
             self.key = key
             self.value = value
 
@@ -27,7 +28,7 @@ class Dictionary:
         self.__init__(self.capacity * 2)
         for item in old_hash_table:
             if item is not None:
-                self.__setitem__(item.key, item.value)
+                self[item.key] = item.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size + 1 >= self.capacity * Fraction(2, 3):
