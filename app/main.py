@@ -1,7 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Hashable, Any
-
+from typing import Hashable, Any, Iterable
 
 INITIAL_CAPACITY = 8
 RESIZE_THRESHOLD = 2 / 3
@@ -20,7 +19,7 @@ class Dictionary:
         self.size = 0
         self.hash_table: list[Node | None] = [None] * self.capacity
 
-    def _calculate_index(self, key: Any) -> int:
+    def _calculate_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
 
         while (
@@ -44,7 +43,7 @@ class Dictionary:
             if node is not None:
                 self.__setitem__(node.key, node.value)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
@@ -59,7 +58,7 @@ class Dictionary:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
-            raise KeyError(f"Cannot find value for key: {key}")
+            raise KeyError(f"Cannot find key: {key}")
 
         return self.hash_table[index].value
 
@@ -67,7 +66,7 @@ class Dictionary:
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
-            raise KeyError(f"Cannot find value for key: {key}")
+            raise KeyError(f"Cannot find key: {key}")
 
         self.hash_table[index] = None
         self.size -= 1
@@ -87,11 +86,33 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def pop(self, key: Any) -> Any:
-        value = self[key]
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            value = self[key]
+        except KeyError as e:
+            if default:
+                return default
+            raise e
         self.__delitem__(key)
         return value
 
-    def update(self, **kwargs) -> None:
-        for key, value in kwargs.items():
-            self.__setitem__(key, value)
+    def update(self, other: Dictionary | Iterable = None, **kwargs) -> None:
+        if not other:
+            for key, value in kwargs.items():
+                self.__setitem__(key, value)
+        elif isinstance(other, Dictionary):
+            for node in other.hash_table:
+                if node is not None:
+                    self.__setitem__(node.key, node.value)
+        elif isinstance(other, dict):
+            for key, value in other.items():
+                self.__setitem__(key, value)
+        elif isinstance(other, Iterable):
+            for el in other:
+                try:
+                    if len(el) == 2:
+                        self.__setitem__(el[0], el[1])
+                    else:
+                        raise TypeError
+                except TypeError:
+                    raise ValueError("Cannot add this object to a Dictionary")
