@@ -15,17 +15,21 @@ class Dictionary:
     RESIZE_THRESHOLD = Fraction(2, 3)
     CAPACITY_MULTIPLIER = 2
 
-    def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
-        self.capacity = capacity
+    def __init__(self) -> None:
+        self.capacity = self.INITIAL_CAPACITY
         self.size = 0
         self.hash_table: list[Dictionary.Node | None] = [None] * self.capacity
 
     def _calculate_index(self, key: Hashable) -> int:
+        key_hash = hash(key)
         index = hash(key) % self.capacity
 
         while (
             self.hash_table[index] is not None
-            and self.hash_table[index].key != key
+            and (
+                self.hash_table[index].key != key
+                or self.hash_table[index].key_hash != key_hash
+            )
         ):
             index = (index + 1) % self.capacity
 
@@ -37,21 +41,21 @@ class Dictionary:
 
     def _resize(self) -> None:
         old_hash_table = self.hash_table
+        self.capacity *= self.CAPACITY_MULTIPLIER
+        self.hash_table = [None] * self.capacity
+        self.size = 0
 
-        self.__init__(self.capacity * self.CAPACITY_MULTIPLIER)
-
-        for node in old_hash_table:
-            if node is not None:
-                self.__setitem__(node.key, node.value)
+        for node in filter(None, old_hash_table):
+            self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.size + 1 > self.current_max_size:
+            self._resize()
+
         index = self._calculate_index(key)
         key_hash = hash(key)
 
         if self.hash_table[index] is None:
-            if self.size + 1 >= self.current_max_size:
-                self._resize()
-                index = self._calculate_index(key)
             self.size += 1
 
         self.hash_table[index] = Dictionary.Node(key, value, key_hash)
@@ -73,6 +77,9 @@ class Dictionary:
         self.hash_table[index] = None
         self.size -= 1
 
+        if self.size < self.capacity // self.CAPACITY_MULTIPLIER:
+            self._resize()
+
     def __iter__(self) -> Iterator[tuple[Hashable, Any]]:
         for node in self.hash_table:
             if node is not None:
@@ -89,6 +96,18 @@ class Dictionary:
         ]
         return "{" + ", ".join(items) + "}"
 
+    def __eq__(self, other: Dictionary) -> bool:
+        """
+        Compare key, value pairs between two Dictionaries.
+        """
+        if not isinstance(other, Dictionary):
+            return False
+
+        for key, value in self:
+            if other.__getitem__(key) != value:
+                return False
+        return True
+
     def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
         """
         Get the value for the given key.
@@ -100,18 +119,21 @@ class Dictionary:
         try:
             return self[key]
         except KeyError:
-            if default is not None:
+            return default
+
+    def pop(self, key: Hashable, default: Optional[Any] = None) -> Any:
+        try:
+            value = self[key]
+            self.__delitem__(key)
+            return value
+        except KeyError:
+            if default:
                 return default
             else:
                 raise KeyError(
-                    f"Cannot find value for key: {key}"
-                    "and no default value is provided"
+                    f"Cannot delete key: {key} and "
+                    "no default value is provided"
                 )
-
-    def pop(self, key: Hashable) -> Any:
-        value = self[key]
-        self.__delitem__(key)
-        return value
 
     def _update_from_node(self, data: Node) -> None:
         """
@@ -134,50 +156,33 @@ class Dictionary:
         for key, value in data.items():
             self.__setitem__(key, value)
 
-    def _update_from_tuple(self, data: tuple) -> None:
-        """
-        Updates the dictionary with a key-value pair from a tuple.
-        """
-        if len(data) != 2:
-            raise ValueError("Tuple must have 2 elements (key, value)")
-
-        key, value = data
-
-        if not isinstance(key, Hashable):
-            raise TypeError("Key must be Hashable")
-
-        self.__setitem__(key, value)
-
     def update(
             self,
-            data: Dictionary | list[Node | dict | tuple] | Node | dict | tuple
+            data: Dictionary | list[Node | dict] | dict
     ) -> None:
         """
         Updates Dictionary with various types of data.
         """
         if isinstance(data, Dictionary):
             self._update_from_dict(data)
+        elif isinstance(data, dict):
+            self._update_from_builtin_dict(data)
         elif isinstance(data, list):
             for item in data:
                 if isinstance(item, Dictionary.Node):
                     self._update_from_node(item)
                 elif isinstance(item, dict):
                     self._update_from_builtin_dict(item)
-                elif isinstance(item, tuple):
-                    self._update_from_tuple(item)
-
-        elif isinstance(data, Dictionary.Node):
-            self._update_from_node(data)
-        elif isinstance(data, dict):
-            self._update_from_builtin_dict(data)
-        elif isinstance(data, tuple):
-            self._update_from_tuple(data)
+                else:
+                    raise TypeError(f"Unsupported type {type(item)}")
+        else:
+            raise TypeError(f"Unsupported type {type(data)}")
 
     def copy(self) -> Dictionary:
         """
         Creates a copy of the dictionary.
         """
-        new_dict = Dictionary(self.capacity)
+        new_dict = Dictionary()
 
         for node in self.hash_table:
             if node is not None:
@@ -189,14 +194,14 @@ class Dictionary:
         """
         Resets the dictionary to its initial state.
         """
-        self.__init__(self.INITIAL_CAPACITY)
+        self.__init__()
 
     @staticmethod
     def from_keys(keys: Iterable, value: Any = None) -> Dictionary:
         """
         Static method to create a new dictionary from keys.
         """
-        new_dict = Dictionary(Dictionary.INITIAL_CAPACITY)
+        new_dict = Dictionary()
 
         for key in keys:
             new_dict.__setitem__(key, value)
