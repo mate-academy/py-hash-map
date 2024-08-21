@@ -49,16 +49,17 @@ class Dictionary:
         hash_value = hash(key)
         index = self._calculate_index(key, hash_value)
 
-        if self.hash_table[index] is None:
-            if self.size + 1 >= self.current_max_size:
-                self.resize()
-                return self.__setitem__(key, value)
-            self.size += 1
-        elif self.hash_table[index].key == key:
-            self.hash_table[index].value = value
-            return
+        while self.hash_table[index] is not None:
+            if self.hash_table[index].key == key:
+                self.hash_table[index].value = value
+                return
+            index = (index + 1) % self.current_max_size
 
         self.hash_table[index] = Dictionary.Node(key, value, hash_value)
+        self.size += 1
+
+        if self.size >= self.current_max_size:
+            self.resize()
 
     def __getitem__(self, key: Hashable) -> Any:
         hash_value = hash(key)
@@ -73,11 +74,23 @@ class Dictionary:
         hash_value = hash(key)
         index = self._calculate_index(key, hash_value)
 
-        if self.hash_table[index] is None:
-            raise KeyError(f"Cannot find value for key: {key}")
+        while True:
+            if self.hash_table[index] is None:
+                raise KeyError(f"Cannot find value for key: {key}")
+            elif self.hash_table[index].key == key:
+                break
+            index = (index + 1) % self.current_max_size
 
         self.hash_table[index] = None
         self.size -= 1
+
+        next_index = (index + 1) % self.current_max_size
+        while self.hash_table[next_index] is not None:
+            node_to_rehash = self.hash_table[next_index]
+            self.hash_table[next_index] = None
+            self.size -= 1
+            self.__setitem__(node_to_rehash.key, node_to_rehash.value)
+            next_index = (next_index + 1) % self.current_max_size
 
     def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
         try:
@@ -102,4 +115,4 @@ class Dictionary:
         except KeyError:
             if default is not None:
                 return default
-            raise KeyError(f"Cannot find a key: {key}")
+            return None
