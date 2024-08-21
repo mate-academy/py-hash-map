@@ -74,14 +74,16 @@ class Dictionary:
     def __iter__(self) -> Iterator:
         return iter(self.hash_table)
 
-    def get(self, key: Hashable) -> Hashable:
+    def get(self, key: Hashable) -> Hashable | None:
         try:
             return self[key]
         except KeyError:
             print(f"Error! Value with key {key} does not exist")
+        return None
+
 
     def clear(self) -> None:
-        self.__init__(8)
+        self.__init__()
 
     def pop(self, key: Hashable) -> Any | None:
         temp = None
@@ -91,19 +93,19 @@ class Dictionary:
             self.hash_table[index] = None
         return temp
 
-    def keys(self) -> list[Hashable]:
+    def keys(self) -> list[Hashable] | None:
         keys = []
         for node_key in self.hash_table:
             keys.append(node_key.key)
-        return keys
+        return keys if keys else None
 
     def values(self) -> Any:
         values = []
         for node_value in self.hash_table:
             values.append(node_value.value)
-        return values
+        return values if values else None
 
-    def items(self) -> tuple:
+    def items(self) -> tuple[Hashable, Any] | tuple[None, None]:
         return self.keys(), self.values()
 
     def update(self, other: object) -> None:
