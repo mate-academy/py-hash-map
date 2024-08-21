@@ -1,52 +1,70 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
-    def __init__(self, capacity: int = 8) -> None:
-        self.capacity = capacity
+    class Node:
+        def __init__(self, key: Hashable, value: Any) -> None:
+            self.key = key
+            self.value = value
+
+    def __init__(self) -> None:
+        self.capacity = 8
         self.size = 0
-        self.hash_table = [[] for _ in range(self.capacity)]
+        self.load_factor_threshold = 2 / 3
+        self.hash_table: list[tuple | None] = [None] * self.capacity
 
-    def calculate_hash(self, key: Any) -> int:
-        return hash(key) % self.capacity
+    def calculate_hash(self, key: Hashable) -> int:
+        index = hash(key) % self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+        while (
+            self.hash_table[index] is not None
+            and self.hash_table[index].key != key
+        ):
+            index = (index + 1) % self.capacity
+        return index
+
+    @property
+    def current_max_size(self) -> int:
+        return int(self.capacity * self.load_factor_threshold)
+
+    def resize(self) -> None:
+        old_hash_table = self.hash_table
+        self.capacity *= 2
+        self.hash_table = [None] * self.capacity
+        self.size = 0
+
+        for node in old_hash_table:
+            if node is not None:
+                self.__setitem__(node.key, node.value)
+
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self.calculate_hash(key)
-        container = self.hash_table[index]
 
-        for index, (key_in_container, _) in enumerate(container):
-            if key_in_container == key:
-                container[index] = (key, value)
-                return
+        if self.hash_table[index] is None:
+            if self.size + 1 >= self.current_max_size:
+                self.resize()
+                return self.__setitem__(key, value)
+            self.size += 1
 
-        container.append((key, value))
-        self.size += 1
+        self.hash_table[index] = Dictionary.Node(key, value)
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> Any:
         index = self.calculate_hash(key)
-        container = self.hash_table[index]
-
-        for key_in_container, value_in_container in container:
-            if key_in_container == key:
-                return value_in_container
-
-        raise KeyError(f"Key{key} not found.")
+        if self.hash_table[index] is None:
+            raise KeyError(f"No value for key: {key}")
+        return self.hash_table[index].value
 
     def __len__(self) -> int:
         return self.size
 
     def clear(self) -> None:
-        for container in self.hash_table:
-            container.clear()
+        self.hash_table = [None] * self.capacity
         self.size = 0
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self.calculate_hash(key)
-        container = self.hash_table[index]
+        if self.hash_table[index] is None:
+            raise KeyError(f"No value for key: {key}")
 
-        for index, (key_in_container, _) in enumerate(container):
-            if key_in_container == key:
-                del container[index]
-                self.size -= 1
-                return
-        raise KeyError(f"Key: {key} not found.")
+        self.hash_table[index] = None
+        self.size -= 1
