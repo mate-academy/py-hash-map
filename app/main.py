@@ -14,43 +14,50 @@ class Dictionary:
 
     def __init__(self) -> None:
         self.__capacity = 8
-        self.__load_factor = 2 / 3
+        self.__load_factor = 0.667
         self.__size = 0
-        self.__arr = [0 for _ in range(self.__capacity)]
+        self.__hash_table: list[None | Dictionary.Node] = [
+            None for _ in range(self.__capacity)]
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.__ready_to_resize():
+        if self.__size >= self.__capacity * self.__load_factor:
             self.__resize()
 
         index = self.__find_index(key)
-        if self.__arr[index] == 0:
+        if self.__hash_table[index] is None:
             self.__size += 1
-        self.__add_node(index, key, value)
+
+        self.__hash_table[index] = Dictionary.Node(key, value, hash(key))
 
     def __getitem__(self, key: Hashable) -> Any:
         index = self.__find_index(key)
-        if self.__arr[index] == 0:
+        if self.__hash_table[index] is None:
             raise KeyError(f"Value for key '{key}' not found")
 
-        return self.__arr[index].value
+        return self.__hash_table[index].value
 
     def __delitem__(self, key: Hashable) -> None:
         index = self.__find_index(key)
-        if self.__arr[index] == 0:
+        if self.__hash_table[index] is None:
             raise KeyError(f"Value for key '{key}' not found")
 
-        self.__arr[index] = 0
+        self.__hash_table[index] = None
         self.__size -= 1
+
+        for values in self.__hash_table:
+            if values is not None:
+                self.__setitem__(values.key, values.value)
 
     def __len__(self) -> int:
         return self.__size
 
     def __repr__(self) -> str:
-        return str(self.__arr)
+        return str(self.__hash_table)
 
     def __find_index(self, key: Hashable) -> int:
         index = hash(key) % self.__capacity
-        while self.__arr[index] != 0 and self.__arr[index].key != key:
+        while (self.__hash_table[index] is not None
+               and self.__hash_table[index].key != key):
             index = (index + 1) % self.__capacity
 
         return index
@@ -58,18 +65,13 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def __ready_to_resize(self) -> bool:
-        return self.__size >= self.__capacity * self.__load_factor
-
     def __resize(self) -> None:
         self.__capacity = self.__capacity * 2
         self.__size = 0
-        copy_arr: list = deepcopy(self.__arr)
-        self.__arr: list = [0 for _ in range(self.__capacity)]
+        copy_arr: list = deepcopy(self.__hash_table)
+        self.__hash_table: list[None | Dictionary.Node] = [
+            None for _ in range(self.__capacity)]
 
         for values in copy_arr:
-            if values != 0:
+            if values is not None:
                 self.__setitem__(values.key, values.value)
-
-    def __add_node(self, index: int, key: Any, value: Any) -> None:
-        self.__arr[index] = Dictionary.Node(key, value, hash(key))
