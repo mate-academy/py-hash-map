@@ -13,32 +13,31 @@ class Dictionary:
 
         for data in old_hash:
             print("Data", data)
-            try:
+
+            if data is not None:
                 key = data[0]
                 value = data[1]
-            except Exception:
-                print(key)
-            index = hash(key) % self.length_hash_table
-            while True:
-                if self.hash_table[index] is None:
-                    break
-                if index == self.length_hash_table - 1:
-                    index = 0
-                    continue
-                index += 1
+                index = hash(key) % self.length_hash_table
 
 
+                while True:
+                    if self.hash_table[index] is None:
+                        break
+                    if index == self.length_hash_table - 1:
+                        index = 0
+                        continue
+                    index += 1
 
-            self.hash_table[index]  = [key, value, hash(key)]
+                self.hash_table[index]  = [key, value, hash(key)]
 
 
     def __setitem__(self, key, value):
-        print(f"Key = {key} \nValue = {value} \nHash table= {self.hash_table} \nHash_key = {hash(key)}\n-------")
+        # print(f"Key = {key} \nValue = {value} \nHash table= {self.hash_table} \nHash_key = {hash(key)}\n-------")
         if self.length > self.length_hash_table * 2 / 3:
             self.update()
 
         index = hash(key) % self.length_hash_table
-        print("Index = ", index)
+        # print("Index = ", index)
         while True:
             if (self.hash_table[index] is None) or (self.hash_table[index][0] == key):
                 break
@@ -46,17 +45,22 @@ class Dictionary:
                 index = 0
                 continue
             index += 1
+        try:
+            if self.hash_table[index][0] != key:
+                self.length += 1
+        except Exception:
+            self.length += 1
 
         self.hash_table[index] = [key, value, hash(key)]
-        self.length += 1
-        print(f"out Key = {self.hash_table[index][0]} \nValue = {self.hash_table[index][1]} \nHash table= {self.hash_table[index]} \nHash_key = {hash(key)}\n-------")
+
+        # print(f"out Key = {self.hash_table[index][0]} \nValue = {self.hash_table[index][1]} \nHash table= {self.hash_table[index]} \nHash_key = {hash(key)}\n-------")
 
 
     def __getitem__(self, key):
         index = hash(key) % self.length_hash_table
         try:
             while True:
-                print(f"Getitem Key = {hash(key)} \n Key in hash table = {self.hash_table[index][2]}")
+                # print(f"Getitem Key = {hash(key)} \n Key in hash table = {self.hash_table[index][2]}")
                 if self.hash_table[index][0] == key:
                     break
                 if index == self.length_hash_table - 1:
