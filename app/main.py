@@ -21,14 +21,14 @@ class Dictionary:
         self.hash_table: list[Dictionary.Node | None] = [None] * self.capacity
 
     def _calculate_index(self, key: Hashable) -> int:
-        key_hash = hash(key)
-        index = hash(key) % self.capacity
+        _key_hash = hash(key)
+        index = _key_hash % self.capacity
 
         while (
             self.hash_table[index] is not None
             and (
                 self.hash_table[index].key != key
-                or self.hash_table[index].key_hash != key_hash
+                or self.hash_table[index].key_hash != _key_hash
             )
         ):
             index = (index + 1) % self.capacity
@@ -39,9 +39,20 @@ class Dictionary:
     def current_max_size(self) -> int:
         return int(self.capacity * self.RESIZE_THRESHOLD)
 
-    def _resize(self) -> None:
+    def _resize_up(self) -> None:
         old_hash_table = self.hash_table
+
         self.capacity *= self.CAPACITY_MULTIPLIER
+        self.hash_table = [None] * self.capacity
+        self.size = 0
+
+        for node in filter(None, old_hash_table):
+            self.__setitem__(node.key, node.value)
+
+    def _resize_down(self) -> None:
+        old_hash_table = self.hash_table
+
+        self.capacity //= self.CAPACITY_MULTIPLIER
         self.hash_table = [None] * self.capacity
         self.size = 0
 
@@ -50,10 +61,17 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size + 1 > self.current_max_size:
-            self._resize()
+            self._resize_up()
 
         index = self._calculate_index(key)
         key_hash = hash(key)
+
+        if (
+            self.hash_table[index] is not None
+            and self.hash_table[index].key == key
+        ):
+            self.hash_table[index].value = value
+            return
 
         if self.hash_table[index] is None:
             self.size += 1
@@ -69,6 +87,9 @@ class Dictionary:
         return self.hash_table[index].value
 
     def __delitem__(self, key: Hashable) -> None:
+        if self.size - 1 < self.current_max_size // self.CAPACITY_MULTIPLIER:
+            self._resize_down()
+
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
@@ -76,9 +97,6 @@ class Dictionary:
 
         self.hash_table[index] = None
         self.size -= 1
-
-        if self.size < self.capacity // self.CAPACITY_MULTIPLIER:
-            self._resize()
 
     def __iter__(self) -> Iterator[tuple[Hashable, Any]]:
         for node in self.hash_table:
@@ -103,9 +121,14 @@ class Dictionary:
         if not isinstance(other, Dictionary):
             return False
 
-        for key, value in self:
-            if other.__getitem__(key) != value:
-                return False
+        if self.size != other.size:
+            return False
+
+        for node in self.hash_table:
+            if node is not None:
+                if other.__getitem__(node.key) != node.value:
+                    return False
+
         return True
 
     def get(self, key: Hashable, default: Optional[Any] = None) -> Any:
@@ -121,25 +144,19 @@ class Dictionary:
         except KeyError:
             return default
 
-    def pop(self, key: Hashable, default: Optional[Any] = None) -> Any:
+    def pop(self, key: Hashable, default: Optional[Any] = object()) -> Any:
         try:
             value = self[key]
             self.__delitem__(key)
             return value
         except KeyError:
-            if default:
+            if isinstance(default, object):
                 return default
             else:
                 raise KeyError(
                     f"Cannot delete key: {key} and "
                     "no default value is provided"
                 )
-
-    def _update_from_node(self, data: Node) -> None:
-        """
-        Updates the dictionary with a Node object.
-        """
-        self.__setitem__(data.key, data.value)
 
     def _update_from_dict(self, data: Dictionary) -> None:
         """
@@ -158,7 +175,7 @@ class Dictionary:
 
     def update(
             self,
-            data: Dictionary | list[Node | dict] | dict
+            data: Dictionary | list[dict] | dict
     ) -> None:
         """
         Updates Dictionary with various types of data.
@@ -169,9 +186,7 @@ class Dictionary:
             self._update_from_builtin_dict(data)
         elif isinstance(data, list):
             for item in data:
-                if isinstance(item, Dictionary.Node):
-                    self._update_from_node(item)
-                elif isinstance(item, dict):
+                if isinstance(item, dict):
                     self._update_from_builtin_dict(item)
                 else:
                     raise TypeError(f"Unsupported type {type(item)}")
