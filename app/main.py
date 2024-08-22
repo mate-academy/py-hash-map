@@ -1,18 +1,17 @@
 from collections.abc import Hashable
+from fractions import Fraction
 from typing import Any
-
-
-class Node:
-    def __init__(self, key: Hashable, value: Any) -> None:
-        self.key = key
-        self.value = value
-        self.hash = hash(key)
-        self.next = None
 
 
 class Dictionary:
     INITIAL_CAPACITY = 8
-    LOAD_FACTOR = 2 / 3
+    LOAD_FACTOR = Fraction(2, 3)
+
+    class Node:
+        def __init__(self, key: Hashable, value: Any) -> None:
+            self.key = key
+            self.value = value
+            self.hash = hash(key)
 
     def __init__(self) -> None:
         self.load_factor = self.LOAD_FACTOR
@@ -30,40 +29,30 @@ class Dictionary:
         self.size = 0
 
         for node in old_table:
-            while node:
+            if node is not None:
                 self.__setitem__(node.key, node.value)
-                node = node.next
+
+    def _insert(self, key: Hashable, value: Any) -> None:
+        index = self._hash(key)
+        while self.table[index] is not None:
+            if self.table[index].key == key:
+                self.table[index].value = value
+                return
+            index = (index + 1) % self.capacity
+        self.table[index] = self.Node(key, value)
+        self.size += 1
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size >= self.capacity * self.load_factor:
             self._resize()
+        self._insert(key, value)
 
+    def __getitem__(self, key: Hashable) -> Any:
         index = self._hash(key)
-        node = self.table[index]
-
-        if node is None:
-            self.table[index] = Node(key, value)
-            self.size += 1
-        else:
-            while node:
-                if node.key == key:
-                    node.value = value
-                    return
-                if node.next is None:
-                    break
-                node = node.next
-            node.next = Node(key, value)
-            self.size += 1
-
-    def __getitem__(self, key: Hashable) -> None:
-        index = self._hash(key)
-        node = self.table[index]
-
-        while node:
-            if node.key == key:
-                return node.value
-            node = node.next
-
+        while self.table[index] is not None:
+            if self.table[index].key == key:
+                return self.table[index].value
+            index = (index + 1) % self.capacity
         raise KeyError(f"Key '{key}' not found")
 
     def __len__(self) -> int:
