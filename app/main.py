@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Hashable, Any, Iterator
+from typing import Hashable, Any, Iterator, Optional
 
 
 class Dictionary:
@@ -80,13 +80,15 @@ class Dictionary:
     def clear(self) -> None:
         self.__init__()
 
-    def pop(self, key: Hashable) -> Any | None:
+    def pop(self, key: Hashable, default: Optional[Any]) -> Any | None:
         temp = None
         index = self._calculate_index(key)
         if self.hash_table[index]:
             temp = self.hash_table[index].value
             self.hash_table[index] = None
-        return temp
+        if temp:
+            return temp
+        return default if default else temp
 
     def keys(self) -> list[Hashable] | None:
         keys = []
@@ -104,12 +106,15 @@ class Dictionary:
 
     def items(self) -> list[tuple[Hashable, Any]] | None:
         items_ = []
-        for key, value in self.values(), self.items():
-            if key and value:
+        for key, value in self.keys(), self.values():
+            if key:
                 items_.append((key, value))
         return items_ if items_ else None
 
-    def update(self, other: object) -> None:
+    def update(self, other: Optional[object]) -> None:
+        if not other:
+            return
+
         if isinstance(other, Dictionary) or type(other) is dict:
             for key, value in other.items():
                 self.hash_table[key] = value
