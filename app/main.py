@@ -1,4 +1,4 @@
-from typing import Any, Optional, List, Tuple, Iterator, Dict
+from typing import Any, Hashable, Optional, List, Tuple, Iterator, Dict
 
 
 class Dictionary:
@@ -11,10 +11,10 @@ class Dictionary:
         self.load_factor: float = load_factor
         self.size: int = 0
         self.table: (
-            List[Optional[List[Tuple[int, Any, Any]]]]
+            List[Optional[List[Tuple[int, Hashable, Any]]]]
         ) = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size / self.capacity >= self.load_factor:
             self._resize()
         index = hash(key) % self.capacity
@@ -27,7 +27,7 @@ class Dictionary:
         self.table[index].append((hash(key), key, value))
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         if self.table[index] is not None:
             for h, k, v in self.table[index]:
@@ -35,7 +35,7 @@ class Dictionary:
                     return v
         raise KeyError(f"Key {key} not found")
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self.capacity
         if self.table[index] is not None:
             for i, (h, k, v) in enumerate(self.table[index]):
@@ -53,13 +53,13 @@ class Dictionary:
         self.table = [None] * self.capacity
         self.size = 0
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: Any, default: Any = None) -> Any:
+    def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
             value = self[key]
             del self[key]
@@ -69,7 +69,7 @@ class Dictionary:
                 return default
             raise
 
-    def update(self, other: Dict[Any, Any]) -> None:
+    def update(self, other: Dict[Hashable, Any]) -> None:
         for key, value in other.items():
             self[key] = value
 
