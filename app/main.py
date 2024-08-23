@@ -1,3 +1,4 @@
+from fractions import Fraction
 from typing import Any, Hashable
 
 
@@ -10,8 +11,8 @@ class Dictionary:
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
-        self.load_factor_threshold = 2 / 3
-        self.hash_table: list[tuple | None] = [None] * self.capacity
+        self.load_factor_threshold = Fraction(2, 3)
+        self.hash_table: list[Dictionary.Node | None] = [None] * self.capacity
 
     def calculate_hash(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
@@ -35,15 +36,15 @@ class Dictionary:
 
         for node in old_hash_table:
             if node is not None:
-                self.__setitem__(node.key, node.value)
+                self[node.key] = node.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.size >= self.capacity * self.load_factor_threshold:
+            self.resize()
+
         index = self.calculate_hash(key)
 
         if self.hash_table[index] is None:
-            if self.size + 1 >= self.current_max_size:
-                self.resize()
-                return self.__setitem__(key, value)
             self.size += 1
 
         self.hash_table[index] = Dictionary.Node(key, value)
@@ -68,3 +69,7 @@ class Dictionary:
 
         self.hash_table[index] = None
         self.size -= 1
+
+        for values in self.hash_table:
+            if values is not None:
+                self.__setitem__(values.key, values.value)
