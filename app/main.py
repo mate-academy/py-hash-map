@@ -44,7 +44,7 @@ class Dictionary:
     def __getitem__(self, key: Any) -> Any:
         index = self._find_index(key)
         if self.table[index] is None:
-            raise KeyError(f'Cannot find value for key: {key}')
+            raise KeyError(f"Cannot find value for key: {key}")
         return self.table[index].value
 
     def __len__(self) -> int:
