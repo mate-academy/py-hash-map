@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Hashable, Any, Iterator, Optional
+from typing import Hashable, Any, Iterator, Optional, Iterable
 
 
 class Dictionary:
@@ -58,17 +58,21 @@ class Dictionary:
     def __delitem__(self, key: Hashable) -> None:
         index = self._calculate_index(key)
 
-        if self.hash_table[index] is None:
+        if not self.hash_table[index]:
             raise KeyError(f"Cannot find value for key: {key}")
 
         self.hash_table[index] = None
         self.size -= 1
+        if self.size <= self.current_max_size // 2:
+            self.capacity //= 4
+            self._resize()
 
     def __len__(self) -> int:
         return self.size
 
     def __iter__(self) -> Iterator:
-        return iter(self.hash_table)
+        generate = iter(self.hash_table)
+        yield next(generate)
 
     def get(self, key: Hashable) -> Hashable | None:
         try:
@@ -78,47 +82,51 @@ class Dictionary:
         return None
 
     def clear(self) -> None:
-        self.__init__()
+        self.capacity = 8
+        self.size = 0
+        self.hash_table: list[Dictionary.Node | None] = [None] * 8
 
     def pop(self, key: Hashable, default: Optional[Any]) -> Any | None:
         temp = None
         index = self._calculate_index(key)
-        if self.hash_table[index]:
+        try:
             temp = self.hash_table[index].value
             self.hash_table[index] = None
-        if temp:
+        except KeyError as e:
+            if default:
+                return default
+            else:
+                raise KeyError(f"{e}")
+        else:
             return temp
-        return default if default else temp
 
     def keys(self) -> list[Hashable] | None:
-        keys = []
-        for node_key in self.hash_table:
-            if node_key:
-                keys.append(node_key.key)
+        keys = [node_key.key for node_key in self.hash_table if node_key]
         return keys if keys else None
 
     def values(self) -> list[Any] | None:
-        values = []
-        for node_value in self.hash_table:
-            if node_value:
-                values.append(node_value.value)
+        values = [node_val.value for node_val in self.hash_table if node_val]
         return values if values else None
 
     def items(self) -> list[tuple[Hashable, Any]] | None:
         items_ = []
-        for key, value in self.keys(), self.values():
+        for key, value in zip(self.keys(), self.values()):
             if key:
                 items_.append((key, value))
         return items_ if items_ else None
 
-    def update(self, other: Optional[object]) -> None:
+    def update(self, other: Optional[Iterable]) -> None:
         if not other:
             return
 
         if isinstance(other, Dictionary) or type(other) is dict:
             for key, value in other.items():
                 self.hash_table[key] = value
-        elif type(other) is Dictionary.Node:
-            self.hash_table[other.key] = other.value
+        elif all(
+                type(value[0]) is Hashable
+                and type(value[1]) is Any for value in other
+        ):
+            for i in range(len(other)):
+                self.hash_table[other[i][0]] = other[i][1]
         else:
             raise TypeError("Update data must be Dictionary!")
