@@ -60,9 +60,6 @@ class Dictionary:
             self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.size + 1 > self.current_max_size:
-            self._resize_up()
-
         index = self._calculate_index(key)
         key_hash = hash(key)
 
@@ -78,6 +75,9 @@ class Dictionary:
 
         self.hash_table[index] = Dictionary.Node(key, value, key_hash)
 
+        if self.size > self.current_max_size:
+            self._resize_up()
+
     def __getitem__(self, key: Hashable) -> Any:
         index = self._calculate_index(key)
 
@@ -87,9 +87,6 @@ class Dictionary:
         return self.hash_table[index].value
 
     def __delitem__(self, key: Hashable) -> None:
-        if self.size - 1 < self.current_max_size // self.CAPACITY_MULTIPLIER:
-            self._resize_down()
-
         index = self._calculate_index(key)
 
         if self.hash_table[index] is None:
@@ -97,6 +94,9 @@ class Dictionary:
 
         self.hash_table[index] = None
         self.size -= 1
+
+        if self.size - 1 < self.current_max_size // self.CAPACITY_MULTIPLIER:
+            self._resize_down()
 
     def __iter__(self) -> Iterator[tuple[Hashable, Any]]:
         for node in self.hash_table:
@@ -188,10 +188,6 @@ class Dictionary:
             for item in data:
                 if isinstance(item, dict):
                     self._update_from_builtin_dict(item)
-                else:
-                    raise TypeError(f"Unsupported type {type(item)}")
-        else:
-            raise TypeError(f"Unsupported type {type(data)}")
 
     def copy(self) -> Dictionary:
         """
@@ -209,7 +205,9 @@ class Dictionary:
         """
         Resets the dictionary to its initial state.
         """
-        self.__init__()
+        self.capacity = self.INITIAL_CAPACITY
+        self.size = 0
+        self.hash_table: list[Dictionary.Node | None] = [None] * self.capacity
 
     @staticmethod
     def from_keys(keys: Iterable, value: Any = None) -> Dictionary:
