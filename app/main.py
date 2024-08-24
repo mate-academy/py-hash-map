@@ -13,7 +13,7 @@ class Dictionary:
         key: Hashable
         value: Any
 
-        def __post_init__(self):
+        def __post_init__(self) -> None:
             self.key_hash = hash(self.key)
 
     def __init__(self) -> None:
