@@ -32,7 +32,10 @@ class Dictionary:
 
     def _resize(self, multiplier: str) -> None:
         old_hash_table = self.hash_table
-        self.capacity //= 2 if multiplier == "resize down" else 0.5
+        if multiplier == "resize down":
+            self.capacity //= 2
+        else:
+            self.capacity *= 2
         self.size = 0
         self.hash_table = [None] * self.capacity
         for node in old_hash_table:
