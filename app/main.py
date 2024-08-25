@@ -41,7 +41,6 @@ class Dictionary:
 
     def resize(self) -> None:
         old_buckets = self.buckets
-        old_capacity = self.capacity
         self.capacity *= self.INCREASE_MULTIPLIER
         self.buckets = [None] * self.capacity
         self.size = 0
@@ -77,9 +76,11 @@ class Dictionary:
         self.rehash()
 
     def rehash(self) -> None:
-            old_buckets = [bucket for bucket in self.buckets if bucket is not None]
-            self.buckets = [None] * self.capacity
-            self.size = 0
+        old_buckets = [
+            bucket for bucket in self.buckets if bucket is not None
+        ]
+        self.buckets = [None] * self.capacity
+        self.size = 0
 
-            for node in old_buckets:
-                self.__setitem__(node.key, node.value)
+        for node in old_buckets:
+            self.__setitem__(node.key, node.value)
