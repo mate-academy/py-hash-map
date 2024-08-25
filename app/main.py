@@ -30,9 +30,9 @@ class Dictionary:
     def current_max_size(self) -> Fraction:
         return self.capacity * Fraction(2 , 3)
 
-    def _resize(self, multiplier: str) -> None:
+    def _resize(self, resize_up: bool = True) -> None:
         old_hash_table = self.hash_table
-        if multiplier == "resize down":
+        if not resize_up:
             self.capacity //= 2
         else:
             self.capacity *= 2
@@ -44,7 +44,7 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size > self.current_max_size:
-            self._resize("resize up")
+            self._resize()
         index = self._calculate_index(key)
         if not self.hash_table[index]:
             self.size += 1
@@ -67,8 +67,7 @@ class Dictionary:
         self.hash_table[index] = None
         self.size -= 1
         if self.size <= self.current_max_size // 2:
-            self.capacity //= 4
-            self._resize("resize down")
+            self._resize(False)
 
     def __len__(self) -> int:
         return self.size
@@ -76,10 +75,16 @@ class Dictionary:
     def __iter__(self) -> Iterator:
         return (node.key for node in self.hash_table if node is not None)
 
-    def get(self, key: Hashable = None) -> Hashable | None:
+    def get(
+            self,
+            key: Hashable,
+            default: Optional[Any] = None
+    ) -> Hashable | None:
         try:
             return self[key]
         except KeyError:
+            if default:
+                return default
             print(f"Error! Value with key {key} does not exist")
         return None
 
@@ -88,13 +93,17 @@ class Dictionary:
         self.size = 0
         self.hash_table: list[Dictionary.Node | None] = [None] * 8
 
-    def pop(self, key: Hashable, default: Optional[Any]) -> Any | None:
+    def pop(
+            self,
+            key: Hashable,
+            default: Optional[object] = None
+    ) -> Any | None:
         temp = None
         index = self._calculate_index(key)
         try:
             temp = self.hash_table[index].value
             self.hash_table[index] = None
-        except KeyError as e:
+        except AttributeError as e:
             if default:
                 return default
             else:
@@ -125,5 +134,5 @@ class Dictionary:
             for key, value in other.items():
                 self.hash_table[key] = value
         else:
-            for i in range(len(other)):
-                self.hash_table[other[i][0]] = other[i][1]
+            for index, value in enumerate(other):
+                self.hash_table[value[0]] = value[1]
