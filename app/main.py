@@ -30,9 +30,9 @@ class Dictionary:
     def current_max_size(self) -> Fraction:
         return self.capacity * Fraction(2 , 3)
 
-    def _resize(self) -> None:
+    def _resize(self, multiplier: str) -> None:
         old_hash_table = self.hash_table
-        self.capacity *= 2
+        self.capacity //= 2 if multiplier == "resize down" else 0.5
         self.size = 0
         self.hash_table = [None] * self.capacity
         for node in old_hash_table:
@@ -41,13 +41,13 @@ class Dictionary:
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size > self.current_max_size:
-            self._resize()
+            self._resize("resize up")
         index = self._calculate_index(key)
         if not self.hash_table[index]:
             self.size += 1
         self.hash_table[index] = Dictionary.Node(key, hash(key), value)
 
-    def __getitem__(self, item: Any) -> Any:
+    def __getitem__(self, item: Hashable) -> Any:
         index = self._calculate_index(item)
 
         if self.hash_table[index] is None:
@@ -65,16 +65,15 @@ class Dictionary:
         self.size -= 1
         if self.size <= self.current_max_size // 2:
             self.capacity //= 4
-            self._resize()
+            self._resize("resize down")
 
     def __len__(self) -> int:
         return self.size
 
     def __iter__(self) -> Iterator:
-        generate = iter(self.hash_table)
-        yield next(generate)
+        return (node.key for node in self.hash_table if node is not None)
 
-    def get(self, key: Hashable) -> Hashable | None:
+    def get(self, key: Hashable = None) -> Hashable | None:
         try:
             return self[key]
         except KeyError:
@@ -122,11 +121,6 @@ class Dictionary:
         if isinstance(other, Dictionary) or type(other) is dict:
             for key, value in other.items():
                 self.hash_table[key] = value
-        elif all(
-                type(value[0]) is Hashable
-                and type(value[1]) is Any for value in other
-        ):
+        else:
             for i in range(len(other)):
                 self.hash_table[other[i][0]] = other[i][1]
-        else:
-            raise TypeError("Update data must be Dictionary!")
