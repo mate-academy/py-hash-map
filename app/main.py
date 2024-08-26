@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Hashable
+from fractions import Fraction
+from typing import Any, Hashable, Optional, Iterable
 
 
 class Dictionary:
     _DEFAULT_INITIAL_CAPACITY = 8
-    _DEFAULT_LOAD_FACTOR = 2 / 3
+    _DEFAULT_LOAD_FACTOR = Fraction(2, 3)
     _DEFAULT_CAPACITY_MULTIPLIER = 2
 
     @dataclass
     class Node:
         key: Hashable
+        key_hash: int
         value: Any
 
     def __init__(
@@ -56,8 +58,8 @@ class Dictionary:
         if not self._hash_table[index]:
             if self._size + 1 >= self._threshold:
                 self._resize_hash_table()
-                return self.__setitem__(key, value)
-            self._hash_table[index] = Dictionary.Node(key, value)
+                index = self._calculate_index(key)
+            self._hash_table[index] = Dictionary.Node(key, hash(key), value)
             self._size += 1
         else:
             self._hash_table[index].value = value
@@ -72,17 +74,16 @@ class Dictionary:
         self._size -= 1
 
     def __iter__(self) -> Dictionary:
-        self._current_iteration = 0
+        def generator() -> Hashable:
+            for item in self._hash_table:
+                if item:
+                    yield item.key
+
+        self._generator = generator()
         return self
 
-    def __next__(self) -> (Hashable, Any):
-        while self._current_iteration < self._capacity:
-            item = self._hash_table[self._current_iteration]
-            self._current_iteration += 1
-            if item:
-                return item.key, item.value
-
-        raise StopIteration
+    def __next__(self) -> Hashable:
+        return next(self._generator)
 
     def __len__(self) -> int:
         return self._size
@@ -107,18 +108,22 @@ class Dictionary:
         self._size = 0
         self._hash_table = [None] * self._capacity
 
-    def get(self, key: Hashable, default_value: Any = None) -> Any:
+    def get(self, key: Hashable, default_value: Optional[Any] = None) -> Any:
         try:
             return self[key]
         except KeyError:
+            if not default_value:
+                raise
             return default_value
 
-    def pop(self, key: Hashable, default_value: Any = None) -> Any:
+    def pop(self, key: Hashable, default_value: Optional[Any] = None) -> Any:
         try:
             item = self[key]
             del self[key]
             return item.value
         except KeyError:
+            if not default_value:
+                raise
             return default_value
 
     def keys(self) -> list[Hashable]:
@@ -142,7 +147,17 @@ class Dictionary:
             if isinstance(item, Dictionary.Node)
         ]
 
-    def update(self, other: Dictionary = None) -> None:
-        if other:
+    def update(
+            self,
+            other: Dictionary | Iterable[Hashable, Any] = None
+    ) -> None:
+        if isinstance(other, Dictionary):
             for key, value in other.items():
                 self[key] = value
+        elif isinstance(other, Iterable):
+            for key, value in other:
+                self[key] = value
+        else:
+            raise TypeError(
+                "Expected Dictionary or iterable of key-value pairs."
+            )
