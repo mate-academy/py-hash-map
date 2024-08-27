@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Hashable, Any, Optional, List
 from fractions import Fraction
 
+
 class Dictionary:
     CAPACITY = 8
     INCREASE_MULTIPLIER = 2
