@@ -46,4 +46,4 @@ class Dictionary:
             if self.dictionary[index] != -1:
                 if self.dictionary[index][0] == key:
                     return self.dictionary[index][2]
-        raise KeyError('There is no such key.')
+        raise KeyError("There is no such key.")
