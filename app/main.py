@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Any, Hashable, Optional, Iterable
+from typing import Any, Hashable, Optional, Iterator, Iterable
 
 
 class Dictionary:
-    _DEFAULT_INITIAL_CAPACITY = 8
-    _DEFAULT_LOAD_FACTOR = Fraction(2, 3)
-    _DEFAULT_CAPACITY_MULTIPLIER = 2
+    _INITIAL_CAPACITY = 8
+    _LOAD_FACTOR = Fraction(2, 3)
+    _CAPACITY_MULTIPLIER = 2
+
+    _sentinel = object()
 
     @dataclass
     class Node:
@@ -16,16 +18,9 @@ class Dictionary:
         key_hash: int
         value: Any
 
-    def __init__(
-            self,
-            initial_capacity: int = _DEFAULT_INITIAL_CAPACITY,
-            load_factor: float = _DEFAULT_LOAD_FACTOR,
-            capacity_multiplier: int | float = _DEFAULT_CAPACITY_MULTIPLIER
-    ) -> None:
-        self._capacity = initial_capacity
-        self._load_factor = load_factor
-        self._threshold = int(initial_capacity * load_factor)
-        self._capacity_multiplier = capacity_multiplier
+    def __init__(self, ) -> None:
+        self._capacity = self._INITIAL_CAPACITY
+        self._threshold = int(self._capacity * self._LOAD_FACTOR)
         self._size = 0
         self._hash_table: list[Dictionary.Node | None] = (
             [None] * self._capacity
@@ -73,17 +68,22 @@ class Dictionary:
         self._hash_table[index] = None
         self._size -= 1
 
-    def __iter__(self) -> Dictionary:
-        def generator() -> Hashable:
-            for item in self._hash_table:
-                if item:
-                    yield item.key
+        next_index = (index + 1) % self._capacity
+        while self._hash_table[next_index] is not None:
+            item = self._hash_table[next_index]
+            self._hash_table[next_index] = None
+            self._size -= 1
 
-        self._generator = generator()
-        return self
+            reindex = self._calculate_index(item.key)
+            while self._hash_table[reindex]:
+                reindex = (reindex + 1) % self._capacity
+            self._hash_table[reindex] = item
+            self._size += 1
 
-    def __next__(self) -> Hashable:
-        return next(self._generator)
+            next_index = (next_index + 1) % self._capacity
+
+    def __iter__(self) -> Iterator[Hashable]:
+        return (item.key for item in self._hash_table if item)
 
     def __len__(self) -> int:
         return self._size
@@ -94,10 +94,11 @@ class Dictionary:
     def _resize_hash_table(self) -> None:
         previous_hash_table = self._hash_table
 
-        self.__init__(
-            self._capacity * self._capacity_multiplier,
-            self._load_factor,
-            self._capacity_multiplier
+        self._capacity *= self._CAPACITY_MULTIPLIER
+        self._threshold = int(self._capacity * self._LOAD_FACTOR)
+        self._size = 0
+        self._hash_table: list[Dictionary.Node | None] = (
+            [None] * self._capacity
         )
 
         for node in previous_hash_table:
@@ -108,21 +109,23 @@ class Dictionary:
         self._size = 0
         self._hash_table = [None] * self._capacity
 
-    def get(self, key: Hashable, default_value: Optional[Any] = None) -> Any:
+    def get(self, key: Hashable,
+            default_value: Optional[Any] = _sentinel) -> Any:
         try:
             return self[key]
         except KeyError:
-            if not default_value:
+            if default_value is self._sentinel:
                 raise
             return default_value
 
-    def pop(self, key: Hashable, default_value: Optional[Any] = None) -> Any:
+    def pop(self, key: Hashable,
+            default_value: Optional[Any] = _sentinel) -> Any:
         try:
             item = self[key]
             del self[key]
             return item.value
         except KeyError:
-            if not default_value:
+            if default_value is self._sentinel:
                 raise
             return default_value
 
@@ -154,10 +157,11 @@ class Dictionary:
         if isinstance(other, Dictionary):
             for key, value in other.items():
                 self[key] = value
-        elif isinstance(other, Iterable):
-            for key, value in other:
-                self[key] = value
         else:
-            raise TypeError(
-                "Expected Dictionary or iterable of key-value pairs."
-            )
+            try:
+                for key, value in other:
+                    self[key] = value
+            except (TypeError, ValueError) as e:
+                raise TypeError(
+                    "Expected Dictionary or iterable of key-value pairs."
+                ) from e
