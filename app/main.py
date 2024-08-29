@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,7 +8,7 @@ class Dictionary:
         self.dictionary = [-1 for _ in range(8)]
         self.insert_elem = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_code = hash(key)
         index = hash_code % self.length
         if self.dictionary[index] == -1:
@@ -38,7 +38,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.insert_elem
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_code = hash(key)
         index = hash_code % self.length
         for i in range(self.length):
