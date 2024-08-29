@@ -44,29 +44,27 @@ class Dictionary:
                 index = 0
                 continue
             index += 1
-        try:
-            if self.hash_table[index][0] != key:
-                self.length += 1
-        except Exception:
+
+        if self.hash_table[index] is None:
             self.length += 1
 
         self.hash_table[index] = [key, value, hash(key)]
 
     def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.length_hash_table
-        try:
-            while True:
-                if self.hash_table[index][0] == key:
-                    break
-                if index == self.length_hash_table - 1:
-                    index = 0
-                    continue
-                index += 1
 
-            return self.hash_table[index][1]
-
-        except Exception:
+        if self.hash_table[index] is None:
             raise KeyError
+
+        while True:
+            print(self.hash_table[index][0])
+            if self.hash_table[index][0] == key:
+                break
+            if index == self.length_hash_table - 1:
+                index = 0
+                continue
+            index += 1
+        return self.hash_table[index][1]
 
     def __len__(self) -> int:
         return self.length
