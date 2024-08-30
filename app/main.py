@@ -7,6 +7,10 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.dictionary = [-1 for _ in range(8)]
         self.insert_elem = 0
+    
+    def resize(self) -> None:
+        self.dictionary += [-1 for _ in range(self.length)]
+        self.length *= 2
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_code = hash(key)
@@ -32,8 +36,7 @@ class Dictionary:
                     self.dictionary[index] = (key, hash_code, value)
                     need_location = False
         if self.insert_elem / self.length > self.load_factor:
-            self.dictionary += [-1 for _ in range(self.length)]
-            self.length *= 2
+            self.resize()
 
     def __len__(self) -> int:
         return self.insert_elem
@@ -47,3 +50,4 @@ class Dictionary:
                 if self.dictionary[index][0] == key:
                     return self.dictionary[index][2]
         raise KeyError("There is no such key.")
+
