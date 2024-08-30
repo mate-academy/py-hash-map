@@ -30,15 +30,17 @@ class Dictionary:
 
         for node in old_hash_table:
             if node is not None:
-                self.__setitem__(node.key, node.value)
+                self[node.key] = node.value
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        if self.size + 1 >= self.capacity * (2 / 3):
+            self.resize()
+
         index = self._find_index(key)
+
         if self.table[index] is None:
-            if self.size + 1 >= self.capacity * (2 / 3):
-                self.resize()
-                index = self._find_index(key)
             self.size += 1
+
         self.table[index] = self.Node(key, value)
 
     def __getitem__(self, key: Any) -> Any:
