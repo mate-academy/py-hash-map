@@ -7,7 +7,7 @@ class Dictionary:
         self.load_factor = 2 / 3
         self.dictionary = [-1 for _ in range(8)]
         self.insert_elem = 0
-    
+
     def resize(self) -> None:
         self.dictionary += [-1 for _ in range(self.length)]
         self.length *= 2
@@ -50,4 +50,3 @@ class Dictionary:
                 if self.dictionary[index][0] == key:
                     return self.dictionary[index][2]
         raise KeyError("There is no such key.")
-
