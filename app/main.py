@@ -18,7 +18,7 @@ class Dictionary:
         key_hash: int
         value: Any
 
-    def __init__(self, ) -> None:
+    def __init__(self) -> None:
         self._capacity = self._INITIAL_CAPACITY
         self._threshold = int(self._capacity * self._LOAD_FACTOR)
         self._size = 0
