@@ -10,9 +10,7 @@ class Dictionary:
         self.length = 0
 
     def __repr__(self) -> str:
-        return f"{list(
-            filter(lambda x: x is not None, self.hash_table)
-        )}"
+        return f"{list(filter(lambda x: x is not None, self.hash_table))}"
 
     def __setitem__(self,
                     key: Union[str, int, tuple, bool, float],
