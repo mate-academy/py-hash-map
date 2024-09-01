@@ -69,7 +69,9 @@ class Dictionary:
     ) -> None:
         if len(self) == int(self.LOAD_FACTOR * len(self.hash_table)):
             self.resize_hash_table()
-            hash_cell = self.get_free_cell(hash_cell)
+            hash_cell = hash(key) % len(self.hash_table)
+            if self.hash_table[hash_cell]:
+                hash_cell = self.get_free_cell(hash_cell)
         self.hash_table[hash_cell] = ItemDictionary(key, value)
         self.length += 1
 
