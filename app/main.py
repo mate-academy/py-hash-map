@@ -8,6 +8,11 @@ class Dictionary:
         self.hash_table = [None] * 8
         self.length_hash_table = 8
 
+    @staticmethod
+    def index_table(key: Hashable, table: int) -> int:
+        if table != 0:
+            return hash(key) % table
+
     def _resize(self) -> None:
         self.length_hash_table *= 2
         index = 0
@@ -17,7 +22,7 @@ class Dictionary:
         for data in old_hash:
             if data is not None:
                 key, value = data[0], data[1]
-                index = hash(key) % self.length_hash_table
+                index = self.index_table(key, self.length_hash_table)
 
                 while True:
                     if self.hash_table[index] is None:
@@ -34,7 +39,7 @@ class Dictionary:
         if self.length > self.length_hash_table * 2 / 3:
             self._resize()
 
-        index = hash(key) % self.length_hash_table
+        index = self.index_table(key, self.length_hash_table)
 
         while True:
             if ((self.hash_table[index] is None)
@@ -51,7 +56,7 @@ class Dictionary:
         self.hash_table[index] = [key, value, hash(key)]
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = hash(key) % self.length_hash_table
+        index = self.index_table(key, self.length_hash_table)
 
         if self.hash_table[index] is None:
             raise KeyError
