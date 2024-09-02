@@ -9,12 +9,26 @@ class Dictionary:
         self.insert_elem = 0
 
     def resize(self) -> None:
-        self.dictionary += [None for _ in range(self.length)]
+        new_dictionary = [None for _ in range(2 * self.length)]
         self.length *= 2
+        for element in self.dictionary:
+            if element:
+                index = element[1] % self.length
+                if not new_dictionary[index]:
+                    new_dictionary[index] = element
+                else:
+                    need_space = True
+                    while need_space:
+                        index = (index + 1) % self.length
+                        if not new_dictionary[index]:
+                            new_dictionary[index] = element
+                            need_space = False
+        self.dictionary = new_dictionary
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_code = hash(key)
         index = hash_code % self.length
+        
         if self.dictionary[index] is None:
             self.dictionary[index] = (key, hash_code, value)
             self.insert_elem += 1
@@ -26,7 +40,7 @@ class Dictionary:
             need_location = True
             while need_location:
                 index = (index + 1) % self.length
-                if self.dictionary[index] is None:
+                if not self.dictionary[index]:
                     self.dictionary[index] = (key, hash_code, value)
                     need_location = False
                     self.insert_elem += 1
