@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,11 +9,7 @@ class Dictionary:
         self.length = 0
         self.hash_table: list = [None] * 8
 
-    def __setitem__(
-            self,
-            key: int | float | str | bool | tuple | object,
-            value: Any
-    ) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
 
         hash_cell = hash(key) % len(self.hash_table)
 
@@ -34,7 +30,7 @@ class Dictionary:
         hash_cell = self.get_free_cell(hash_cell)
         self.add_new_item(hash_cell, key, value)
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         for item in self.hash_table:
             if item and item.key == key:
                 return item.value
@@ -61,12 +57,7 @@ class Dictionary:
                     hash_cell = self.get_free_cell(hash_cell)
                 self.hash_table[hash_cell] = item
 
-    def add_new_item(
-            self,
-            hash_cell: int,
-            key: int | float | str | bool | tuple | object,
-            value: Any
-    ) -> None:
+    def add_new_item(self, hash_cell: int, key: Hashable, value: Any) -> None:
         if len(self) == int(self.LOAD_FACTOR * len(self.hash_table)):
             self.resize_hash_table()
             hash_cell = hash(key) % len(self.hash_table)
@@ -81,7 +72,7 @@ class Dictionary:
                 self.__delitem__(item.key)
         self.__init__()
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         for item in self.hash_table:
             if item and item.key == key:
                 index_ = self.hash_table.index(item)
@@ -90,14 +81,14 @@ class Dictionary:
                 self.length -= 1
                 break
 
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             get_value = self.__getitem__(key)
         except KeyError:
             return default
         return get_value
 
-    def pop(self, key: Any) -> Any:
+    def pop(self, key: Hashable) -> Any:
         get_value = self.get(key)
         self.__delitem__(key)
         return get_value
@@ -114,10 +105,6 @@ class Dictionary:
 
 
 class ItemDictionary:
-    def __init__(
-            self,
-            key: int | float | str | bool | tuple | object,
-            value: Any
-    ) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
