@@ -85,7 +85,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __iter__(self) -> "Dictionary":
+    def __iter__(self) -> Dictionary:
         self.clear_table = list(
             filter(lambda x: x is not None, self.hash_table)
         )
