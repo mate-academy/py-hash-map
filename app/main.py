@@ -28,7 +28,7 @@ class Dictionary:
     def __setitem__(self, key: Hashable, value: Any) -> None:
         hash_code = hash(key)
         index = hash_code % self.length
-        
+
         if self.dictionary[index] is None:
             self.dictionary[index] = (key, hash_code, value)
             self.insert_elem += 1
