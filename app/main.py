@@ -62,7 +62,6 @@ class Dictionary:
             raise KeyError
 
         while True:
-            print(self.hash_table[index][0])
             if self.hash_table[index][0] == key:
                 break
             if index == self.length_hash_table - 1:
