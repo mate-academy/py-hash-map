@@ -51,15 +51,19 @@ class Dictionary:
         self.size = 0
         new_table: list[None | Dictionary.Node] = [None] * self.capacity
 
+        new_table: list[None | Dictionary.Node] = [None] * self.capacity
+
         old_table = self.hash_table
         self.hash_table = new_table
 
         for bucket in old_table:
             if bucket is not None:
-                current_node = bucket
-                while current_node is not None:
-                    self.__setitem__(current_node.key, current_node.value)
-                    current_node = current_node.next
+                if isinstance(bucket, list):
+                    for node in bucket:
+                        if node is not None:
+                            self.__setitem__(node.key, node.value)
+                else:
+                    self.__setitem__(bucket.key, bucket.value)
 
     def find_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
