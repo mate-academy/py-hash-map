@@ -6,18 +6,39 @@ from app.main import Dictionary
 from app.point import Point
 
 
-# @pytest.mark.timeout(5)
-# def test_deletion():
-#     items = [(f"Element {i}", i) for i in range(1000)]
-#     dictionary = Dictionary()
-#     for key, value in items:
-#         dictionary[key] = value
-#     for key, value in items:
-#         assert dictionary[key] == value
-#     assert len(dictionary) == len(items)
-#     for key, value in items:
-#         del dictionary[key]
-#     print(len(dictionary))
+@pytest.mark.timeout(5)
+def test_deletion():
+    items = [(f"Element {i}", i) for i in range(1000)]
+    dictionary = Dictionary()
+    for key, value in items:
+        dictionary[key] = value
+    for key, value in items:
+        assert dictionary[key] == value
+    assert len(dictionary) == len(items)
+    for key, value in items:
+        del dictionary[key]
+    print(len(dictionary))
+    
+    
+def test_should_find_element_after_deletion():
+    d = Dictionary()
+    d[1] = 5
+    d[9] = 10
+    del d[1]
+    assert d[9] == 10
+    
+
+
+@pytest.mark.parametrize(
+    "defalut_value",
+    [(1,), (False,), (None, ), (5, )]
+)
+def test_pop_should_return_defalt_value(
+    defalut_value
+):
+    my_dict = Dictionary()
+    assert my_dict.pop("test_key", defalut_value) == defalut_value
+    
 
 
 @pytest.mark.parametrize(
