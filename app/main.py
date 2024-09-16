@@ -1,3 +1,4 @@
+from fractions import Fraction
 from typing import Hashable, Any
 
 
@@ -11,7 +12,7 @@ class Dictionary:
             self.hash_key = hash_key
 
     def __init__(self) -> None:
-        self.load_factor = 2 / 3
+        self.load_factor = Fraction(2, 3)
         self.number_of_elements = 0
         self.capacity = 8
         self.size = 0
@@ -51,19 +52,16 @@ class Dictionary:
         self.size = 0
         new_table: list[None | Dictionary.Node] = [None] * self.capacity
 
-        new_table: list[None | Dictionary.Node] = [None] * self.capacity
-
         old_table = self.hash_table
         self.hash_table = new_table
 
         for bucket in old_table:
-            if bucket is not None:
-                if isinstance(bucket, list):
-                    for node in bucket:
-                        if node is not None:
-                            self.__setitem__(node.key, node.value)
-                else:
-                    self.__setitem__(bucket.key, bucket.value)
+            if isinstance(bucket, list):
+                for node in bucket:
+                    if node is not None:
+                        self.__setitem__(node.key, node.value)
+            elif bucket is not None:
+                self.__setitem__(bucket.key, bucket.value)
 
     def find_index(self, key: Hashable) -> int:
         index = hash(key) % self.capacity
