@@ -1,5 +1,5 @@
 import copy
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -24,7 +24,7 @@ class Dictionary:
                             break
                     self.hash_table[hash_place] = item
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if isinstance(key, (list, dict, set)):
             raise TypeError("key must be of immutable type")
         hash_place = hash(key) % self.load_factor
@@ -45,7 +45,7 @@ class Dictionary:
         if self.length > self.load_factor * (2 / 3):
             self.resize_hash_table()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         hash_place = hash(key) % self.load_factor
         if not self.hash_table[hash_place]:
             raise KeyError("no key with such name")
@@ -59,7 +59,7 @@ class Dictionary:
                 break
         return self.hash_table[hash_place][2]
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         hash_place = hash(key) % self.load_factor
         original_hash_place = hash_place
         while True:
