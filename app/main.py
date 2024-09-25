@@ -74,7 +74,6 @@ class Dictionary:
         if not self.hash_table[index]:
             self.hash_table[index] = Node(key, hash(key), value)
             self.size += 1
-            return
 
     def resize(self) -> None:
         """
@@ -159,9 +158,9 @@ class Dictionary:
         Rehashes entries in the table after a deletion
         to maintain correct lookup behavior.
         """
-        index = (deleted_index + 1) % self.size
+        index = (deleted_index + 1) % self.capacity
         while self.hash_table[index]:
             node = self.hash_table[index]
             self.hash_table[index] = None
             self.__setitem__(node.key, node.value)
-            index = (index + 1) % self.size
+            index = (index + 1) % self.capacity
