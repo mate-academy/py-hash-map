@@ -1,5 +1,8 @@
+from typing import Hashable, Any
+
+
 class Node:
-    def __init__(self, key: int, value: int) -> None:
+    def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.hash = hash(key)
@@ -17,7 +20,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def _hash(self, key: int) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
     def _resize(self) -> None:
@@ -31,7 +34,7 @@ class Dictionary:
                 self.__setitem__(node.key, node.value)
                 node = node.next
 
-    def __setitem__(self, key: int, value: int) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._hash(key)
         node = self.hash_table[index]
 
@@ -53,7 +56,7 @@ class Dictionary:
         if self.size / self.capacity >= self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: int) -> int:
+    def __getitem__(self, key: Hashable) -> int:
         index = self._hash(key)
         node = self.hash_table[index]
 
@@ -64,7 +67,7 @@ class Dictionary:
 
         raise KeyError(f"{key} missing in dictionary")
 
-    def __delitem__(self, key: int) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._hash(key)
         node = self.hash_table[index]
         prev = None
@@ -82,7 +85,7 @@ class Dictionary:
 
         raise KeyError(f"{key} missing in dictionary")
 
-    def __contains__(self, key: int) -> bool:
+    def __contains__(self, key: Hashable) -> bool:
         try:
             self.__getitem__(key)
             return True
