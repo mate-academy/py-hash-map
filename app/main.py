@@ -26,7 +26,7 @@ class Dictionary:
         for node in current_nodes:
             self.__setitem__(node.key, node.value)
 
-    def get(self, key: object) -> None | Node:
+    def get(self, key: object) -> None | object:
         try:
             return self.__getitem__(key)
         except KeyError:
@@ -60,7 +60,7 @@ class Dictionary:
         if self.size == round(self.capacity * self.load_factor):
             self.update()
 
-    def __getitem__(self, key: object) -> Node:
+    def __getitem__(self, key: object) -> object:
         cell = self.get_cell(key)
         if not self.hash_table[cell]:
             raise KeyError
