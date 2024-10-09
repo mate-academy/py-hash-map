@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 from typing import Any
 
 
@@ -8,10 +9,10 @@ class Dictionary:
         self.table = [None] * self.capacity
         self.load_factor = 0.75
 
-    def _hash(self, key: Any) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) % self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.size / self.capacity >= self.load_factor:
             self._resize()
         index = self._hash(key)
@@ -27,7 +28,7 @@ class Dictionary:
             node.append((key, value))
             self.size += 1
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Hashable) -> None:
         index = self._hash(key)
         node = self.table[index]
 
@@ -51,7 +52,7 @@ class Dictionary:
                 for key, value in node:
                     self.__setitem__(key, value)
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._hash(key)
         node = self.table[index]
         if node is None:
