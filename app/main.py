@@ -19,7 +19,7 @@ class Dictionary:
     def get_cell(self, key: object) -> int:
         return hash(key) % self.capacity
 
-    def update(self) -> None:
+    def resize(self) -> None:
         current_nodes = [node for node in self.hash_table if node]
         self.capacity *= 2
         self.clear()
@@ -58,12 +58,12 @@ class Dictionary:
         )
         self.size += 1
         if self.size == round(self.capacity * self.load_factor):
-            self.update()
+            self.resize()
 
     def __getitem__(self, key: object) -> object:
         cell = self.get_cell(key)
         if not self.hash_table[cell]:
-            raise KeyError
+            raise KeyError("This key wasn't found")
         while node := self.hash_table[cell]:
             if node.key == key:
                 return node.value
