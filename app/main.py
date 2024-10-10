@@ -1,5 +1,4 @@
-from collections.abc import Hashable
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -61,7 +60,7 @@ class Dictionary:
             if k == key:
                 del node[i]
                 self.size -= 1
-                if not node:  # Якщо список порожній, очищаємо його
+                if not node:
                     self.table[index] = None
                 return
         raise KeyError(f"Key '{key}' not found")
