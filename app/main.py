@@ -31,20 +31,20 @@ class Dictionary:
         bucket = key_hash % self.table_size
 
         if self.table[bucket] is None:
-            raise KeyError(f"Key '{key}' not found")
+            raise KeyError(f"Key {key} not found")
 
         for h, (k, v) in self.table[bucket]:
             if h == key_hash and k == key:
                 return v
 
-        raise KeyError(f"Key '{key}' not found")
+        raise KeyError(f"Key {key} not found")
 
     def __delitem__(self, key: Hashable) -> None:
         key_hash = self._hash(key)
         bucket = key_hash % self.table_size
 
         if self.table[bucket] is None:
-            raise KeyError(f"Key '{key}' not found")
+            raise KeyError(f"Key {key} not found")
 
         for i, (h, (k, v)) in enumerate(self.table[bucket]):
             if h == key_hash and k == key:
@@ -52,7 +52,7 @@ class Dictionary:
                 self.num_elements -= 1
                 return
 
-        raise KeyError(f"Key '{key}' not found")
+        raise KeyError(f"Key {key} not found")
 
     def _resize(self) -> None:
         old_table = self.table
@@ -67,7 +67,7 @@ class Dictionary:
 
     def _hash(self, key: Hashable) -> int:
         if isinstance(key, (list, dict)):
-            raise TypeError("Unhashable type: 'list' or 'dict'")
+            raise TypeError("Unhashable type: list or dict")
         return hash(key)
 
     def __len__(self) -> int:
