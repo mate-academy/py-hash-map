@@ -112,8 +112,6 @@ class Dictionary:
             del self[key]
             return value
         except KeyError:
-            if default is not None:
-                return default
             raise
 
     def update(self, other: dict) -> None:
