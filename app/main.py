@@ -22,12 +22,12 @@ class Dictionary:
                 return
 
         # recount dict size, if too load
-        if self.capacity >= Dictionary.size * 2 // 3:
+        if self.capacity > Dictionary.size * 2 // 3:
             self.resize_dict()
 
         # check collision
         index = hash_key % Dictionary.size
-        index = self.check_collision(index)
+        index = self.check_collision(self.hash_table, index)
         self.hash_table[index] = Node(hash_key, key, value)
         self.capacity += 1
 
@@ -37,16 +37,16 @@ class Dictionary:
         hash_key = hash(key_item)
         for item in self.hash_table:
             if item and item.key == key_item and hash_key == item.hash:
-                print(item.value)
                 return item.value
         raise KeyError("key not in dict")
 
     def __len__(self) -> int:
         return self.capacity
 
-    def check_collision(self, index: int) -> int:
+    @staticmethod
+    def check_collision(list_, index: int) -> int:
         while True:
-            if self.hash_table[index] is not None:
+            if list_[index] is not None:
                 index += 1
                 if index >= (Dictionary.size - 1):
                     index = 0
