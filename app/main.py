@@ -44,7 +44,7 @@ class Dictionary:
         return self.capacity
 
     @staticmethod
-    def check_collision(list_, index: int) -> int:
+    def check_collision(list_: list, index: int) -> int:
         while True:
             if list_[index] is not None:
                 index += 1
