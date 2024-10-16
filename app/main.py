@@ -37,9 +37,9 @@ class Dictionary:
         return self.capacity
 
     @staticmethod
-    def check_collision_for_write(list_: list, index: int) -> int:
+    def check_collision_for_write(hash_table_to_check: list, index: int) -> int:
         while True:
-            if list_[index] is not None:
+            if hash_table_to_check[index] is not None:
                 index += 1
                 if index >= (Dictionary.SIZE - 1):
                     index = 0
@@ -50,11 +50,11 @@ class Dictionary:
     def resize_dict(self) -> None:
         Dictionary.SIZE *= Dictionary.INC_SIZE_TWICE
         new_hash_table = [None] * Dictionary.SIZE
-        for ind in self.hash_table:
-            if ind:
-                index = hash(ind.key) % Dictionary.SIZE
+        for item in self.hash_table:
+            if item:
+                index = hash(item.key) % Dictionary.SIZE
                 index = self.check_collision_for_write(new_hash_table, index)
-                new_hash_table[index] = ind
+                new_hash_table[index] = item
         self.hash_table = new_hash_table
 
     def check_rewrite_value(self, key: Any, value: Any) -> bool:
