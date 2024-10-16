@@ -38,7 +38,10 @@ class Dictionary:
         index = self._hash(key)
 
         while self.hash_table[index]:
-            if self.hash_table[index] is not self.DELETED and self.hash_table[index].key == key:
+            if (
+                    self.hash_table[index] != self.DELETED
+                    and self.hash_table[index].key == key
+            ):
                 self.hash_table[index].value = value
                 return
             index = (index + 1) % self.capacity
@@ -55,7 +58,10 @@ class Dictionary:
         index = self._hash(key)
 
         while self.hash_table[index]:
-            if self.hash_table[index] is not self.DELETED and self.hash_table[index].key == key:
+            if (
+                    self.hash_table[index] != self.DELETED
+                    and self.hash_table[index].key == key
+            ):
                 return self.hash_table[index].value
             index = (index + 1) % self.capacity
 
