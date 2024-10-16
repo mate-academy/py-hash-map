@@ -1,6 +1,13 @@
 from typing import Any, Iterable
 
 
+class Node:
+    def __init__(self, key: Any, value: Any, hash_value: int) -> None:
+        self.key = key
+        self.value = value
+        self.hash = hash_value
+
+
 class Dictionary:
     DELETED = "DELETED"
 
@@ -24,19 +31,20 @@ class Dictionary:
 
         for node in old_table:
             if node and node is not self.DELETED:
-                self.__setitem__(node[0], node[1])
+                self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Any, value: Any) -> None:
         """Set the value for a given key or update if key already exists."""
         index = self._hash(key)
 
         while self.hash_table[index]:
-            if self.hash_table[index][0] == key:
-                self.hash_table[index] = (key, value)
+            if self.hash_table[index] is not self.DELETED and self.hash_table[index].key == key:
+                self.hash_table[index].value = value
                 return
             index = (index + 1) % self.capacity
 
-        self.hash_table[index] = (key, value)
+        node = Node(key, value, self._hash(key))
+        self.hash_table[index] = node
         self.length += 1
 
         if self.length / self.capacity > self.load_factor:
@@ -47,8 +55,8 @@ class Dictionary:
         index = self._hash(key)
 
         while self.hash_table[index]:
-            if self.hash_table[index][0] == key:
-                return self.hash_table[index][1]
+            if self.hash_table[index] is not self.DELETED and self.hash_table[index].key == key:
+                return self.hash_table[index].value
             index = (index + 1) % self.capacity
 
         raise KeyError(f"Key '{key}' not found.")
@@ -63,7 +71,7 @@ class Dictionary:
 
         while self.hash_table[index]:
             if (self.hash_table[index] is not self.DELETED
-                    and self.hash_table[index][0] == key):
+                    and self.hash_table[index].key == key):
                 self.hash_table[index] = self.DELETED
                 self.length -= 1
                 return
@@ -103,5 +111,5 @@ class Dictionary:
     def __iter__(self) -> Iterable[Any]:
         """Return an iterator over the dictionary's keys."""
         for node in self.hash_table:
-            if node:
-                yield node[0]
+            if node and node is not self.DELETED:
+                yield node.key
