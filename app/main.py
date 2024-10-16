@@ -37,9 +37,9 @@ class Dictionary:
         return self.capacity
 
     @staticmethod
-    def check_collision_for_write(hash_table_to_check: list, index: int) -> int:
+    def check_collision_for_write(table_to_check: list, index: int) -> int:
         while True:
-            if hash_table_to_check[index] is not None:
+            if table_to_check[index] is not None:
                 index += 1
                 if index >= (Dictionary.SIZE - 1):
                     index = 0
