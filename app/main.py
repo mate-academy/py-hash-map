@@ -1,68 +1,86 @@
 from typing import Any
 
-INC_SIZE_TWICE = 2
-
 
 class Dictionary:
-    size = 8
+    INC_SIZE_TWICE = 2
+    SIZE = 8
 
     def __init__(self) -> None:
         self.capacity = 0
-        self.hash_table = [None] * Dictionary.size
+        self.hash_table = [None] * Dictionary.SIZE
 
     def __setitem__(self, key: Any, value: Any) -> None:
         if isinstance(key, (list, dict, set)):
             raise KeyError("key must be hashable")
-        hash_key = hash(key)
 
         # rewrite value, if we have the same key
-        for item in self.hash_table:
-            if item and item.hash == hash_key and item.key == key:
-                item.value = value
-                return
+        if self.check_rewrite_value(key, value):
+            return
 
         # recount dict size, if too load
-        if self.capacity > Dictionary.size * 2 // 3:
+        if self.capacity > Dictionary.SIZE * 2 // 3:
             self.resize_dict()
 
         # check collision
-        index = hash_key % Dictionary.size
-        index = self.check_collision(self.hash_table, index)
+        hash_key = hash(key)
+        index = hash_key % Dictionary.SIZE
+        index = self.check_collision_for_write(self.hash_table, index)
         self.hash_table[index] = Node(hash_key, key, value)
         self.capacity += 1
 
     def __getitem__(self, key_item: Any) -> Any:
         if isinstance(key_item, (list, dict, set)):
             raise KeyError("key must be hashable")
-        hash_key = hash(key_item)
-        for item in self.hash_table:
-            if item and item.key == key_item and hash_key == item.hash:
-                return item.value
-        raise KeyError("key not in dict")
+        return self.check_return_value(key_item)
 
     def __len__(self) -> int:
         return self.capacity
 
     @staticmethod
-    def check_collision(list_: list, index: int) -> int:
+    def check_collision_for_write(list_: list, index: int) -> int:
         while True:
             if list_[index] is not None:
                 index += 1
-                if index >= (Dictionary.size - 1):
+                if index >= (Dictionary.SIZE - 1):
                     index = 0
             else:
                 break
         return index
 
     def resize_dict(self) -> None:
-        Dictionary.size *= INC_SIZE_TWICE
-        new_hash_table = [None] * Dictionary.size
+        Dictionary.SIZE *= Dictionary.INC_SIZE_TWICE
+        new_hash_table = [None] * Dictionary.SIZE
         for ind in self.hash_table:
             if ind:
-                index = hash(ind.key) % Dictionary.size
-                index = self.check_collision(new_hash_table, index)
+                index = hash(ind.key) % Dictionary.SIZE
+                index = self.check_collision_for_write(new_hash_table, index)
                 new_hash_table[index] = ind
         self.hash_table = new_hash_table
+
+    def check_rewrite_value(self, key: Any, value: Any) -> bool:
+        hash_key = hash(key)
+        index = hash_key % Dictionary.SIZE
+        while self.hash_table[index]:
+            item = self.hash_table[index]
+            if item.hash == hash_key and item.key == key:
+                item.value = value
+                return True
+            index += 1
+            if index >= Dictionary.SIZE - 1:
+                index = 0
+        return False
+
+    def check_return_value(self, key: Any) -> bool | None:
+        hash_key = hash(key)
+        index = hash_key % Dictionary.SIZE
+        while self.hash_table[index]:
+            item = self.hash_table[index]
+            if item.hash == hash_key and item.key == key:
+                return item.value
+            index += 1
+            if index >= Dictionary.SIZE - 1:
+                index = 0
+        raise KeyError("key not in dict")
 
 
 class Node:
