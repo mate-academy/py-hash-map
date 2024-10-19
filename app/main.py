@@ -63,7 +63,7 @@ class Dictionary:
                 raise KeyError("Key not found in dictionary")
         return index
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Any) -> Any:
         index = self.check_valid_index(key)
         if self.hash_table[index]:
             return self.hash_table[index].value
@@ -82,6 +82,7 @@ class Dictionary:
         try:
             return self.__getitem__(key)
         except KeyError:
+            print("Key not found in dictionary")
             return None
 
     def pop(self, key: Any) -> Any:
