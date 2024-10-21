@@ -41,7 +41,7 @@ class Dictionary:
                 node[1] = []
                 self.length -= 1
 
-    def clear(self):
+    def clear(self) -> None:
         self.__init__()
 
     def get(self, key: any) -> None:
@@ -50,7 +50,7 @@ class Dictionary:
         except KeyError:
             return None
 
-    def pop(self, key):
+    def pop(self, key: any) -> None:
         result = self.__getitem__(key)
         self.__delitem__(key)
         return result
