@@ -50,7 +50,7 @@ class Dictionary:
         except KeyError:
             return None
 
-    def pop(self, key: any) -> None:
+    def pop(self, key: any) -> any:
         result = self.__getitem__(key)
         self.__delitem__(key)
         return result
