@@ -105,6 +105,4 @@ class Dictionary:
                 self[key] = value
 
     def clear(self) -> None:
-        for i in range(self.__len):
-            if self.dictionary[i] is not None:
-                self.dictionary[i] = None
+        self.dictionary = [None] * self.__len
