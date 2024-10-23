@@ -67,8 +67,9 @@ class Dictionary:
                 else:
                     self.storage[new_index] = (key, value, hash_)
 
-    def __getitem__(self, key: Any) -> Any:
-        """This method is responsible for getting the value by key."""
+    def get_key_index(self, key: Any) -> int:
+        """This method finds the key for
+        the pop, __getitem__ and __delitem__ methods."""
         hash_, index_ = self.get_index_hash(key)
 
         if self.storage[index_] is None:
@@ -76,7 +77,7 @@ class Dictionary:
 
         if (self.storage[index_][0] == key
                 and self.storage[index_][2] == hash_):
-            return self.storage[index_][1]
+            return index_
 
         for i in range(1, self.capacity):
             new_index = (index_ + i) % self.capacity
@@ -84,7 +85,12 @@ class Dictionary:
                 raise KeyError("No such key exists.")
             if (self.storage[new_index][0] == key
                     and self.storage[new_index][2] == hash_):
-                return self.storage[new_index][1]
+                return new_index
+
+    def __getitem__(self, key: Any) -> Any:
+        """This method is responsible for getting the value by key."""
+        index_ = self.get_key_index(key)
+        return self.storage[index_][1]
 
     def clear(self) -> None:
         """This method returns the dictionary to its original form."""
@@ -94,26 +100,9 @@ class Dictionary:
 
     def __delitem__(self, key: Any) -> None:
         """This method removes an element by the specified key."""
-        hash_, index_ = self.get_index_hash(key)
-
-        if self.storage[index_] is None:
-            raise KeyError("No such key exists.")
-
-        if self.storage[index_][0] == key and self.storage[index_][2] == hash_:
-            self.storage[index_] = None
-            self.current_length -= 1
-            return f"The item {key} has been successfully removed."
-
-        for i in range(1, self.capacity):
-            new_index = (index_ + i) % self.capacity
-            if self.storage[new_index] is None:
-                raise KeyError("No such key exists.")
-
-            if (self.storage[new_index][0] == key
-                    and self.storage[new_index][2] == hash_):
-                self.storage[new_index] = None
-                self.current_length -= 1
-                return f"The item {key} has been successfully removed."
+        index_ = self.get_key_index(key)
+        self.storage[index_] = None
+        self.current_length -= 1
 
     def get(self, key: Any, user_value: Any = None) -> None | Any:
         """This method returns the value by key or None | user value."""
@@ -121,3 +110,22 @@ class Dictionary:
             return self.__getitem__(key)
         except KeyError:
             return user_value
+
+    def __iter__(self) -> Any:
+        """This method returns keys when iterating over a dictionary."""
+        for element in self.storage:
+            if element is not None:
+                yield element[0]
+
+    def pop(self, key: Any, user_value: Any = None) -> Any:
+        """This method returns the value by key and removes the element."""
+        try:
+            index_ = self.get_key_index(key)
+            value = self.storage[index_][1]
+            self.__delitem__(key)
+            return value
+        except KeyError:
+            if user_value is not None:
+                return user_value
+            else:
+                raise KeyError("No such key exists.")
