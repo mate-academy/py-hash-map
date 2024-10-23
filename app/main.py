@@ -15,7 +15,7 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.size / self.capacity > self.load_factor:
+        if self.size >= self.capacity * self.load_factor:
             self._resize()
 
         index = self._hash(key)
