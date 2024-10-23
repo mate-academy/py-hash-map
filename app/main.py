@@ -53,12 +53,11 @@ class Dictionary:
             raise TypeError("Expected at most two argument")
         try:
             item = self[key]
+            return item
         except KeyError:
             if value_switched:
                 return value
-            return None
-        else:
-            return item
+            raise
 
     def pop(self, key: Hashable, *default_value: Any) -> Any:
         value = None
@@ -68,20 +67,15 @@ class Dictionary:
             value_switched = True
         if len(default_value) > 1:
             raise TypeError("Expected at most two argument")
-        key_index = hash(key) % self.__len
-        for i in range(key_index, self.__len):
-            if self.dictionary[i] is not None and self.dictionary[i][0] == key:
-                value = self[key]
-                self.dictionary[i] = None
-                return value
-        for i in range(0, key_index):
-            if self.dictionary[i] is not None and self.dictionary[i][0] == key:
-                value = self[key]
-                self.dictionary[i] = None
-                return value
-        if value_switched:
+        try:
+            hash_index = self.__collision_to_read(key)
+            value = self.dictionary[hash_index]
+            self.dictionary[hash_index] = None
             return value
-        raise KeyError
+        except KeyError:
+            if value_switched:
+                return value
+            raise
 
     def update(self, other: dict | Dictionary) -> None:
         for key in other:
