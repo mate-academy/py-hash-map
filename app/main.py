@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Hashable, Iterator
 
 
@@ -7,9 +9,9 @@ class Dictionary:
         self.__len = 8
         self.dictionary = [None] * self.__len
 
-    def __setitem__(self, key: Hashable, value: Any) -> None:
-        if "__hash__" not in self.__dir__():
-            raise TypeError("key should be hashable")
+    def __setitem__(self, key: Hashable, *value: Any) -> None:
+        if len(value) == 1:
+            value = value[0]
         key_index = hash(key) % self.__len
         is_writen = False
         for i in range(key_index, self.__len):
@@ -53,11 +55,9 @@ class Dictionary:
 
     def __repr__(self) -> str:
         str_ = "{"
-        for i in range(self.__len):
-            if self.dictionary[i] is not None:
-                key, value = self.dictionary[i]
-                str_ += f"'{key}': {value}, "
-        return str_ + "}"
+        for el in self:
+            str_ += f"'{el}': {self.get(el)}, "
+        return str_[:-2] + "}"
 
     def __iter__(self) -> Iterator:
         list_ = []
@@ -75,15 +75,31 @@ class Dictionary:
                 key, value = el
                 self[key] = value
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable, *default_value: Any) -> Any:
+        value = None
+        value_switched = False
+        if len(default_value) == 1:
+            value = default_value[0]
+            value_switched = True
+        if len(default_value) > 1:
+            raise TypeError("Expected at most two argument")
         try:
             item = self[key]
         except KeyError:
+            if value_switched:
+                return value
             return None
         else:
             return item
 
-    def pop(self, key: Hashable) -> Any:
+    def pop(self, key: Hashable, *default_value: Any) -> Any:
+        value = None
+        value_switched = False
+        if len(default_value) == 1:
+            value = default_value[0]
+            value_switched = True
+        if len(default_value) > 1:
+            raise TypeError("Expected at most two argument")
         key_index = hash(key) % self.__len
         for i in range(key_index, self.__len):
             if self.dictionary[i] is not None and self.dictionary[i][0] == key:
@@ -95,14 +111,13 @@ class Dictionary:
                 value = self[key]
                 self.dictionary[i] = None
                 return value
+        if value_switched:
+            return value
         raise KeyError
 
-    def update(self, other: dict, **kwargs) -> None:
-        for key, value in other.items():
-            self[key] = value
-        if kwargs:
-            for key, value in kwargs.items():
-                self[key] = value
+    def update(self, other: dict | Dictionary) -> None:
+        for key in other:
+            self[key] = other.get(key)
 
     def clear(self) -> None:
         self.dictionary = [None] * self.__len
