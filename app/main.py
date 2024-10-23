@@ -10,6 +10,8 @@ class Dictionary:
         self.dictionary = [None] * self.__len
 
     def __setitem__(self, key: Hashable, *value: Any) -> None:
+        if len(value) == 0:
+            raise TypeError("expected 2 arguments, got 1")
         key_hash = hash(key)
         hash_index = self.__collision_to_write(key)
         if len(value) == 1:
