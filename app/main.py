@@ -31,7 +31,7 @@ class Dictionary:
                 key, value = element[0], element[1]
                 self.__setitem__(key, value)
 
-    def get_index_hash(self, key: Any) -> tuple[int | int]:
+    def get_index_hash(self, key: Any) -> tuple[int, int]:
         """This method calculates the index for storage and the hash."""
         hash_ = hash(key)
         index_ = hash_ % self.capacity
@@ -79,7 +79,7 @@ class Dictionary:
             return self.storage[index_][1]
 
         for i in range(1, self.capacity):
-            new_index = self.collision(key, index_)
+            new_index = (index_ + i) % self.capacity
             if self.storage[new_index] is None:
                 raise KeyError("No such key exists.")
             if (self.storage[new_index][0] == key
@@ -105,7 +105,7 @@ class Dictionary:
             return f"The item {key} has been successfully removed."
 
         for i in range(1, self.capacity):
-            new_index = self.collision(key, index_)
+            new_index = (index_ + i) % self.capacity
             if self.storage[new_index] is None:
                 raise KeyError("No such key exists.")
 
