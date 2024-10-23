@@ -216,6 +216,8 @@ class Dictionary:
     def __len__(self):
         return self.length
 
+    def my_len(self) -> int:
+        return self.length
 
     def _check_extend_memory(self):
         if self.length >= (2 / 3) * self.capacity:
