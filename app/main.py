@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Hashable
 
 
 class Dictionary:
@@ -7,7 +7,7 @@ class Dictionary:
         self.capacity: int = 8
         self.hash_table: list[Optional[tuple]] = [None] * self.capacity
 
-    def _get_key_value(self, key: Any) -> int | None:
+    def _get_key_value(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         original_index = index
 
@@ -21,7 +21,7 @@ class Dictionary:
 
         return None
 
-    def _set_key_value(self, key: Any, value: Any) -> int | None:
+    def _set_key_value(self, key: Hashable, value: Any) -> None:
         self._check_extend_memory()
 
         index = hash(key) % self.capacity
