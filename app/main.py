@@ -29,6 +29,8 @@ class Dictionary:
                 self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        if self.size / self.capacity > self.load_factor:
+            self.resize()
         index = hash(key) % self.capacity
 
         while True:
@@ -37,9 +39,6 @@ class Dictionary:
             if node is None:
                 self.hash_table[index] = Node(key, value)
                 self.size += 1
-
-                if self.size / self.capacity > self.load_factor:
-                    self.resize()
                 return
 
             elif node.key == key:
