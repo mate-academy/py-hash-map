@@ -3,7 +3,7 @@ from typing import Hashable
 
 class Dictionary:
     DEFAULT_CAPACITY = 8
-    LOAD_FACTOR = 2 / 3
+    LOAD_FACTOR = 2 / 3.0
 
     def __init__(self,
                  capacity: int = DEFAULT_CAPACITY,
