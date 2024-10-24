@@ -54,7 +54,9 @@ class Dictionary:
             node = self.hash_table[index]
 
             if node is None:
-                raise KeyError(f"Key {key} not found")
+                raise KeyError(f"Key '{key}' not found, "
+                               f"you're trying to find a value"
+                               f"in a dict using a key that doesn't exist.")
 
             if node.key == key:
                 return node.value
