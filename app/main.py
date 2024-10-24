@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -31,13 +31,13 @@ class Dictionary:
                 key, value = element[0], element[1]
                 self.__setitem__(key, value)
 
-    def get_index_hash(self, key: Any) -> tuple[int, int]:
+    def get_index_hash(self, key: Hashable) -> tuple[int, int]:
         """This method calculates the index for storage and the hash."""
         hash_ = hash(key)
         index_ = hash_ % self.capacity
         return hash_, index_
 
-    def collision(self, key: Any, index_: int) -> int:
+    def collision(self, key: Hashable, index_: int) -> int:
         """This method deals with collisions."""
         for i in range(self.capacity):
             new_index = (index_ + i) % self.capacity
@@ -45,7 +45,7 @@ class Dictionary:
                     or self.storage[new_index][0] == key):
                 return new_index
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         """
         This method is responsible for placing
         the key-value-hash tuple into storage.
@@ -67,7 +67,7 @@ class Dictionary:
                 else:
                     self.storage[new_index] = (key, value, hash_)
 
-    def get_key_index(self, key: Any) -> int:
+    def get_key_index(self, key: Hashable) -> int:
         """This method finds the key for
         the pop, __getitem__ and __delitem__ methods."""
         hash_, index_ = self.get_index_hash(key)
@@ -87,7 +87,7 @@ class Dictionary:
                     and self.storage[new_index][2] == hash_):
                 return new_index
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         """This method is responsible for getting the value by key."""
         index_ = self.get_key_index(key)
         return self.storage[index_][1]
@@ -98,13 +98,13 @@ class Dictionary:
         self.storage = [None] * self.capacity
         self.current_length = 0
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         """This method removes an element by the specified key."""
         index_ = self.get_key_index(key)
         self.storage[index_] = None
         self.current_length -= 1
 
-    def get(self, key: Any, user_value: Any = None) -> None | Any:
+    def get(self, key: Hashable, user_value: Any = None) -> None | Any:
         """This method returns the value by key or None | user value."""
         try:
             return self.__getitem__(key)
@@ -117,7 +117,7 @@ class Dictionary:
             if element is not None:
                 yield element[0]
 
-    def pop(self, key: Any, user_value: Any = None) -> Any:
+    def pop(self, key: Hashable, user_value: Any = None) -> Any:
         """This method returns the value by key and removes the element."""
         try:
             index_ = self.get_key_index(key)
