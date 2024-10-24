@@ -26,7 +26,6 @@ class Dictionary:
 
         return index
 
-    @property
     def current_max_size(self, threshold: float = 2 / 3) -> float:
         return self.capacity * threshold
 
@@ -43,10 +42,9 @@ class Dictionary:
         index = self.calculate_index(key)
 
         if self.hash_table[index] is None:
-            if self.size + 1 >= self.current_max_size:
+            if self.size + 1 >= self.current_max_size():
                 self.resize()
-                self.__setitem__(key, value)
-                return
+                return self.__setitem__(key, value)
 
             self.size += 1
 
