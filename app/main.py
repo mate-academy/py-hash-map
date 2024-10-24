@@ -45,21 +45,13 @@ class Dictionary:
                 list_.append(self.dictionary[i][0])
         return iter(list_)
 
-    def get(self, key: Hashable, *default_value: Any) -> Any:
-        value = None
-        value_switched = False
-        if len(default_value) == 1:
-            value = default_value[0]
-            value_switched = True
-        if len(default_value) > 1:
-            raise TypeError("Expected at most two argument")
+    def get(self, key: Hashable, default_value: Any = None) -> Any:
         try:
             item = self[key]
             return item
         except KeyError:
-            if value_switched:
-                return value
-            raise
+            return default_value
+
 
     def pop(self, key: Hashable, *default_value: Any) -> Any:
         value = None
