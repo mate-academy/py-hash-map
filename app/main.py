@@ -24,7 +24,8 @@ class Dictionary:
         hash_index = self.__index_to_write(key)
         if self._hash_table[hash_index] is None:
             self.__size += 1
-        self._hash_table[hash_index] = Node(hash=key_hash, key=key, value=value)
+        node = Node(hash=key_hash, key=key, value=value)
+        self._hash_table[hash_index] = node
 
         if len(self) > int(self.__capacity * (2 / 3)):
             self.__resize()
