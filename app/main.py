@@ -11,7 +11,7 @@ class Dictionary:
         index = hash(key) % self.capacity
         original_index = index
 
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             if self.hash_table[index][0] == key:
                 return self.hash_table[index][2]
             index = (index + 1) % self.capacity
@@ -27,7 +27,7 @@ class Dictionary:
         index = hash(key) % self.capacity
         original_index = index
 
-        while self.hash_table[index] is not None:
+        while self.hash_table[index]:
             if self.hash_table[index][0] == key:
                 self.hash_table[index] = (key, hash(key), value)
                 return
@@ -54,7 +54,8 @@ class Dictionary:
     def _re_sort_memory(self, old_table: list) -> None:
         for entry in old_table:
             if entry is not None:
-                self.__setitem__(entry[0], entry[2])
+                # it == self.__setitem__(entry[0], entry[2])
+                self[entry[0]] = entry[2]
 
     def _check_extend_memory(self) -> None:
         if self.length >= (2 / 3) * self.capacity:
