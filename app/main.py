@@ -40,7 +40,7 @@ class Dictionary:
     def __getitem__(self, key: any) -> any:
         hash_item = hash(key)
         node_index = hash_item % len(self.hash_table)
-        if self.hash_table[node_index] is None:
+        if self.hash_table[node_index] == []:
             raise KeyError
         for node in self.hash_table[node_index]:
             if node[0] == key:
