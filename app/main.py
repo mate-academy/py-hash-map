@@ -1,11 +1,11 @@
-from typing import Any
+from typing import Any, Optional
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.length: int = 0
         self.capacity: int = 8
-        self.hash_table: list[tuple | None] = [None] * self.capacity
+        self.hash_table: list[Optional[tuple]] = [None] * self.capacity
 
     def _get_key_value(self, key: Any) -> int | None:
         index = hash(key) % self.capacity
