@@ -22,27 +22,21 @@ class Dictionary:
     def _hash(self, key: Any) -> int:
         return hash(key) % self.capacity
 
-    def find_index(self, key: Any) -> int:
-        index = self._hash(key)
-
-        while True:
-            node = self.hash_table[index]
-            if node is None:
-                return index
-            if node.key == key:
-                return index
-            index = (index + 1) % self.capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        index = self._hash(key)
+        while self.hash_table[index] is not None:
+            if self.hash_table[index].key == key:
+                self.hash_table[index].value = value
+                return
+            index = (index + 1) % self.capacity
+
+        self.hash_table[index] = Node(key, hash(key), value)
+        self.length += 1
+
         if self.length + 1 >= self.capacity * self.load_factor:
             self.resize_dictionary()
 
-        index = self.find_index(key)
-        if self.hash_table[index] is None:
-            self.hash_table[index] = Node(key, hash(key), value)
-            self.length += 1
-        else:
-            self.hash_table[index].value = value
 
     def resize_dictionary(self) -> None:
         old_hash_table = [item for item in self.hash_table if item]
@@ -54,20 +48,15 @@ class Dictionary:
 
     def check_valid_index(self, key: Any) -> int:
         index = self._hash(key)
-        start_index = index
         while self.hash_table[index]:
             if self.hash_table[index].key == key:
                 return index
             index = (index + 1) % self.capacity
-            if start_index == index:
-                raise KeyError("Key not found in dictionary")
-        return index
+        raise KeyError("Key not found in dictionary")
 
     def __getitem__(self, key: Any) -> Any:
         index = self.check_valid_index(key)
-        if self.hash_table[index]:
-            return self.hash_table[index].value
-        raise KeyError("Key not found in dictionary")
+        return self.hash_table[index].value
 
     def __delitem__(self, key: Any) -> None:
         index = self.check_valid_index(key)
