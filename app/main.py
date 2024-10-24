@@ -83,11 +83,12 @@ class Dictionary:
 
     def pop(self, key: Any) -> Any:
         index = self.find_value_from_key(key)
-        pair = self.hash_table.pop(index)
+        pair = self.hash_table[index]
+        self.hash_table[index] = None
         return pair[1]
 
     def update(self, other: "Dictionary") -> None:
-        for key, index in enumerate(other.hash_table):
+        for index, key in enumerate(other.hash_table):
             if not other.hash_table[index]:
                 continue
             self.__setitem__(key[0], key[1])
