@@ -83,8 +83,8 @@ class Dictionary:
 
     def pop(self, key: Any) -> Any:
         index = self.find_value_from_key(key)
-        self.hash_table[index] = None
         pair = self.hash_table[index]
+        self.hash_table[index] = None
         return pair[1]
 
     def update(self, other: "Dictionary") -> None:
@@ -99,17 +99,3 @@ class Dictionary:
             key[0] for index, key in enumerate(self.hash_table)
             if self.hash_table[index]
         )
-
-
-dicty = Dictionary()
-dicty[8] = "dolboeb"
-dicty[16] = "16"
-dicty[32] = "32"
-dicty["one"] = 1
-dicty["one"] = 11
-print(dicty.hash_table)
-print(dicty.pop(8))
-print(f"16 = {dicty[16]}")
-print(f"32 = {dicty[32]}")
-print(f"one = {dicty["one"]}")
-print(f"Lenght = {len(dicty)}")
