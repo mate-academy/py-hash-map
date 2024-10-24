@@ -11,7 +11,7 @@ class Node:
 
 class Dictionary:
     INITIAL_CAPACITY = 8
-    THRESHOLD = 2 / 3
+    THRESHOLD = 2 / 3.0
     CAPACITY_MULTIPLIER = 2
 
     def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
@@ -77,8 +77,4 @@ class Dictionary:
         raise KeyError(f"Key '{key}' not found.")
 
     def __len__(self) -> int:
-        counter = 0
-        for node in self.hash_table:
-            if node is not None:  # Рахуємо тільки ненульові вузли
-                counter += 1
-        return counter
+        return self.size
