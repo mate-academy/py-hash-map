@@ -1,14 +1,14 @@
 from typing import Any
 
 
-class Node:
-    def __init__(self, key: Any, value: Any) -> None:
-        self.key = key
-        self.value = value
-        self.hash = hash(key)
-
-
 class Dictionary:
+
+    class Node:
+        def __init__(self, key: Any, value: Any) -> None:
+            self.key = key
+            self.value = value
+            self.hash = hash(key)
+
     def __init__(self) -> None:
         self.capacity = 8
         self.load_factor = 2 / 3
@@ -18,7 +18,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-    def _hash(self, key: Any) -> int:
+    def index(self, key: Any) -> int:
         return hash(key) % self.capacity
 
     def resize(self) -> None:
@@ -34,27 +34,26 @@ class Dictionary:
         self.table = new_table
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        idx = self._hash(key)
-        bucket = self.table[idx]
+        if self.size >= self.capacity * self.load_factor:
+            self.resize()
 
-        for node in bucket:
+        index = self.index(key)
+        for node in self.table[index]:
             if node.key == key:
                 node.value = value
                 return
 
-        new_node = Node(key, value)
-        bucket.append(new_node)
+        self.table[index].append(self.Node(key, value))
         self.size += 1
 
         if self.size / self.capacity > self.load_factor:
             self.resize()
 
     def __getitem__(self, key: Any) -> Any:
-        idx = self._hash(key)
-        bucket = self.table[idx]
+        index = self.index(key)
 
-        for node in bucket:
+        for node in self.table[index]:
             if node.key == key:
                 return node.value
 
-        raise KeyError(f"Key {key} not found.")
+        raise KeyError(f"Key '{key}' not found.")
