@@ -28,9 +28,9 @@ class Dictionary:
             self.resize()
         hash_item = hash(key)
         node_index = hash_item % len(self.hash_table)
-        if self.hash_table[node_index] is None:
+        if self.hash_table[node_index] == []:
             self.hash_table[node_index].append([key, hash_item, value])
-        elif self.hash_table[node_index] is not None:
+        else:
             for node in self.hash_table[node_index]:
                 if key == node[0]:
                     node[2] = value
