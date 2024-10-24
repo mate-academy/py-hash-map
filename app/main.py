@@ -11,7 +11,7 @@ class Node:
 
 class Dictionary:
     INITIAL_CAPACITY = 8
-    THRESHOLD = 2 / 3
+    THRESHOLD = 2 / 3.0
     CAPACITY_MULTIPLIER = 2
 
     def __init__(self, initial_capacity: int = INITIAL_CAPACITY) -> None:
@@ -35,9 +35,6 @@ class Dictionary:
         self.buckets = new_buckets
 
     def __setitem__(self, key: Hashable, value: any) -> None:
-        if isinstance(key, (list, dict, set)):
-            raise KeyError("key must be hashable")
-
         hash_key = hash(key)
         index = self._get_index(key)
         bucket = self.buckets[index]
