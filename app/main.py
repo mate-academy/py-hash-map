@@ -1,5 +1,4 @@
 INITIAL_CAPACITY = 8
-LOAD_FACTOR = 2 / 3
 RESIZE_STRATEGY = 2
 
 
@@ -24,7 +23,7 @@ class Dictionary:
                 self.__setitem__(node[0], node[2])
 
     def __setitem__(self, key: any, value: any) -> None:
-        if self.length >= len(self.hash_table) * LOAD_FACTOR:
+        if self.length >= len(self.hash_table) * 2 / 3:
             self.resize()
         hash_item = hash(key)
         node_index = hash_item % len(self.hash_table)
