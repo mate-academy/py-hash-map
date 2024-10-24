@@ -1,56 +1,63 @@
 from typing import Any
 
 
+class Node:
+    def __init__(self, key: Any, value: Any) -> None:
+        self.key = key
+        self.value = value
+        self.hash = hash(key)
+
+
 class Dictionary:
-
-    class Node:
-        def __init__(self, key: Any, value: Any) -> None:
-            self.key = key
-            self.value = value
-            self.hash = hash(key)
-
     def __init__(self) -> None:
         self.capacity = 8
         self.size = 0
         self.load_factor = 2 / 3
-        self.hash_table = [[] for _ in range(self.capacity)]
+        self.hash_table = [None] * self.capacity
 
     def __len__(self) -> int:
         return self.size
 
-    def index(self, key: Any) -> int:
-        return hash(key) % self.capacity
-
     def resize(self) -> None:
-        new_capacity = self.capacity * 2
-        new_hash_table = [[] for _ in range(new_capacity)]
+        self.capacity *= 2
+        self.size = 0
+        old_table = self.hash_table
+        self.hash_table = [None] * self.capacity
 
-        for bucket in self.hash_table:
-            for node in bucket:
-                index = node.hash % new_capacity
-                new_hash_table[index].append(node)
-
-        self.hash_table = new_hash_table
-        self.capacity = new_capacity
+        for node in old_table:
+            if node is not None:
+                self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if self.size / self.capacity > self.load_factor:
-            self.resize()
+        index = hash(key) % self.capacity
 
-        index = self.index(key)
-        for node in self.hash_table[index]:
-            if node.key == key:
-                node.value = value
+        while True:
+            node = self.hash_table[index]
+
+            if node is None:
+                self.hash_table[index] = Node(key, value)
+                self.size += 1
+
+                if self.size / self.capacity > self.load_factor:
+                    self.resize()
                 return
 
-        self.hash_table[index].append(self.Node(key, value))
-        self.size += 1
+            elif node.key == key:
+                self.hash_table[index].value = value
+                return
+
+            index = (index + 1) % self.capacity
 
     def __getitem__(self, key: Any) -> Any:
-        index = self.index(key)
+        index = hash(key) % self.capacity
 
-        for node in self.hash_table[index]:
+        while True:
+            node = self.hash_table[index]
+
+            if node is None:
+                raise KeyError(f"Key {key} not found")
+
             if node.key == key:
                 return node.value
 
-        raise KeyError(f"Key '{key}' not found.")
+            index = (index + 1) % self.capacity
