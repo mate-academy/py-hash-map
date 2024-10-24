@@ -52,7 +52,6 @@ class Dictionary:
         except KeyError:
             return default_value
 
-
     def pop(self, key: Hashable, *default_value: Any) -> Any:
         value = None
         value_switched = False
