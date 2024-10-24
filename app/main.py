@@ -39,13 +39,13 @@ class Dictionary:
         self.hash_table[index] = (key, hash(key), value)
         self.length += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         value = self._get_key_value(key)
         if value is None:
             raise KeyError
         return value
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         self._set_key_value(key, value)
 
     def __len__(self) -> int:
