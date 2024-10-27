@@ -47,7 +47,7 @@ class Dictionary():
         self.table[index] = Node(key, value)
         self.size += 1
 
-    def __getitem__(self, key: Any) -> None:
+    def __getitem__(self, key: Any) -> Any:
         index = self._index(key)
 
         while self.table[index] is not None:
@@ -57,5 +57,5 @@ class Dictionary():
 
         raise KeyError(f"Key {key} not found")
 
-    def __len__(self) -> Any:
+    def __len__(self) -> int:
         return self.size
