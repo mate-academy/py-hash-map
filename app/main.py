@@ -19,12 +19,12 @@ class Dictionary():
         self.size = 0
         self.table = [None] * self.capacity
 
-    def _resize(self):
+    def _resize(self) -> None:
         old_table = self.table
         self.capacity *= 2
         self.table = [None] * self.capacity
         self.size = 0
-        
+
         for node in old_table:
             if node:
                 self.__setitem__(node.key, node.value)
