@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -9,9 +9,7 @@ class Dictionary:
     def _hash(self, key: Any) -> int:
         return hash(key) % len(self.hash_table)
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        if isinstance(key, list | dict | set):
-            raise TypeError("Key must be a hashable type")
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._hash(key)
 
         if self.hash_table[index] is None:
@@ -33,6 +31,8 @@ class Dictionary:
         for (k, v) in self.hash_table[index]:
             if k == key:
                 return v
+
+        raise KeyError(f"Key {key} not found.")
 
     def __len__(self) -> int:
         return self.length
