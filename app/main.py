@@ -1,64 +1,78 @@
-from typing import Any
+from dataclasses import dataclass
+from typing import Hashable, Any, Optional
 
 
+@dataclass
 class Node:
-    def __init__(self, key: Any, value: Any, hash_value: int) -> None:
-        self.key = key
-        self.value = value
-        self.hash = hash_value
-        self.next = None
+    key: Hashable
+    value_data: Any
+    hash_value: int
 
 
 class Dictionary:
-    def __init__(self) -> None:
-        self.capacity = 8
-        self.size = 0
-        self.load_factor = 0.7
-        self.table = [None] * self.capacity
+    initial_capacity = 8
+    capacity_multiplier = 2
+    size = 0
+    load_factor = 2 / 3
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        current_index = self._hash_index(key)
-        current = self.table[current_index]
-        while current is not None:
-            if current.key == key:
-                current.value = value
-                return
-            current = current.next
+    def __init__(self, capacity: int = initial_capacity) -> None:
+        self.capacity = capacity
+        self._size = 0
+        self._hash_table: list[Optional[Node]] = [None] * self.capacity
 
-        new_node = Node(key, value, hash(key))
-        new_node.next = self.table[current_index]
-        self.table[current_index] = new_node
-        self.size += 1
+    def __repr__(self) -> str:
+        return str(self)
 
-        if self.size / self.capacity > self.load_factor:
-            self._resize()
-
-    def __getitem__(self, key: Any) -> None:
-        current_index = self._hash_index(key)
-        current = self.table[current_index]
-        while current is not None:
-            if current.key == key:
-                return current.value
-            current = current.next
-        raise KeyError(f"Key '{key}' is not found")
+    def __str__(self) -> str:
+        return str(self._hash_table)
 
     def __len__(self) -> int:
-        return self.size
+        return self._size
 
-    def _hash_index(self, key: Any) -> int:
-        return hash(key) % self.capacity
+    @property
+    def max_size(self) -> float:
+        return self.capacity * self.load_factor
+
+    def _linear_probing(self, index: int) -> int:
+        return (index + 1) % self.capacity
+
+    def _calculate_index(self, key: Hashable) -> int:
+        key_hash = hash(key)
+        index = key_hash % self.capacity
+        while (node := self._hash_table[index]) is not None:
+            if node.key == key and node.hash_value == key_hash:
+                break
+            index = self._linear_probing(index)
+        return index
 
     def _resize(self) -> None:
-        new_capacity = self.capacity * 2
-        new_table = [None] * new_capacity
+        print("resize called")
+        self.capacity *= self.capacity_multiplier
+        old_hash_table = self._hash_table
+        self._hash_table = [None] * self.capacity
+        self._size = 0
+        for node in old_hash_table:
+            if node is not None:
+                self[node.key] = node.value_data
 
-        for node in self.table:
-            while node is not None:
-                current_index = hash(node.key) % new_capacity
-                new_node = Node(node.key, node.value, node.hash)
-                new_node.next = new_table[current_index]
-                new_table[current_index] = new_node
-                node = node.next
+    def __setitem__(self, key: Hashable, value_data: Any) -> None:
+        index = self._calculate_index(key)
+        if (node := self._hash_table[index]) is not None:
+            node.value_data = value_data
+            return
 
-        self.table = new_table
-        self.capacity = new_capacity
+        if self._size >= self.max_size:
+            self._resize()
+            index = self._calculate_index(key)
+
+        self._hash_table[index] = Node(key=key,
+                                       value_data=value_data,
+                                       hash_value=hash(key))
+        self._size += 1
+
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self._calculate_index(key)
+        node = self._hash_table[index]
+        if node is None:
+            raise KeyError(f"No such key: {key}")
+        return node.value_data
