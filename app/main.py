@@ -43,13 +43,13 @@ class Dictionary:
         return len(self.keys)
 
     def clear(self) -> None:
-        self.nodes = []
+        self.nodes, self.keys = list(), set()
 
     def __delitem__(self, key: Any) -> None:
         for index, node in enumerate(self.nodes):
             if isinstance(node, tuple):
                 if key == node[0]:
-                    del self.nodes[index]
+                    self.nodes[index] = None
                     return
         raise KeyError
 
