@@ -45,16 +45,18 @@ class Dictionary:
         self._size = 0
         for node in old_hash_table:
             if node is not None:
-                self[node.key] = node.value
+                index = self._calculate_index(node.key)
+                self._hash_table[index] = node
+                self._size += 1
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._calculate_index(key)
-        if (node := self._hash_table[index]) is not None:
-            node.value = value
+        if self._hash_table[index] is not None:
+            self._hash_table[index].value = value
             return
         if self._size + 1 >= self.max_size:
             self._resize()
-            self[key] = value
+            index = self._calculate_index(key)
         self._hash_table[index] = Node(
             key=key, value=value, key_hash=hash(key)
         )
