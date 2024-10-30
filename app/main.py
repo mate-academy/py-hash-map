@@ -79,7 +79,7 @@ class Dictionary:
         for item in self.hash_table:
             if item is not None:
                 item_list.append(f"{item.key}: {item.value}")
-        return f"{{{", ".join(item_list)}}}"
+        return "{" + ", ".join(item_list) + "}"
 
     def clear(self) -> None:
         default_capacity = 8
