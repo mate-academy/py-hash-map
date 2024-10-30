@@ -106,7 +106,7 @@ class Dictionary:
 
         if item is None:
             if value is None:
-                raise KeyError
+                raise KeyError(f"Key {key} not found.")
             else:
                 return value
 
@@ -115,9 +115,14 @@ class Dictionary:
         return item.value
 
     def update(self, iterable: Dictionary) -> None:
-        for item in iterable.hash_table:
-            if item is not None:
-                self[item.key] = item.value
+        if isinstance(iterable, Dictionary):
+            for item in iterable.hash_table:
+                if item is not None:
+                    self[item.key] = item.value
+        else:
+            raise TypeError(
+                "Iterable must be an instance of Dictionary class."
+            )
 
     def __iter__(self) -> Iterator:
         for item in self.hash_table:
