@@ -91,12 +91,12 @@ class Dictionary:
         self.hash_table[index] = None
         self.size -= 1
 
-    def get(self, key: Any, value: Any = None) -> Any:
+    def get(self, key: Any, default: Any = None) -> Any:
         index = self.find_index(key)
         item = self.hash_table[index]
 
         if item is None:
-            return value
+            return default
 
         return item.value
 
