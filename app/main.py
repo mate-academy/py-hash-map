@@ -1,67 +1,74 @@
-from typing import Any
-from collections.abc import Hashable
+from dataclasses import dataclass
+from typing import Hashable, Any
+
+
+@dataclass
+class Node:
+    key: Hashable
+    value: Any
+    key_hash: int
 
 
 class Dictionary:
-    def __init__(self) -> None:
-        self.__len = 8
-        self.dictionary = [None] * self.__len
+    INITIAL_CAPACITY = 8
+    THRESHOLD = 2 / 3
+    CAPACITY_MULTIPLIER = 2
 
-    def __setitem__(self, key: Hashable, value: Any) -> None:
-        if "__hash__" not in self.__dir__():
-            raise TypeError("Unhashable key")
+    def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
+        self.capacity = capacity
+        self._size = 0
+        self._hash_table: list[None | Node] = [None] * self.capacity
 
-        key_index = hash(key) % self.__len
+    def __repr__(self) -> str:
+        return str(self)
 
-        is_written = False
-        for i in range(key_index, self.__len):
-            if self.dictionary[i] is None or self.dictionary[i][0] == key:
-                self.dictionary[i] = [key, value]
-                is_written = True
-                break
-
-        if not is_written:
-            for i in range(0, key_index):
-                if self.dictionary[i] is None or self.dictionary[i][0] == key:
-                    self.dictionary[i] = [key, value]
-                    break
-
-        if len(self) > int(self.__len * (2 / 3)):
-            self.__resize()
-
-    def __getitem__(self, key: Hashable) -> Any:
-        key_index = hash(key) % self.__len
-
-        for i in range(key_index, self.__len):
-            if self.dictionary[i] is not None and self.dictionary[i][0] == key:
-                return self.dictionary[i][1]
-
-        for i in range(0, key_index):
-            if self.dictionary[i] is not None and self.dictionary[i][0] == key:
-                return self.dictionary[i][1]
-
-        raise KeyError
+    def __str__(self) -> str:
+        return str(self._hash_table)
 
     def __len__(self) -> int:
-        return sum(1 for item in self.dictionary if item is not None)
+        return self._size
 
-    def __delitem__(self, key: Hashable) -> None:
-        key_index = hash(key) % self.__len
-        for i in range(key_index, self.__len):
-            if self.dictionary[i] is not None and self.dictionary[i][0] == key:
-                self.dictionary[i] = None
-                return
-        for i in range(0, key_index):
-            if self.dictionary[i] is not None and self.dictionary[i][0] == key:
-                self.dictionary[i] = None
-                return
-        raise KeyError
+    @property
+    def max_size(self) -> float:
+        return self.capacity * self.THRESHOLD
 
-    def __resize(self) -> None:
-        old_dictionary = self.dictionary
-        self.__len *= 2
-        self.dictionary = [None] * self.__len
-        for el in old_dictionary:
-            if el is not None:
-                key, value = el
-                self[key] = value
+    def _linear_probing(self, index: int) -> int:
+        return (index + 1) % self.capacity
+
+    def _calculate_index(self, key: Hashable) -> int:
+        key_hash = hash(key)
+        index = key_hash % self.capacity
+        while (node := self._hash_table[index]) is not None:
+            if node.key == key and node.key_hash == key_hash:
+                break
+            index = self._linear_probing(index)
+        return index
+
+    def _resize(self) -> None:
+        print("resize called")
+        self.capacity *= self.CAPACITY_MULTIPLIER
+        old_hash_table = self._hash_table
+        self._hash_table = [None] * self.capacity
+        self._size = 0
+        for node in old_hash_table:
+            if node is not None:
+                self[node.key] = node.value
+
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        index = self._calculate_index(key)
+        node = self._hash_table[index]
+        if node is not None:
+            node.value = value
+            return
+        if self._size + 1 >= self.max_size:
+            self._resize()
+            self[key] = value
+        else:
+            self._hash_table[index] = Node(key, value, hash(key))
+            self._size += 1
+
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self._calculate_index(key)
+        if (node := self._hash_table[index]) is None:
+            raise KeyError(f"No such key: {key}")
+        return node.value
