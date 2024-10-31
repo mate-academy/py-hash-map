@@ -11,7 +11,7 @@ class Node:
 
 class Dictionary:
     INITIAL_CAPACITY = 8
-    THRESHOLD = 2 / 3
+    THRESHOLD = 0.67
     CAPACITY_MULTIPLIER = 2
 
     def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
@@ -43,11 +43,10 @@ class Dictionary:
         self.capacity *= self.CAPACITY_MULTIPLIER
         self._hash_table = [None] * self.capacity
         self._size = 0
+
         for node in old_hash_table:
             if node is not None:
-                index = self._calculate_index(node.key)
-                self._hash_table[index] = node
-                self._size += 1
+                self[node.key] = node.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
         index = self._calculate_index(key)
