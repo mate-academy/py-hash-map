@@ -1,10 +1,12 @@
-from typing import Any, Hashable, List, Tuple
+from typing import Any, Hashable, List
+
 
 class Node:
     def __init__(self, key: Hashable, value: Any) -> None:
         self.key = key
         self.value = value
         self.hash = hash(key)
+
 
 class Dictionary:
     def __init__(self) -> None:
