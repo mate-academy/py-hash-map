@@ -1,37 +1,49 @@
-from typing import Any, Hashable
+from typing import Any, Hashable, List, Tuple
 
+class Node:
+    def __init__(self, key: Hashable, value: Any) -> None:
+        self.key = key
+        self.value = value
+        self.hash = hash(key)
 
 class Dictionary:
     def __init__(self) -> None:
         self.length = 0
-        self.hash_table: list = [None] * 8
+        self.capacity = 8
+        self.hash_table: List[List[Node]] = [[] for _ in range(self.capacity)]
 
     def _hash(self, key: Any) -> int:
-        return hash(key) % len(self.hash_table)
+        return hash(key) % self.capacity
+
+    def _resize(self) -> None:
+        old_hash_table = self.hash_table
+        self.capacity *= 2
+        self.hash_table = [[] for _ in range(self.capacity)]
+        self.length = 0
+
+        for bucket in old_hash_table:
+            for node in bucket:
+                self[node.key] = node.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.length / self.capacity >= 0.7:
+            self._resize()
+
         index = self._hash(key)
 
-        if self.hash_table[index] is None:
-            self.hash_table[index] = []
-
-        for i, (k, v) in enumerate(self.hash_table[index]):
-            if k == key:
-                self.hash_table[index][i] = (key, value)
+        for node in self.hash_table[index]:
+            if node.key == key:
+                node.value = value
                 return
 
-        self.hash_table[index].append((key, value))
+        self.hash_table[index].append(Node(key, value))
         self.length += 1
 
     def __getitem__(self, key: Any) -> Any:
         index = self._hash(key)
-        if self.hash_table[index] is None:
-            raise KeyError(f"Key {key} not found.")
-
-        for (k, v) in self.hash_table[index]:
-            if k == key:
-                return v
-
+        for node in self.hash_table[index]:
+            if node.key == key:
+                return node.value
         raise KeyError(f"Key {key} not found.")
 
     def __len__(self) -> int:
