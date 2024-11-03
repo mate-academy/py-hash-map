@@ -52,6 +52,7 @@ class Dictionary:
         else:
             self.hash_table[index] = Node(key, value, hash(key))
             self.size += 1
+
     def __getitem__(self, key: Hashable) -> Any:
         index = self.calculate_index(key)
         if (node := self.hash_table[index]) is None:
