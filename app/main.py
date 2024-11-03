@@ -6,7 +6,7 @@ from typing import Hashable, Any
 class Node:
     key: Hashable
     value: any
-    hash_value: int
+    key_hash: int
 
 
 class Dictionary:
@@ -18,37 +18,45 @@ class Dictionary:
         self.capacity = capacity
         self.size = 0
         self.hash_table = [None] * self.capacity
-        self.container = [[] for _ in range(self.capacity)]
 
-    def value_table_index(self, key: Hashable) -> int:
-        return hash(key) % self.capacity
+    def index_change(self, index: int) -> int:
+        return (index + 1) % self.capacity
+
+    def calculate_index(self, key: Hashable) -> int:
+        key_hash = hash(key)
+        index = key_hash % self.capacity
+        while (node := self.hash_table[index]) is not None:
+            if node.key == key and node.key_hash == key_hash:
+                break
+            index = self.index_change(index)
+        return index
 
     def resize(self) -> None:
-        new_capacity = self.capacity * self.CAPACITY_MULTIPLIER
-        new_container = [[] for _ in range(new_capacity)]
-
-        for bucket in self.container:
-            for node in bucket:
-                new_index = node.hash_value % new_capacity
-                new_container[new_index].append(node)
-
-        self.capacity = new_capacity
-        self.container = new_container
+        self.capacity *= self.CAPACITY_MULTIPLIER
+        old_hash_table = self.hash_table
+        self.hash_table = [None] * self.capacity
+        self.size = 0
+        for node in old_hash_table:
+            if node is not None:
+                self[node.key] = node.value
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        node = Node(key, value, hash(key))
-        index = self.value_table_index(key)
-        if self.hash_table[index] is None:
-            self.size += 1
-        self.hash_table[index] = node
-        if self.THRESHOLD * self.capacity <= self.size:
+        index = self.calculate_index(key)
+        node = self.hash_table[index]
+        if node is not None:
+            node.value = value
+            return
+        if self.size + 1 >= self.capacity * self.THRESHOLD:
             self.resize()
-
+            self[key] = value
+        else:
+            self.hash_table[index] = Node(key, value, hash(key))
+            self.size += 1
     def __getitem__(self, key: Hashable) -> Any:
-        index = self.value_table_index(key)
-        if self.hash_table[index] is not None:
-            return self.hash_table[index].value
-        raise KeyError
+        index = self.calculate_index(key)
+        if (node := self.hash_table[index]) is None:
+            raise KeyError
+        return node.value
 
     def __len__(self) -> int:
         return self.size
