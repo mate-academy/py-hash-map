@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 
 class Dictionary:
@@ -8,12 +8,12 @@ class Dictionary:
         self.storage = [None] * self.capacity
 
     class Node:
-        def __init__(self, key: Any, value: Any) -> None:
+        def __init__(self, key: Hashable, value: Any) -> None:
             self.key = key
             self.value = value
             self.next = None
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         index = hash(key) % self.capacity
         node = self.storage[index]
 
@@ -28,7 +28,7 @@ class Dictionary:
         self.storage[index] = new_node
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
         node = self.storage[index]
 
