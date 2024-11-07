@@ -21,13 +21,17 @@ class Dictionary:
         """Resize the hash table when the load factor is exceeded."""
         self.capacity *= 2
         new_table: list[Optional[self._Node]] = [None] * self.capacity
+
         for node in self.table:
             while node:
                 index = self._hash(node.key)
                 new_node = self._Node(node.key, node.value)
+
                 new_node.next = new_table[index]
                 new_table[index] = new_node
+
                 node = node.next
+
         self.table = new_table
 
     def __setitem__(self, key: Any, value: Any) -> None:
