@@ -29,6 +29,8 @@ class Dictionary:
             self.__resize()
 
     def __getitem__(self, key: Hashable) -> Any:
+        if not len(self._hash_table):
+            raise KeyError
         hash_index = self.__index_to_read(key)
         return self._hash_table[hash_index].value
 
@@ -41,10 +43,12 @@ class Dictionary:
         self.__size -= 1
 
     def __repr__(self) -> str:
-        str_ = "{"
-        for el in self:
-            str_ += f"'{el}': {self.get(el)}, "
-        return str_[:-2] + "}"
+        if self.__size:
+            str_ = "{"
+            for el in self:
+                str_ += f"'{el}': {self.get(el)}, "
+            return str_[:-2] + "}"
+        return "{}"
 
     def __iter__(self) -> Iterator:
         list_ = []
@@ -67,7 +71,6 @@ class Dictionary:
             hash_index = self.__index_to_read(key)
             value = self._hash_table[hash_index]
             self.__delitem__(key)
-            self.__size -= 1
             return value
         except KeyError:
             try:
