@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Hashable, Any
 
 import copy
 
@@ -12,7 +12,7 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def get_cell_index(self, key: Any) -> int:
+    def get_cell_index(self, key: Hashable) -> int:
         return hash(key) % self.len_hash_table
 
     def resize_hash_table(self) -> None:
@@ -32,11 +32,11 @@ class Dictionary:
     def check_threshold(self) -> bool:
         return self.length == self.threshold()
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self.check_threshold():
             self.resize_hash_table()
 
-        hashed_key = hash(key) % self.len_hash_table
+        hashed_key = self.get_cell_index(key)
         cell = self.hash_table[hashed_key]
 
         if cell is None:
@@ -59,7 +59,7 @@ class Dictionary:
                 self.hash_table[index] = [key, hash(key), value]
                 self.length += 1
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Any:
         found_key = False
         for index, cell in enumerate(self.hash_table):
             if cell is not None:
@@ -71,7 +71,7 @@ class Dictionary:
             return record_value
         raise KeyError
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         found_key = False
         for index, cell in enumerate(self.hash_table):
             if cell is not None:
@@ -80,8 +80,7 @@ class Dictionary:
                     found_key = True
                     break
         if found_key:
-            self.hash_table.remove(cell)
-            self.length -= 1
             self.hash_table.append(None)
+            self.length -= 1
         else:
             raise KeyError
