@@ -7,18 +7,18 @@ class Dictionary:
     def __init__(self) -> None:
         self.length = 0
         self.hash_table: list = [None] * 8
-        self.len_hash_tabel = len(self.hash_table)
+        self.len_hash_table = len(self.hash_table)
 
     def __len__(self) -> int:
         return self.length
 
     def get_cell_index(self, key: Any) -> int:
-        return hash(key) % self.len_hash_tabel
+        return hash(key) % self.len_hash_table
 
-    def resize_hash_tabel(self) -> None:
+    def resize_hash_table(self) -> None:
         old_tabel = copy.deepcopy(self.hash_table)
-        self.hash_table = self.len_hash_tabel * [None] * 2
-        self.len_hash_tabel = len(self.hash_table)
+        self.hash_table = [None] * (self.len_hash_table * 2)
+        self.len_hash_table = len(self.hash_table)
         self.length = 0
         for cell in old_tabel:
             if cell is not None:
@@ -27,23 +27,23 @@ class Dictionary:
         del old_tabel
 
     def threshold(self) -> int:
-        return int((2 / 3) * self.len_hash_tabel)
+        return int((2 / 3) * self.len_hash_table)
 
     def check_threshold(self) -> bool:
-        return self.length < self.threshold()
+        return self.length == self.threshold()
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if not self.check_threshold():
-            self.resize_hash_tabel()
+        if self.check_threshold():
+            self.resize_hash_table()
 
-        hashed_key = hash(key) % self.len_hash_tabel
-        sell = self.hash_table[hashed_key]
+        hashed_key = hash(key) % self.len_hash_table
+        cell = self.hash_table[hashed_key]
 
-        if sell is None:
+        if cell is None:
             self.hash_table[hashed_key] = [key, hash(key), value]
             self.length += 1
 
-        if sell is not None:
+        if cell is not None:
             found_key = False
             for index, cell in enumerate(self.hash_table):
                 if cell is not None:
@@ -81,6 +81,7 @@ class Dictionary:
                     break
         if found_key:
             self.hash_table.remove(cell)
+            self.length -= 1
             self.hash_table.append(None)
         else:
             raise KeyError
