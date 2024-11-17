@@ -8,7 +8,7 @@ _TV = TypeVar("_TV")
 
 
 @dataclass
-class Node[_TK, _TV]:
+class Node:
     key: _TK
     hash_key: int = field(init=False, repr=False)
     value: _TV
