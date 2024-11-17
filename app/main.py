@@ -236,10 +236,9 @@ class Dictionary[_TK, _TV](Mapping):
                     if self._reached_threshold():
                         self._resize_hash_table()
 
-
     def _key_by_index_is_found(self, index: int, key: _TK, /) -> bool:
         return (
-            self._hash_table[index] is not None 
+            self._hash_table[index] is not None
             and self._hash_table[index].key == key
         )
 
