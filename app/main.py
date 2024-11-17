@@ -17,7 +17,7 @@ class Node:
         self.hash_key = hash(self.key)
 
 
-class DictionaryKeys[_TK]:
+class DictionaryKeys:
 
     def __init__(self, dictionary: Dictionary[_TK, _TV], /) -> None:
         self._keys = tuple(
@@ -25,23 +25,23 @@ class DictionaryKeys[_TK]:
             if node is not None
         )
 
-    def __iter__(self) -> DictionaryKeysIterator[_TK]:
+    def __iter__(self) -> DictionaryKeysIterator:
         return DictionaryKeysIterator(self)
 
 
-class DictionaryValues[_TV]:
+class DictionaryValues:
 
-    def __init__(self, dictionary: Dictionary[_TK, _TV], /) -> None:
+    def __init__(self, dictionary: Dictionary, /) -> None:
         self._values = tuple(
             node.value for node in dictionary.__dict__["_hash_table"]
             if node is not None
         )
 
-    def __iter__(self) -> DictionaryValuesIterator[_TV]:
+    def __iter__(self) -> DictionaryValuesIterator:
         return DictionaryValuesIterator(self)
 
 
-class DictionaryItems[_TK, _TV]:
+class DictionaryItems:
 
     def __init__(self, dictionary: Dictionary[_TK, _TV], /) -> None:
         self._items = tuple(
@@ -49,13 +49,13 @@ class DictionaryItems[_TK, _TV]:
             if node is not None
         )
 
-    def __iter__(self) -> DictionaryItemsIterator[_TK, _TV]:
+    def __iter__(self) -> DictionaryItemsIterator:
         return DictionaryItemsIterator(self)
 
 
-class DictionaryKeysIterator[_TK]:
+class DictionaryKeysIterator:
 
-    def __init__(self, dictionary_keys: DictionaryKeys[_TK], /) -> None:
+    def __init__(self, dictionary_keys: DictionaryKeys, /) -> None:
         self._keys = dictionary_keys.__dict__["_keys"]
         self._index = 0
 
@@ -71,9 +71,9 @@ class DictionaryKeysIterator[_TK]:
         return key
 
 
-class DictionaryValuesIterator[_TV]:
+class DictionaryValuesIterator:
 
-    def __init__(self, dictionary_values: DictionaryValues[_TV], /) -> None:
+    def __init__(self, dictionary_values: DictionaryValues, /) -> None:
         self._values = dictionary_values.__dict__["_values"]
         self._index = 0
 
@@ -89,9 +89,9 @@ class DictionaryValuesIterator[_TV]:
         return key
 
 
-class DictionaryItemsIterator[_TK, _TV]:
+class DictionaryItemsIterator:
 
-    def __init__(self, dictionary_items: DictionaryItems[_TK, _TV], /) -> None:
+    def __init__(self, dictionary_items: DictionaryItems, /) -> None:
         self._items = dictionary_items.__dict__["_items"]
         self._index = 0
 
@@ -107,7 +107,7 @@ class DictionaryItemsIterator[_TK, _TV]:
         return key, value
 
 
-class Dictionary[_TK, _TV](Mapping):
+class Dictionary(Mapping):
 
     def __init__(self) -> None:
         self._hash_table: list[None | Node] = [None] * 8
@@ -122,7 +122,7 @@ class Dictionary[_TK, _TV](Mapping):
             ) + "})"
         )
 
-    def __iter__(self) -> DictionaryKeysIterator[_TK]:
+    def __iter__(self) -> DictionaryKeysIterator:
         return iter(self.keys())
 
     def __len__(self) -> int:
