@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TypeVar, Any, Self, Mapping
+from typing import TypeVar, Any, Mapping
 from dataclasses import dataclass, field
 
 
@@ -59,7 +59,7 @@ class DictionaryKeysIterator:
         self._keys = dictionary_keys.__dict__["_keys"]
         self._index = 0
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> DictionaryKeysIterator:
         return self
 
     def __next__(self) -> _TK:
@@ -77,16 +77,16 @@ class DictionaryValuesIterator:
         self._values = dictionary_values.__dict__["_values"]
         self._index = 0
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> DictionaryValuesIterator:
         return self
 
     def __next__(self) -> _TV:
         if self._index == len(self._values):
             raise StopIteration
 
-        key = self._values[self._index]
+        value = self._values[self._index]
         self._index += 1
-        return key
+        return value
 
 
 class DictionaryItemsIterator:
@@ -95,7 +95,7 @@ class DictionaryItemsIterator:
         self._items = dictionary_items.__dict__["_items"]
         self._index = 0
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> DictionaryItemsIterator:
         return self
 
     def __next__(self) -> tuple[_TK, _TV]:
@@ -135,28 +135,6 @@ class Dictionary(Mapping):
         self._manage_hash_table(key, value, set_item=True)
 
     def __delitem__(self, key: _TK, /) -> None:
-        # hash_key = hash(key)
-        # index = hash_key % len(self._hash_table)
-        #
-        # if self._key_by_index_is_found(index, key):
-        #     self._hash_table[index] = None
-        #     self._length -= 1
-        #
-        # else:
-        #     index2 = index + 1
-        #     while index2 != index:
-        #         if index2 >= len(self._hash_table):
-        #             index2 = 0
-        #
-        #         if self._key_by_index_is_found(index2, key):
-        #             self._hash_table[index2] = None
-        #             self._length -= 1
-        #             break
-        #
-        #         if index2 != index:
-        #             index2 += 1
-        #     else:
-        #         raise KeyError(f"Key '{key}' is not in dictionary")
         self._manage_hash_table(key, delete_item=True)
 
     def _get_item_by(self, index: int, /) -> _TV:
