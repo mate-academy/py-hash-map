@@ -19,9 +19,10 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
 
     def get_hash_table_load_info(self) -> str:
+        current_load = len(self.hash_table) - self.hash_table.count(None)
+        expected_load = self.loaded + 1
         return (
-            "is Load" if self.loaded == self.hash_table.count(None)
-            else "is not Load"
+            "is Load" if current_load == expected_load else "is not Load"
         )
 
     @staticmethod
@@ -44,13 +45,12 @@ class Dictionary:
             self.hash_table[index] = node_pair
 
     def resize_hash_table(self) -> None:
-        self.hash_table.extend([None] * self.capacity)
         self.capacity *= 2
+        old_hash_table = self.hash_table
+        self.hash_table = [None] * self.capacity
         self.loaded = int(self.capacity * (2 / 3))
-        for i in range(self.capacity // 2):
-            if self.hash_table[i] is not None:
-                node_pair = self.hash_table[i]
-                self.hash_table[i] = None
+        for node_pair in old_hash_table:
+            if node_pair is not None:
                 self.input_hash_data(node_pair)
 
     def __setitem__(
