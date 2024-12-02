@@ -4,14 +4,13 @@ from typing import Any
 class Dictionary:
     def __init__(
             self,
-            initial_capacity: int =8,
-            load_factor: float =0.666
+            initial_capacity: int = 8,
+            load_factor: float = 0.666
     ) -> None:
         self.capacity = initial_capacity
         self.load_factor = load_factor
         self.size = 0
         self.table = [None] * self.capacity
-
 
     class Node:
         def __init__(self, key: Any, value: Any) -> None:
@@ -19,7 +18,6 @@ class Dictionary:
             self.value = value
             self.hash = hash(key)
             self.next = None
-
 
     def __setitem__(self, key: Any, value: Any) -> None:
         node_hash = hash(key)
@@ -56,7 +54,6 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.size
-
 
     def _resize(self) -> None:
         old_table = self.table
