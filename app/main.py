@@ -21,7 +21,7 @@ class Dictionary:
                 return entry[0]
             table_index = next(self._gen_next_slot(table_index))
 
-        raise KeyError(f'Key {key} not found')
+        raise KeyError(f"Key {key} not found")
 
     def __setitem__(self, key: any, value: any) -> None:
         if isinstance(key, (list, set, dict)):
