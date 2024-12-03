@@ -16,15 +16,12 @@ class Dictionary:
         table_index = hash_key % self._size
 
         for _ in range(self._size):
-            if self._table[table_index] and self._table[table_index][1] == key:
-                return self._table[table_index][0]
-            else:
-                table_index = next(self._gen_next_slot(table_index))
-                if (self._table[table_index]
-                        and self._table[table_index][1] == key):
-                    return self._table[table_index][0]
+            entry = self._table[table_index]
+            if entry and entry[1] == key:
+                return entry[0]
+            table_index = next(self._gen_next_slot(table_index))
 
-        raise KeyError
+        raise KeyError(f'Key {key} not found')
 
     def __setitem__(self, key: any, value: any) -> None:
         if isinstance(key, (list, set, dict)):
@@ -47,10 +44,7 @@ class Dictionary:
 
                 table_index = next(self._gen_next_slot(table_index))
 
-        print("NO EMPTY SLOTS")
-
     def _resize_table(self) -> None:
-        print("RESIZE")
         old_size = self._size
         self._size *= self._resize_const
         new_table: list[list] = [[] for _ in range(self._size)]
