@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Iterable, Mapping, Tuple
 
 
 class Dictionary:
@@ -57,7 +57,7 @@ class Dictionary:
 
         raise KeyError(f"Key '{key}' not found")
 
-    def __iter__(self) -> None:
+    def __iter__(self) -> Iterable:
         for bucket in self.table:
             for key, value in bucket:
                 yield key
@@ -103,6 +103,8 @@ class Dictionary:
             return default
         raise KeyError(f"Key '{key}' not found")
 
-    def update(self, other: dict) -> None:
+    def update(self,
+               other: Mapping | Iterable[Tuple[Any, Any]] = None,
+               ) -> None:
         for key, value in other.items():
             self[key] = value
