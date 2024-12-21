@@ -2,7 +2,7 @@ from typing import Any
 
 
 class Dictionary:
-    class Node:
+    class _Node:
         def __init__(self, key: Any, value: Any) -> None:
             self.key = key
             self.value = value
@@ -35,10 +35,10 @@ class Dictionary:
                 node.value = value
                 return
 
-        self.table[index].append(self.Node(key, value))
+        self.table[index].append(self._Node(key, value))
         self.size += 1
 
-    def __getitem__(self, key: Any) -> Node:
+    def __getitem__(self, key: Any) -> Any:
         index = hash(key) % self.capacity
 
         if self.table[index] is not None:
