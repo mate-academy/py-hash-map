@@ -1,12 +1,12 @@
-from operator import index
 from typing import Any
 
 
 class ClassKeyValue:
-    def __init__(self, key: str, value) -> None:
+    def __init__(self, key: str, value: Any) -> None:
         self.key = key
         self.value = value
         self.hash = hash(key)
+
 
 class Dictionary:
     def __init__(self) -> None:
@@ -17,11 +17,10 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __setitem__(self, key: str, value) -> None:
+    def __setitem__(self, key: str, value: Any) -> None:
         if self.length / len(self.key_value_table) >= 0.75:
             self.double_size()
         index = self.get_index(key)
-
 
         for _ in range(len(self.key_value_table)):
             key_value = self.key_value_table[index]
@@ -35,18 +34,15 @@ class Dictionary:
 
             index = (index + 1) % len(self.key_value_table)
 
-    def __getitem__(self, key: str):
+    def __getitem__(self, key: str) -> Any:
         index = self.get_index(key)
-
-        # if key_value.key == key:
-        #     return key_value.value
         for _ in range(len(self.key_value_table)):
             key_value = self.key_value_table[index]
             if key_value is not None and key_value.key == key:
                 return key_value.value
             index = (index + 1) % len(self.key_value_table)
 
-        raise KeyError
+        raise KeyError(f"Key '{key}' not found.")
 
     def double_size(self) -> None:
         old_table = self.key_value_table
@@ -57,5 +53,5 @@ class Dictionary:
             if key_value is not None:
                 self.__setitem__(key_value.key, key_value.value)
 
-    def get_index(self, key: str) -> Any:
+    def get_index(self, key: str) -> int:
         return hash(key) % len(self.key_value_table)
