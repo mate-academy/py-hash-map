@@ -75,13 +75,13 @@ class Dictionary:
 
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
-        new_tabl = [None] * new_capacity
+        new_table = [None] * new_capacity
         for slot in self.table:
             if slot is not None:
                 for h, k, v in slot:
                     new_index: int = h % new_capacity
-                    if new_tabl[new_index] is None:
-                        new_tabl[new_index] = []
-                    new_tabl[new_index].append((h, k, v))
-        self.table = new_tabl
+                    if new_table[new_index] is None:
+                        new_table[new_index] = []
+                    new_table[new_index].append((h, k, v))
+        self.table = new_table
         self.capacity = new_capacity
