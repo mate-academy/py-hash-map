@@ -1,4 +1,5 @@
 from collections.abc import Hashable
+from typing import Any
 
 
 class Dictionary:
@@ -21,7 +22,7 @@ class Dictionary:
         self._capacity = new_capacity
         self.nodes = new_nodes
 
-    def __setitem__(self, key: Hashable, value: any) -> None:
+    def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._size / self._capacity >= self._load_factor:
             self._resize()
 
@@ -53,6 +54,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.nodes = [None] * self._capacity
+        self._size = 0
 
     def __delitem__(self, key: Hashable) -> None:
         index = hash(key) % self._capacity
@@ -74,8 +76,11 @@ class Dictionary:
             if node is not None:
                 yield node[0]
 
-    def get(self, key: Hashable) -> any:
-        return self.__getitem__(key)
+    def get(self, key: Hashable, value: Any = 0) -> any:
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return value
 
     def pop(self, key: Hashable) -> any:
         index = hash(key) % self._capacity
@@ -92,8 +97,4 @@ class Dictionary:
         raise KeyError(f"Key {key} not found")
 
     def update(self, key: Hashable, value: any) -> None:
-        try:
-            self[key] = value
-        except KeyError:
-            print(f"Key {key} not found. New item is added: ({key}: {value})")
-            self.__setitem__(key, value)
+        self.__setitem__(key, value)

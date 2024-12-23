@@ -1,3 +1,4 @@
+import math
 from typing import Any
 
 
@@ -12,7 +13,7 @@ class Point:
         return self.x == other.x and self.y == other.y
 
     def __hash__(self) -> int:
-        return hash((self.x + self.y))
+        return int(math.sqrt(self._x ** 2 + self._y ** 2))
 
     @property
     def x(self) -> float:
