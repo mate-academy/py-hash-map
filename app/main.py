@@ -48,8 +48,6 @@ class Dictionary:
         self.table[index] = self.Node(key, value)
         self.size += 1
 
-        print(self.table)
-
     def __getitem__(self, key: Any) -> Any:
         index = self.index(key)
 
