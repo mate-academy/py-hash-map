@@ -17,7 +17,6 @@ class Dictionary:
         self.capacity = initial_capacity
         self.load_factor = load_factor
         self.table = [None] * initial_capacity
-        self.size = 0
 
     def index(self, key: Any) -> int:
         return hash(key) % self.capacity
@@ -26,14 +25,16 @@ class Dictionary:
         old_table = self.table
         self.capacity = self.capacity * 2
         self.table = [None] * self.capacity
-        self.size = 0
 
         for node in old_table:
             if node is not None:
                 self.__setitem__(node.key, node.value)
 
+    def calculate_size(self) -> int:
+        return sum(1 for node in self.table if node is not None)
+
     def __setitem__(self, key: Any, value: Any) -> None:
-        if (self.size + 1) / self.capacity > self.load_factor:
+        if (self.calculate_size() + 1) / self.capacity >= self.load_factor:
             self.resize()
 
         index = self.index(key)
@@ -46,7 +47,6 @@ class Dictionary:
             index = (index + 1) % self.capacity
 
         self.table[index] = self.Node(key, value)
-        self.size += 1
 
     def __getitem__(self, key: Any) -> Any:
         index = self.index(key)
@@ -59,4 +59,4 @@ class Dictionary:
         raise KeyError(f"Key {key} not found.")
 
     def __len__(self) -> int:
-        return self.size
+        return self.calculate_size()
