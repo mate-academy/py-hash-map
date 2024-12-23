@@ -1,26 +1,25 @@
 from __future__ import annotations
 from math import floor, log
-from collections import deque
 from typing import Hashable, Any, Iterator
 
 
 PairType = tuple[Hashable, Any]
-BucketType = deque[PairType]
+BucketType = list[PairType]
 
 
 class Dictionary:
 
-    DEFAULT_CAPACITY: int = 16
+    DEFAULT_CAPACITY: int = 8
 
     def __init__(
             self,
             capacity: int = DEFAULT_CAPACITY,
             load_factor_limit: float = 0.75
     ) -> None:
-        if capacity >= Dictionary.DEFAULT_CAPACITY:
+        if capacity < Dictionary.DEFAULT_CAPACITY:
             capacity = Dictionary._next_power_of_two(capacity)
 
-        self._buckets: list[BucketType] = [deque() for _ in range(capacity)]
+        self._buckets: list[BucketType] = [[] for _ in range(capacity)]
 
         self._load_factor_limit = load_factor_limit
 
