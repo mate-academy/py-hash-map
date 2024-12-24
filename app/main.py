@@ -73,7 +73,6 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
-
     def __delitem__(self, key: Any) -> None:
         index = self._hash(key)
         bucket = self.table[index]
@@ -86,12 +85,10 @@ class Dictionary:
 
         raise KeyError(f"Key '{key}' not found.")
 
-
     def __iter__(self) -> Iterable[Any]:
         for bucket in self.table:
             for key in bucket:
                 yield key
-
 
     def __contains__(self, key: Any) -> bool:
         index = self._hash(key)
@@ -100,7 +97,6 @@ class Dictionary:
             if k == key:
                 return True
         return False
-
 
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
@@ -123,7 +119,6 @@ class Dictionary:
         for i in range(self.capacity):
             self.table[i] = []
         self.size = 0
-
 
     def get(self, key: Any, default: Any = None) -> Any:
         try:
