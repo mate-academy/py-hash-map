@@ -1,76 +1,153 @@
-from typing import Any, Hashable
+from dataclasses import dataclass
+from typing import Hashable, Any, Iterator, Iterable
 
 
 class Dictionary:
 
-    def __init__(self) -> None:
-        self._size = 8
-        self._table = [None] * self._size
-        self._counter = 0
+    INITIAL_CAPACITY = 8
+    RESIZE_THRESHOLD = 2 / 3
 
-    class Node:
-        def __init__(self, key: Hashable, value: Any) -> None:
-            self.key = key
-            self.value = value
-            self._hash = hash(key)
+    @dataclass
+    class Bucket:
+        key: Hashable
+        value: Any
 
         def __str__(self) -> str:
-            key_string = \
-                f"'{self.key}'" if isinstance(self.key, str) \
-                else self.key
-            value_string = \
-                f"'{self.value}'" if isinstance(self.value, str) \
-                else self.value
-            return f"{key_string}: {value_string}"
+            return f"{self.key}: {self.value}"
 
-    def _resize(self) -> None:
-        old_table = self._table
-        self._size *= 2
-        self._table = [None] * self._size
-        self._counter = 0
+    def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
+        self._capacity = capacity
+        self._size = 0
+        self._table: list[Dictionary.Bucket | None] = [None] * self._capacity
 
-        for node in old_table:
-            if node:
-                index = self._hash_to_index(node.key)
+    def _calculate_index(self, key: Hashable) -> int:
+        index = hash(key) % self._capacity
 
-                while self._table[index] is not None:
-                    index = (index + 1) % self._size
+        while (self._table[index] is not None
+               and self._table[index].key != key):
+            index = (index + 1) % self._capacity
 
-                self._table[index] = self.Node(node.key, node.value)
-                self._counter += 1
+        return index
 
-    def _hash_to_index(self, key: Hashable) -> int:
-        return hash(key) % self._size
+    @property
+    def current_max_size(self) -> float | int:
+        return self._capacity * Dictionary.RESIZE_THRESHOLD
+
+    def resize(self) -> None:
+        old_hash_table = self._table
+        new_size = self._capacity * 2
+
+        self.__init__(new_size)
+
+        for node in old_hash_table:
+            if node is not None:
+                self.__setitem__(node.key, node.value)
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
+        index = self._calculate_index(key)
 
-        if self._counter >= round(self._size * 2 / 3):
-            self._resize()
+        if self._table[index] is None:
+            if self._size + 1 >= self.current_max_size:
+                self.resize()
+                return self.__setitem__(key, value)
 
-        index = self._hash_to_index(key)
+            self._size += 1
 
-        while self._table[index] is not None:
-            if self._table[index].key == key:
-                self._table[index].value = value
-                return
-            index = (index + 1) % self._size
-
-        self._table[index] = self.Node(key, value)
-        self._counter += 1
+        self._table[index] = Dictionary.Bucket(key, value)
 
     def __getitem__(self, key: Hashable) -> Any:
-        index = self._hash_to_index(key)
+        index = self._calculate_index(key)
 
-        while self._table[index] is not None:
-            if self._table[index].key == key:
-                return self._table[index].value
-            index = (index + 1) % self._size
+        if self._table[index] is None:
+            raise KeyError(f"Cannot find value for key: {key}")
 
-        raise KeyError(f"Key {key} not found")
+        return self._table[index].value
 
     def __len__(self) -> int:
-        return self._counter
+        return self._size
+
+    def _rehash_all(self) -> None:
+        existing_buckets = [
+            bucket for bucket
+            in self._table
+            if bucket is not None
+        ]
+
+        self.__init__(self._capacity)
+
+        for bucket in existing_buckets:
+            self.__setitem__(bucket.key, bucket.value)
+
+    def __delitem__(self, key: Hashable) -> None:
+        index = self._calculate_index(key)
+
+        if self._table[index] is None:
+            raise KeyError(f"Cannot find value for key: {key}")
+
+        self._table[index] = None
+        self._size -= 1
+        self._rehash_all()
+
+    def get(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def pop(self, key: Hashable, default: Any = None) -> Any:
+        try:
+            value = self[key]
+        except KeyError:
+            if default is not None:
+                return default
+            raise
+
+        self.__delitem__(key)
+        return value
+
+    def clear(self) -> None:
+        self.__init__()
+
+    def update(self, other: Iterable[Any] = None, **kwargs) -> None:
+        if other:
+            if hasattr(other, "items"):
+                for key, value in other.items():
+                    self[key] = value
+            elif hasattr(other, "__iter__"):
+                for item in other:
+                    if isinstance(item, (list, tuple)) and len(item) == 2:
+                        key, value = item
+                        self[key] = value
+                    else:
+                        raise ValueError
+            else:
+                raise ValueError
+
+        for key, value in kwargs.items():
+            self[key] = value
+
+    def keys(self) -> Iterator[Hashable]:
+        for bucket in self._table:
+            if bucket is not None:
+                yield bucket.key
+
+    def values(self) -> Iterator[Any]:
+        for bucket in self._table:
+            if bucket is not None:
+                yield bucket.value
+
+    def items(self) -> Iterator[tuple[Hashable, Any]]:
+        for bucket in self._table:
+            if bucket is not None:
+                yield bucket.key, bucket.value
+
+    def __iter__(self) -> Iterator[Hashable]:
+        return self.keys()
 
     def __str__(self) -> str:
-        presentation = ", ".join(str(el) for el in self._table if el)
-        return f"{{{presentation}}}"
+        items = {
+            bucket.key: bucket.value
+            for bucket in self._table
+            if bucket is not None
+        }
+        return str(items)
