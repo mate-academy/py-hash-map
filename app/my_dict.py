@@ -1,7 +1,7 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Hashable, Any
 
-from app.my_dict1 import Dictionary
 
 INITIAL_CAPACITY = 8
 RESIZE_THRESHOLD = 2 / 3
