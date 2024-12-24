@@ -31,7 +31,13 @@ class Dictionary:
 
         for node in old_table:
             if node:
-                self[node.key] = node.value
+                index = self._hash_to_index(node.key)
+
+                while self._table[index] is not None:
+                    index = (index + 1) % self._size
+
+                self._table[index] = self.Node(node.key, node.value)
+                self._counter += 1
 
     def _hash_to_index(self, key: Hashable) -> int:
         return hash(key) % self._size
