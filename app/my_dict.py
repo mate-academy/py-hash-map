@@ -91,14 +91,14 @@ class Dictionary:
             return default
 
     def update(self, key: Hashable, value: Any) -> None:
-        index = self.__hash__(key)
+        index = self._calculate_index(key)
         step = 1
 
         while self.hash_table[index] is not None:
             if self.hash_table[index].key == key:
                 self.hash_table[index].value = value
                 return
-            index = self.__getitem__(key)
+            index = self._calculate_index(key)
             step += 1
 
         self.hash_table[index] = Node(key, value)
@@ -107,12 +107,16 @@ class Dictionary:
     def __iter__(self) -> list:
         yield self.hash_table
 
+    @property
+    def pairs(self) -> list:
+        return [(key, self[key]) for key in self.hash_table]
+
     def __eq__(self, other: Dictionary) -> bool:
         if self is other:
             return True
         if type(self) is not type(other):
             return False
-        return set(self.get(self)) == set(other.get(other))
+        return set(self.pairs) == set(other.pairs)
 
     def __hash__(self, key: Hashable = None) -> int:
         return hash(key) % self.capacity
