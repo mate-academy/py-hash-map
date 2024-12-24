@@ -75,6 +75,8 @@ class Dictionary:
         for node in self._hash_table:
             node.value = None
 
+        self._size = 0
+
     def __delitem__(self, key: Hashable) -> None:
         index = self._calculate_index(key)
 
@@ -87,7 +89,7 @@ class Dictionary:
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
             return self[key]
-        except KeyError(f"Cannot find value for key: {key}"):
+        except KeyError:
             return default
 
     def __str__(self) -> str:
