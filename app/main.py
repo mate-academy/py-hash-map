@@ -3,7 +3,6 @@ from typing import Hashable, Any, Iterator, Iterable
 
 
 class Dictionary:
-
     INITIAL_CAPACITY = 8
     RESIZE_THRESHOLD = 2 / 3
 
@@ -34,12 +33,12 @@ class Dictionary:
         return self._capacity * Dictionary.RESIZE_THRESHOLD
 
     def resize(self) -> None:
-        old_hash_table = self._table
-        new_size = self._capacity * 2
+        old_table = self._table
+        self._capacity *= 2
+        self._table = [None] * self._capacity
+        self._size = 0
 
-        self.__init__(new_size)
-
-        for node in old_hash_table:
+        for node in old_table:
             if node is not None:
                 self.__setitem__(node.key, node.value)
 
@@ -49,7 +48,7 @@ class Dictionary:
         if self._table[index] is None:
             if self._size + 1 >= self.current_max_size:
                 self.resize()
-                return self.__setitem__(key, value)
+                index = self._calculate_index(key)
 
             self._size += 1
 
@@ -86,7 +85,16 @@ class Dictionary:
 
         self._table[index] = None
         self._size -= 1
-        self._rehash_all()
+        index = (index + 1) % self._capacity
+        while self._table[index] is not None:
+            key_to_rehash, value_to_rehash = (
+                self._table[index].key,
+                self._table[index].value
+            )
+            self._table[index] = None
+            self._size -= 1
+            self.__setitem__(key_to_rehash, value_to_rehash)
+            index = (index + 1) % self._capacity
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
@@ -119,9 +127,9 @@ class Dictionary:
                         key, value = item
                         self[key] = value
                     else:
-                        raise ValueError
+                        raise ValueError("Invalid items in the iterable.")
             else:
-                raise ValueError
+                raise ValueError("Provided argument is not iterable.")
 
         for key, value in kwargs.items():
             self[key] = value
