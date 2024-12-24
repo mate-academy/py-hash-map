@@ -64,6 +64,7 @@ class Dictionary:
                 self.table[index] = None
                 return
             index = (index + 1) % self.capacity
+        raise KeyError(f"Key '{key}' not found.")
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
