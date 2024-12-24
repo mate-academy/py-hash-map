@@ -16,7 +16,6 @@ class Dictionary:
     def _hash(self, key: Any) -> int:
         return hash(key) % self.capacity
 
-
     def __setitem__(self, key: Any, value: Any) -> None:
         index = self._hash(key)
 
