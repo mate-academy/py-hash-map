@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from typing import Any, Hashable
 
+
 INITIAL_CAPACITY = 8
 RESIZE_THRESHOLD = 2 / 3
+
 
 @dataclass
 class Node:
@@ -15,11 +17,12 @@ class Node:
             f"'{self.value}'" if isinstance(self.value, str) else self.value
         return f"{key_string}: {value_string}"
 
+
 class Dictionary:
     def __init__(
             self,
-            capacity: int=INITIAL_CAPACITY,
-            load_factor: float=RESIZE_THRESHOLD
+            capacity: int = INITIAL_CAPACITY,
+            load_factor: float = RESIZE_THRESHOLD
     ) -> None:
         self.length = 0
         self.capacity = capacity
@@ -38,8 +41,8 @@ class Dictionary:
         index = hash(key) % self.capacity
 
         while (
-                self.hash_table[index] is not None and
-                self.hash_table[index].key != key
+                self.hash_table[index] is not None
+                and self.hash_table[index].key != key
         ):
             index = (index + 1) % self.capacity
         return index
@@ -77,8 +80,8 @@ class Dictionary:
         index = hash(key) % self.capacity
 
         if (
-                self.hash_table[index] is not None and
-                self.hash_table[index].key == key
+                self.hash_table[index] is not None
+                and self.hash_table[index].key == key
         ):
             return self.hash_table[index].value
 
@@ -90,20 +93,3 @@ class Dictionary:
 
     def __len__(self) -> int:
         return self.length
-
-if __name__ == "__main__":
-    my_dict = Dictionary()
-    my_dict["one"] = 1
-    my_dict["one-one"] = 10
-    my_dict[8] = 8
-    my_dict[1] = 1
-    my_dict[2] = 2
-    my_dict[3] = 3
-    my_dict['four'] = 4
-    my_dict[1] = 16
-    my_dict[2] = 16
-    my_dict[3] = 16
-
-    print(my_dict)
-    print(len(my_dict))
-    print(my_dict["one"])
