@@ -22,8 +22,9 @@ class Dictionary:
     def calculate_index(self, key: Hashable, key_hash: int) -> int:
         index = key_hash % self.capacity
         while (
-            self.hash_table[index] is not None and
-            self.hash_table[index].key != key):
+                self.hash_table[index] is not None
+                and self.hash_table[index].key != key
+        ):
             index = (index + 1) % self.capacity
         return index
 
