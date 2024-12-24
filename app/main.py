@@ -79,7 +79,7 @@ class Dictionary:
         return [pair[1] for pair in self.items()]
 
     def keys(self) -> list[Hashable]:
-        return [pair[0]for pair in self.items()]
+        return [pair[0] for pair in self.items()]
 
     def pop(self, key: Hashable, default: Any = None) -> Any:
         try:
@@ -111,7 +111,7 @@ class Dictionary:
         else:
             raise TypeError(f"{type(iterable)} is not supported")
 
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             self[key] = value
 
     def clear(self) -> None:
