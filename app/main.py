@@ -73,9 +73,10 @@ class Dictionary:
 
     def clear(self) -> None:
         for node in self._hash_table:
-            node.value = None
+            node = None
 
         self._size = 0
+        self._keys = []
 
     def __delitem__(self, key: Hashable) -> None:
         index = self._calculate_index(key)
@@ -85,6 +86,7 @@ class Dictionary:
 
         self._hash_table[index] = None
         self._size -= 1
+        self._keys.remove(key)
 
     def get(self, key: Hashable, default: Any = None) -> Any:
         try:
