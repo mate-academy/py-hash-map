@@ -1,7 +1,7 @@
 from typing import Union, Any, Iterable, Tuple
 
 
-# Linear Probing
+# Quadratic Probing
 class Dictionary:
     def __init__(self,
                  initial_capacity: int = 8,
@@ -14,18 +14,21 @@ class Dictionary:
         self.capacity = initial_capacity
 
     def _hash(self, key: Any) -> int:
-        return hash(key) % self.capacity
-
+        return hash() % self.capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
         index = self._hash(key)
 
-        # Linear probing: find an empty slot or replace the existing value
+        # Quadratic probing: find an empty slot or replace the existing value
+        # index = (original_index + i ** 2) % self.capacity
+        i = 0
         original_index = index
         while self.table[index] is not None and self.table[index][0] != key:
-            index = (index + 1) % self.capacity
-            # We have returned to the starting point (table is full)
-            if index == original_index:
+            i += 1
+            # Apply quadratic probing formula
+            index = (original_index + pow(i, 2)) % self.capacity
+            # We have looped through all possible slots
+            if i >= self.capacity:
                 raise Exception("Dictionary is full")
 
         # If the key already exists, update the value
@@ -41,13 +44,17 @@ class Dictionary:
 
     def __getitem__(self, key: Any) -> Any:
         index = self._hash(key)
+        i = 0
         original_index = index
 
         while self.table[index] is not None:
             if self.table[index][0] == key:
                 return self.table[index][1]
-            index = (index + 1) % self.capacity
-            if index == original_index:
+            i += 1
+            # Apply quadratic probing formula
+            index = (original_index + pow(i, 2)) % self.capacity
+            # We have looped through all possible slots
+            if i >= self.capacity:
                 break
 
         raise KeyError(f"Key '{key}' not found.")
@@ -57,6 +64,7 @@ class Dictionary:
 
     def __delitem__(self, key: Any) -> None:
         index = self._hash(key)
+        i = 0
         original_index = index
 
         while self.table[index] is not None:
@@ -67,8 +75,11 @@ class Dictionary:
                 # we need to rehash the remaining elements
                 self._rehash(index)
                 return
-            index = (index + 1) % self.capacity
-            if index == original_index:
+            i += 1
+            # Apply quadratic probing formula
+            index = (original_index + pow(i, 2)) % self.capacity
+            # We have looped through all possible slots
+            if i >= self.capacity:
                 break
 
         raise KeyError(f"Key '{key}' not found.")
@@ -80,13 +91,17 @@ class Dictionary:
 
     def __contains__(self, key: Any) -> bool:
         index = self._hash(key)
+        i = 0
         original_index = index
 
         while self.table[index] is not None:
             if self.table[index][0] == key:
                 return True
-            index = (index + 1) % self.capacity
-            if index == original_index:
+            i += 1
+            # Apply quadratic probing formula
+            index = (original_index + pow(i, 2)) % self.capacity
+            # We have looped through all possible slots
+            if i >= self.capacity:
                 break
         return False
 
@@ -99,8 +114,11 @@ class Dictionary:
             if item is not None:
                 key, value = item
                 index = hash(key) % new_capacity
+                i = 0
+                original_index = index
                 while new_table[index] is not None:
-                    index = (index + 1) % new_capacity
+                    i += 1
+                    index = (original_index + pow(i, 2)) % new_capacity
                 new_table[index] = (key, value)
 
         self.table = new_table
@@ -118,6 +136,7 @@ class Dictionary:
 
     def pop(self, key: Any) -> Any:
         index = self._hash(key)
+        i = 0
         original_index = index
 
         while self.table[index] is not None:
@@ -127,21 +146,24 @@ class Dictionary:
                 self.size -= 1
                 self._rehash(index)
                 return value
-            index = (index + 1) % self.capacity
-            if index == original_index:
+            i += 1
+            index = (original_index + pow(i, 2)) % self.capacity
+            if i >= self.capacity:
                 break
 
         raise KeyError(f"Key '{key}' not found.")
 
     def _rehash(self, deleted_index: int) -> None:
         # After removing an element, shift remaining elements for proper lookup
-        index = (deleted_index + 1) % self.capacity
+        i = 0
+        index = (deleted_index + pow(i, 2)) % self.capacity
         while self.table[index] is not None:
             key, value = self.table[index]
             self.table[index] = None
             self.size -= 1
             self.__setitem__(key, value)
-            index = (index + 1) % self.capacity
+            i += 1
+            index = (deleted_index + pow(i, 2)) % self.capacity
 
     def items(self) -> Iterable[Tuple[Any, Any]]:
         for item in self.table:
