@@ -72,9 +72,7 @@ class Dictionary:
         return self._size
 
     def clear(self) -> None:
-        for node in self._hash_table:
-            node = None
-
+        self._hash_table = [None] * self._capacity
         self._size = 0
         self._keys = []
 
