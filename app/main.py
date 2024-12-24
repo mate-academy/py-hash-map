@@ -41,8 +41,7 @@ class Dictionary:
 
     def __len__(self) -> int:
         return len(
-            [node for node in self._hash_table
-             if node != self._hash_table_node]
+            self._normalized_table()
         )
 
     def __delitem__(self, key: Hashable) -> None:
@@ -64,7 +63,7 @@ class Dictionary:
     def _find_index(self, key: Any) -> int:
         _index = _start_index = hash(key) % len(self._hash_table)
 
-        while self._hash_table[_index] != self._hash_table_node:
+        while True:
             if self._hash_table[_index][1] == key:
                 return _index
             _index += 1
@@ -89,7 +88,7 @@ class Dictionary:
         ]
 
     def clear(self) -> None:
-        self._hash_table = []
+        self.__init__()
 
     def get(
             self,
@@ -103,7 +102,7 @@ class Dictionary:
 
     def pop(self, index: int) -> None:
         _node = self._normalized_table()[index]
-        self.__delitem__(_node[1])
+        self.__delitem__(_node[0])
         return _node
 
     def update(self, new_items: list[(Key, Value)]) -> None:
