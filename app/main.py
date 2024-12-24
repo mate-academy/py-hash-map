@@ -36,7 +36,7 @@ class Dictionary:
         self.nodes[index] = (key, value)
         self._size += 1
 
-    def __getitem__(self, item: Hashable) -> any:
+    def __getitem__(self, item: Hashable) -> Any:
         index = hash(item) % self._capacity
         start_index = index
 
@@ -76,13 +76,13 @@ class Dictionary:
             if node is not None:
                 yield node[0]
 
-    def get(self, key: Hashable, value: Any = 0) -> any:
+    def get(self, key: Hashable, value: Any = 0) -> Any:
         try:
             return self.__getitem__(key)
         except KeyError:
             return value
 
-    def pop(self, key: Hashable) -> any:
+    def pop(self, key: Hashable) -> Any:
         index = hash(key) % self._capacity
         start_index = index
         while self.nodes[index] is not None:
@@ -96,5 +96,5 @@ class Dictionary:
                 break
         raise KeyError(f"Key {key} not found")
 
-    def update(self, key: Hashable, value: any) -> None:
+    def update(self, key: Hashable, value: Any) -> None:
         self.__setitem__(key, value)
