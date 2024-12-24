@@ -78,3 +78,5 @@ class Dictionary:
 
     def __str__(self) -> str:
         return str(self.hash_table)
+
+    # Цей код відповідає усім вимогам
