@@ -1,12 +1,13 @@
-from random import randrange
+from dataclasses import dataclass
 from typing import Any, Hashable
 
+INITIAL_CAPACITY = 8
+RESIZE_THRESHOLD = 2 / 3
 
+@dataclass
 class Node:
-    def __init__(self, key: Hashable, value: Any) -> None:
-        self.key = key
-        self.value = value
-        self.hash = hash(key)
+    key: Hashable
+    value: Any
 
     def __repr__(self) -> str:
         key_string = f"'{self.key}'" if isinstance(self.key, str) else self.key
@@ -14,13 +15,16 @@ class Node:
             f"'{self.value}'" if isinstance(self.value, str) else self.value
         return f"{key_string}: {value_string}"
 
-
 class Dictionary:
-    def __init__(self) -> None:
+    def __init__(
+            self,
+            capacity: int=INITIAL_CAPACITY,
+            load_factor: float=RESIZE_THRESHOLD
+    ) -> None:
         self.length = 0
-        self.hash_table: list = [None] * 8
-        self.load_factor = 2 / 3
-        self.capacity = 8
+        self.capacity = capacity
+        self.load_factor = load_factor
+        self.hash_table: list[Node | None] = [None] * self.capacity
 
     def __str__(self) -> str:
         presentation = "{"
@@ -28,48 +32,78 @@ class Dictionary:
             if el:
                 presentation += f"{el}, "
         presentation = presentation.strip(", ") + "}"
-        return presentation
+        return presentation + "___" + str(self.hash_table)
+
+    def calculating_index(self, key: Hashable) -> int:
+        index = hash(key) % self.capacity
+
+        while (
+                self.hash_table[index] is not None and
+                self.hash_table[index].key != key
+        ):
+            index = (index + 1) % self.capacity
+        return index
+
+    def extend_hash_table(self) -> None:
+        old_hash_table = self.hash_table
+        self.capacity = self.capacity * 2
+        self.hash_table = [None] * self.capacity
+
+        for node in old_hash_table:
+            if node is not None:
+                index = self.calculating_index(node.key)
+                self.hash_table[index] = node
 
     def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.__len__() >= int(self.capacity * self.load_factor):
+        if self.length + 1 >= self.capacity * self.load_factor:
             self.extend_hash_table()
 
-        node = Node(key, value)
-        index = node.hash % self.capacity
-        if self.hash_table[index]:
+        index = self.calculating_index(key)
+
+        if self.hash_table[index] is not None:
             if self.hash_table[index].key == key:
-                self.hash_table[index].value = node.value
+                self.hash_table[index].value = value
                 return
             else:
                 for index, el in enumerate(self.hash_table):
                     if el and el.key == key:
-                        self.hash_table[index].value = node.value
+                        self.hash_table[index].value = value
                         return
-        while self.hash_table[index]:
-            index = randrange(self.capacity)
-        self.hash_table[index] = node
+
+        self.length += 1
+        self.hash_table[index] = Node(key, value)
 
     def __getitem__(self, key: Hashable) -> Any:
         index = hash(key) % self.capacity
-        if self.hash_table[index] and self.hash_table[index].key == key:
+
+        if (
+                self.hash_table[index] is not None and
+                self.hash_table[index].key == key
+        ):
             return self.hash_table[index].value
+
         for index, el in enumerate(self.hash_table):
             if el and el.key == key:
                 return self.hash_table[index].value
+
         raise KeyError(key)
 
     def __len__(self) -> int:
-        self.length = len([el for el in self.hash_table if el])
         return self.length
 
-    def extend_hash_table(self) -> None:
-        self.capacity *= 2
-        new_hash_table = [None] * self.capacity
-        for el in self.hash_table:
-            if el:
-                index = el.hash % self.capacity
-                if new_hash_table[index]:
-                    while new_hash_table[index]:
-                        index = randrange(self.capacity)
-                new_hash_table[index] = el
-        self.hash_table = new_hash_table
+if __name__ == "__main__":
+    my_dict = Dictionary()
+    my_dict["one"] = 1
+    my_dict["one-one"] = 10
+    my_dict[8] = 8
+    my_dict[1] = 1
+    my_dict[2] = 2
+    my_dict[3] = 3
+    my_dict['four'] = 4
+    my_dict[1] = 16
+    my_dict[2] = 16
+    my_dict[3] = 16
+
+    print(my_dict)
+    print(len(my_dict))
+    print(my_dict["one"])
