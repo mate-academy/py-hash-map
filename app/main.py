@@ -73,6 +73,35 @@ class Dictionary:
     def __len__(self) -> int:
         return self.size
 
+
+    def __delitem__(self, key: Any) -> None:
+        index = self._hash(key)
+        bucket = self.table[index]
+
+        for k, v in bucket:
+            if k == key:
+                bucket.remove((k, v))
+                self.size -= 1
+                return
+
+        raise KeyError(f"Key '{key}' not found.")
+
+
+    def __iter__(self) -> Iterable[Any]:
+        for bucket in self.table:
+            for key in bucket:
+                yield key
+
+
+    def __contains__(self, key: Any) -> bool:
+        index = self._hash(key)
+        bucket = self.table[index]
+        for k, _ in bucket:
+            if k == key:
+                return True
+        return False
+
+
     def _resize(self) -> None:
         new_capacity = self.capacity * 2
         new_table: list[list[Tuple[Any, Any]]] = \
@@ -95,17 +124,6 @@ class Dictionary:
             self.table[i] = []
         self.size = 0
 
-    def __delitem__(self, key: Any) -> None:
-        index = self._hash(key)
-        bucket = self.table[index]
-
-        for k, v in bucket:
-            if k == key:
-                bucket.remove((k, v))
-                self.size -= 1
-                return
-
-        raise KeyError(f"Key '{key}' not found.")
 
     def get(self, key: Any, default: Any = None) -> Any:
         try:
@@ -149,11 +167,6 @@ class Dictionary:
             for _, value in bucket:
                 yield value
 
-    def __iter__(self) -> Iterable[Any]:
-        for bucket in self.table:
-            for key in bucket:
-                yield key
-
     # Iterable[Tuple] -> list, generator, iterator, any type with __iter__()
     # -> zip(['a', 'b'], [1, 2])
     def update(self,
@@ -171,11 +184,3 @@ class Dictionary:
 
         for key, value in kwargs.items():
             self[key] = value
-
-    def __contains__(self, key: Any) -> bool:
-        index = self._hash(key)
-        bucket = self.table[index]
-        for k, _ in bucket:
-            if k == key:
-                return True
-        return False
