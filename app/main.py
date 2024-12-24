@@ -27,6 +27,8 @@ class Dictionary:
 
         self._load_factor_limit = load_factor_limit
 
+        self._length = 0
+
     def __setitem__(self, key: Hashable, value: Any) -> None:
         if self._load_factor() >= self._load_factor_limit:
             self._resize_and_rehash()
@@ -37,6 +39,7 @@ class Dictionary:
             index_in_bucket, _ = self._find_pair(bucket, key)
             bucket[index_in_bucket] = Pair(key, value, index)
         except KeyError:
+            self._length += 1
             bucket.append(Pair(key, value, index))
 
     def __getitem__(self, key: Hashable) -> Any:
@@ -48,6 +51,7 @@ class Dictionary:
         bucket = self._buckets[self._index(key)]
         index, _ = self._find_pair(bucket, key)
         del bucket[index]
+        self._length -= 1
 
     def __contains__(self, key: Hashable) -> bool:
         try:
@@ -58,7 +62,7 @@ class Dictionary:
             return True
 
     def __len__(self) -> int:
-        return len(self.items())
+        return self._length
 
     def __iter__(self) -> Iterator:
         yield from self.keys()
