@@ -147,7 +147,7 @@ class Dictionary:
             if item is not None:
                 yield item
 
-    def values(self) -> Iterable[Any]:
+    def _values(self) -> Iterable[Any]:
         for item in self.table:
             if item is not None:
                 yield item[1]

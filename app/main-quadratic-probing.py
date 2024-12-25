@@ -14,7 +14,7 @@ class Dictionary:
         self.capacity = initial_capacity
 
     def _hash(self, key: Any) -> int:
-        return hash() % self.capacity
+        return hash(key) % self.capacity
 
     def __setitem__(self, key: Any, value: Any) -> None:
         index = self._hash(key)
@@ -170,7 +170,7 @@ class Dictionary:
             if item is not None:
                 yield item
 
-    def values(self) -> Iterable[Any]:
+    def _values(self) -> Iterable[Any]:
         for item in self.table:
             if item is not None:
                 yield item[1]

@@ -122,7 +122,7 @@ class Dictionary:
             if self.status[i] is not None and self.status[i] is not False:
                 yield self.keys[i], self.values[i]
 
-    def values(self) -> Iterable[Any]:
+    def _values(self) -> Iterable[Any]:
         for i in range(self.capacity):
             if self.status[i] is not None and self.status[i] is not False:
                 yield self.values[i]

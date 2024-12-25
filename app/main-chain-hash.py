@@ -126,7 +126,7 @@ class Dictionary:
             for key, value in bucket:
                 yield key, value
 
-    def values(self) -> Iterable[Any]:
+    def _values(self) -> Iterable[Any]:
         for bucket in self.table:
             for _, value in bucket:
                 yield value
