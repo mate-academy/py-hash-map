@@ -15,42 +15,45 @@ class Dictionary:
     def __init__(self, capacity: int = INITIAL_CAPACITY) -> None:
         self.capacity = capacity
         self.size = 0
-        self.hashtable: list[None | Node] = [None] * self.capacity
+        self._hashtable: list[None | Node] = [None] * self.capacity
 
     def calculate_index(self, key: Any) -> int:
         index = hash(key) % self.capacity
         while (
-                self.hashtable[index] is not None
-                and self.hashtable[index].key != key
+                self._hashtable[index] is not None
+                and self._hashtable[index].key != key
         ):
             index = (index + 1) % self.capacity
         return index
 
+    def _resize(self) -> None:
+        old_hash_table = self._hashtable
+        self.capacity = self.capacity * 2
+        self.size = 0
+        self._hashtable: list[None | Node] = [None] * self.capacity
+
+        for node in old_hash_table:
+            if node is not None:
+                self.__setitem__(node.key, node.value)
+
     def __setitem__(self, key: Any, value: Any) -> None:
         index = self.calculate_index(key)
 
-        if self.hashtable[index] is None:
+        if self._hashtable[index] is None:
             if self.size + 1 > self.capacity * RESIZE_THRESHOLD:
-                old_hash_table = self.hashtable
-                self.__init__(self.capacity * 2)
-
-                for node in old_hash_table:
-                    if node is not None:
-                        self.__setitem__(node.key, node.value)
-
-                return self.__setitem__(key, value)
+                self._resize()
 
             self.size += 1
 
-        self.hashtable[index] = Node(key, value)
+        self._hashtable[index] = Node(key, value)
 
     def __getitem__(self, key: Any) -> Any:
         index = self.calculate_index(key)
 
-        if self.hashtable[index] is None:
+        if self._hashtable[index] is None:
             raise KeyError(f"key {key} is not present in dictionary")
 
-        return self.hashtable[index].value
+        return self._hashtable[index].value
 
     def __len__(self) -> int:
         return self.size
