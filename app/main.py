@@ -42,6 +42,8 @@ class Dictionary:
         if self._hashtable[index] is None:
             if self.size + 1 > self.capacity * RESIZE_THRESHOLD:
                 self._resize()
+                self.__setitem__(key, value)
+                return
 
             self.size += 1
 
