@@ -1,6 +1,6 @@
 import math
 from collections.abc import Hashable
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Generator, Iterable, Tuple
 
 
 class Dictionary:
@@ -138,9 +138,7 @@ class Dictionary:
             key, value = pair
             self.__setitem__(key, value)
 
-    def __iter__(self) -> List:
-        keys_list = []
+    def __iter__(self) -> Generator[Any, None, None]:
         for bucket in self.hash_table:
             if bucket is not None and bucket != "del":
-                keys_list.append(bucket[0])
-        return keys_list
+                yield bucket[0]
