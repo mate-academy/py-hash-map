@@ -1,6 +1,5 @@
 import math
-from collections.abc import Hashable
-from typing import Any, Dict, Generator, Iterable, Tuple
+from typing import Any, Dict, Generator, Hashable, Iterable, Tuple
 
 
 class Dictionary:
@@ -95,41 +94,20 @@ class Dictionary:
                 raise KeyError(f"Key {key} does not exist")
 
     def get(self, key: Any, default: Any = None) -> Any:
-        key_hash = hash(key)
-        index = key_hash % self.capacity
-        start_index = index
-
-        while True:
-            target = self.hash_table[index]
-            if target is None:
-                return default
-            if target != "del" and target[1] == key_hash and target[0] == key:
-                return target[2]
-            index = (index + 1) % self.capacity
-            if start_index == index:
-                return default
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
     def pop(self, key: Any, default: Any = "raise") -> None:
-        key_hash = hash(key)
-        index = key_hash % self.capacity
-        start_index = index
-
-        while True:
-            target = self.hash_table[index]
-            if target is None:
-                if default == "raise":
-                    raise KeyError(f"Key {key} does not exist")
-                return default
-            if target != "del" and target[1] == key_hash and target[0] == key:
-                value = target[2]
-                self.hash_table[index] = "del"
-                self.length -= 1
-                return value
-            index = (index + 1) % self.capacity
-            if start_index == index:
-                if default == "raise":
-                    raise KeyError(f"Key {key} does not exist")
-                return default
+        try:
+            value = self[key]
+            del self[key]
+            return value
+        except KeyError:
+            if default == "raise":
+                raise
+            return default
 
     def update(self, new_pairs: Iterable[Tuple] | Dict) -> None:
         if isinstance(new_pairs, dict):
