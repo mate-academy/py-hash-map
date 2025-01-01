@@ -1,10 +1,10 @@
-from typing import Any, Optional
+from typing import Hashable, Any, Optional
 from dataclasses import dataclass
 
 
 @dataclass
 class Node:
-    key: Any
+    key: Hashable
     value: Any
     _next: Optional["Node"] = None
 
@@ -15,8 +15,11 @@ class Dictionary:
         self.hash_table: list[Optional[Node]] = [None] * self.capacity
         self.length: int = 0
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        index = hash(key) % self.capacity
+    def hash_value(self, key: Hashable) -> int:
+        return hash(key) % self.capacity
+
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        index = self.hash_value(key)
         node = self.hash_table[index]
 
         while node:
@@ -32,26 +35,26 @@ class Dictionary:
         if self.length / self.capacity > 0.75:
             self._resize()
 
-    def __contains__(self, key: Any) -> bool:
-        index = hash(key) % self.capacity
+    def __contains__(self, key: Hashable) -> bool:
+        index = self.hash_value(key)
         node = self.hash_table[index]
+
         while node:
             if node.key == key:
                 return True
             node = node._next
         return False
 
-    def __getitem__(self, key: Any) -> Any:
-        if key not in self:
-            raise KeyError("Key not found in dictionary")
-
-        index = hash(key) % self.capacity
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self.hash_value(key)
         node = self.hash_table[index]
 
         while node:
             if node.key == key:
                 return node.value
             node = node._next
+
+        raise KeyError("Key not found in dictionary")
 
     def __len__(self) -> int:
         return self.length
