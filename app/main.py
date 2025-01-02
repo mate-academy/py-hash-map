@@ -1,25 +1,29 @@
-from typing import Any
+from typing import Hashable
 
 
 class Dictionary:
     def __init__(self) -> None:
         self.size = 8
         self.count = 0
+        self.start_resizing = 0.75
+        self._initialize_buckets()
+
+    def _initialize_buckets(self) -> None:
         self.buckets = [[] for _ in range(self.size)]
 
-    def _hash(self, key: Any) -> int:
+    def _hash(self, key: Hashable) -> int:
         return hash(key) % self.size
 
     def _rehash(self) -> None:
         old_buckets = self.buckets
         self.size *= 2
-        self.buckets = [[] for _ in range(self.size)]
+        self._initialize_buckets()
         self.count = 0
         for bucket in old_buckets:
             for key, value in bucket:
                 self[key] = value
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Hashable, value: Hashable) -> None:
         index = self._hash(key)
         bucket = self.buckets[index]
         for i, (k, _) in enumerate(bucket):
@@ -28,10 +32,10 @@ class Dictionary:
                 return
         bucket.append((key, value))
         self.count += 1
-        if self.count / self.size > 0.75:
+        if self.count / self.size > self.start_resizing:
             self._rehash()
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: Hashable) -> Hashable:
         index = self._hash(key)
         bucket = self.buckets[index]
         for k, v in bucket:
@@ -39,7 +43,7 @@ class Dictionary:
                 return v
         raise KeyError(f"Key {key} not found.")
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Hashable) -> None:
         index = self._hash(key)
         bucket = self.buckets[index]
         for i, (k, _) in enumerate(bucket):
@@ -53,5 +57,5 @@ class Dictionary:
         return self.count
 
     def _clear(self) -> None:
-        self.buckets = [[] for _ in range(self.size)]
+        self._initialize_buckets()
         self.count = 0
