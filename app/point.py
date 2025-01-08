@@ -12,7 +12,7 @@ class Point:
         return self.x == other.x and self.y == other.y
 
     def __hash__(self) -> int:
-        return int(self.x + self.y * 9)
+        return int(self.x + self.y)
 
     @property
     def x(self) -> float:
