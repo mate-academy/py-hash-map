@@ -2,9 +2,11 @@ from typing import Union, Any, Iterable, Mapping, Tuple
 
 
 class Dictionary:
-    def __init__(self,
-                 initial_capacity: int = 8,
-                 load_factor: float = 0.75) -> None:
+    def __init__(
+        self,
+        initial_capacity: int = 8,
+        load_factor: float = 0.75
+    ) -> None:
         self.capacity = initial_capacity
         self.load_factor = load_factor
         self.size = 0
@@ -13,9 +15,11 @@ class Dictionary:
     def hash_key(self, key: int) -> int:
         return hash(key) % self.capacity
 
-    def __setitem__(self,
-                    key: Union[int, str, float, tuple, bool],
-                    value: Any) -> None:
+    def __setitem__(
+        self,
+        key: Union[int, str, float, tuple, bool],
+        value: Any
+    ) -> None:
         hash_key = self.hash_key(key)
         bucket = self.table[hash_key]
         for i, (k, _) in enumerate(bucket):
@@ -41,7 +45,7 @@ class Dictionary:
 
     def __delitem__(self, key: Union[int, str, float, tuple, bool]) -> None:
         hash_key = self.hash_key(key)
-        bucket = self.table(hash_key)
+        bucket = self.table[hash_key]
 
         for i, (k, _) in enumerate(bucket):
             if k == key:
@@ -65,9 +69,11 @@ class Dictionary:
             for key, value in bucket:
                 self[key] = value
 
-    def get(self,
-            key: Union[int, str, float, tuple, bool],
-            default: Any = None) -> Any:
+    def get(
+        self,
+        key: Union[int, str, float, tuple, bool],
+        default: Any = None
+    ) -> Any:
         try:
             return self[key]
         except KeyError:
@@ -79,12 +85,18 @@ class Dictionary:
         self.table = [[] for _ in range(self.capacity)]
 
     def update(self, other: Union[Mapping, Iterable[Tuple[Any, Any]]]) -> None:
-        for key, value in other.items():
+        if isinstance(other, Mapping):
+            items = other.items()
+        else:
+            items = other
+        for key, value in items:
             self[key] = value
 
     def pop(
-        self, key: Union[str, int, float, tuple, bool], default: Any = None
-    ) -> None:
+        self,
+        key: Union[int, str, float, tuple, bool],
+        default: Any = None
+    ) -> Any:
         hash_key = self.hash_key(key)
         bucket = self.table[hash_key]
 
