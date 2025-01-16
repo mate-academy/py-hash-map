@@ -7,7 +7,7 @@ class Dictionary:
         self.size = 0
         self.table = [None] * self.capacity
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Any, value: Any) -> Any:
         index = hash(key) % self.capacity
 
         if self.table[index] is None:
