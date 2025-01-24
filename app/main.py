@@ -31,13 +31,12 @@ class Dictionary:
             for node in nodes:
                 if node.key == key:
                     return node.value
-            raise KeyError
+            raise KeyError(f"{key} is not existed...")
 
     def resize(self) -> None:
         if self.size < int(self.load_factor * self.capacity):
             return
         self.capacity *= 2
-        self.load_factor *= 2
         old_list_nodes = copy.copy(self.list_nodes)
         self.list_nodes = [None] * self.capacity
         for nodes in old_list_nodes:
