@@ -5,9 +5,6 @@ class Dictionary:
         self.length = 8
         self.size = 0
 
-    table = []
-    length = 8
-
     def __setitem__(self, key: any, value: any) -> None:
         index = self.index_function(key)
 
@@ -42,7 +39,7 @@ class Dictionary:
                 index += 1
                 if index >= len(self.table):
                     index = 0
-        raise KeyError
+        raise KeyError("Key not found")
 
     def __len__(self) -> any:
         return self.size
