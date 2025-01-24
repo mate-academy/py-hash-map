@@ -1,8 +1,2 @@
-.idea/
-.vscode/
-*.iml
-.env
-.DS_Store
-venv/
-.pytest_cache/
-**__pycache__/
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*
