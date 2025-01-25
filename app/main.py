@@ -16,7 +16,7 @@ class Dictionary:
         self.load_factor = int(self.capacity * (2 / 3))
         self.size = 0
         for node in old_storage:
-            if node:
+            if node and len(node) == 2:
                 key, value = node
                 self[key] = value
 
@@ -35,9 +35,6 @@ class Dictionary:
                 return
 
             index = (index + 1) % self.capacity
-
-            if index == _hash:
-                raise Exception("Hash table is full")
 
     def __getitem__(self, key: Any) -> Any:
         _hash = hash(key) % self.capacity
