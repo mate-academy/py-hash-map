@@ -24,15 +24,15 @@ class Dictionary:
         self._occupied = 0
         self._hash_table = [None for _ in range(self._capacity)]
 
-    def __setitem__(self, key: type, value: type) -> None:
+    def __setitem__(self, key: Any, value: Any) -> None:
         self._change_capacity()
         self._set_key(key, value)
 
-    def __getitem__(self, item: type) -> Any:
+    def __getitem__(self, item: Any) -> Any:
         index, _ = self._calculate_index_and_hash(item)
 
         if self._hash_table[index] is None:
-            raise KeyError
+            raise KeyError(f"No key: {item} in dict")
 
         if self._hash_table[index].key == item:
             return self._hash_table[index].value
@@ -44,7 +44,7 @@ class Dictionary:
                 if (self._hash_table[index] is not None
                         and self._hash_table[index] == item):
                     return self._hash_table[index].value
-        raise KeyError
+        raise KeyError(f"No key: {item} in dict")
 
     def __len__(self) -> int:
         return self._occupied
@@ -53,11 +53,11 @@ class Dictionary:
         self._hash_table = [None for _ in range(self._capacity)]
         self._occupied = 0
 
-    def __delitem__(self, item: type) -> None:
+    def __delitem__(self, item: Any) -> None:
         index, _ = self._calculate_index_and_hash(item)
 
         if self._hash_table[index] is None:
-            raise KeyError
+            raise KeyError(f"There's no key: {item}. When trying to delete!")
 
         if self._hash_table[index].key == item:
             self._hash_table[index] = None
@@ -71,9 +71,9 @@ class Dictionary:
                         and self._hash_table[index] == item):
                     self._hash_table[index] = None
                     return
-        raise KeyError
+        raise KeyError(f"There's no key: {item}. When trying to delete!")
 
-    def _calculate_index_and_hash(self, key: type) -> (int, int):
+    def _calculate_index_and_hash(self, key: Any) -> (int, int):
         key_hash = hash(key)
         index = key_hash % self._capacity
         return index, key_hash
