@@ -20,8 +20,7 @@ class Dictionary:
         bucket = self.__table[index]
         for k, v in bucket:
             if k == key:
-                bucket[k] = v
-                return
+                 return v
 
     def __len__(self) -> int:
         return sum(len(bucket) for bucket in self.__table)
