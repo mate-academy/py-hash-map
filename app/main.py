@@ -1,8 +1,11 @@
+from typing import Union
+
+
 class Dictionary:
     def __init__(
             self,
             initial_capacity: int = 8,
-            load_factor: None = 2 / 3
+            load_factor: float = 2 / 3
     ) -> None:
         self.capacity = initial_capacity
         self.load_factor = load_factor
@@ -10,17 +13,21 @@ class Dictionary:
         self.buckets = [None] * self.capacity
 
     class Node:
-        def __init__(self, key: None, value: None) -> None:
+        def __init__(
+                self,
+                key: Union[str, int, float],
+                value: Union[str, int, float]
+        ) -> None:
             self.key = key
             self.value = value
             self.hash = hash(key)
 
-    def _hash_index(self, key: None) -> hash:
+    def _hash_index(self, key: Union[str, int, float]) -> int:
         return hash(key) % self.capacity
 
     def __setitem__(
-            self, key: [str, int, float],
-            value: [str, int, float]
+            self, key: Union[str, int, float],
+            value: Union[str, int, float]
     ) -> None:
         if self.size / self.capacity >= self.load_factor:
             self._resize()
@@ -36,7 +43,10 @@ class Dictionary:
         self.buckets[index] = self.Node(key, value)
         self.size += 1
 
-    def __getitem__(self, key: [int, str, float]) -> None:
+    def __getitem__(
+            self,
+            key: Union[str, int, float]
+    ) -> Union[str, int, float]:
         index = self._hash_index(key)
 
         while self.buckets[index] is not None:
