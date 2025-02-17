@@ -78,6 +78,21 @@ class Dictionary:
 
         self.hash_table = new_hash_table
 
+    def processing_existing_node(
+            self,
+            key: Hashable,
+            value: Any,
+            node: Node,
+            real_index: int
+    ) -> None:
+        if not node.is_deleted:
+            node.value = value
+            return
+        new_node = Node(key, hash(key), value)
+        self.hash_table[real_index] = new_node
+        new_node.chained_nodes_indexes = node.chained_nodes_indexes
+        self.length += 1
+
     def __setitem__(
             self,
             key: Hashable,
@@ -87,13 +102,12 @@ class Dictionary:
         current_node = self.hash_table[real_index]
 
         if current_node:
-            if not current_node.is_deleted:
-                current_node.value = value
-                return
-            new_node = Node(key, hash(key), value)
-            self.hash_table[real_index] = new_node
-            new_node.chained_nodes_indexes = current_node.chained_nodes_indexes
-            self.length += 1
+            self.processing_existing_node(
+                key,
+                value,
+                current_node,
+                real_index
+            )
             return
 
         if self.length + 1 > self.current_size * 2 / 3:
@@ -117,8 +131,7 @@ class Dictionary:
 
         if node.key == key:
             if node.is_deleted:
-                if not node.chained_nodes_indexes:
-                    raise KeyError
+                raise KeyError
             else:
                 return node.value if not deletion else node
 
@@ -140,7 +153,7 @@ class Dictionary:
         self.deleted_value = None
         node = self.__getitem__(key, deletion=True)
         node.is_deleted = True
-        self.deleted_value = node.value.key
+        self.deleted_value = node.value
         self.length -= 1
 
     def get(self, key: Hashable, value_to_return: Any = None) -> Any:
