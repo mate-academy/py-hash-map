@@ -25,10 +25,14 @@ class Dictionary:
         self.length = 0
 
     def __str__(self) -> str:
-        return f"{{{", ".join(
-            str(node) for node in self.hash_table
+        nodes = [
+            str(node)
+            for node in self.hash_table
             if node and not node.is_deleted
-        )}}}"
+        ]
+        return (
+            f"{{{", ".join(nodes)}}}"
+        )
 
     def get_init_index(self, key: Hashable) -> int:
         return hash(key) % self.current_size
@@ -84,15 +88,15 @@ class Dictionary:
         current_node = self.hash_table[real_index]
 
         if (
-                current_node
-                and not current_node.is_deleted
+            current_node
+            and not current_node.is_deleted
         ):
             self.hash_table[real_index].value = value
             return
 
         if (
-                current_node
-                and current_node.is_deleted
+            current_node
+            and current_node.is_deleted
         ):
             self.hash_table[real_index] = new_node
             new_node.chained_nodes_indexes = current_node.chained_nodes_indexes
