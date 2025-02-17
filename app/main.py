@@ -83,21 +83,14 @@ class Dictionary:
             key: Hashable,
             value: Any
     ) -> None:
-        new_node = Node(key, hash(key), value)
         real_index = self.get_real_index(key, self.hash_table)
         current_node = self.hash_table[real_index]
 
-        if (
-            current_node
-            and not current_node.is_deleted
-        ):
-            self.hash_table[real_index].value = value
-            return
-
-        if (
-            current_node
-            and current_node.is_deleted
-        ):
+        if current_node:
+            if not current_node.is_deleted:
+                current_node.value = value
+                return
+            new_node = Node(key, hash(key), value)
             self.hash_table[real_index] = new_node
             new_node.chained_nodes_indexes = current_node.chained_nodes_indexes
             self.length += 1
@@ -105,14 +98,15 @@ class Dictionary:
 
         if self.length + 1 > self.current_size * 2 / 3:
             self.resize_and_rehash()
+            real_index = self.get_real_index(key, self.hash_table)
 
-        real_index = self.get_real_index(key, self.hash_table)
-        init_index = self.get_init_index(key)
         self.set_chained_node_index(
-            init_index, real_index, self.hash_table
+            self.get_init_index(key),
+            real_index,
+            self.hash_table
         )
 
-        self.hash_table[real_index] = new_node
+        self.hash_table[real_index] = Node(key, hash(key), value)
         self.length += 1
 
     def __getitem__(self, key: Hashable, deletion: bool = False) -> Any:
@@ -146,7 +140,7 @@ class Dictionary:
         self.deleted_value = None
         node = self.__getitem__(key, deletion=True)
         node.is_deleted = True
-        self.deleted_value = node
+        self.deleted_value = node.value.key
         self.length -= 1
 
     def get(self, key: Hashable, value_to_return: Any = None) -> Any:
