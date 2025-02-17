@@ -31,7 +31,7 @@ class Dictionary:
             if node and not node.is_deleted
         ]
         return (
-            f"{{{", ".join(nodes)}}}"
+            f"{{{', '.join(nodes)}}}"
         )
 
     def get_init_index(self, key: Hashable) -> int:
