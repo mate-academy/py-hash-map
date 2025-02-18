@@ -29,8 +29,8 @@ class Dictionary:
                 while new_table[index] is not None:
                     index = (index + 1) % new_capacity
                 new_table[index] = item
-            self.table = new_table
-            self.capacity = new_capacity
+        self.table = new_table
+        self.capacity = new_capacity
 
     def __getitem__(self, key: Any) -> Any:
         index = hash(key) % self.capacity
@@ -40,5 +40,5 @@ class Dictionary:
             index = (index + 1) % self.capacity
         raise KeyError(f"Key {key} not found")
 
-    def __len__(self) -> Any:
+    def __len__(self) -> int:
         return self.size
