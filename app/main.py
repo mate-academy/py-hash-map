@@ -64,7 +64,7 @@ class Dictionary:
         if self.size / self.capacity > self.load_factor:
             self._resize()
 
-    def __getitem__(self, key: str | int | float | bool | tuple) -> None:
+    def __getitem__(self, key: str | int | float | bool | tuple) -> Any:
         index = self._hash(key)
         node = self.table[index]
 
@@ -75,5 +75,5 @@ class Dictionary:
 
         raise KeyError(f"Key {key} not found.")
 
-    def __len__(self) -> None:
+    def __len__(self) -> int:
         return self.size
