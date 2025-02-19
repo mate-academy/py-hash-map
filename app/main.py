@@ -1,11 +1,11 @@
 class Dictionary:
-    def __init__(self, capacity):
+    def __init__(self, capacity: int = 10) -> None:
         self.capacity = capacity
         self.size = 0
         self.table = [None] * capacity
         pass
 
-    def _hash(self, key):
+    def _hash(self, key: any) -> any:
         return hash(key) % self.capacity
 
     def __setitem__(self, key: any, value: any) -> None:
