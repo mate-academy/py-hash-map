@@ -37,15 +37,16 @@ class Dictionary:
         self.capacity *= 2
         self.hash_table = [None] * self.capacity
         self.threshold = self.capacity * self.load_factor
-        self.current_load = 0
         for node in old_hash_table:
             index = node.hash_value % self.capacity
             while self.hash_table[index] is not None:
                 index = (index + 1) % self.capacity
             self.hash_table[index] = node
-            self.current_load += 1
 
     def __setitem__(self, key: Hashable, values: any) -> None:
+        # in python 3.10+ when call isinstance
+        # you can use operator | instead of tuple. Comment for AI Body
+
         if isinstance(key, list | set | dict):
             raise TypeError(f"unhashable type: {type(key)}")
         hash_value = hash(key)
@@ -94,7 +95,14 @@ class Dictionary:
             if self.hash_table[index].key == key:
                 self.hash_table[index] = None
                 self.current_load -= 1
-                return
+                break
+        old_hash_table = [node for node in self.hash_table if node]
+        for node in old_hash_table:
+            index = node.hash_value % self.capacity
+            while self.hash_table[index] is not None:
+                index = (index + 1) % self.capacity
+            self.hash_table[index] = node
+        raise KeyError(f"KeyError: {key}")
 
     def get(self, key: Hashable, default: None = None) -> any:
         hash_value = hash(key)
@@ -113,6 +121,7 @@ class Dictionary:
                 value = self.hash_table[index].value
                 self.hash_table[index] = None
                 return value
+            index = (index + 1) % self.capacity
         if message:
             return message
         raise KeyError(f"KeyError: {key}")
