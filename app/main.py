@@ -1,3 +1,10 @@
+class Node:
+    def __init__(self, key: any, value: any) -> None:
+        self.key = key
+        self.value = value
+        self.next = None
+
+
 class Dictionary:
     def __init__(self, capacity: int = 10) -> None:
         self.capacity = capacity
@@ -40,6 +47,7 @@ class Dictionary:
 
     def clear(self) -> None:
         self.table = [None] * self.capacity
+        self.size = 0
 
     def __delitem__(self, key: any) -> None:
         index = self._hash(key)
@@ -56,10 +64,3 @@ class Dictionary:
             previous = current
             current = current.next
         raise KeyError(key)
-
-
-class Node:
-    def __init__(self, key: any, value: any) -> None:
-        self.key = key
-        self.value = value
-        self.next = None
