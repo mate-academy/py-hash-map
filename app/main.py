@@ -94,14 +94,6 @@ class Dictionary:
     def __len__(self) -> int:
         return self.length
 
-    def __repr__(self) -> str:
-
-        list_items_str = ",\n".join(
-            [f"\t{repr(value["key"])}: {repr(value["value"])}" for value in
-             self.hash_table if value])
-
-        return "{\n%s\n}" % list_items_str
-
     def clear(self) -> None:
         self.capacity = 8
         self.hash_table = [None] * self.capacity
