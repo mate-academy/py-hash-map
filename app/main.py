@@ -11,7 +11,7 @@ class DictionaryIterator:
         return self
 
     def __next__(self) -> any:
-        if len(self.dictionary) != self.current_size:
+        if self.dictionary.length != self.current_size:
             raise Exception("dictionary changed size during iteration")
 
         while (
@@ -99,22 +99,41 @@ class Dictionary:
         self.hash_table = [None] * self.capacity
         self.length = 0
 
-    def __delitem__(self, key: any) -> None:
-        key_hash = hash(key)
-        index = key_hash % self.capacity
-
+    def __rebuild(self, index: int) -> int:
         prev_index = index
         current_index = (index + 1) % self.capacity
 
-        if not self.hash_table[index]:
-            raise KeyError
-
-        while self.hash_table[current_index]:
-            if self.hash_table[current_index]["hash"] == key_hash:
+        while current_index != index:
+            hash_table_item = self.hash_table[current_index]
+            if (
+                    hash_table_item
+                    and hash_table_item["hash"] % self.capacity == index
+            ):
                 self.hash_table[prev_index] = self.hash_table[current_index]
-                prev_index = current_index
+                self.hash_table[current_index] = None
+                prev_index = self.__rebuild(current_index)
 
             current_index = (current_index + 1) % self.capacity
+
+        return prev_index
+
+    def __delitem__(self, key: any) -> None:
+        key_hash = hash(key)
+        hash_index = key_hash % self.capacity
+        index = hash_index
+
+        while (
+                not self.hash_table[index]
+                or self.hash_table[index]["key"] != key
+        ):
+            index = (index + 1) % self.capacity
+
+            if index == hash_index:
+                raise KeyError(key)
+
+        self.hash_table[index] = None
+
+        self.__rebuild(index)
 
         self.length -= 1
 
