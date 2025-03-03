@@ -8,6 +8,43 @@ class Dictionary:
         self.quantity_key = 0
         self.container = [[] for _ in range(self.len_of_dict)]
 
+    def __delitem__(self, key: Hashable) -> None:
+        index = self.hash_formula(key)
+
+        if self.container[index]:
+            for i, (k, v) in enumerate(self.container[index]):
+                if k == key:
+                    del self.container[index][i]
+                    self.quantity_key -= 1
+                    return
+
+        raise KeyError(f"Key {key} not found")
+
+    def __setitem__(self, key: Hashable, value: Any) -> None:
+        if self.quantity_key >= self.len_of_dict * self.resize_value:
+            self.resize()
+
+        index = self.hash_formula(key)
+
+        for i, (k, v) in enumerate(self.container[index]):
+            if k == key:
+                self.container[index][i] = (key, value)
+                return
+
+        self.container[index].append((key, value))
+        self.quantity_key += 1
+
+    def __getitem__(self, key: Hashable) -> Any:
+        index = self.hash_formula(key)
+
+        for k, v in self.container[index]:
+            if k == key:
+                return v
+        raise KeyError(f"Key {key} not found")
+
+    def __len__(self) -> int:
+        return self.quantity_key
+
     def hash_formula(self, key: Hashable) -> int:
         return hash(key) % self.len_of_dict
 
@@ -45,39 +82,4 @@ class Dictionary:
         for key, value in other:
             self.__setitem__(key, value)
 
-    def __delitem__(self, key: Hashable) -> None:
-        index = self.hash_formula(key)
 
-        if self.container[index]:
-            for i, (k, v) in enumerate(self.container[index]):
-                if k == key:
-                    del self.container[index][i]
-                    self.quantity_key -= 1
-                    return
-
-        raise KeyError(f"Key {key} not found")
-
-    def __setitem__(self, key: Hashable, value: Any) -> None:
-        if self.quantity_key >= self.len_of_dict * self.resize_value:
-            self.resize()
-
-        index = self.hash_formula(key)
-
-        for i, (k, v) in enumerate(self.container[index]):
-            if k == key:
-                self.container[index][i] = (key, value)
-                return
-
-        self.container[index].append((key, value))
-        self.quantity_key += 1
-
-    def __getitem__(self, key: Hashable) -> Any:
-        index = self.hash_formula(key)
-
-        for k, v in self.container[index]:
-            if k == key:
-                return v
-        raise KeyError(f"Key {key} not found")
-
-    def __len__(self) -> int:
-        return self.quantity_key
