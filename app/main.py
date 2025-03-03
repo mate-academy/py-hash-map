@@ -43,7 +43,7 @@ class Dictionary:
         self.table[index] = new_node
         self.size += 1
 
-    def __getitem__(self, key: int) -> None:
+    def __getitem__(self, key: int) -> int:
         index = self._hash(key)
         node = self.table[index]
         while node:
