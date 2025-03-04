@@ -14,7 +14,7 @@ class Dictionary:
         return table_place
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        if self.length == 0 or self.length == self.load_factor:
+        if self.length == 0 or self.length >= self.load_factor:
             self.__resize__()
         table_place = self.get_table_place(key)
         while (self.hash_table[table_place] is not None
@@ -43,25 +43,23 @@ class Dictionary:
                     table_place += 1
                     table_place %= len(self.hash_table)
                     counter += 1
-            except KeyError:
+            except KeyError("There is no such key in the list"):
                 return -1
         else:
-            raise KeyError
+            raise KeyError("There is no such key in the list")
 
     def __len__(self) -> int:
         return self.length
 
     def __resize__(self) -> None:
-        for _ in range(8):
-            self.hash_table.append(None)
-        self.load_factor = floor(len(self.hash_table) * 2 / 3)
+        new_size = len(self.hash_table) + 8
+        self.load_factor = floor(new_size * 2 / 3)
         list_to_rewrite = []
         self.length = 0
         for element in self.hash_table:
             if element is not None:
                 list_to_rewrite.append(element)
-        self.hash_table = [None] * len(self.hash_table)
-        self.length = 0
+        self.hash_table = [None] * new_size
         for element in list_to_rewrite:
             self.__setitem__(element[0], element[2])
 
@@ -69,20 +67,20 @@ class Dictionary:
         self.hash_table = []
         return self.hash_table
 
-    def __delitem__(self, key: Any) -> Any:
+    def __delitem__(self, key: Any) -> None:
         if len(self.hash_table) != 0:
             try:
                 table_place = self.get_table_place(key)
                 while self.hash_table[table_place] is not None:
                     if self.hash_table[table_place][0] == key:
-                        self.hash_table[table_place] = [None]
+                        self.hash_table[table_place] = None
                         self.length -= 1
                     table_place += 1
                     table_place %= len(self.hash_table)
             except KeyError:
-                return 0
+                print("There is no such key in the list")
         else:
-            raise KeyError
+            raise KeyError("There is no such key in the list")
 
     def pop(self, key: Any) -> Any:
         if len(self.hash_table) != 0:
@@ -90,16 +88,16 @@ class Dictionary:
                 table_place = self.get_table_place(key)
                 while self.hash_table[table_place] is not None:
                     if self.hash_table[table_place][0] == key:
-                        item_to_return = self.hash_table[table_place]
+                        item_to_return = self.hash_table[table_place][2]
                         self.hash_table[table_place] = None
                         self.length -= 1
                         return item_to_return
                     table_place += 1
                     table_place %= len(self.hash_table)
-            except KeyError:
+            except KeyError("There is no such key in the list"):
                 return 0
         else:
-            raise KeyError
+            raise KeyError("There is no such key in the list")
 
     def update(self, key: Any, value: Any) -> None:
         table_place = self.get_table_place(key)
@@ -126,12 +124,12 @@ class Dictionary:
                     table_place += 1
                     table_place %= len(self.hash_table)
                     counter += 1
-            except KeyError:
+            except KeyError("There is no such key in the list"):
                 return None
         else:
             return None
 
-    def __iter__(self) -> None:
+    def __iter__(self) -> Any:
         for element in self.hash_table:
             if element is not None:
                 yield element
